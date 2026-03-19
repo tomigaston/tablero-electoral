@@ -3,14 +3,15 @@ import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import * as topojson from 'topojson-client';
 import 'leaflet/dist/leaflet.css';
 
-// Colores por categoría v4
+// Colores por categoría v4 - INCLUYE "D" para EN DISPUTA
 const COLORES_CATEGORIA = {
-  'A.1': '#4CAF50',
-  'A.2': '#FFCA28',
-  'B.1': '#26A69A',
-  'B.3': '#FF7043',
-  'B.2': '#78909C',
-  'C': '#EF5350',
+  'A.1': '#2E7D32',  // Bastión sólido - VERDE MÁS INTENSO
+  'A.2': '#FFCA28',  // Bastión con erosión
+  'B.1': '#26A69A',  // Territorio leal
+  'B.3': '#FF7043',  // Pérdida 2023
+  'B.2': '#78909C',  // En disputa (por si existe)
+  'D': '#78909C',    // En disputa (como viene en los datos)
+  'C': '#EF5350',    // Territorio hostil
 };
 
 function MapController({ mapkeySeleccionado, geoJsonData }) {
@@ -80,7 +81,7 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
     
     return {
       fillColor: color,
-      fillOpacity: isFiltered ? 0.15 : (isSelected ? 0.9 : 0.65),
+      fillOpacity: isFiltered ? 0.15 : (isSelected ? 0.9 : 0.7),
       color: isSelected ? '#1565C0' : '#ffffff',
       weight: isSelected ? 3 : 1,
       opacity: isFiltered ? 0.3 : 1,
@@ -120,7 +121,7 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
       if (mapkey !== mapkeySeleccionado) {
         const datosC = datosLookup[mapkey];
         const isFiltered = filtroCategoria && datosC?.Categoria_v4 !== filtroCategoria;
-        e.target.setStyle({ fillOpacity: isFiltered ? 0.15 : 0.65, weight: 1 });
+        e.target.setStyle({ fillOpacity: isFiltered ? 0.15 : 0.7, weight: 1 });
       }
     });
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
@@ -8,14 +8,15 @@ const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), {
 });
 
 // ============================================
-// PALETA DE COLORES
+// PALETA DE COLORES - INCLUYE "D" PARA EN DISPUTA
 // ============================================
 const COLORES_CATEGORIA = {
-  'A.1': { bg: '#4CAF50', text: '#1B5E20', label: 'BASTIÓN SÓLIDO' },
+  'A.1': { bg: '#2E7D32', text: '#1B5E20', label: 'BASTIÓN SÓLIDO' },
   'A.2': { bg: '#FFCA28', text: '#F57F17', label: 'BASTIÓN CON EROSIÓN' },
   'B.1': { bg: '#26A69A', text: '#00695C', label: 'TERRITORIO LEAL' },
   'B.3': { bg: '#FF7043', text: '#BF360C', label: 'PÉRDIDA 2023' },
   'B.2': { bg: '#78909C', text: '#37474F', label: 'EN DISPUTA' },
+  'D': { bg: '#78909C', text: '#37474F', label: 'EN DISPUTA' },
   'C': { bg: '#EF5350', text: '#B71C1C', label: 'TERRITORIO HOSTIL' },
 };
 
@@ -26,6 +27,25 @@ const COLORES_ML = {
   'ML.4': { bg: '#26A69A', text: '#00695C', label: 'AVANCE CON DERROTA' },
   'ML.5': { bg: '#EF5350', text: '#B71C1C', label: 'RETROCESO' },
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
+};
+
+// Descripciones para el popup de info
+const DESCRIPCIONES_CATEGORIA = {
+  'A.1': 'Circuito donde el oficialismo ganó todas las elecciones recientes con margen amplio.',
+  'A.2': 'Circuito históricamente ganador pero con tendencia a la baja en las últimas elecciones.',
+  'B.1': 'Circuito que vota mayoritariamente al oficialismo de forma consistente.',
+  'B.3': 'Circuito que se perdió en la elección de Gobernador 2023.',
+  'D': 'Circuito donde la elección está reñida y puede inclinarse hacia cualquier lado.',
+  'C': 'Circuito donde el oficialismo pierde sistemáticamente.',
+};
+
+const DESCRIPCIONES_ML = {
+  'ML.1': 'Ganó con Llaryora en Int. 2019 y Gob. 2023, y creció más que el promedio de Capital.',
+  'ML.2': 'Ganó ambas elecciones con Llaryora pero creció menos que el promedio de Capital.',
+  'ML.3': 'No ganó en Int. 2019 pero sí en Gob. 2023 - territorio conquistado.',
+  'ML.4': 'Ganó Int. 2019, perdió Gob. 2023, pero el % de votos de Llaryora subió (perdió por terceros).',
+  'ML.5': 'Perdió Gob. 2023 y además el % de votos bajó respecto a Int. 2019.',
+  'ML.6': 'Territorio adverso donde se perdieron ambas elecciones.',
 };
 
 // ============================================
@@ -59,18 +79,57 @@ const VictoriaIndicator = ({ label, gano }) => (
   </div>
 );
 
+// Modal de información
+const InfoModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={onClose}>
+      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#666' }}>×</button>
+        </div>
+        
+        <div style={{ marginBottom: '28px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Diagnóstico Territorial (v4)</h3>
+          {Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2').map(([cat, config]) => (
+            <div key={cat} style={{ display: 'flex', gap: '12px', marginBottom: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+              <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: config.bg, flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: '14px', color: config.text }}>{config.label}</div>
+                <div style={{ fontSize: '13px', color: '#666', marginTop: '4px' }}>{DESCRIPCIONES_CATEGORIA[cat]}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Evolución Llaryora (ML)</h3>
+          {Object.entries(COLORES_ML).map(([cat, config]) => (
+            <div key={cat} style={{ display: 'flex', gap: '12px', marginBottom: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+              <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: config.bg, flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: '14px', color: config.text }}>{config.label}</div>
+                <div style={{ fontSize: '13px', color: '#666', marginTop: '4px' }}>{DESCRIPCIONES_ML[cat]}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const formatPct = (val) => val != null ? `${(val * 100).toFixed(1)}%` : '—';
 const formatPP = (val) => val != null ? `${val > 0 ? '+' : ''}${(val * 100).toFixed(1)} pp` : '—';
-
-// Función para extraer número base del CircuitoKey (ej: "12C" -> "12", "4A" -> "4")
 const getNumeroBase = (circuitoKey) => {
   if (!circuitoKey) return '';
-  const str = String(circuitoKey);
-  return str.replace(/[A-Za-z]/g, '');
+  return String(circuitoKey).replace(/[A-Za-z]/g, '');
 };
 
 // ============================================
-// SOLAPA RESUMEN
+// SOLAPAS
 // ============================================
 const SolapaResumen = ({ circuito, datos, padronTotal }) => {
   if (!datos) return null;
@@ -133,9 +192,6 @@ const SolapaResumen = ({ circuito, datos, padronTotal }) => {
   );
 };
 
-// ============================================
-// SOLAPA EVOLUCIÓN
-// ============================================
 const SolapaEvolucion = ({ circuito, datos }) => {
   const [mostrarCapital, setMostrarCapital] = useState(true);
   if (!datos) return null;
@@ -160,15 +216,15 @@ const SolapaEvolucion = ({ circuito, datos }) => {
   const getX = (idx) => padding.left + (idx / (elecciones.length - 1)) * (chartWidth - padding.left - padding.right);
   
   const todasElecciones = [
-    { label: 'Gob. 2023', share: datos.Share_G23, cap: datos.ShareCap_G23, gano: datos.Gano_G23, pos: datos.Posicion_G23 },
-    { label: 'Gob. 2019', share: datos.Share_G19, cap: datos.ShareCap_G19, gano: datos.Gano_G19, pos: datos.Posicion_G19 },
-    { label: 'Gob. 2015', share: datos.Share_G15, cap: datos.ShareCap_G15, gano: null, pos: null },
-    { label: 'Gob. 2011', share: datos.Share_G11, cap: datos.ShareCap_G11, gano: null, pos: null },
-    { label: 'Gob. 2007', share: datos.Share_G07, cap: datos.ShareCap_G07, gano: null, pos: null },
-    { label: 'Dip. 2025', share: datos.Share_L25, cap: datos.ShareCap_L25, gano: datos.Gano_L25, pos: datos.Posicion_L25 },
-    { label: 'Dip. 2023', share: datos.Share_L23, cap: datos.ShareCap_L23, gano: null, pos: null },
-    { label: 'Dip. 2021', share: datos.Share_L21, cap: datos.ShareCap_L21, gano: datos.Gano_L21, pos: datos.Posicion_L21 },
-    { label: 'Int. 2019', share: datos.Share_Int19, cap: datos.ShareCap_Int19, gano: datos.Gano_Int19, pos: datos.Posicion_Int19 },
+    { label: 'Gob. 2023', share: datos.Share_G23, cap: datos.ShareCap_G23, gano: datos.Gano_G23 },
+    { label: 'Gob. 2019', share: datos.Share_G19, cap: datos.ShareCap_G19, gano: datos.Gano_G19 },
+    { label: 'Gob. 2015', share: datos.Share_G15, cap: datos.ShareCap_G15, gano: null },
+    { label: 'Gob. 2011', share: datos.Share_G11, cap: datos.ShareCap_G11, gano: null },
+    { label: 'Gob. 2007', share: datos.Share_G07, cap: datos.ShareCap_G07, gano: null },
+    { label: 'Dip. 2025', share: datos.Share_L25, cap: datos.ShareCap_L25, gano: datos.Gano_L25 },
+    { label: 'Dip. 2023', share: datos.Share_L23, cap: datos.ShareCap_L23, gano: null },
+    { label: 'Dip. 2021', share: datos.Share_L21, cap: datos.ShareCap_L21, gano: datos.Gano_L21 },
+    { label: 'Int. 2019', share: datos.Share_Int19, cap: datos.ShareCap_Int19, gano: datos.Gano_Int19 },
   ];
   
   return (
@@ -209,29 +265,15 @@ const SolapaEvolucion = ({ circuito, datos }) => {
         <div style={{ fontSize: '14px', color: 'var(--text-secondary)', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>Resumen</div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-            <thead>
-              <tr style={{ backgroundColor: 'var(--bg-secondary)' }}>
-                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Elección</th>
-                <th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Circuito</th>
-                <th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Capital</th>
-                <th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Diferencia</th>
-                <th style={{ padding: '12px 18px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Resultado</th>
-              </tr>
-            </thead>
+            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Elección</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Circuito</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Capital</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Diferencia</th><th style={{ padding: '12px 18px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Resultado</th></tr></thead>
             <tbody>
               {todasElecciones.map((row, i) => (
                 <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
                   <td style={{ padding: '12px 18px', fontWeight: 500 }}>{row.label}</td>
                   <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600 }}>{formatPct(row.share)}</td>
                   <td style={{ padding: '12px 18px', textAlign: 'right', color: 'var(--text-secondary)' }}>{formatPct(row.cap)}</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', color: row.share != null && row.cap != null ? ((row.share - row.cap) >= 0 ? '#2E7D32' : '#C62828') : 'var(--text-tertiary)', fontWeight: 500 }}>
-                    {row.share != null && row.cap != null ? `${(row.share - row.cap) >= 0 ? '+' : ''}${((row.share - row.cap) * 100).toFixed(1)} pp` : '—'}
-                  </td>
-                  <td style={{ padding: '12px 18px', textAlign: 'center' }}>
-                    {row.gano != null ? (
-                      <span style={{ display: 'inline-block', padding: '5px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, backgroundColor: row.gano ? '#4CAF5022' : '#EF535022', color: row.gano ? '#2E7D32' : '#C62828' }}>{row.gano ? 'GANÓ' : 'PERDIÓ'}</span>
-                    ) : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}
-                  </td>
+                  <td style={{ padding: '12px 18px', textAlign: 'right', color: row.share != null && row.cap != null ? ((row.share - row.cap) >= 0 ? '#2E7D32' : '#C62828') : 'var(--text-tertiary)', fontWeight: 500 }}>{row.share != null && row.cap != null ? formatPP(row.share - row.cap) : '—'}</td>
+                  <td style={{ padding: '12px 18px', textAlign: 'center' }}>{row.gano != null ? <span style={{ display: 'inline-block', padding: '5px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, backgroundColor: row.gano ? '#4CAF5022' : '#EF535022', color: row.gano ? '#2E7D32' : '#C62828' }}>{row.gano ? 'GANÓ' : 'PERDIÓ'}</span> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
                 </tr>
               ))}
             </tbody>
@@ -242,9 +284,6 @@ const SolapaEvolucion = ({ circuito, datos }) => {
   );
 };
 
-// ============================================
-// SOLAPA PARTIDOS
-// ============================================
 const SolapaPartidos = ({ circuito, datos, partidos }) => {
   const [eleccionSeleccionada, setEleccionSeleccionada] = useState('G23');
   const elecciones = ['G23', 'G19', 'L25', 'L21', 'Int19'];
@@ -312,14 +351,9 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
   );
 };
 
-// ============================================
-// SOLAPA TERRITORIO (CORREGIDA)
-// ============================================
 const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCircuito }) => {
   const mapkey = datos?.Mapkey;
   const barriosCircuito = barrios?.[mapkey] || [];
-  
-  // Nueva lógica: agrupar por número base (ej: 12 para 12, 12A, 12B, 12C)
   const numeroBase = getNumeroBase(circuito);
   const vecinos = todosLosDatos?.filter(d => {
     if (d.CircuitoKey === circuito) return false;
@@ -340,18 +374,13 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
                     <tr><th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% en circuito</th></tr>
                   </thead>
                   <tbody>
-                    {barriosCircuito.map((barrio, i) => {
-                      const nombre = barrio?.nombre || barrio;
-                      const poblacion = barrio?.poblacion;
-                      const porcentaje = barrio?.porcentaje;
-                      return (
-                        <tr key={i} style={{ borderTop: '1px solid var(--border)', backgroundColor: i === 0 ? '#1976D208' : 'transparent' }}>
-                          <td style={{ padding: '10px 14px', fontWeight: i === 0 ? 600 : 400 }}>{nombre}</td>
-                          <td style={{ padding: '10px 14px', textAlign: 'right' }}>{poblacion != null ? poblacion.toLocaleString() : '—'}</td>
-                          <td style={{ padding: '10px 14px', textAlign: 'right' }}>{porcentaje != null ? `${porcentaje.toFixed(1)}%` : '—'}</td>
-                        </tr>
-                      );
-                    })}
+                    {barriosCircuito.map((barrio, i) => (
+                      <tr key={i} style={{ borderTop: '1px solid var(--border)', backgroundColor: i === 0 ? '#1976D208' : 'transparent' }}>
+                        <td style={{ padding: '10px 14px', fontWeight: i === 0 ? 600 : 400 }}>{barrio.nombre || barrio}</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right' }}>{barrio.poblacion != null ? barrio.poblacion.toLocaleString() : '—'}</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right' }}>{barrio.porcentaje != null ? `${barrio.porcentaje.toFixed(1)}%` : '—'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -361,7 +390,7 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
                 Padrón: <strong style={{ color: 'var(--text-primary)' }}>{datos?.Padron_G23?.toLocaleString() || '—'}</strong>
               </div>
             </>
-          ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>No hay información de barrios disponible para este circuito</div>}
+          ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>No hay información de barrios disponible</div>}
         </div>
       </div>
       <div>
@@ -386,93 +415,50 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
   );
 };
 
-// ============================================
-// SOLAPA COMPARATIVAS
-// ============================================
 const SolapaComparativas = ({ circuito, datos }) => {
   if (!datos) return null;
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-      {/* Comparativa Gob 19 vs Gob 23 */}
       <div>
         <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Comparativa Gobernador: 2019 vs 2023</h4>
         <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2019</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G19)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G19}°</div>
-            </div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2019</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G19)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G19}°</div></div>
             <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2023</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G23)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div>
-            </div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Residual_Gov >= 0 ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Variación</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Residual_Gov)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>vs Capital: -5.7 pp</div>
-            </div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Residual_Gov >= 0 ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Variación</div><div style={{ fontSize: '32px', fontWeight: 700, color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Residual_Gov)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>vs Capital: -5.7 pp</div></div>
           </div>
         </div>
       </div>
       
-      {/* Evolución Llaryora */}
       <div>
         <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Evolución Llaryora: Int. 2019 → Gob. 2023</h4>
         <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Int. 2019</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_Int19)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_Int19}°</div>
-            </div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Int. 2019</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_Int19)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_Int19}°</div></div>
             <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: '#1976D218', border: '1px solid #1976D240', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: '#1976D2', marginBottom: '10px' }}>Gob. 2023</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: '#1565C0' }}>{formatPct(datos.Share_G23)}</div>
-              <div style={{ fontSize: '13px', color: '#1976D2', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div>
-            </div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Crecio_vs_Capital ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: datos.Efecto_ML >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Efecto_ML / 100)}</div>
-              <div style={{ fontSize: '13px', color: datos.Crecio_vs_Capital ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Efecto_ML_vs_Capital / 100)}</div>
-            </div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: '#1976D218', border: '1px solid #1976D240', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: '#1976D2', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '32px', fontWeight: 700, color: '#1565C0' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '13px', color: '#1976D2', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Crecio_vs_Capital ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div><div style={{ fontSize: '32px', fontWeight: 700, color: datos.Efecto_ML >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Efecto_ML / 100)}</div><div style={{ fontSize: '13px', color: datos.Crecio_vs_Capital ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Efecto_ML_vs_Capital / 100)}</div></div>
           </div>
           <div style={{ marginTop: '18px' }}><Badge categoria={datos.Categoria_ML} tipo="ml" /></div>
           {datos.Categoria_ML === 'ML.4' && <div style={{ marginTop: '12px', padding: '10px 14px', backgroundColor: '#26A69A15', borderRadius: '8px', fontSize: '13px', color: '#00695C' }}>ℹ️ ML subió su % de votos ({formatPP(datos.Efecto_ML / 100)}), pero perdió la elección por irrupción de terceros.</div>}
         </div>
       </div>
       
-      {/* Efecto Schiaretti */}
       <div>
         <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Efecto Schiaretti: Dip. 2021 → Dip. 2025</h4>
         <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2021</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L21)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L21}°</div>
-            </div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2021</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L21)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L21}°</div></div>
             <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2025</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L25)}</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L25}°</div>
-            </div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: datos.Sch_Efecto >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Sch_Efecto)}</div>
-              <div style={{ fontSize: '13px', color: datos.Sch_Efecto_vs_Capital >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Sch_Efecto_vs_Capital)}</div>
-            </div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2025</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L25)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L25}°</div></div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div><div style={{ fontSize: '32px', fontWeight: 700, color: datos.Sch_Efecto >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Sch_Efecto)}</div><div style={{ fontSize: '13px', color: datos.Sch_Efecto_vs_Capital >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Sch_Efecto_vs_Capital)}</div></div>
           </div>
           <div style={{ marginTop: '18px' }}><span style={{ display: 'inline-block', padding: '7px 16px', borderRadius: '8px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5022' : '#EF535022', color: datos.Sch_Mejoro ? '#2E7D32' : '#C62828', fontSize: '13px', fontWeight: 600 }}>{datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'}</span></div>
         </div>
       </div>
       
-      {/* Tendencias del circuito */}
       <div style={{ padding: '24px', backgroundColor: datos.Victorias_Total >= 2 ? '#4CAF5012' : '#EF535012', border: `1px solid ${datos.Victorias_Total >= 2 ? '#4CAF5040' : '#EF535040'}`, borderRadius: '12px' }}>
         <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '18px', fontWeight: 600 }}>Tendencias del circuito</h4>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '18px' }}>
@@ -494,12 +480,24 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
   const [ordenColumna, setOrdenColumna] = useState('Share_G23');
   const [ordenAsc, setOrdenAsc] = useState(false);
   
-  const conteoCategoria = datos.reduce((acc, d) => { acc[d.Categoria_v4] = (acc[d.Categoria_v4] || 0) + 1; return acc; }, {});
-  const datosFiltrados = filtroCategoria ? datos.filter(d => d.Categoria_v4 === filtroCategoria) : datos;
+  const conteoCategoria = datos.reduce((acc, d) => { 
+    const cat = d.Categoria_v4;
+    // Normalizar D y B.2 como la misma categoría para el conteo
+    const catNorm = cat === 'B.2' ? 'D' : cat;
+    acc[catNorm] = (acc[catNorm] || 0) + 1; 
+    return acc; 
+  }, {});
+  
+  const datosFiltrados = filtroCategoria 
+    ? datos.filter(d => d.Categoria_v4 === filtroCategoria || (filtroCategoria === 'D' && d.Categoria_v4 === 'B.2'))
+    : datos;
   const datosOrdenados = [...datosFiltrados].sort((a, b) => { const valA = a[ordenColumna] || 0; const valB = b[ordenColumna] || 0; return ordenAsc ? valA - valB : valB - valA; });
   const totalPadron = datos.reduce((sum, d) => sum + (d.Padron_G23 || 0), 0);
   
   const handleOrdenar = (col) => { if (ordenColumna === col) { setOrdenAsc(!ordenAsc); } else { setOrdenColumna(col); setOrdenAsc(false); } };
+  
+  // Filtrar categorías únicas para mostrar (excluir B.2 duplicado)
+  const categoriasUnicas = Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2');
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -531,7 +529,7 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
           {filtroCategoria && <button onClick={() => setFiltroCategoria(null)} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '12px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtro</button>}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-          {Object.entries(COLORES_CATEGORIA).map(([cat, config]) => (
+          {categoriasUnicas.map(([cat, config]) => (
             <div key={cat} onClick={() => setFiltroCategoria(filtroCategoria === cat ? null : cat)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', backgroundColor: filtroCategoria === cat ? `${config.bg}30` : 'var(--bg-secondary)', border: filtroCategoria === cat ? `2px solid ${config.bg}` : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s' }}>
               <div style={{ width: '14px', height: '14px', borderRadius: '4px', backgroundColor: config.bg }} />
               <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: filtroCategoria === cat ? 600 : 400 }}>{config.label} ({conteoCategoria[cat] || 0})</span>
@@ -581,133 +579,152 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
 };
 
 // ============================================
-// FUNCIÓN EXPORTAR FICHA PDF
+// FUNCIÓN EXPORTAR FICHA PDF MEJORADA
 // ============================================
-const generarFichaPDF = (datos, barrios, padronTotal, COLORES_CATEGORIA, COLORES_ML) => {
+const generarFichaPDF = (datos, barrios, partidos, padronTotal) => {
   const mapkey = datos.Mapkey;
   const barriosCircuito = barrios?.[mapkey] || [];
   const pctPadron = padronTotal > 0 ? ((datos.Padron_G23 / padronTotal) * 100).toFixed(2) : 0;
+  const partidosG23 = partidos?.[datos.CircuitoKey]?.['G23'] || [];
+  const partidosL25 = partidos?.[datos.CircuitoKey]?.['L25'] || [];
   
-  const getBadgeStyle = (categoria, tipo) => {
-    const colores = tipo === 'v4' ? COLORES_CATEGORIA : COLORES_ML;
-    const config = colores[categoria] || { bg: '#9E9E9E', label: categoria || '—' };
-    return `background-color: ${config.bg}22; color: ${config.text}; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 600;`;
-  };
+  const elecciones = [
+    { key: 'G07', label: '2007', share: datos.Share_G07, shareCap: datos.ShareCap_G07 },
+    { key: 'G11', label: '2011', share: datos.Share_G11, shareCap: datos.ShareCap_G11 },
+    { key: 'G15', label: '2015', share: datos.Share_G15, shareCap: datos.ShareCap_G15 },
+    { key: 'G19', label: '2019', share: datos.Share_G19, shareCap: datos.ShareCap_G19 },
+    { key: 'G23', label: '2023', share: datos.Share_G23, shareCap: datos.ShareCap_G23 },
+  ];
   
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Ficha Circuito ${datos.CircuitoKey}</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #1a1a1a; }
-        .header { border-bottom: 3px solid #1976D2; padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { font-size: 28px; font-weight: 700; }
-        .header h2 { font-size: 18px; font-weight: 400; color: #666; margin-top: 8px; }
-        .badges { margin-top: 16px; display: flex; gap: 12px; }
-        .badge { display: inline-block; padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
-        .metric { padding: 16px; background: #f5f5f5; border-radius: 8px; text-align: center; }
-        .metric-label { font-size: 12px; color: #666; margin-bottom: 6px; }
-        .metric-value { font-size: 24px; font-weight: 700; }
-        .metric-sub { font-size: 11px; color: #999; margin-top: 4px; }
-        .section { margin-bottom: 30px; }
-        .section h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { padding: 10px; text-align: left; background: #f5f5f5; font-weight: 500; }
-        td { padding: 10px; border-top: 1px solid #e0e0e0; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .green { color: #2E7D32; }
-        .red { color: #C62828; }
-        .comparativas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .comp-box { padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; }
-        .comp-box h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-        .comp-value { font-size: 28px; font-weight: 700; }
-        .comp-sub { font-size: 12px; color: #666; margin-top: 4px; }
-        .barrios { display: flex; flex-wrap: wrap; gap: 8px; }
-        .barrio { padding: 6px 12px; background: #f5f5f5; border-radius: 4px; font-size: 12px; }
-        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 11px; color: #999; text-align: center; }
-        @media print { body { padding: 20px; } }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>CIRCUITO ${datos.CircuitoKey}</h1>
-        <h2>${datos.cirn_nom}</h2>
-        <div class="badges">
-          <span class="badge" style="${getBadgeStyle(datos.Categoria_v4, 'v4')}">${COLORES_CATEGORIA[datos.Categoria_v4]?.label || datos.Categoria_v4}</span>
-          <span class="badge" style="${getBadgeStyle(datos.Categoria_ML, 'ml')}">${COLORES_ML[datos.Categoria_ML]?.label || datos.Categoria_ML}</span>
-        </div>
-      </div>
-      
-      <div class="metrics">
-        <div class="metric">
-          <div class="metric-label">Padrón 2023</div>
-          <div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div>
-          <div class="metric-sub">${pctPadron}% de Capital</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Victorias</div>
-          <div class="metric-value">${datos.Victorias_Total}/4</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Gob. 2023</div>
-          <div class="metric-value ${datos.Share_G23 >= 0.5 ? 'green' : 'red'}">${(datos.Share_G23 * 100).toFixed(1)}%</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Dip. 2025</div>
-          <div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div>
-        </div>
-      </div>
-      
-      <div class="section">
-        <h3>Resultados históricos</h3>
-        <table>
-          <thead>
-            <tr><th>Elección</th><th class="text-right">% Votos</th><th class="text-right">vs Capital</th><th class="text-center">Resultado</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Gob. 2023</td><td class="text-right"><strong>${(datos.Share_G23 * 100).toFixed(1)}%</strong></td><td class="text-right ${(datos.Share_G23 - datos.ShareCap_G23) >= 0 ? 'green' : 'red'}">${((datos.Share_G23 - datos.ShareCap_G23) * 100).toFixed(1)} pp</td><td class="text-center">${datos.Gano_G23 ? '✓ GANÓ' : '✗ PERDIÓ'}</td></tr>
-            <tr><td>Gob. 2019</td><td class="text-right"><strong>${(datos.Share_G19 * 100).toFixed(1)}%</strong></td><td class="text-right ${(datos.Share_G19 - datos.ShareCap_G19) >= 0 ? 'green' : 'red'}">${((datos.Share_G19 - datos.ShareCap_G19) * 100).toFixed(1)} pp</td><td class="text-center">${datos.Gano_G19 ? '✓ GANÓ' : '✗ PERDIÓ'}</td></tr>
-            <tr><td>Dip. 2025</td><td class="text-right"><strong>${(datos.Share_L25 * 100).toFixed(1)}%</strong></td><td class="text-right ${(datos.Share_L25 - datos.ShareCap_L25) >= 0 ? 'green' : 'red'}">${((datos.Share_L25 - datos.ShareCap_L25) * 100).toFixed(1)} pp</td><td class="text-center">${datos.Gano_L25 ? '✓ GANÓ' : '✗ PERDIÓ'}</td></tr>
-            <tr><td>Dip. 2021</td><td class="text-right"><strong>${(datos.Share_L21 * 100).toFixed(1)}%</strong></td><td class="text-right ${(datos.Share_L21 - datos.ShareCap_L21) >= 0 ? 'green' : 'red'}">${((datos.Share_L21 - datos.ShareCap_L21) * 100).toFixed(1)} pp</td><td class="text-center">${datos.Gano_L21 ? '✓ GANÓ' : '✗ PERDIÓ'}</td></tr>
-            <tr><td>Int. 2019</td><td class="text-right"><strong>${(datos.Share_Int19 * 100).toFixed(1)}%</strong></td><td class="text-right ${(datos.Share_Int19 - datos.ShareCap_Int19) >= 0 ? 'green' : 'red'}">${((datos.Share_Int19 - datos.ShareCap_Int19) * 100).toFixed(1)} pp</td><td class="text-center">${datos.Gano_Int19 ? '✓ GANÓ' : '✗ PERDIÓ'}</td></tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <div class="comparativas">
-        <div class="comp-box">
-          <h4>Efecto Llaryora (Int.19 → Gob.23)</h4>
-          <div class="comp-value ${datos.Efecto_ML >= 0 ? 'green' : 'red'}">${datos.Efecto_ML >= 0 ? '+' : ''}${(datos.Efecto_ML).toFixed(1)} pp</div>
-          <div class="comp-sub">vs Capital: ${datos.Efecto_ML_vs_Capital >= 0 ? '+' : ''}${(datos.Efecto_ML_vs_Capital).toFixed(1)} pp</div>
-        </div>
-        <div class="comp-box">
-          <h4>Efecto Legislativo (Dip.21 → Dip.25)</h4>
-          <div class="comp-value ${datos.Sch_Efecto >= 0 ? 'green' : 'red'}">${datos.Sch_Efecto >= 0 ? '+' : ''}${(datos.Sch_Efecto * 100).toFixed(1)} pp</div>
-          <div class="comp-sub">vs Capital: ${datos.Sch_Efecto_vs_Capital >= 0 ? '+' : ''}${(datos.Sch_Efecto_vs_Capital * 100).toFixed(1)} pp</div>
-        </div>
-      </div>
-      
-      ${barriosCircuito.length > 0 ? `
-      <div class="section">
-        <h3>Barrios del circuito (${barriosCircuito.length})</h3>
-        <div class="barrios">
-          ${barriosCircuito.slice(0, 15).map(b => `<span class="barrio">${b?.nombre || b}</span>`).join('')}
-          ${barriosCircuito.length > 15 ? `<span class="barrio">+${barriosCircuito.length - 15} más</span>` : ''}
-        </div>
-      </div>
-      ` : ''}
-      
-      <div class="footer">
-        Diagnóstico Territorial - Córdoba Capital │ Generado el ${new Date().toLocaleDateString('es-AR')}
-      </div>
-    </body>
-    </html>
-  `;
+  const maxShare = Math.max(...elecciones.map(e => e.share || 0), ...elecciones.map(e => e.shareCap || 0), 0.6);
+  const chartW = 500, chartH = 150, padL = 40, padR = 20, padT = 20, padB = 30;
+  const getY = (v) => padT + (1 - v / maxShare) * (chartH - padT - padB);
+  const getX = (i) => padL + (i / (elecciones.length - 1)) * (chartW - padL - padR);
+  
+  const circuitoPoints = elecciones.filter(e => e.share != null).map((e, i) => `${getX(elecciones.indexOf(e))},${getY(e.share)}`).join(' ');
+  const capitalPoints = elecciones.filter(e => e.shareCap != null).map((e, i) => `${getX(elecciones.indexOf(e))},${getY(e.shareCap)}`).join(' ');
+  
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ficha ${datos.CircuitoKey}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:30px;max-width:850px;margin:0 auto;color:#1a1a1a;font-size:13px}
+.header{border-bottom:3px solid #1976D2;padding-bottom:16px;margin-bottom:24px}
+.header h1{font-size:24px;font-weight:700}
+.header h2{font-size:16px;font-weight:400;color:#666;margin-top:6px}
+.badges{margin-top:12px;display:flex;gap:10px}
+.badge{display:inline-block;padding:4px 12px;border-radius:5px;font-size:11px;font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.metric{padding:14px;background:#f5f5f5;border-radius:6px;text-align:center}
+.metric-label{font-size:11px;color:#666;margin-bottom:4px}
+.metric-value{font-size:22px;font-weight:700}
+.metric-sub{font-size:10px;color:#999;margin-top:2px}
+.section{margin-bottom:24px}
+.section h3{font-size:14px;font-weight:600;margin-bottom:10px;color:#1976D2}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px;text-align:left;background:#f5f5f5;font-weight:500}
+td{padding:8px;border-top:1px solid #e0e0e0}
+.text-right{text-align:right}
+.text-center{text-align:center}
+.green{color:#2E7D32}
+.red{color:#C62828}
+.chart-container{background:#f9f9f9;padding:16px;border-radius:8px;margin-bottom:20px}
+.comparativas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.comp-box{padding:14px;border:1px solid #e0e0e0;border-radius:6px;text-align:center}
+.comp-box h4{font-size:11px;color:#666;margin-bottom:8px}
+.comp-value{font-size:20px;font-weight:700}
+.partidos-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.partido-section{background:#f5f5f5;padding:12px;border-radius:6px}
+.partido-section h4{font-size:12px;font-weight:600;margin-bottom:8px}
+.partido-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e0e0e0}
+.partido-item:last-child{border:none}
+.footer{margin-top:30px;padding-top:16px;border-top:1px solid #e0e0e0;font-size:10px;color:#999;text-align:center}
+@media print{body{padding:15px}}
+</style></head><body>
+
+<div class="header">
+  <h1>CIRCUITO ${datos.CircuitoKey}</h1>
+  <h2>${datos.cirn_nom}</h2>
+  <div class="badges">
+    <span class="badge" style="background:${COLORES_CATEGORIA[datos.Categoria_v4]?.bg}22;color:${COLORES_CATEGORIA[datos.Categoria_v4]?.text}">${COLORES_CATEGORIA[datos.Categoria_v4]?.label || datos.Categoria_v4}</span>
+    <span class="badge" style="background:${COLORES_ML[datos.Categoria_ML]?.bg}22;color:${COLORES_ML[datos.Categoria_ML]?.text}">${COLORES_ML[datos.Categoria_ML]?.label || datos.Categoria_ML}</span>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-label">Padrón 2023</div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div></div>
+  <div class="metric"><div class="metric-label">Victorias</div><div class="metric-value">${datos.Victorias_Total}/4</div></div>
+  <div class="metric"><div class="metric-label">Gob. 2023</div><div class="metric-value ${datos.Share_G23 >= 0.5 ? 'green' : 'red'}">${(datos.Share_G23 * 100).toFixed(1)}%</div></div>
+  <div class="metric"><div class="metric-label">Dip. 2025</div><div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div></div>
+</div>
+
+<div class="section">
+  <h3>Evolución histórica - Gobernador</h3>
+  <div class="chart-container">
+    <svg width="100%" viewBox="0 0 ${chartW} ${chartH}">
+      ${[0.2, 0.4, 0.6].filter(v => v <= maxShare).map(v => `<line x1="${padL}" y1="${getY(v)}" x2="${chartW - padR}" y2="${getY(v)}" stroke="#ddd" stroke-dasharray="3 3"/><text x="${padL - 5}" y="${getY(v) + 4}" text-anchor="end" font-size="10" fill="#999">${(v * 100).toFixed(0)}%</text>`).join('')}
+      <polyline points="${capitalPoints}" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4 3"/>
+      <polyline points="${circuitoPoints}" fill="none" stroke="#1976D2" stroke-width="2.5"/>
+      ${elecciones.map((e, i) => e.share != null ? `<circle cx="${getX(i)}" cy="${getY(e.share)}" r="4" fill="#1976D2"/>` : '').join('')}
+      ${elecciones.map((e, i) => `<text x="${getX(i)}" y="${chartH - 5}" text-anchor="middle" font-size="10" fill="#666">${e.label}</text>`).join('')}
+    </svg>
+    <div style="display:flex;gap:20px;margin-top:8px;font-size:11px">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:20px;height:2px;background:#1976D2"></div>Circuito</div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:20px;height:0;border-top:2px dashed #999"></div>Capital</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Resultados históricos</h3>
+  <table>
+    <thead><tr><th>Elección</th><th class="text-right">% Votos</th><th class="text-right">vs Capital</th><th class="text-center">Resultado</th></tr></thead>
+    <tbody>
+      ${[
+        { l: 'Gob. 2023', s: datos.Share_G23, c: datos.ShareCap_G23, g: datos.Gano_G23 },
+        { l: 'Gob. 2019', s: datos.Share_G19, c: datos.ShareCap_G19, g: datos.Gano_G19 },
+        { l: 'Dip. 2025', s: datos.Share_L25, c: datos.ShareCap_L25, g: datos.Gano_L25 },
+        { l: 'Dip. 2021', s: datos.Share_L21, c: datos.ShareCap_L21, g: datos.Gano_L21 },
+        { l: 'Int. 2019', s: datos.Share_Int19, c: datos.ShareCap_Int19, g: datos.Gano_Int19 },
+      ].map(r => `<tr><td>${r.l}</td><td class="text-right"><strong>${(r.s * 100).toFixed(1)}%</strong></td><td class="text-right ${(r.s - r.c) >= 0 ? 'green' : 'red'}">${((r.s - r.c) * 100).toFixed(1)} pp</td><td class="text-center">${r.g != null ? (r.g ? '✓ GANÓ' : '✗ PERDIÓ') : '—'}</td></tr>`).join('')}
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h3>Comparativas</h3>
+  <div class="comparativas">
+    <div class="comp-box"><h4>Gob. 2019 → Gob. 2023</h4><div class="comp-value ${datos.Residual_Gov >= 0 ? 'green' : 'red'}">${datos.Residual_Gov >= 0 ? '+' : ''}${(datos.Residual_Gov * 100).toFixed(1)} pp</div></div>
+    <div class="comp-box"><h4>Efecto Llaryora (Int.19→G.23)</h4><div class="comp-value ${datos.Efecto_ML >= 0 ? 'green' : 'red'}">${datos.Efecto_ML >= 0 ? '+' : ''}${datos.Efecto_ML.toFixed(1)} pp</div></div>
+    <div class="comp-box"><h4>Efecto Legislativo (D.21→D.25)</h4><div class="comp-value ${datos.Sch_Efecto >= 0 ? 'green' : 'red'}">${datos.Sch_Efecto >= 0 ? '+' : ''}${(datos.Sch_Efecto * 100).toFixed(1)} pp</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Composición del voto</h3>
+  <div class="partidos-grid">
+    <div class="partido-section">
+      <h4>Gob. 2023</h4>
+      ${partidosG23.slice(0, 5).map((p, i) => `<div class="partido-item"><span>${i + 1}. ${p.partido.substring(0, 25)}${p.partido.length > 25 ? '...' : ''}</span><strong>${(p.share * 100).toFixed(1)}%</strong></div>`).join('')}
+    </div>
+    <div class="partido-section">
+      <h4>Dip. 2025</h4>
+      ${partidosL25.slice(0, 5).map((p, i) => `<div class="partido-item"><span>${i + 1}. ${p.partido.substring(0, 25)}${p.partido.length > 25 ? '...' : ''}</span><strong>${(p.share * 100).toFixed(1)}%</strong></div>`).join('')}
+    </div>
+  </div>
+</div>
+
+${barriosCircuito.length > 0 ? `
+<div class="section">
+  <h3>Barrios del circuito (${barriosCircuito.length})</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:6px">
+    ${barriosCircuito.slice(0, 12).map(b => `<span style="padding:4px 10px;background:#f5f5f5;border-radius:4px;font-size:11px">${b.nombre || b}</span>`).join('')}
+    ${barriosCircuito.length > 12 ? `<span style="padding:4px 10px;font-size:11px;color:#666">+${barriosCircuito.length - 12} más</span>` : ''}
+  </div>
+</div>
+` : ''}
+
+<div class="footer">Diagnóstico Territorial - Córdoba Capital │ Generado el ${new Date().toLocaleDateString('es-AR')}</div>
+</body></html>`;
   
   return html;
 };
@@ -725,6 +742,7 @@ export default function Home() {
   const [geoData, setGeoData] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
+  const [mostrarInfo, setMostrarInfo] = useState(false);
   
   useEffect(() => {
     const cargarDatos = async () => {
@@ -753,7 +771,7 @@ export default function Home() {
   
   const exportarPDF = () => {
     if (!datosCircuito) return;
-    const html = generarFichaPDF(datosCircuito, barrios, padronTotal, COLORES_CATEGORIA, COLORES_ML);
+    const html = generarFichaPDF(datosCircuito, barrios, partidos, padronTotal);
     const ventana = window.open('', '_blank');
     ventana.document.write(html);
     ventana.document.close();
@@ -773,6 +791,8 @@ export default function Home() {
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f0; }
       `}</style>
       
+      <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
+      
       <div style={{ minHeight: '100vh' }}>
         <header style={{ padding: '18px 28px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
           <div>
@@ -780,12 +800,13 @@ export default function Home() {
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>Córdoba Capital — 119 circuitos</p>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button onClick={() => setMostrarInfo(true)} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>ℹ️ Info</button>
             {circuitoSeleccionado && <button onClick={exportarPDF} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📄 Exportar ficha</button>}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', zIndex: 200 }}>
               <input type="text" placeholder="Buscar circuito..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ padding: '12px 18px', paddingLeft: '44px', width: '300px', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '15px', backgroundColor: 'var(--bg-secondary)' }} />
               <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '16px' }}>🔍</span>
               {busqueda && circuitosFiltrados.length > 0 && (
-                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', marginTop: '6px', maxHeight: '350px', overflowY: 'auto', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', marginTop: '6px', maxHeight: '350px', overflowY: 'auto', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 300 }}>
                   {circuitosFiltrados.map(d => (
                     <div key={d.CircuitoKey} onClick={() => { setCircuitoSeleccionado(d.CircuitoKey); setBusqueda(''); setFiltroCategoria(null); }} style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '15px' }}><strong>{d.CircuitoKey}</strong> - {d.cirn_nom}</span>
@@ -837,7 +858,7 @@ export default function Home() {
               <div style={{ marginTop: '14px' }}>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Leyenda (click para filtrar)</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
-                  {Object.entries(COLORES_CATEGORIA).map(([cat, config]) => (
+                  {Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2').map(([cat, config]) => (
                     <div key={cat} onClick={() => setFiltroCategoria(filtroCategoria === cat ? null : cat)} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 6px', borderRadius: '4px', cursor: 'pointer', backgroundColor: filtroCategoria === cat ? `${config.bg}20` : 'transparent', border: filtroCategoria === cat ? `1px solid ${config.bg}` : '1px solid transparent' }}>
                       <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: config.bg, flexShrink: 0 }} />
                       <span style={{ fontSize: '10px', color: 'var(--text-secondary)', lineHeight: 1.2 }}>{config.label}</span>
