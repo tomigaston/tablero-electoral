@@ -429,7 +429,7 @@ const SolapaComparativas = ({ circuito, datos }) => {
             <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2019</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G19)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G19}°</div></div>
             <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
             <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Residual_Gov >= 0 ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Variación</div><div style={{ fontSize: '32px', fontWeight: 700, color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Residual_Gov)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>vs Capital: -5.7 pp</div></div>
+            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: (datos.Share_G23 - datos.Share_G19) >= 0 ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Variación</div><div style={{ fontSize: '32px', fontWeight: 700, color: (datos.Share_G23 - datos.Share_G19) >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Share_G23 - datos.Share_G19)}</div><div style={{ fontSize: '13px', color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Residual_Gov)}</div></div>
           </div>
         </div>
       </div>
@@ -693,7 +693,7 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 <div class="section">
   <h3>Comparativas</h3>
   <div class="comparativas">
-    <div class="comp-box"><h4>Gob. 2019 → Gob. 2023</h4><div class="comp-value ${datos.Residual_Gov >= 0 ? 'green' : 'red'}">${datos.Residual_Gov >= 0 ? '+' : ''}${(datos.Residual_Gov * 100).toFixed(1)} pp</div></div>
+    <div class="comp-box"><h4>Gob. 2019 → Gob. 2023</h4><div class="comp-value ${(datos.Share_G23 - datos.Share_G19) >= 0 ? 'green' : 'red'}">${(datos.Share_G23 - datos.Share_G19) >= 0 ? '+' : ''}${((datos.Share_G23 - datos.Share_G19) * 100).toFixed(1)} pp</div><div style="font-size:11px;color:#666;margin-top:4px">vs Capital: ${datos.Residual_Gov >= 0 ? '+' : ''}${(datos.Residual_Gov * 100).toFixed(1)} pp</div></div>
     <div class="comp-box"><h4>Efecto Llaryora (Int.19→G.23)</h4><div class="comp-value ${datos.Efecto_ML >= 0 ? 'green' : 'red'}">${datos.Efecto_ML >= 0 ? '+' : ''}${datos.Efecto_ML.toFixed(1)} pp</div></div>
     <div class="comp-box"><h4>Efecto Legislativo (D.21→D.25)</h4><div class="comp-value ${datos.Sch_Efecto >= 0 ? 'green' : 'red'}">${datos.Sch_Efecto >= 0 ? '+' : ''}${(datos.Sch_Efecto * 100).toFixed(1)} pp</div></div>
   </div>
