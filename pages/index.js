@@ -8,7 +8,7 @@ const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), {
 });
 
 // ============================================
-// PALETA DE COLORES - INCLUYE "D" PARA EN DISPUTA
+// PALETA DE COLORES
 // ============================================
 const COLORES_CATEGORIA = {
   'A.1': { bg: '#2E7D32', text: '#1B5E20', label: 'BASTIÓN SÓLIDO' },
@@ -29,23 +29,23 @@ const COLORES_ML = {
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
 };
 
-// Descripciones para el popup de info
+// Descripciones CLARAS para el popup de info
 const DESCRIPCIONES_CATEGORIA = {
-  'A.1': 'Circuito donde el oficialismo ganó todas las elecciones recientes con margen amplio.',
-  'A.2': 'Circuito históricamente ganador pero con tendencia a la baja en las últimas elecciones.',
-  'B.1': 'Circuito que vota mayoritariamente al oficialismo de forma consistente.',
-  'B.3': 'Circuito que se perdió en la elección de Gobernador 2023.',
-  'D': 'Circuito donde la elección está reñida y puede inclinarse hacia cualquier lado.',
-  'C': 'Circuito donde el oficialismo pierde sistemáticamente.',
+  'A.1': 'Ganó las 4 elecciones analizadas: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.',
+  'A.2': 'Ganó en Gob. 2019 y Gob. 2023, pero el porcentaje de votos bajó de una elección a la otra.',
+  'B.1': 'Vota mayoritariamente al oficialismo de forma consistente, aunque no siempre gana.',
+  'B.3': 'Ganó en Gob. 2019 pero perdió en Gob. 2023.',
+  'D': 'Circuito reñido donde las elecciones se definen por pocos votos. Sin patrón claro.',
+  'C': 'Perdió las 4 elecciones analizadas: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.',
 };
 
 const DESCRIPCIONES_ML = {
-  'ML.1': 'Ganó con Llaryora en Int. 2019 y Gob. 2023, y creció más que el promedio de Capital.',
-  'ML.2': 'Ganó ambas elecciones con Llaryora pero creció menos que el promedio de Capital.',
-  'ML.3': 'No ganó en Int. 2019 pero sí en Gob. 2023 - territorio conquistado.',
-  'ML.4': 'Ganó Int. 2019, perdió Gob. 2023, pero el % de votos de Llaryora subió (perdió por terceros).',
-  'ML.5': 'Perdió Gob. 2023 y además el % de votos bajó respecto a Int. 2019.',
-  'ML.6': 'Territorio adverso donde se perdieron ambas elecciones.',
+  'ML.1': 'Ganó con Llaryora en Int. 2019 y en Gob. 2023, y el porcentaje de votos creció más que el promedio de Capital (+5.6 pp).',
+  'ML.2': 'Ganó con Llaryora en Int. 2019 y en Gob. 2023, pero el crecimiento fue igual o menor que el promedio de Capital.',
+  'ML.3': 'Perdió en Int. 2019 pero ganó en Gob. 2023. Territorio conquistado por Llaryora.',
+  'ML.4': 'Ganó en Int. 2019 pero perdió en Gob. 2023. Sin embargo, el porcentaje de votos de Llaryora subió. Perdió por irrupción de terceros, no por pérdida de votos propios.',
+  'ML.5': 'Perdió en Gob. 2023 y además el porcentaje de votos bajó respecto a Int. 2019.',
+  'ML.6': 'Perdió ambas elecciones con Llaryora: Int. 2019 y Gob. 2023.',
 };
 
 // ============================================
@@ -84,7 +84,7 @@ const InfoModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={onClose}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '20px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
@@ -92,7 +92,8 @@ const InfoModal = ({ isOpen, onClose }) => {
         </div>
         
         <div style={{ marginBottom: '28px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Diagnóstico Territorial (v4)</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Diagnóstico Territorial</h3>
+          <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Basado en resultados de: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.</p>
           {Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2').map(([cat, config]) => (
             <div key={cat} style={{ display: 'flex', gap: '12px', marginBottom: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
               <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: config.bg, flexShrink: 0, marginTop: '2px' }} />
@@ -105,7 +106,8 @@ const InfoModal = ({ isOpen, onClose }) => {
         </div>
         
         <div>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Evolución Llaryora (ML)</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Evolución Llaryora</h3>
+          <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Compara el desempeño de Llaryora entre Int. 2019 (como candidato a intendente) y Gob. 2023 (como candidato a gobernador).</p>
           {Object.entries(COLORES_ML).map(([cat, config]) => (
             <div key={cat} style={{ display: 'flex', gap: '12px', marginBottom: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
               <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: config.bg, flexShrink: 0, marginTop: '2px' }} />
@@ -482,7 +484,6 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
   
   const conteoCategoria = datos.reduce((acc, d) => { 
     const cat = d.Categoria_v4;
-    // Normalizar D y B.2 como la misma categoría para el conteo
     const catNorm = cat === 'B.2' ? 'D' : cat;
     acc[catNorm] = (acc[catNorm] || 0) + 1; 
     return acc; 
@@ -496,7 +497,6 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
   
   const handleOrdenar = (col) => { if (ordenColumna === col) { setOrdenAsc(!ordenAsc); } else { setOrdenColumna(col); setOrdenAsc(false); } };
   
-  // Filtrar categorías únicas para mostrar (excluir B.2 duplicado)
   const categoriasUnicas = Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2');
   
   return (
@@ -789,12 +789,13 @@ export default function Home() {
         :root { --bg-primary: #ffffff; --bg-secondary: #f5f5f5; --text-primary: #1a1a1a; --text-secondary: #666666; --text-tertiary: #999999; --border: #e0e0e0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f0; }
+        .leaflet-container { z-index: 1 !important; }
       `}</style>
       
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
       
       <div style={{ minHeight: '100vh' }}>
-        <header style={{ padding: '18px 28px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
+        <header style={{ padding: '18px 28px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
           <div>
             <h1 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>Diagnóstico Territorial</h1>
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>Córdoba Capital — 119 circuitos</p>
@@ -802,11 +803,11 @@ export default function Home() {
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <button onClick={() => setMostrarInfo(true)} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>ℹ️ Info</button>
             {circuitoSeleccionado && <button onClick={exportarPDF} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📄 Exportar ficha</button>}
-            <div style={{ position: 'relative', zIndex: 200 }}>
+            <div style={{ position: 'relative' }}>
               <input type="text" placeholder="Buscar circuito..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ padding: '12px 18px', paddingLeft: '44px', width: '300px', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '15px', backgroundColor: 'var(--bg-secondary)' }} />
               <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '16px' }}>🔍</span>
               {busqueda && circuitosFiltrados.length > 0 && (
-                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', marginTop: '6px', maxHeight: '350px', overflowY: 'auto', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 300 }}>
+                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', marginTop: '6px', maxHeight: '350px', overflowY: 'auto', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 9999 }}>
                   {circuitosFiltrados.map(d => (
                     <div key={d.CircuitoKey} onClick={() => { setCircuitoSeleccionado(d.CircuitoKey); setBusqueda(''); setFiltroCategoria(null); }} style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '15px' }}><strong>{d.CircuitoKey}</strong> - {d.cirn_nom}</span>
@@ -851,7 +852,7 @@ export default function Home() {
             )}
           </div>
           
-          <div style={{ flex: '1', padding: '24px', paddingLeft: '0' }}>
+          <div style={{ flex: '1', padding: '24px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
             <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '14px', padding: '18px', display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>Mapa de circuitos</div>
               <MapaCircuitos datos={datos} geoData={geoData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={(c) => { setCircuitoSeleccionado(c); setFiltroCategoria(null); }} filtroCategoria={filtroCategoria} />
