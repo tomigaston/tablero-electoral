@@ -1,26 +1,26 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import * as topojson from 'topojson-client';
 import 'leaflet/dist/leaflet.css';
 
-// Colores por categoría
+// Colores por categoría v4
 const COLORES_CATEGORIA = {
-  'A.1': '#4CAF50',
-  'A.2': '#FFCA28', 
-  'B.1': '#26A69A',
-  'B.3': '#FF7043',
-  'B.2': '#78909C',
-  'C': '#EF5350',
+  'A.1': '#4CAF50',  // Bastión sólido
+  'A.2': '#FFCA28',  // Bastión con erosión
+  'B.1': '#26A69A',  // Territorio leal
+  'B.3': '#FF7043',  // Pérdida 2023
+  'B.2': '#78909C',  // En disputa
+  'C': '#EF5350',    // Territorio hostil
 };
 
 // Componente para ajustar vista cuando cambia selección
-function MapController({ circuitoSeleccionado, geoJsonData }) {
+function MapController({ mapkeySeleccionado, geoJsonData }) {
   const map = useMap();
   
   useEffect(() => {
-    if (circuitoSeleccionado && geoJsonData) {
+    if (mapkeySeleccionado && geoJsonData) {
       const feature = geoJsonData.features.find(
-        f => f.properties.CircuitoKey === circuitoSeleccionado
+        f => f.properties.circuito === mapkeySeleccionado
       );
       if (feature && feature.geometry) {
         try {
@@ -28,7 +28,7 @@ function MapController({ circuitoSeleccionado, geoJsonData }) {
           const layer = L.geoJSON(feature);
           const bounds = layer.getBounds();
           if (bounds.isValid()) {
-            map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+            map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
           }
         } catch (e) {
           console.log('Error ajustando bounds');
@@ -38,7 +38,7 @@ function MapController({ circuitoSeleccionado, geoJsonData }) {
       // Vista general de Córdoba Capital
       map.setView([-31.42, -64.18], 12);
     }
-  }, [circuitoSeleccionado, geoJsonData, map]);
+  }, [mapkeySeleccionado, geoJsonData, map]);
   
   return null;
 }
@@ -47,11 +47,10 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
   const geoJsonRef = useRef(null);
   
   // Convertir TopoJSON a GeoJSON
-  const geoJsonData = React.useMemo(() => {
+  const geoJsonData = useMemo(() => {
     if (!geoData) return null;
     
     try {
-      // Buscar el objeto correcto en el TopoJSON
       const objectKey = Object.keys(geoData.objects)[0];
       if (!objectKey) return null;
       
@@ -63,26 +62,35 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
     }
   }, [geoData]);
   
-  // Crear lookup de datos por circuito
-  const datosLookup = React.useMemo(() => {
+  // Crear lookup de datos por Mapkey
+  const datosLookup = useMemo(() => {
     const lookup = {};
     datos.forEach(d => {
-      lookup[d.CircuitoKey] = d;
+      if (d.Mapkey) {
+        lookup[d.Mapkey] = d;
+      }
     });
     return lookup;
   }, [datos]);
   
+  // Obtener Mapkey del circuito seleccionado
+  const mapkeySeleccionado = useMemo(() => {
+    if (!circuitoSeleccionado) return null;
+    const circuito = datos.find(d => d.CircuitoKey === circuitoSeleccionado);
+    return circuito?.Mapkey || null;
+  }, [circuitoSeleccionado, datos]);
+  
   // Estilo para cada feature
   const getStyle = (feature) => {
-    const circuitoKey = feature.properties.CircuitoKey || feature.properties.cirn_id;
-    const datosCircuito = datosLookup[circuitoKey];
+    const mapkey = feature.properties.circuito;
+    const datosCircuito = datosLookup[mapkey];
     const categoria = datosCircuito?.Categoria_v4 || 'B.2';
     const color = COLORES_CATEGORIA[categoria] || '#78909C';
-    const isSelected = circuitoKey === circuitoSeleccionado;
+    const isSelected = mapkey === mapkeySeleccionado;
     
     return {
       fillColor: color,
-      fillOpacity: isSelected ? 0.85 : 0.6,
+      fillOpacity: isSelected ? 0.9 : 0.65,
       color: isSelected ? '#1565C0' : '#ffffff',
       weight: isSelected ? 3 : 1,
       opacity: 1,
@@ -91,21 +99,22 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
   
   // Handlers para cada feature
   const onEachFeature = (feature, layer) => {
-    const circuitoKey = feature.properties.CircuitoKey || feature.properties.cirn_id;
-    const datosCircuito = datosLookup[circuitoKey];
+    const mapkey = feature.properties.circuito;
+    const datosCircuito = datosLookup[mapkey];
+    
+    if (!datosCircuito) return;
     
     // Tooltip
+    const shareG23 = datosCircuito.Share_G23;
     const tooltipContent = `
-      <div style="font-family: -apple-system, sans-serif; padding: 4px;">
-        <strong style="font-size: 13px;">${circuitoKey}</strong>
-        ${datosCircuito ? `
-          <div style="font-size: 12px; color: #666; margin-top: 2px;">
-            ${datosCircuito.cirn_nom || ''}
-          </div>
-          <div style="font-size: 12px; margin-top: 4px;">
-            Gob. 2023: <strong>${(datosCircuito.Share_G23 * 100).toFixed(1)}%</strong>
-          </div>
-        ` : ''}
+      <div style="font-family: -apple-system, sans-serif; padding: 6px 8px;">
+        <strong style="font-size: 14px;">${datosCircuito.CircuitoKey}</strong>
+        <div style="font-size: 13px; color: #666; margin-top: 3px;">
+          ${datosCircuito.cirn_nom || feature.properties.nombre_circuito || ''}
+        </div>
+        <div style="font-size: 13px; margin-top: 6px;">
+          Gob. 2023: <strong>${shareG23 ? (shareG23 * 100).toFixed(1) + '%' : '—'}</strong>
+        </div>
       </div>
     `;
     
@@ -118,25 +127,25 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
     
     // Click handler
     layer.on('click', () => {
-      if (onSelectCircuito) {
-        onSelectCircuito(circuitoKey);
+      if (onSelectCircuito && datosCircuito) {
+        onSelectCircuito(datosCircuito.CircuitoKey);
       }
     });
     
     // Hover effects
     layer.on('mouseover', (e) => {
-      if (circuitoKey !== circuitoSeleccionado) {
+      if (mapkey !== mapkeySeleccionado) {
         e.target.setStyle({
-          fillOpacity: 0.8,
+          fillOpacity: 0.85,
           weight: 2,
         });
       }
     });
     
     layer.on('mouseout', (e) => {
-      if (circuitoKey !== circuitoSeleccionado) {
+      if (mapkey !== mapkeySeleccionado) {
         e.target.setStyle({
-          fillOpacity: 0.6,
+          fillOpacity: 0.65,
           weight: 1,
         });
       }
@@ -153,7 +162,7 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
         }
       });
     }
-  }, [circuitoSeleccionado, datosLookup]);
+  }, [mapkeySeleccionado, datosLookup]);
   
   if (!geoJsonData) {
     return (
@@ -205,13 +214,14 @@ export default function MapaCircuitos({ datos, geoData, circuitoSeleccionado, on
         
         <GeoJSON
           ref={geoJsonRef}
+          key={JSON.stringify(mapkeySeleccionado)}
           data={geoJsonData}
           style={getStyle}
           onEachFeature={onEachFeature}
         />
         
         <MapController 
-          circuitoSeleccionado={circuitoSeleccionado}
+          mapkeySeleccionado={mapkeySeleccionado}
           geoJsonData={geoJsonData}
         />
       </MapContainer>

@@ -36,8 +36,8 @@ const COLORES_ML = {
   'ML.1': { bg: '#4CAF50', text: '#1B5E20', label: 'FIEL CRECIENTE' },
   'ML.2': { bg: '#FFCA28', text: '#F57F17', label: 'FIEL ESTANCADO' },
   'ML.3': { bg: '#42A5F5', text: '#1565C0', label: 'CONQUISTA ML' },
-  'ML.4': { bg: '#EF5350', text: '#B71C1C', label: 'RETROCESO ML' },
-  'ML.5': { bg: '#7E57C2', text: '#4527A0', label: 'OPORTUNIDAD' },
+  'ML.4': { bg: '#26A69A', text: '#00695C', label: 'AVANCE CON DERROTA' },  // Antes RETROCESO ML
+  'ML.5': { bg: '#EF5350', text: '#B71C1C', label: 'RETROCESO' },  // Efecto_ML negativo
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
 };
 
@@ -686,13 +686,16 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
 };
 
 const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos }) => {
-  const barriosCircuito = barrios?.[circuito] || [];
+  // Usar Mapkey para buscar barrios (formato "0013" en vez de "13")
+  const mapkey = datos?.Mapkey;
+  const barriosCircuito = barrios?.[mapkey] || [];
   
   const vecinos = todosLosDatos?.filter(d => {
     if (d.CircuitoKey === circuito) return false;
-    const baseActual = circuito.replace(/[A-Z]/g, '');
-    const baseOtro = d.CircuitoKey.replace(/[A-Z]/g, '');
-    return baseActual.substring(0, 2) === baseOtro.substring(0, 2);
+    // Comparar por los primeros dígitos del Mapkey
+    const baseActual = datos?.Mapkey?.substring(0, 2);
+    const baseOtro = d.Mapkey?.substring(0, 2);
+    return baseActual && baseOtro && baseActual === baseOtro;
   }).slice(0, 5) || [];
   
   const formatPct = (val) => val != null ? `${(val * 100).toFixed(1)}%` : '—';

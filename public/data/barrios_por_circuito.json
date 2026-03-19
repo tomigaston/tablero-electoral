@@ -1,3478 +1,1353 @@
 {
-  "0001": {
-    "nombre_circuito": "SECCIONAL PRIMERA",
-    "barrios": [
-      {
-        "nombre": "CENTRO",
-        "tipo": "BarrioOficial",
-        "poblacion": 27456,
-        "pct_en_circuito": 70.9
-      }
-    ]
-  },
-  "0003": {
-    "nombre_circuito": "SECCIONAL TERCERA",
-    "barrios": [
-      {
-        "nombre": "ALBERDI",
-        "tipo": "BarrioOficial",
-        "poblacion": 29371,
-        "pct_en_circuito": 75.0
-      },
-      {
-        "nombre": "QUINTA SANTA ANA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1150,
-        "pct_en_circuito": 99.1
-      }
-    ]
-  },
-  "0004": {
-    "nombre_circuito": "NUEVA CORDOBA",
-    "barrios": [
-      {
-        "nombre": "NUEVA CORDOBA",
-        "tipo": "BarrioOficial",
-        "poblacion": 44562,
-        "pct_en_circuito": 90.0
-      },
-      {
-        "nombre": "PARQUE SARMIENTO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1268,
-        "pct_en_circuito": 99.5
-      },
-      {
-        "nombre": "VILLA REVOL ANEXO",
-        "tipo": "BarrioOficial",
-        "poblacion": 702,
-        "pct_en_circuito": 94.4
-      },
-      {
-        "nombre": "CIUDAD UNIVERSITARIA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 585,
-        "pct_en_circuito": 82.9
-      },
-      {
-        "nombre": "ROGELIO MARTINEZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 114,
-        "pct_en_circuito": 95.0
-      }
-    ]
-  },
-  "0005": {
-    "nombre_circuito": "ALTAMIRA",
-    "barrios": [
-      {
-        "nombre": "ALTAMIRA",
-        "tipo": "BarrioOficial",
-        "poblacion": 6010,
-        "pct_en_circuito": 98.4
-      },
-      {
-        "nombre": "ACOSTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4821,
-        "pct_en_circuito": 82.7
-      },
-      {
-        "nombre": "PARQUE SAN VICENTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1287,
-        "pct_en_circuito": 96.3
-      },
-      {
-        "nombre": "AMPLIACION ALTAMIRA",
-        "tipo": "BarrioOficial",
-        "poblacion": 921,
-        "pct_en_circuito": 70.4
-      }
-    ]
-  },
-  "0006": {
-    "nombre_circuito": "ALTO GRAL PAZ",
-    "barrios": [
-      {
-        "nombre": "HOGAR PROPIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4796,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "PARQUE DEL ESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 517,
-        "pct_en_circuito": 50.3
-      }
-    ]
-  },
-  "0007": {
-    "nombre_circuito": "AEROPUERTO",
-    "barrios": [
-      {
-        "nombre": "AEROPUERTO",
-        "tipo": "BarrioOficial",
-        "poblacion": 430,
-        "pct_en_circuito": 97.7
-      }
-    ]
-  },
-  "0009": {
-    "nombre_circuito": "ESCOBAR",
-    "barrios": [
-      {
-        "nombre": "ESCOBAR",
-        "tipo": "BarrioOficial",
-        "poblacion": 1987,
-        "pct_en_circuito": 96.9
-      },
-      {
-        "nombre": "BAJO PALERMO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1905,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "OMBU",
-        "tipo": "BarrioOficial",
-        "poblacion": 1516,
-        "pct_en_circuito": 98.3
-      },
-      {
-        "nombre": "LAS ROSAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1155,
-        "pct_en_circuito": 98.4
-      }
-    ]
-  },
-  "0010": {
-    "nombre_circuito": "BELLA VISTA",
-    "barrios": [
-      {
-        "nombre": "BELLA VISTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 3980,
-        "pct_en_circuito": 89.4
-      },
-      {
-        "nombre": "PARQUE VELEZ SARSFIELD",
-        "tipo": "BarrioOficial",
-        "poblacion": 3262,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SUAREZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 2556,
-        "pct_en_circuito": 98.5
-      },
-      {
-        "nombre": "FERRER",
-        "tipo": "BarrioOficial",
-        "poblacion": 1758,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "BELLA VISTA OESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1689,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "COLINAS DE VELEZ SARSFIELD",
-        "tipo": "BarrioOficial",
-        "poblacion": 1321,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CACERES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1200,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "RESIDENCIAL OLIVOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1095,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "ACHAVAL PEÑA",
-        "tipo": "BarrioOficial",
-        "poblacion": 821,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "COLINAS DE BELLA VISTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 677,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "0011": {
-    "nombre_circuito": "AERONAUTICO",
-    "barrios": [
-      {
-        "nombre": "VILLA UNION",
-        "tipo": "BarrioOficial",
-        "poblacion": 5423,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "VILLA ZEPPELIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 214,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AERONAUTICO",
-        "tipo": "BarrioOficial",
-        "poblacion": 180,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "LAS DELICIAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 22,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ARSENALES ANEXO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA DERNA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "0012": {
-    "nombre_circuito": "AVELLANEDA",
-    "barrios": [
-      {
-        "nombre": "BETANIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1762,
-        "pct_en_circuito": 95.4
-      },
-      {
-        "nombre": "QUINTAS DEL SUR",
-        "tipo": "BarrioOficial",
-        "poblacion": 1602,
-        "pct_en_circuito": 96.5
-      },
-      {
-        "nombre": "LOS SAUCES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1528,
-        "pct_en_circuito": 98.3
-      },
-      {
-        "nombre": "NICOLAS AVELLANEDA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1344,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "Sin Barrio - Circuito AVELLANEDA",
-        "tipo": "Sin Barrio",
-        "poblacion": 1204,
-        "pct_en_circuito": 91.8
-      },
-      {
-        "nombre": "ALMIRANTE BROWN",
-        "tipo": "BarrioOficial",
-        "poblacion": 622,
-        "pct_en_circuito": 94.8
-      }
-    ]
-  },
-  "0013": {
-    "nombre_circuito": "LEANDRO N. ALEM",
-    "barrios": [
-      {
-        "nombre": "TALLERES (O)",
-        "tipo": "BarrioOficial",
-        "poblacion": 5669,
-        "pct_en_circuito": 97.4
-      },
-      {
-        "nombre": "TALLERES (E)",
-        "tipo": "BarrioOficial",
-        "poblacion": 5136,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "0014": {
-    "nombre_circuito": "ARGUELLO",
-    "barrios": [
-      {
-        "nombre": "ARGUELLO",
-        "tipo": "BarrioOficial",
-        "poblacion": 7687,
-        "pct_en_circuito": 49.4
-      },
-      {
-        "nombre": "LA CAROLINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1016,
-        "pct_en_circuito": 96.9
-      }
-    ]
-  },
-  "004A": {
-    "nombre_circuito": "PUEBLO LAS FLORES",
-    "barrios": [
-      {
-        "nombre": "SAN FERNANDO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4397,
-        "pct_en_circuito": 99.1
-      },
-      {
-        "nombre": "LAS FLORES",
-        "tipo": "BarrioOficial",
-        "poblacion": 3181,
-        "pct_en_circuito": 71.5
-      },
-      {
-        "nombre": "AMPLIACION SAN FERNANDO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3094,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AMPLIACION GENERAL ARTIGAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2712,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GENERAL ARTIGAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1808,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA SAN ISIDRO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1200,
-        "pct_en_circuito": 97.6
-      },
-      {
-        "nombre": "TEJAS DEL SUR",
-        "tipo": "BarrioOficial",
-        "poblacion": 1136,
-        "pct_en_circuito": 98.2
-      },
-      {
-        "nombre": "EJERCITO ARGENTINO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1133,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "KENNEDY",
-        "tipo": "BarrioOficial",
-        "poblacion": 1014,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "IPONA",
-        "tipo": "BarrioOficial",
-        "poblacion": 873,
-        "pct_en_circuito": 99.1
-      },
-      {
-        "nombre": "JARDIN HIPODROMO",
-        "tipo": "BarrioOficial",
-        "poblacion": 646,
-        "pct_en_circuito": 82.3
-      },
-      {
-        "nombre": "AMPLIACION KENNEDY",
-        "tipo": "BarrioOficial",
-        "poblacion": 483,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LAS CAÑITAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 473,
-        "pct_en_circuito": 97.5
-      }
-    ]
-  },
-  "004B": {
-    "nombre_circuito": "VILLA REVOL",
-    "barrios": [
-      {
-        "nombre": "JARDIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 6666,
-        "pct_en_circuito": 99.7
-      },
-      {
-        "nombre": "VILLA REVOL",
-        "tipo": "BarrioOficial",
-        "poblacion": 4234,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "JOCKEY",
-        "tipo": "BarrioOficial",
-        "poblacion": 2290,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "JARDIN ESPINOSA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1667,
-        "pct_en_circuito": 98.5
-      },
-      {
-        "nombre": "JOCKEY CLUB",
-        "tipo": "BarrioOficial",
-        "poblacion": 1084,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SANTA RITA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1030,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "PARQUE ALAMEDA",
-        "tipo": "BarrioOficial",
-        "poblacion": 751,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "AMPLIACION JARDIN ESPINOSA",
-        "tipo": "BarrioOficial",
-        "poblacion": 386,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "004C": {
-    "nombre_circuito": "INAUDI",
-    "barrios": [
-      {
-        "nombre": "INAUDI",
-        "tipo": "BarrioOficial",
-        "poblacion": 1576,
-        "pct_en_circuito": 99.7
-      },
-      {
-        "nombre": "LAS HUERTILLAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1318,
-        "pct_en_circuito": 97.8
-      },
-      {
-        "nombre": "TEJAS DE LA CANDELARIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1175,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN ANTONIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 939,
-        "pct_en_circuito": 94.2
-      },
-      {
-        "nombre": "Sin Barrio - Circuito INAUDI",
-        "tipo": "Sin Barrio",
-        "poblacion": 80,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito INAUDI",
-        "tipo": "Sin Barrio",
-        "poblacion": 78,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "POSTA DE VARGAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 70,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ROCIO DEL SUR",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 47,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "004D": {
-    "nombre_circuito": "VILLA EUCARISTICA",
-    "barrios": [
-      {
-        "nombre": "VILLA EUCARISTICA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4363,
-        "pct_en_circuito": 97.5
-      },
-      {
-        "nombre": "CAMINO A SAN CARLOS",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1225,
-        "pct_en_circuito": 66.8
-      },
-      {
-        "nombre": "QUINTAS DE ITALIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 991,
-        "pct_en_circuito": 99.3
-      }
-    ]
-  },
-  "004E": {
-    "nombre_circuito": "NUESTRO HOGAR III",
-    "barrios": [
-      {
-        "nombre": "NUESTRO HOGAR III",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 6534,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "004F": {
-    "nombre_circuito": "CIUDAD OBISPO ANGELELLI",
-    "barrios": [
-      {
-        "nombre": "OBISPO ANGELELLI",
-        "tipo": "BarrioOficial",
-        "poblacion": 2231,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "VILLA RIVADAVIA ANEXO \"A\"",
-        "tipo": "BarrioOficial",
-        "poblacion": 899,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "OBISPO ANGELELLI",
-        "tipo": "BarrioOficial",
-        "poblacion": 152,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "005A": {
-    "nombre_circuito": "COLONIA LOLA",
-    "barrios": [
-      {
-        "nombre": "MIRALTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 3533,
-        "pct_en_circuito": 96.6
-      },
-      {
-        "nombre": "COLONIA LOLA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2869,
-        "pct_en_circuito": 96.2
-      }
-    ]
-  },
-  "005B": {
-    "nombre_circuito": "DEAN FUNES",
-    "barrios": [
-      {
-        "nombre": "DEAN FUNES",
-        "tipo": "BarrioOficial",
-        "poblacion": 2403,
-        "pct_en_circuito": 96.6
-      }
-    ]
-  },
-  "005C": {
-    "nombre_circuito": "EMPALME",
-    "barrios": [
-      {
-        "nombre": "1º DE MAYO",
-        "tipo": "BarrioOficial",
-        "poblacion": 9447,
-        "pct_en_circuito": 83.6
-      },
-      {
-        "nombre": "EMPALME",
-        "tipo": "BarrioOficial",
-        "poblacion": 3379,
-        "pct_en_circuito": 97.7
-      },
-      {
-        "nombre": "MIRADOR",
-        "tipo": "BarrioOficial",
-        "poblacion": 2566,
-        "pct_en_circuito": 79.5
-      },
-      {
-        "nombre": "AMPLIACION EMPALME",
-        "tipo": "BarrioOficial",
-        "poblacion": 2496,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "EMPALME CASAS DE OBREROS Y EMPLEADOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1429,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "VILLA ARGENTINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 801,
-        "pct_en_circuito": 98.5
-      }
-    ]
-  },
-  "005D": {
-    "nombre_circuito": "MALDONADO",
-    "barrios": [
-      {
-        "nombre": "MULLER",
-        "tipo": "BarrioOficial",
-        "poblacion": 5754,
-        "pct_en_circuito": 95.0
-      },
-      {
-        "nombre": "MALDONADO",
-        "tipo": "BarrioOficial",
-        "poblacion": 5127,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "MALDONADO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 2285,
-        "pct_en_circuito": 51.9
-      },
-      {
-        "nombre": "LOS JOSEFINOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 113,
-        "pct_en_circuito": 91.1
-      }
-    ]
-  },
-  "005E": {
-    "nombre_circuito": "VILLA BUSTOS",
-    "barrios": [
-      {
-        "nombre": "VILLA BUSTOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 3213,
-        "pct_en_circuito": 96.9
-      }
-    ]
-  },
-  "005F": {
-    "nombre_circuito": "RENACIMIENTO",
-    "barrios": [
-      {
-        "nombre": "RENACIMIENTO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2416,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "COLONIA LOLA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 2158,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito RENACIMIENTO",
-        "tipo": "Sin Barrio",
-        "poblacion": 28,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "005G": {
-    "nombre_circuito": "SAN VICENTE",
-    "barrios": [
-      {
-        "nombre": "SAN VICENTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 17088,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "LOS CEIBOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 818,
-        "pct_en_circuito": 97.4
-      }
-    ]
-  },
-  "005H": {
-    "nombre_circuito": "VILLA BOEDO",
-    "barrios": [
-      {
-        "nombre": "BOEDO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2106,
-        "pct_en_circuito": 90.7
-      }
-    ]
-  },
-  "005I": {
-    "nombre_circuito": "COLINAS DEL SUR",
-    "barrios": [
-      {
-        "nombre": "SAN JAVIER",
-        "tipo": "BarrioOficial",
-        "poblacion": 2419,
-        "pct_en_circuito": 98.4
-      },
-      {
-        "nombre": "SAN LORENZO (S)",
-        "tipo": "BarrioOficial",
-        "poblacion": 2124,
-        "pct_en_circuito": 89.5
-      },
-      {
-        "nombre": "EVITA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2119,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CAMINO A VILLA POSE",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1266,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PORTAL DE CORDOBA",
-        "tipo": "BarrioOficial",
-        "poblacion": 967,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AMPLIACION 1º DE MAYO",
-        "tipo": "BarrioOficial",
-        "poblacion": 555,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "BETANIA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 188,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito COLINAS DEL SUR",
-        "tipo": "Sin Barrio",
-        "poblacion": 6,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito COLINAS DEL SUR",
-        "tipo": "Sin Barrio",
-        "poblacion": 4,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "006C": {
-    "nombre_circuito": "GRAL PAZ",
-    "barrios": [
-      {
-        "nombre": "GENERAL PAZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 15979,
-        "pct_en_circuito": 95.9
-      },
-      {
-        "nombre": "PATRIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2289,
-        "pct_en_circuito": 94.7
-      }
-    ]
-  },
-  "006D": {
-    "nombre_circuito": "JUNIORS",
-    "barrios": [
-      {
-        "nombre": "JUNIORS",
-        "tipo": "BarrioOficial",
-        "poblacion": 6522,
-        "pct_en_circuito": 96.6
-      },
-      {
-        "nombre": "BAJO GENERAL PAZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 1155,
-        "pct_en_circuito": 96.2
-      }
-    ]
-  },
-  "006E": {
-    "nombre_circuito": "LA FLORESTA SUD",
-    "barrios": [
-      {
-        "nombre": "LA FLORESTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4444,
-        "pct_en_circuito": 83.4
-      }
-    ]
-  },
-  "006F": {
-    "nombre_circuito": "YAPEYU",
-    "barrios": [
-      {
-        "nombre": "YAPEYU",
-        "tipo": "BarrioOficial",
-        "poblacion": 6864,
-        "pct_en_circuito": 84.2
-      },
-      {
-        "nombre": "BAJADA DE PIEDRA",
-        "tipo": "BarrioOficial",
-        "poblacion": 926,
-        "pct_en_circuito": 72.9
-      }
-    ]
-  },
-  "007A": {
-    "nombre_circuito": "GUIÑAZU",
-    "barrios": [
-      {
-        "nombre": "VILLA ALICIA RISLER",
-        "tipo": "BarrioOficial",
-        "poblacion": 3398,
-        "pct_en_circuito": 85.0
-      },
-      {
-        "nombre": "RECREO DEL NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 2025,
-        "pct_en_circuito": 98.8
-      },
-      {
-        "nombre": "GUIÑAZU",
-        "tipo": "BarrioOficial",
-        "poblacion": 1615,
-        "pct_en_circuito": 98.8
-      },
-      {
-        "nombre": "MARIA LASTENIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 962,
-        "pct_en_circuito": 98.8
-      },
-      {
-        "nombre": "GUIÑAZU SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 22,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "007B": {
-    "nombre_circuito": "ALTA CORDOBA",
-    "barrios": [
-      {
-        "nombre": "ALTA CORDOBA",
-        "tipo": "BarrioOficial",
-        "poblacion": 26205,
-        "pct_en_circuito": 67.5
-      },
-      {
-        "nombre": "LA FRATERNIDAD",
-        "tipo": "BarrioOficial",
-        "poblacion": 449,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "007D": {
-    "nombre_circuito": "COFICO",
-    "barrios": [
-      {
-        "nombre": "INDEPENDENCIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 764,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "COFICO",
-        "tipo": "BarrioOficial",
-        "poblacion": 396,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "007E": {
-    "nombre_circuito": "MARQUES DE SOBREMONTE",
-    "barrios": [
-      {
-        "nombre": "MARQUES DE SOBREMONTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 21139,
-        "pct_en_circuito": 99.0
-      }
-    ]
-  },
-  "007F": {
-    "nombre_circuito": "JORGE NEWBERY",
-    "barrios": [
-      {
-        "nombre": "REMEDIOS DE ESCALADA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4260,
-        "pct_en_circuito": 86.7
-      },
-      {
-        "nombre": "PARQUE JORGE NEWBERY",
-        "tipo": "BarrioOficial",
-        "poblacion": 3147,
-        "pct_en_circuito": 93.9
-      },
-      {
-        "nombre": "JERONIMO LUIS DE CABRERA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1451,
-        "pct_en_circuito": 85.2
-      }
-    ]
-  },
-  "007G": {
-    "nombre_circuito": "PANAMERICANO",
-    "barrios": [
-      {
-        "nombre": "PANAMERICANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3509,
-        "pct_en_circuito": 97.6
-      },
-      {
-        "nombre": "JUAN B. JUSTO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3011,
-        "pct_en_circuito": 96.6
-      },
-      {
-        "nombre": "MARIANO FRAGUEIRO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2900,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "HIPOLITO IRIGOYEN",
-        "tipo": "BarrioOficial",
-        "poblacion": 2614,
-        "pct_en_circuito": 96.4
-      },
-      {
-        "nombre": "AMPLIACION PANAMERICANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1744,
-        "pct_en_circuito": 99.8
-      }
-    ]
-  },
-  "008A": {
-    "nombre_circuito": "PALMAR",
-    "barrios": [
-      {
-        "nombre": "Sin Barrio - Circuito PALMAR",
-        "tipo": "Sin Barrio",
-        "poblacion": 3102,
-        "pct_en_circuito": 8.5
-      },
-      {
-        "nombre": "PALMAR",
-        "tipo": "BarrioOficial",
-        "poblacion": 723,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "VILLA CLAUDINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 458,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "NUESTRO HOGAR II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 361,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ZEPA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 292,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AMPLIACION PALMAR",
-        "tipo": "BarrioOficial",
-        "poblacion": 231,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ZEPA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 50,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "008B": {
-    "nombre_circuito": "PUEYRREDON",
-    "barrios": [
-      {
-        "nombre": "GENERAL PUEYRREDON",
-        "tipo": "BarrioOficial",
-        "poblacion": 20670,
-        "pct_en_circuito": 86.1
-      },
-      {
-        "nombre": "AMPLIACION PUEYRREDON",
-        "tipo": "BarrioOficial",
-        "poblacion": 1522,
-        "pct_en_circuito": 89.6
-      },
-      {
-        "nombre": "Sin Barrio - Circuito PUEYRREDON",
-        "tipo": "Sin Barrio",
-        "poblacion": 1153,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "008C": {
-    "nombre_circuito": "VILLA LOS PINOS",
-    "barrios": [
-      {
-        "nombre": "YOFRE SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 5102,
-        "pct_en_circuito": 96.1
-      },
-      {
-        "nombre": "YOFRE I",
-        "tipo": "BarrioOficial",
-        "poblacion": 2024,
-        "pct_en_circuito": 96.3
-      },
-      {
-        "nombre": "LOS PINOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1499,
-        "pct_en_circuito": 79.9
-      }
-    ]
-  },
-  "009A": {
-    "nombre_circuito": "LA FRANCE",
-    "barrios": [
-      {
-        "nombre": "LA FRANCE",
-        "tipo": "BarrioOficial",
-        "poblacion": 2728,
-        "pct_en_circuito": 98.0
-      }
-    ]
-  },
-  "009B": {
-    "nombre_circuito": "LAS MARGARITAS",
-    "barrios": [
-      {
-        "nombre": "LAS MARGARITAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2283,
-        "pct_en_circuito": 99.0
-      },
-      {
-        "nombre": "ALTO VERDE",
-        "tipo": "BarrioOficial",
-        "poblacion": 2127,
-        "pct_en_circuito": 50.8
-      },
-      {
-        "nombre": "ALTOS SAN MARTIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 1316,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "ALTOS DE VILLA CABRERA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1220,
-        "pct_en_circuito": 98.7
-      },
-      {
-        "nombre": "PARQUE CHACABUCO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1218,
-        "pct_en_circuito": 96.8
-      },
-      {
-        "nombre": "SAN LORENZO NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 334,
-        "pct_en_circuito": 99.1
-      }
-    ]
-  },
-  "009C": {
-    "nombre_circuito": "LOS PARAISOS",
-    "barrios": [
-      {
-        "nombre": "LOS PARAISOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 4902,
-        "pct_en_circuito": 95.7
-      },
-      {
-        "nombre": "ANA MARIA ZUMARAN",
-        "tipo": "BarrioOficial",
-        "poblacion": 3667,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "SARGENTO CABRAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 3185,
-        "pct_en_circuito": 94.4
-      },
-      {
-        "nombre": "SAN MARTIN NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 2139,
-        "pct_en_circuito": 97.4
-      },
-      {
-        "nombre": "GRANADERO PRINGLES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1811,
-        "pct_en_circuito": 98.5
-      }
-    ]
-  },
-  "009D": {
-    "nombre_circuito": "POETA LUGONES",
-    "barrios": [
-      {
-        "nombre": "POETA LUGONES",
-        "tipo": "BarrioOficial",
-        "poblacion": 9633,
-        "pct_en_circuito": 97.1
-      },
-      {
-        "nombre": "LAS MAGNOLIAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2436,
-        "pct_en_circuito": 99.8
-      }
-    ]
-  },
-  "009E": {
-    "nombre_circuito": "PROVIDENCIA",
-    "barrios": [
-      {
-        "nombre": "PROVIDENCIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 5916,
-        "pct_en_circuito": 98.0
-      },
-      {
-        "nombre": "DUCASSE",
-        "tipo": "BarrioOficial",
-        "poblacion": 705,
-        "pct_en_circuito": 69.7
-      }
-    ]
-  },
-  "009F": {
-    "nombre_circuito": "SAN MARTIN",
-    "barrios": [
-      {
-        "nombre": "SAN MARTIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 13780,
-        "pct_en_circuito": 98.1
-      },
-      {
-        "nombre": "LOMAS DE SAN MARTIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 3053,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "SAN MARTIN ANEXO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2257,
-        "pct_en_circuito": 97.9
-      },
-      {
-        "nombre": "BAJO GALAN",
-        "tipo": "BarrioOficial",
-        "poblacion": 760,
-        "pct_en_circuito": 62.9
-      }
-    ]
-  },
-  "009G": {
-    "nombre_circuito": "VILLA CABRERA",
-    "barrios": [
-      {
-        "nombre": "VILLA CABRERA",
-        "tipo": "BarrioOficial",
-        "poblacion": 6499,
-        "pct_en_circuito": 97.0
-      }
-    ]
-  },
-  "010A": {
-    "nombre_circuito": "CABILDO",
-    "barrios": [
-      {
-        "nombre": "EL CABILDO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4824,
-        "pct_en_circuito": 89.2
-      },
-      {
-        "nombre": "Sin Barrio - Circuito CABILDO",
-        "tipo": "Sin Barrio",
-        "poblacion": 107,
-        "pct_en_circuito": 98.2
-      },
-      {
-        "nombre": "COUNTRY LOS ALGARROBOS",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 48,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito CABILDO",
-        "tipo": "Sin Barrio",
-        "poblacion": 28,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LA ESPERANZA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 14,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010B": {
-    "nombre_circuito": "CIUDADELA",
-    "barrios": [
-      {
-        "nombre": "RESIDENCIAL VELEZ SARSFIELD",
-        "tipo": "BarrioOficial",
-        "poblacion": 3046,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "PARQUE ATLANTICA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2288,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "AMPLIACION VELEZ SARSFIELD",
-        "tipo": "BarrioOficial",
-        "poblacion": 1783,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN DANIEL",
-        "tipo": "BarrioOficial",
-        "poblacion": 1652,
-        "pct_en_circuito": 98.8
-      },
-      {
-        "nombre": "ALTOS DE VELEZ SARSFIELD",
-        "tipo": "BarrioOficial",
-        "poblacion": 1615,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "RENE FAVALORO SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 1595,
-        "pct_en_circuito": 60.2
-      },
-      {
-        "nombre": "CIUDADELA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1293,
-        "pct_en_circuito": 93.0
-      },
-      {
-        "nombre": "AMPLIACION BENJAMIN MATIENZO",
-        "tipo": "BarrioOficial",
-        "poblacion": 592,
-        "pct_en_circuito": 49.2
-      },
-      {
-        "nombre": "PARQUE LOS MOLINOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 559,
-        "pct_en_circuito": 52.6
-      },
-      {
-        "nombre": "CALIFORNIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 396,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010C": {
-    "nombre_circuito": "COMERCIAL",
-    "barrios": [
-      {
-        "nombre": "COMERCIAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 5920,
-        "pct_en_circuito": 95.9
-      },
-      {
-        "nombre": "VALLE CERCANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1849,
-        "pct_en_circuito": 98.3
-      }
-    ]
-  },
-  "010D": {
-    "nombre_circuito": "CONGRESO",
-    "barrios": [
-      {
-        "nombre": "CONGRESO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2185,
-        "pct_en_circuito": 91.8
-      },
-      {
-        "nombre": "SAN PEDRO NOLASCO",
-        "tipo": "BarrioOficial",
-        "poblacion": 292,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010E": {
-    "nombre_circuito": "ESTACION FLORES",
-    "barrios": [
-      {
-        "nombre": "CARRARA DE HORIZONTE",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 5762,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ESTACION FLORES",
-        "tipo": "BarrioOficial",
-        "poblacion": 3864,
-        "pct_en_circuito": 97.4
-      },
-      {
-        "nombre": "VILLA ADELA",
-        "tipo": "BarrioOficial",
-        "poblacion": 3586,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "VILLA ASPASIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2951,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LAS PLAYAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2655,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SACCHI",
-        "tipo": "BarrioOficial",
-        "poblacion": 1115,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GUARNICION AREA CBA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 830,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "CARRARA",
-        "tipo": "BarrioOficial",
-        "poblacion": 499,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "DOCTA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 257,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SIETE SOLES",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 10,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010F": {
-    "nombre_circuito": "MATIENZO",
-    "barrios": [
-      {
-        "nombre": "TTE. BENJAMIN MATIENZO",
-        "tipo": "BarrioOficial",
-        "poblacion": 7828,
-        "pct_en_circuito": 98.1
-      },
-      {
-        "nombre": "AMEGHINO SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 3731,
-        "pct_en_circuito": 99.1
-      },
-      {
-        "nombre": "A.T. E.",
-        "tipo": "BarrioOficial",
-        "poblacion": 1028,
-        "pct_en_circuito": 96.4
-      }
-    ]
-  },
-  "010G": {
-    "nombre_circuito": "OBSERVATORIO",
-    "barrios": [
-      {
-        "nombre": "GUEMES",
-        "tipo": "BarrioOficial",
-        "poblacion": 12664,
-        "pct_en_circuito": 79.4
-      },
-      {
-        "nombre": "OBSERVATORIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 8090,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PASO DE LOS ANDES",
-        "tipo": "BarrioOficial",
-        "poblacion": 2658,
-        "pct_en_circuito": 95.8
-      },
-      {
-        "nombre": "CUPANI",
-        "tipo": "BarrioOficial",
-        "poblacion": 2074,
-        "pct_en_circuito": 98.4
-      },
-      {
-        "nombre": "MAURIZI",
-        "tipo": "BarrioOficial",
-        "poblacion": 604,
-        "pct_en_circuito": 95.4
-      },
-      {
-        "nombre": "BAJADA SAN ROQUE",
-        "tipo": "BarrioOficial",
-        "poblacion": 444,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010H": {
-    "nombre_circuito": "PARQUE CAPITAL",
-    "barrios": [
-      {
-        "nombre": "PARQUE CAPITAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 4712,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AMPLIACION ROSEDAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 3657,
-        "pct_en_circuito": 93.2
-      },
-      {
-        "nombre": "ROSEDAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 2285,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "MARIANO BALCARCE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1804,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PARQUE CAPITAL SUR",
-        "tipo": "BarrioOficial",
-        "poblacion": 1752,
-        "pct_en_circuito": 99.2
-      }
-    ]
-  },
-  "010I": {
-    "nombre_circuito": "PARQUE HORIZONTE",
-    "barrios": [
-      {
-        "nombre": "MANANTIALES",
-        "tipo": "BarrioOficial",
-        "poblacion": 2823,
-        "pct_en_circuito": 57.6
-      },
-      {
-        "nombre": "CABO FARINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2293,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "HORIZONTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1905,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LOS OLMOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1656,
-        "pct_en_circuito": 98.0
-      },
-      {
-        "nombre": "PARQUE LATINO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1404,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "SOLARES DE SANTA MARIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1201,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SMATA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1115,
-        "pct_en_circuito": 63.3
-      },
-      {
-        "nombre": "MUTUAL DE LOS DOCENTES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1027,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "IRUPE",
-        "tipo": "BarrioOficial",
-        "poblacion": 654,
-        "pct_en_circuito": 94.0
-      },
-      {
-        "nombre": "AMPLIACION FARINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 544,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010J": {
-    "nombre_circuito": "SANTA ISABEL",
-    "barrios": [
-      {
-        "nombre": "SANTA ISABEL 2A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 6167,
-        "pct_en_circuito": 96.5
-      },
-      {
-        "nombre": "SANTA ISABEL 1A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 4368,
-        "pct_en_circuito": 83.6
-      },
-      {
-        "nombre": "SANTA ISABEL 3A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 3422,
-        "pct_en_circuito": 96.1
-      },
-      {
-        "nombre": "RESIDENCIAL SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 682,
-        "pct_en_circuito": 79.7
-      }
-    ]
-  },
-  "010K": {
-    "nombre_circuito": "VICOR",
-    "barrios": [
-      {
-        "nombre": "PARQUE FUTURA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2922,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "UNIVERSITARIO DE HORIZONTE",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 2254,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "V.I.C.O.R.",
-        "tipo": "BarrioOficial",
-        "poblacion": 1795,
-        "pct_en_circuito": 81.3
-      },
-      {
-        "nombre": "MANANTIALES II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1452,
-        "pct_en_circuito": 85.5
-      },
-      {
-        "nombre": "KAIROS",
-        "tipo": "BarrioOficial",
-        "poblacion": 545,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN LUIS DE FRANCIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 218,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito VICOR",
-        "tipo": "Sin Barrio",
-        "poblacion": 193,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito VICOR",
-        "tipo": "Sin Barrio",
-        "poblacion": 22,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "010L": {
-    "nombre_circuito": "VILLA EL LIBERTADOR",
-    "barrios": [
-      {
-        "nombre": "VILLA EL LIBERTADOR",
-        "tipo": "BarrioOficial",
-        "poblacion": 27281,
-        "pct_en_circuito": 99.0
-      },
-      {
-        "nombre": "SANTA ROSA RESIDENCIAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 2729,
-        "pct_en_circuito": 95.0
-      },
-      {
-        "nombre": "CARBO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1141,
-        "pct_en_circuito": 67.4
-      },
-      {
-        "nombre": "LOS OLMOS SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 1107,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "MIRIZI",
-        "tipo": "BarrioOficial",
-        "poblacion": 422,
-        "pct_en_circuito": 97.0
-      }
-    ]
-  },
-  "010M": {
-    "nombre_circuito": "AMPLIACION CABILDO",
-    "barrios": [
-      {
-        "nombre": "VILLA EL LIBERTADOR",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 4869,
-        "pct_en_circuito": 81.8
-      }
-    ]
-  },
-  "011A": {
-    "nombre_circuito": "ALTO ALBERDI",
-    "barrios": [
-      {
-        "nombre": "ALTO ALBERDI",
-        "tipo": "BarrioOficial",
-        "poblacion": 14594,
-        "pct_en_circuito": 45.8
-      },
-      {
-        "nombre": "MARECHAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 3981,
-        "pct_en_circuito": 99.5
-      },
-      {
-        "nombre": "VILLA PAEZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 3759,
-        "pct_en_circuito": 79.8
-      }
-    ]
-  },
-  "011B": {
-    "nombre_circuito": "DON BOSCO",
-    "barrios": [
-      {
-        "nombre": "PARQUE DON BOSCO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4579,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GUARNICION MILITAR CBA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1786,
-        "pct_en_circuito": 74.8
-      },
-      {
-        "nombre": "NUEVO URCA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1219,
-        "pct_en_circuito": 83.9
-      },
-      {
-        "nombre": "MIRADOR DEL CHATEAU",
-        "tipo": "BarrioOficial",
-        "poblacion": 984,
-        "pct_en_circuito": 44.7
-      },
-      {
-        "nombre": "MILITAR GENERAL DEHEZA",
-        "tipo": "BarrioOficial",
-        "poblacion": 533,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA ALBERTO ANEXO",
-        "tipo": "BarrioOficial",
-        "poblacion": 6,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "011C": {
-    "nombre_circuito": "LAS PALMAS",
-    "barrios": [
-      {
-        "nombre": "LAS PALMAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 6859,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "SAN SALVADOR",
-        "tipo": "BarrioOficial",
-        "poblacion": 2264,
-        "pct_en_circuito": 99.7
-      },
-      {
-        "nombre": "AMPLIACION LAS PALMAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2095,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PUENTE BLANCO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1260,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "DR RENE FAVALORO",
-        "tipo": "BarrioOficial",
-        "poblacion": 825,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LAS DALIAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 716,
-        "pct_en_circuito": 99.0
-      },
-      {
-        "nombre": "URITORCO",
-        "tipo": "BarrioOficial",
-        "poblacion": 473,
-        "pct_en_circuito": 99.8
-      }
-    ]
-  },
-  "011D": {
-    "nombre_circuito": "LOS NARANJOS",
-    "barrios": [
-      {
-        "nombre": "LOS NARANJOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 3490,
-        "pct_en_circuito": 98.1
-      },
-      {
-        "nombre": "SAN RAFAEL",
-        "tipo": "BarrioOficial",
-        "poblacion": 2906,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "AVENIDA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1729,
-        "pct_en_circuito": 98.5
-      },
-      {
-        "nombre": "EL TREBOL",
-        "tipo": "BarrioOficial",
-        "poblacion": 1308,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN FRANCISCO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1262,
-        "pct_en_circuito": 85.0
-      },
-      {
-        "nombre": "SANTA ANA RESIDENCIAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 1213,
-        "pct_en_circuito": 89.7
-      },
-      {
-        "nombre": "JUAN XXIII",
-        "tipo": "BarrioOficial",
-        "poblacion": 883,
-        "pct_en_circuito": 92.7
-      },
-      {
-        "nombre": "1RA. JUNTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 791,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CAROLA LORENZINI",
-        "tipo": "BarrioOficial",
-        "poblacion": 256,
-        "pct_en_circuito": 97.0
-      }
-    ]
-  },
-  "011E": {
-    "nombre_circuito": "LOS PLATANOS",
-    "barrios": [
-      {
-        "nombre": "LOS PLATANOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 7023,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "AMEGHINO NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 3899,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "LOS GRANADOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 3292,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LAMADRID",
-        "tipo": "BarrioOficial",
-        "poblacion": 2848,
-        "pct_en_circuito": 99.2
-      },
-      {
-        "nombre": "LOS JACARANDAES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1311,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AMPLIACION LOS PLATANOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 863,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CONSORCIO ESPERANZA",
-        "tipo": "BarrioOficial",
-        "poblacion": 448,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "011F": {
-    "nombre_circuito": "LOS ROBLES",
-    "barrios": [
-      {
-        "nombre": "TEODORO FELS",
-        "tipo": "BarrioOficial",
-        "poblacion": 4586,
-        "pct_en_circuito": 97.2
-      },
-      {
-        "nombre": "ALTOS DE SANTA ANA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1794,
-        "pct_en_circuito": 64.9
-      },
-      {
-        "nombre": "VILLA MAFEKIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 1151,
-        "pct_en_circuito": 93.1
-      },
-      {
-        "nombre": "EL TROPEZON",
-        "tipo": "BarrioOficial",
-        "poblacion": 862,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "011G": {
-    "nombre_circuito": "PARQUE REPUBLICA",
-    "barrios": [
-      {
-        "nombre": "PARQUE REPUBLICA",
-        "tipo": "BarrioOficial",
-        "poblacion": 8268,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "LOS ROBLES",
-        "tipo": "BarrioOficial",
-        "poblacion": 3704,
-        "pct_en_circuito": 62.4
-      },
-      {
-        "nombre": "INDUSTRIAL OESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 2826,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "EL PUEBLITO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2739,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LAS VIOLETAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2359,
-        "pct_en_circuito": 85.7
-      },
-      {
-        "nombre": "VILLA ALBERTO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1134,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LA TOMA",
-        "tipo": "BarrioOficial",
-        "poblacion": 607,
-        "pct_en_circuito": 97.4
-      }
-    ]
-  },
-  "011H": {
-    "nombre_circuito": "QUEBRADA LAS ROSAS",
-    "barrios": [
-      {
-        "nombre": "QUEBRADA DE LAS ROSAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 6369,
-        "pct_en_circuito": 89.3
-      },
-      {
-        "nombre": "CHATEAU CARRERAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1063,
-        "pct_en_circuito": 94.2
-      },
-      {
-        "nombre": "CO.VI.CO.",
-        "tipo": "BarrioOficial",
-        "poblacion": 290,
-        "pct_en_circuito": 97.0
-      }
-    ]
-  },
-  "011I": {
-    "nombre_circuito": "RESIDENCIAL SAN ROQUE",
-    "barrios": [
-      {
-        "nombre": "RESIDENCIAL SAN ROQUE",
-        "tipo": "BarrioOficial",
-        "poblacion": 13727,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "VILLA MARTINEZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 2933,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "VILLA AVALOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1869,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "ANEXO LAS PALMAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1429,
-        "pct_en_circuito": 96.8
-      },
-      {
-        "nombre": "LOS FILTROS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1229,
-        "pct_en_circuito": 98.7
-      }
-    ]
-  },
-  "011J": {
-    "nombre_circuito": "SANTA ANA",
-    "barrios": [
-      {
-        "nombre": "OBRERO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2962,
-        "pct_en_circuito": 97.1
-      },
-      {
-        "nombre": "TRANVIARIOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2056,
-        "pct_en_circuito": 96.7
-      },
-      {
-        "nombre": "CASEROS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1623,
-        "pct_en_circuito": 97.5
-      },
-      {
-        "nombre": "COMANDANTE ESPORA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1380,
-        "pct_en_circuito": 99.2
-      }
-    ]
-  },
-  "011K": {
-    "nombre_circuito": "VILLA GRAL URQUIZA",
-    "barrios": [
-      {
-        "nombre": "VILLA GENERAL URQUIZA",
-        "tipo": "BarrioOficial",
-        "poblacion": 6310,
-        "pct_en_circuito": 97.8
-      },
-      {
-        "nombre": "SAN IGNACIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2933,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "VILLA ALBERDI",
-        "tipo": "BarrioOficial",
-        "poblacion": 1950,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "VILLA SIBURU",
-        "tipo": "BarrioOficial",
-        "poblacion": 1336,
-        "pct_en_circuito": 77.7
-      }
-    ]
-  },
-  "011L": {
-    "nombre_circuito": "COUNTRYS DEL OESTE",
-    "barrios": [
-      {
-        "nombre": "LOMAS DE LA CAROLINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 907,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "EL BOSQUE",
-        "tipo": "BarrioOficial",
-        "poblacion": 717,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LAS DELICIAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 246,
-        "pct_en_circuito": 93.5
-      }
-    ]
-  },
-  "011M": {
-    "nombre_circuito": "VALLE ESCONDIDO",
-    "barrios": [
-      {
-        "nombre": "VALLE ESCONDIDO",
-        "tipo": "BarrioOficial",
-        "poblacion": 7095,
-        "pct_en_circuito": 79.6
-      },
-      {
-        "nombre": "PARQUE CHATEAU CARRERAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1643,
-        "pct_en_circuito": 64.5
-      },
-      {
-        "nombre": "ALTOS DEL CHATEAU",
-        "tipo": "BarrioOficial",
-        "poblacion": 1080,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LA RESERVA",
-        "tipo": "BarrioOficial",
-        "poblacion": 143,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "012A": {
-    "nombre_circuito": "CARCANO",
-    "barrios": [
-      {
-        "nombre": "EL QUEBRACHO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4226,
-        "pct_en_circuito": 99.5
-      },
-      {
-        "nombre": "CAMINO A 60 CUADRAS",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1654,
-        "pct_en_circuito": 57.3
-      },
-      {
-        "nombre": "RAMON J. CARCANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1637,
-        "pct_en_circuito": 99.7
-      },
-      {
-        "nombre": "EL CARMELO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 502,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "JOSE IGNACIO RUCCI",
-        "tipo": "BarrioOficial",
-        "poblacion": 455,
-        "pct_en_circuito": 82.9
-      }
-    ]
-  },
-  "012B": {
-    "nombre_circuito": "COLON",
-    "barrios": [
-      {
-        "nombre": "URQUIZA",
-        "tipo": "BarrioOficial",
-        "poblacion": 6225,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "COLON",
-        "tipo": "BarrioOficial",
-        "poblacion": 4201,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CRISOL SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 3485,
-        "pct_en_circuito": 99.0
-      },
-      {
-        "nombre": "RIVADAVIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 2360,
-        "pct_en_circuito": 73.4
-      },
-      {
-        "nombre": "SARMIENTO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2296,
-        "pct_en_circuito": 96.6
-      },
-      {
-        "nombre": "MAIPU 2A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 2282,
-        "pct_en_circuito": 97.7
-      },
-      {
-        "nombre": "MAIPU 1A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 1953,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "NUEVA CORDOBA ANEXA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1685,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CRISOL NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1502,
-        "pct_en_circuito": 95.7
-      },
-      {
-        "nombre": "INDUSTRIAL ESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1079,
-        "pct_en_circuito": 99.1
-      }
-    ]
-  },
-  "012C": {
-    "nombre_circuito": "CORONEL OLMEDO",
-    "barrios": [
-      {
-        "nombre": "VILLA CORONEL OLMEDO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4866,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "VILLA CORONEL OLMEDO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 326,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "012D": {
-    "nombre_circuito": "JOSE IGNACIO DIAZ",
-    "barrios": [
-      {
-        "nombre": "JOSE IGNACIO DIAZ 3A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 7164,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "JOSE IGNACIO DIAZ 1A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 5094,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "LAS LILAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 5038,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "JOSE IGNACIO DIAZ 2A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 4694,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "TALLERES SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 3607,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "SAN FELIPE",
-        "tipo": "BarrioOficial",
-        "poblacion": 3142,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "23 DE ABRIL",
-        "tipo": "BarrioOficial",
-        "poblacion": 1718,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "CORRAL DE PALOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1139,
-        "pct_en_circuito": 91.0
-      },
-      {
-        "nombre": "ALTOS SUD DE SAN VICENTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 969,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "FERROVIARIO  MITRE",
-        "tipo": "BarrioOficial",
-        "poblacion": 742,
-        "pct_en_circuito": 63.2
-      },
-      {
-        "nombre": "BENJAMIN POLICARPIO CABRAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 583,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN CAYETANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 520,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "EMAUS",
-        "tipo": "BarrioOficial",
-        "poblacion": 202,
-        "pct_en_circuito": 99.0
-      },
-      {
-        "nombre": "4 DE FEBRERO",
-        "tipo": "BarrioOficial",
-        "poblacion": 201,
-        "pct_en_circuito": 99.0
-      }
-    ]
-  },
-  "012E": {
-    "nombre_circuito": "FERREYRA",
-    "barrios": [
-      {
-        "nombre": "FERREYRA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4646,
-        "pct_en_circuito": 99.1
-      },
-      {
-        "nombre": "ESTACION FERREYRA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1130,
-        "pct_en_circuito": 50.5
-      },
-      {
-        "nombre": "LA CARBONADA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 394,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "25 DE MAYO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 12,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "012F": {
-    "nombre_circuito": "JOSE HERNANDEZ",
-    "barrios": [
-      {
-        "nombre": "JARDIN DEL PILAR",
-        "tipo": "BarrioOficial",
-        "poblacion": 3457,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "JOSE HERNANDEZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 2938,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "RESIDENCIAL SAN CARLOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2878,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "AMPLIACION SAN PABLO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2877,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN PABLO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2351,
-        "pct_en_circuito": 99.5
-      },
-      {
-        "nombre": "JARDIN DEL SUD",
-        "tipo": "BarrioOficial",
-        "poblacion": 1981,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "BIALET MASSE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1766,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CLAROS DEL BOSQUE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1630,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "MARCOS SASTRE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1507,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "OÑA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1287,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PARQUE SAN CARLOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 813,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CABAÑA DEL PILAR",
-        "tipo": "BarrioOficial",
-        "poblacion": 519,
-        "pct_en_circuito": 98.5
-      }
-    ]
-  },
-  "012G": {
-    "nombre_circuito": "ITUZAINGO",
-    "barrios": [
-      {
-        "nombre": "ITUZAINGO ANEXO",
-        "tipo": "BarrioOficial",
-        "poblacion": 5056,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "ITUZAINGO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3597,
-        "pct_en_circuito": 97.0
-      },
-      {
-        "nombre": "DE MIS SUEÑOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 2320,
-        "pct_en_circuito": 98.1
-      },
-      {
-        "nombre": "LOS EUCALIPTUS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1720,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ITUZAINGO II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 749,
-        "pct_en_circuito": 99.1
-      },
-      {
-        "nombre": "ITUZAINGO II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 714,
-        "pct_en_circuito": 77.3
-      },
-      {
-        "nombre": "Sin Barrio - Circuito ITUZAINGO",
-        "tipo": "Sin Barrio",
-        "poblacion": 681,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ITUZAINGO II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 341,
-        "pct_en_circuito": 99.7
-      },
-      {
-        "nombre": "LOS FRESNOS",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 323,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "012H": {
-    "nombre_circuito": "LOS CERVECEROS",
-    "barrios": [
-      {
-        "nombre": "S.E.P.",
-        "tipo": "BarrioOficial",
-        "poblacion": 3457,
-        "pct_en_circuito": 96.2
-      },
-      {
-        "nombre": "CERVECEROS",
-        "tipo": "BarrioOficial",
-        "poblacion": 3390,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "O.S.N.",
-        "tipo": "BarrioOficial",
-        "poblacion": 1552,
-        "pct_en_circuito": 98.4
-      },
-      {
-        "nombre": "LAS CAÑUELAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1500,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CAMINO A SAN CARLOS",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1314,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "FINCAS DEL SUR",
-        "tipo": "BarrioOficial",
-        "poblacion": 1131,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "QUINTAS DE FLORES",
-        "tipo": "BarrioOficial",
-        "poblacion": 768,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA SAN CARLOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 538,
-        "pct_en_circuito": 79.8
-      },
-      {
-        "nombre": "EL VIEJO ALGARROBO",
-        "tipo": "BarrioOficial",
-        "poblacion": 15,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "012I": {
-    "nombre_circuito": "CIUDAD DE MIS SUEÑOS",
-    "barrios": [
-      {
-        "nombre": "QUINTAS DE FERREYRA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 709,
-        "pct_en_circuito": 98.7
-      }
-    ]
-  },
-  "013A": {
-    "nombre_circuito": "AYACUCHO",
-    "barrios": [
-      {
-        "nombre": "CENTRO AMERICA",
-        "tipo": "BarrioOficial",
-        "poblacion": 5423,
-        "pct_en_circuito": 73.5
-      },
-      {
-        "nombre": "LOS GIGANTES",
-        "tipo": "BarrioOficial",
-        "poblacion": 4437,
-        "pct_en_circuito": 94.8
-      },
-      {
-        "nombre": "AYACUCHO",
-        "tipo": "BarrioOficial",
-        "poblacion": 4253,
-        "pct_en_circuito": 98.5
-      },
-      {
-        "nombre": "MARCELO T. DE ALVEAR",
-        "tipo": "BarrioOficial",
-        "poblacion": 2678,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA AZALAIZ OESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1078,
-        "pct_en_circuito": 99.5
-      }
-    ]
-  },
-  "013C": {
-    "nombre_circuito": "GENERAL BUSTOS",
-    "barrios": [
-      {
-        "nombre": "GENERAL BUSTOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 15642,
-        "pct_en_circuito": 98.3
-      },
-      {
-        "nombre": "20 DE JUNIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 357,
-        "pct_en_circuito": 91.3
-      }
-    ]
-  },
-  "013D": {
-    "nombre_circuito": "JARDIN ARENALES",
-    "barrios": [
-      {
-        "nombre": "GENERAL ARENALES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1781,
-        "pct_en_circuito": 62.7
-      },
-      {
-        "nombre": "1 DE JULIO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 873,
-        "pct_en_circuito": 49.5
-      },
-      {
-        "nombre": "EL QUEBRACHAL",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 97,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013E": {
-    "nombre_circuito": "LA DOROTEA",
-    "barrios": [
-      {
-        "nombre": "FINCA LA DOROTEA",
-        "tipo": "BarrioOficial",
-        "poblacion": 209,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "FINCA LA DOROTEA",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 75,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013F": {
-    "nombre_circuito": "NUEVA ITALIA",
-    "barrios": [
-      {
-        "nombre": "NUEVA ITALIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 3184,
-        "pct_en_circuito": 94.7
-      },
-      {
-        "nombre": "LA HORTENSIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1669,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "PARQUE MONTECRISTO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1548,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "VIVERO NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1533,
-        "pct_en_circuito": 97.5
-      },
-      {
-        "nombre": "SANTA CLARA DE ASIS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1485,
-        "pct_en_circuito": 95.3
-      }
-    ]
-  },
-  "013G": {
-    "nombre_circuito": "PARQUE LICEO",
-    "barrios": [
-      {
-        "nombre": "PARQUE LICEO 2A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 8052,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PARQUE LICEO 3A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 7014,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PARQUE LICEO 1A SECCION",
-        "tipo": "BarrioOficial",
-        "poblacion": 6875,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "LOS CHINGOLOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 3012,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LOS HORNILLOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1210,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "VILLA RETIRO",
-        "tipo": "BarrioOficial",
-        "poblacion": 936,
-        "pct_en_circuito": 83.1
-      },
-      {
-        "nombre": "LICEO GENERAL PAZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 782,
-        "pct_en_circuito": 85.2
-      },
-      {
-        "nombre": "VILLA RETIRO DE HORIZONTE",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 169,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013H": {
-    "nombre_circuito": "PATRICIOS",
-    "barrios": [
-      {
-        "nombre": "PATRICIOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 5196,
-        "pct_en_circuito": 99.4
-      },
-      {
-        "nombre": "PATRICIOS OESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 4314,
-        "pct_en_circuito": 97.5
-      },
-      {
-        "nombre": "VILLA CORINA",
-        "tipo": "BarrioOficial",
-        "poblacion": 3993,
-        "pct_en_circuito": 97.0
-      },
-      {
-        "nombre": "GENERAL BELGRANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3223,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "PATRICIOS ESTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1970,
-        "pct_en_circuito": 94.8
-      },
-      {
-        "nombre": "PATRICIOS NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1856,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013I": {
-    "nombre_circuito": "SAN JORGE",
-    "barrios": [
-      {
-        "nombre": "VILLA ESQUIU",
-        "tipo": "BarrioOficial",
-        "poblacion": 1476,
-        "pct_en_circuito": 77.0
-      },
-      {
-        "nombre": "RESIDENCIAL ARAGON",
-        "tipo": "BarrioOficial",
-        "poblacion": 1397,
-        "pct_en_circuito": 95.9
-      },
-      {
-        "nombre": "ARTURO CAPDEVILA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1176,
-        "pct_en_circuito": 71.1
-      },
-      {
-        "nombre": "QUINTAS DE SAN JORGE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1087,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "RESIDENCIAL SAN JORGE",
-        "tipo": "BarrioOficial",
-        "poblacion": 793,
-        "pct_en_circuito": 96.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito SAN JORGE",
-        "tipo": "Sin Barrio",
-        "poblacion": 16,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013J": {
-    "nombre_circuito": "VILLA AZALAIS",
-    "barrios": [
-      {
-        "nombre": "VILLA AZALAIZ",
-        "tipo": "BarrioOficial",
-        "poblacion": 7656,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "RESIDENCIAL AMERICA",
-        "tipo": "BarrioOficial",
-        "poblacion": 6404,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "AMPLIACION RESIDENCIAL AMERICA",
-        "tipo": "BarrioOficial",
-        "poblacion": 5743,
-        "pct_en_circuito": 99.3
-      },
-      {
-        "nombre": "LOS ALAMOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 3703,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GENERAL MOSCONI",
-        "tipo": "BarrioOficial",
-        "poblacion": 3150,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "CIUDAD DE JUAN PABLO II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 2733,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN NICOLAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 1875,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GENERAL SAVIO",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1726,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "CIUDAD DE JUAN PABLO II",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 1483,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GENERAL SAVIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1301,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "GUAYAQUIL",
-        "tipo": "BarrioOficial",
-        "poblacion": 580,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013K": {
-    "nombre_circuito": "VILLA ESQUIU",
-    "barrios": [
-      {
-        "nombre": "SAN RAMON",
-        "tipo": "BarrioOficial",
-        "poblacion": 365,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "013L": {
-    "nombre_circuito": "VILLA GRAN PARQUE",
-    "barrios": [
-      {
-        "nombre": "VILLA GRAN PARQUE",
-        "tipo": "BarrioOficial",
-        "poblacion": 504,
-        "pct_en_circuito": 99.0
-      }
-    ]
-  },
-  "013N": {
-    "nombre_circuito": "YOFRE",
-    "barrios": [
-      {
-        "nombre": "YOFRE NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 5680,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "YOFRE H",
-        "tipo": "BarrioOficial",
-        "poblacion": 2516,
-        "pct_en_circuito": 85.5
-      }
-    ]
-  },
-  "013O": {
-    "nombre_circuito": "CHACHAPOYAS",
-    "barrios": [
-      {
-        "nombre": "DE LOS CUARTETOS",
-        "tipo": "BarrioOficial",
-        "poblacion": 839,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014A": {
-    "nombre_circuito": "ARGUELLO NORTE",
-    "barrios": [
-      {
-        "nombre": "ARGUELLO NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 15250,
-        "pct_en_circuito": 91.5
-      },
-      {
-        "nombre": "Sin Barrio - Circuito ARGUELLO NORTE",
-        "tipo": "Sin Barrio",
-        "poblacion": 3984,
-        "pct_en_circuito": 97.3
-      },
-      {
-        "nombre": "EL CERRITO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3645,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "AUTODROMO",
-        "tipo": "BarrioOficial",
-        "poblacion": 3364,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LOURDES",
-        "tipo": "BarrioOficial",
-        "poblacion": 1075,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014B": {
-    "nombre_circuito": "ARGUELLO PRIMERO",
-    "barrios": [
-      {
-        "nombre": "LA SALLE",
-        "tipo": "BarrioOficial",
-        "poblacion": 715,
-        "pct_en_circuito": 98.6
-      },
-      {
-        "nombre": "QUINTAS DE ARGUELLO",
-        "tipo": "BarrioOficial",
-        "poblacion": 500,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ALBORADA (N)",
-        "tipo": "BarrioOficial",
-        "poblacion": 436,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA SOLFERINO",
-        "tipo": "BarrioOficial",
-        "poblacion": 417,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014C": {
-    "nombre_circuito": "ARGUELLO SEGUNDO",
-    "barrios": [
-      {
-        "nombre": "RIVERA INDARTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 2123,
-        "pct_en_circuito": 91.7
-      },
-      {
-        "nombre": "VILLA QUISQUIZACATE",
-        "tipo": "BarrioOficial",
-        "poblacion": 1395,
-        "pct_en_circuito": 90.6
-      },
-      {
-        "nombre": "EL REFUGIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1028,
-        "pct_en_circuito": 99.7
-      },
-      {
-        "nombre": "SAN JOSE",
-        "tipo": "BarrioOficial",
-        "poblacion": 426,
-        "pct_en_circuito": 99.8
-      }
-    ]
-  },
-  "014D": {
-    "nombre_circuito": "CERRO DE LAS ROSAS",
-    "barrios": [
-      {
-        "nombre": "CERRO DE LAS ROSAS",
-        "tipo": "BarrioOficial",
-        "poblacion": 5156,
-        "pct_en_circuito": 95.6
-      },
-      {
-        "nombre": "VALLE DEL CERRO",
-        "tipo": "BarrioOficial",
-        "poblacion": 644,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014E": {
-    "nombre_circuito": "CERRO NORTE",
-    "barrios": [
-      {
-        "nombre": "CERRO NORTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 6160,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "U.O.C.R.A.",
-        "tipo": "BarrioOficial",
-        "poblacion": 1776,
-        "pct_en_circuito": 89.0
-      }
-    ]
-  },
-  "014F": {
-    "nombre_circuito": "GRANJA DE FUNES",
-    "barrios": [
-      {
-        "nombre": "GRANJA DE FUNES",
-        "tipo": "BarrioOficial",
-        "poblacion": 4160,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "VILLA SILVANO FUNES",
-        "tipo": "BarrioOficial",
-        "poblacion": 848,
-        "pct_en_circuito": 88.6
-      },
-      {
-        "nombre": "PADRE CLARET",
-        "tipo": "BarrioOficial",
-        "poblacion": 565,
-        "pct_en_circuito": 56.8
-      }
-    ]
-  },
-  "014G": {
-    "nombre_circuito": "LOS BOULEVARES",
-    "barrios": [
-      {
-        "nombre": "LOS BOULEVARES",
-        "tipo": "BarrioOficial",
-        "poblacion": 11298,
-        "pct_en_circuito": 58.9
-      },
-      {
-        "nombre": "BRIGADIER SAN MARTIN",
-        "tipo": "BarrioOficial",
-        "poblacion": 514,
-        "pct_en_circuito": 98.1
-      },
-      {
-        "nombre": "APEADERO LA TABLADA",
-        "tipo": "BarrioOficial",
-        "poblacion": 468,
-        "pct_en_circuito": 66.2
-      },
-      {
-        "nombre": "VILLA CLARET",
-        "tipo": "BarrioOficial",
-        "poblacion": 419,
-        "pct_en_circuito": 99.8
-      },
-      {
-        "nombre": "Sin Barrio - Circuito LOS BOULEVARES",
-        "tipo": "Sin Barrio",
-        "poblacion": 11,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014H": {
-    "nombre_circuito": "MERCANTIL",
-    "barrios": [
-      {
-        "nombre": "POLICIAL",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 2822,
-        "pct_en_circuito": 98.0
-      },
-      {
-        "nombre": "COOPERATIVA 16 DE NOVIEMBRE",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 2497,
-        "pct_en_circuito": 91.4
-      },
-      {
-        "nombre": "Sin Barrio - Circuito MERCANTIL",
-        "tipo": "Sin Barrio",
-        "poblacion": 1168,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "VILLA CORNU",
-        "tipo": "BarrioNoOficial",
-        "poblacion": 960,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "Sin Barrio - Circuito MERCANTIL",
-        "tipo": "Sin Barrio",
-        "poblacion": 808,
-        "pct_en_circuito": 97.7
-      },
-      {
-        "nombre": "MERCANTIL",
-        "tipo": "BarrioOficial",
-        "poblacion": 612,
-        "pct_en_circuito": 97.8
-      },
-      {
-        "nombre": "CONSORCIO 16 DE NOVIEMBRE",
-        "tipo": "BarrioOficial",
-        "poblacion": 440,
-        "pct_en_circuito": 99.1
-      },
-      {
-        "nombre": "Sin Barrio - Circuito MERCANTIL",
-        "tipo": "Sin Barrio",
-        "poblacion": 112,
-        "pct_en_circuito": 99.1
-      }
-    ]
-  },
-  "014I": {
-    "nombre_circuito": "SANTA CECILIA",
-    "barrios": [
-      {
-        "nombre": "AMPLIACION POETA LUGONES",
-        "tipo": "BarrioOficial",
-        "poblacion": 2710,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SANTA CECILIA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1031,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014J": {
-    "nombre_circuito": "URCA",
-    "barrios": [
-      {
-        "nombre": "URCA",
-        "tipo": "BarrioOficial",
-        "poblacion": 4922,
-        "pct_en_circuito": 96.6
-      },
-      {
-        "nombre": "COLINAS DEL CERRO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2243,
-        "pct_en_circuito": 94.1
-      },
-      {
-        "nombre": "PARQUE TABLADA",
-        "tipo": "BarrioOficial",
-        "poblacion": 913,
-        "pct_en_circuito": 86.9
-      }
-    ]
-  },
-  "014K": {
-    "nombre_circuito": "VILLA ALLENDE PARQUE",
-    "barrios": [
-      {
-        "nombre": "VILLA ALLENDE PARQUE",
-        "tipo": "BarrioOficial",
-        "poblacion": 5966,
-        "pct_en_circuito": 99.8
-      }
-    ]
-  },
-  "014L": {
-    "nombre_circuito": "VILLA BELGRANO",
-    "barrios": [
-      {
-        "nombre": "VILLA BELGRANO",
-        "tipo": "BarrioOficial",
-        "poblacion": 5427,
-        "pct_en_circuito": 99.6
-      },
-      {
-        "nombre": "PARQUE MODELO",
-        "tipo": "BarrioOficial",
-        "poblacion": 209,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014M": {
-    "nombre_circuito": "VILLA CENTENARIO",
-    "barrios": [
-      {
-        "nombre": "VILLA CENTENARIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 2139,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "CERRO CHICO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1552,
-        "pct_en_circuito": 70.3
-      },
-      {
-        "nombre": "ALEJANDRO CENTENO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1191,
-        "pct_en_circuito": 94.3
-      },
-      {
-        "nombre": "ALTO PALERMO",
-        "tipo": "BarrioOficial",
-        "poblacion": 900,
-        "pct_en_circuito": 94.0
-      },
-      {
-        "nombre": "TABLADA PARK",
-        "tipo": "BarrioOficial",
-        "poblacion": 821,
-        "pct_en_circuito": 95.4
-      },
-      {
-        "nombre": "VILLA MARTA",
-        "tipo": "BarrioOficial",
-        "poblacion": 796,
-        "pct_en_circuito": 93.2
-      },
-      {
-        "nombre": "PARQUE COREMA",
-        "tipo": "BarrioOficial",
-        "poblacion": 628,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "LOS ANGELES",
-        "tipo": "BarrioOficial",
-        "poblacion": 585,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "SAN MARCELO",
-        "tipo": "BarrioOficial",
-        "poblacion": 289,
-        "pct_en_circuito": 100.0
-      },
-      {
-        "nombre": "ALBORADA (S)",
-        "tipo": "BarrioOficial",
-        "poblacion": 214,
-        "pct_en_circuito": 83.3
-      }
-    ]
-  },
-  "014N": {
-    "nombre_circuito": "VILLA CORNU",
-    "barrios": [
-      {
-        "nombre": "VILLA CORNU",
-        "tipo": "BarrioOficial",
-        "poblacion": 3158,
-        "pct_en_circuito": 98.9
-      },
-      {
-        "nombre": "POLICIAL",
-        "tipo": "BarrioOficial",
-        "poblacion": 1739,
-        "pct_en_circuito": 99.9
-      },
-      {
-        "nombre": "DR REMO M. COPELLO",
-        "tipo": "BarrioOficial",
-        "poblacion": 1234,
-        "pct_en_circuito": 98.1
-      }
-    ]
-  },
-  "014O": {
-    "nombre_circuito": "VILLA 9 DE JULIO",
-    "barrios": [
-      {
-        "nombre": "VILLA 9 DE JULIO",
-        "tipo": "BarrioOficial",
-        "poblacion": 10275,
-        "pct_en_circuito": 97.8
-      },
-      {
-        "nombre": "VILLA SERRANA",
-        "tipo": "BarrioOficial",
-        "poblacion": 1056,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014P": {
-    "nombre_circuito": "VILLA RIVERA INDARTE",
-    "barrios": [
-      {
-        "nombre": "VILLA RIVERA INDARTE",
-        "tipo": "BarrioOficial",
-        "poblacion": 5605,
-        "pct_en_circuito": 99.2
-      },
-      {
-        "nombre": "VILLA SALDAN",
-        "tipo": "BarrioOficial",
-        "poblacion": 9,
-        "pct_en_circuito": 100.0
-      }
-    ]
-  },
-  "014Q": {
-    "nombre_circuito": "VILLA WARCALDE",
-    "barrios": [
-      {
-        "nombre": "VILLA WARCALDE",
-        "tipo": "BarrioOficial",
-        "poblacion": 986,
-        "pct_en_circuito": 66.0
-      },
-      {
-        "nombre": "ALTO HERMOSO",
-        "tipo": "BarrioOficial",
-        "poblacion": 280,
-        "pct_en_circuito": 54.5
-      },
-      {
-        "nombre": "PORTAL DEL JACARANDA",
-        "tipo": "BarrioOficial",
-        "poblacion": 197,
-        "pct_en_circuito": 93.4
-      }
-    ]
-  }
+  "0001": [
+    "CENTRO",
+    "NUEVA CORDOBA"
+  ],
+  "0002": [
+    "CENTRO",
+    "ALTA CORDOBA",
+    "DUCASSE",
+    "ALBERDI",
+    "GENERAL PUEYRREDON"
+  ],
+  "0003": [
+    "ALBERDI",
+    "QUINTA SANTA ANA",
+    "VILLA PAEZ",
+    "CENTRO",
+    "PASO DE LOS ANDES",
+    "CASEROS",
+    "OBRERO",
+    "PROVIDENCIA"
+  ],
+  "0004": [
+    "NUEVA CORDOBA",
+    "PARQUE SARMIENTO",
+    "VILLA REVOL ANEXO",
+    "CIUDAD UNIVERSITARIA",
+    "ROGELIO MARTINEZ",
+    "LAS FLORES",
+    "CENTRO",
+    "CRISOL SUD",
+    "SAN FERNANDO",
+    "CRISOL NORTE",
+    "IPONA"
+  ],
+  "0005": [
+    "ALTAMIRA",
+    "ACOSTA",
+    "PARQUE SAN VICENTE",
+    "AMPLIACION ALTAMIRA",
+    "SAN VICENTE",
+    "COLONIA LOLA",
+    "VILLA ARGENTINA",
+    "EMPALME",
+    "MULLER"
+  ],
+  "0006": [
+    "HOGAR PROPIO",
+    "GENERAL PUEYRREDON",
+    "YAPEYU",
+    "PARQUE DEL ESTE",
+    "PATRIA"
+  ],
+  "0007": [
+    "VILLA ALICIA RISLER",
+    "AEROPUERTO",
+    "Sin Barrio - Circuito AEROPUERTO",
+    "MARIA LASTENIA",
+    "LOS BOULEVARES",
+    "REMEDIOS DE ESCALADA"
+  ],
+  "0008": [
+    "GENERAL ARENALES",
+    "LA FLORESTA",
+    "Sin Barrio - Circuito LA FLORESTA NORTE",
+    "1 DE JULIO"
+  ],
+  "0009": [
+    "ESCOBAR",
+    "BAJO PALERMO",
+    "OMBU",
+    "LAS ROSAS",
+    "PARQUE TABLADA",
+    "ALTO ALBERDI",
+    "CERRO DE LAS ROSAS",
+    "MARECHAL",
+    "VILLA CABRERA",
+    "VILLA SIBURU",
+    "ALTOS DE VILLA CABRERA",
+    "VILLA ALBERDI"
+  ],
+  "0010": [
+    "BELLA VISTA",
+    "GUEMES",
+    "PARQUE VELEZ SARSFIELD",
+    "SUAREZ",
+    "NUEVA CORDOBA",
+    "FERRER",
+    "BELLA VISTA OESTE",
+    "COLINAS DE VELEZ SARSFIELD",
+    "CACERES",
+    "RESIDENCIAL OLIVOS",
+    "ACHAVAL PEÑA",
+    "COLINAS DE BELLA VISTA",
+    "CIUDAD UNIVERSITARIA",
+    "CIUDADELA",
+    "RESIDENCIAL VELEZ SARSFIELD",
+    "MAURIZI",
+    "SAN FRANCISCO",
+    "PARQUE CAPITAL"
+  ],
+  "0011": [
+    "VILLA UNION",
+    "VILLA ZEPPELIN",
+    "AERONAUTICO",
+    "GUARNICION MILITAR CBA",
+    "LAS DELICIAS",
+    "PARQUE REPUBLICA",
+    "GUARNICION AREA CBA",
+    "ARSENALES ANEXO",
+    "VILLA DERNA"
+  ],
+  "0012": [
+    "BETANIA",
+    "QUINTAS DEL SUR",
+    "LOS SAUCES",
+    "Sin Barrio - Circuito AVELLANEDA",
+    "NICOLAS AVELLANEDA",
+    "ALMIRANTE BROWN",
+    "ITUZAINGO ANEXO",
+    "ITUZAINGO",
+    "SAN JAVIER"
+  ],
+  "0013": [
+    "TALLERES (O)",
+    "TALLERES (E)",
+    "GENERAL PUEYRREDON",
+    "NUEVA ITALIA",
+    "GENERAL BUSTOS",
+    "AMPLIACION PUEYRREDON"
+  ],
+  "0014": [
+    "ARGUELLO",
+    "LA CAROLINA",
+    "PARQUE CHATEAU CARRERAS",
+    "VILLA BELGRANO",
+    "GUARNICION MILITAR CBA",
+    "VALLE ESCONDIDO",
+    "PORTAL DEL JACARANDA",
+    "LA SALLE",
+    "GRANJA DE FUNES",
+    "Sin Barrio - Circuito ARGUELLO",
+    "EL REFUGIO"
+  ],
+  "004A": [
+    "SAN FERNANDO",
+    "LAS FLORES",
+    "AMPLIACION SAN FERNANDO",
+    "AMPLIACION GENERAL ARTIGAS",
+    "GENERAL ARTIGAS",
+    "VILLA SAN ISIDRO",
+    "TEJAS DEL SUR",
+    "EJERCITO ARGENTINO",
+    "KENNEDY",
+    "IPONA",
+    "JARDIN HIPODROMO",
+    "PARQUE LOS MOLINOS",
+    "AMPLIACION KENNEDY",
+    "LAS CAÑITAS",
+    "IRUPE",
+    "LAS HUERTILLAS",
+    "JARDIN",
+    "SAN DANIEL",
+    "CABO FARINA",
+    "CIUDADELA",
+    "SAN ANTONIO",
+    "Sin Barrio - Circuito PUEBLO LAS FLORES",
+    "PARQUE ALAMEDA",
+    "VILLA EUCARISTICA"
+  ],
+  "004B": [
+    "JARDIN",
+    "VILLA REVOL",
+    "JOCKEY",
+    "JARDIN ESPINOSA",
+    "JOCKEY CLUB",
+    "SANTA RITA",
+    "PARQUE ALAMEDA",
+    "AMPLIACION JARDIN ESPINOSA",
+    "JARDIN HIPODROMO",
+    "VILLA SAN CARLOS",
+    "VILLA EUCARISTICA",
+    "VILLA REVOL ANEXO",
+    "VILLA SAN ISIDRO",
+    "TEJAS DEL SUR",
+    "SAN FERNANDO",
+    "LAS CAÑITAS",
+    "CABAÑA DEL PILAR",
+    "ROGELIO MARTINEZ",
+    "RESIDENCIAL SAN CARLOS",
+    "PARQUE SARMIENTO",
+    "CIUDAD UNIVERSITARIA"
+  ],
+  "004C": [
+    "Sin Barrio - Circuito INAUDI",
+    "INAUDI",
+    "LAS HUERTILLAS",
+    "TEJAS DE LA CANDELARIA",
+    "SAN ANTONIO",
+    "SANTA ROSA RESIDENCIAL",
+    "CARBO",
+    "POSTA DE VARGAS",
+    "COMERCIAL",
+    "ROCIO DEL SUR",
+    "MIRIZI",
+    "VILLA EUCARISTICA"
+  ],
+  "004D": [
+    "VILLA EUCARISTICA",
+    "CAMINO A SAN CARLOS",
+    "QUINTAS DE ITALIA",
+    "SAN ANTONIO",
+    "Sin Barrio - Circuito VILLA EUCARISTICA",
+    "OBISPO ANGELELLI",
+    "INAUDI"
+  ],
+  "004E": [
+    "NUESTRO HOGAR III",
+    "Sin Barrio - Circuito NUESTRO HOGAR III"
+  ],
+  "004F": [
+    "Sin Barrio - Circuito CIUDAD OBISPO ANGELELLI",
+    "OBISPO ANGELELLI",
+    "VILLA RIVADAVIA ANEXO \"A\"",
+    "CAMINO A SAN CARLOS"
+  ],
+  "005A": [
+    "MIRALTA",
+    "COLONIA LOLA",
+    "1º DE MAYO",
+    "Sin Barrio - Circuito COLONIA LOLA",
+    "BOEDO"
+  ],
+  "005B": [
+    "DEAN FUNES",
+    "SAN LORENZO (S)",
+    "Sin Barrio - Circuito DEAN FUNES",
+    "1º DE MAYO",
+    "VILLA BUSTOS"
+  ],
+  "005C": [
+    "1º DE MAYO",
+    "EMPALME",
+    "MIRADOR",
+    "AMPLIACION EMPALME",
+    "EMPALME CASAS DE OBREROS Y EMPLEADOS",
+    "VILLA ARGENTINA",
+    "FERROVIARIO  MITRE",
+    "SAN VICENTE",
+    "Sin Barrio - Circuito EMPALME",
+    "ALTAMIRA",
+    "ACOSTA",
+    "BOEDO",
+    "TALLERES SUD",
+    "PARQUE SAN VICENTE",
+    "DEAN FUNES"
+  ],
+  "005D": [
+    "MULLER",
+    "MALDONADO",
+    "ACOSTA",
+    "AMPLIACION ALTAMIRA",
+    "LOS JOSEFINOS",
+    "SAN VICENTE",
+    "Sin Barrio - Circuito MALDONADO",
+    "RENACIMIENTO",
+    "ALTAMIRA"
+  ],
+  "005E": [
+    "VILLA BUSTOS",
+    "1º DE MAYO",
+    "Sin Barrio - Circuito VILLA BUSTOS",
+    "BOEDO",
+    "DEAN FUNES"
+  ],
+  "005F": [
+    "RENACIMIENTO",
+    "COLONIA LOLA",
+    "MALDONADO",
+    "Sin Barrio - Circuito RENACIMIENTO",
+    "MIRALTA",
+    "ACOSTA",
+    "LOS JOSEFINOS"
+  ],
+  "005G": [
+    "SAN VICENTE",
+    "LOS CEIBOS",
+    "MIRADOR",
+    "JUNIORS",
+    "CENTRO",
+    "MULLER",
+    "SARMIENTO",
+    "MAIPU 2A SECCION",
+    "CRISOL NORTE",
+    "PARQUE SAN VICENTE",
+    "BAJO GENERAL PAZ",
+    "ALTAMIRA",
+    "INDUSTRIAL ESTE",
+    "BAJADA DE PIEDRA"
+  ],
+  "005H": [
+    "BOEDO",
+    "Sin Barrio - Circuito VILLA BOEDO",
+    "VILLA BUSTOS",
+    "1º DE MAYO"
+  ],
+  "005I": [
+    "SAN JAVIER",
+    "SAN LORENZO (S)",
+    "EVITA",
+    "CAMINO A VILLA POSE",
+    "PORTAL DE CORDOBA",
+    "Sin Barrio - Circuito COLINAS DEL SUR",
+    "AMPLIACION 1º DE MAYO",
+    "BETANIA",
+    "QUINTAS DEL SUR",
+    "DEAN FUNES",
+    "VILLA BUSTOS",
+    "ALMIRANTE BROWN",
+    "LOS SAUCES",
+    "NICOLAS AVELLANEDA"
+  ],
+  "006A": [
+    "Sin Barrio - Circuito BAJADA DE PIEDRA",
+    "MALDONADO",
+    "PARQUE DEL ESTE",
+    "YAPEYU",
+    "BAJADA DE PIEDRA",
+    "MULLER"
+  ],
+  "006B": [
+    "Sin Barrio - Circuito CHACRA DE LA MERCED"
+  ],
+  "006C": [
+    "GENERAL PAZ",
+    "PATRIA",
+    "GENERAL PUEYRREDON",
+    "CENTRO",
+    "BAJO GENERAL PAZ"
+  ],
+  "006D": [
+    "JUNIORS",
+    "BAJO GENERAL PAZ",
+    "GENERAL PAZ",
+    "CENTRO",
+    "SAN VICENTE"
+  ],
+  "006E": [
+    "LA FLORESTA",
+    "Sin Barrio - Circuito LA FLORESTA SUD"
+  ],
+  "006F": [
+    "YAPEYU",
+    "BAJADA DE PIEDRA",
+    "SAN VICENTE",
+    "GENERAL PAZ",
+    "BAJO GENERAL PAZ",
+    "MULLER",
+    "HOGAR PROPIO",
+    "PATRIA"
+  ],
+  "007A": [
+    "VILLA ALICIA RISLER",
+    "RECREO DEL NORTE",
+    "GUIÑAZU",
+    "MARIA LASTENIA",
+    "REMEDIOS DE ESCALADA",
+    "Sin Barrio - Circuito GUIÑAZU",
+    "GUIÑAZU SUD",
+    "LICEO GENERAL PAZ",
+    "VILLA GRAN PARQUE",
+    "AEROPUERTO"
+  ],
+  "007B": [
+    "ALTA CORDOBA",
+    "LA FRATERNIDAD",
+    "LOS PARAISOS",
+    "HIPOLITO IRIGOYEN",
+    "PANAMERICANO",
+    "SARGENTO CABRAL",
+    "SAN MARTIN",
+    "GENERAL BUSTOS"
+  ],
+  "007C": [
+    "LOS BOULEVARES",
+    "REMEDIOS DE ESCALADA",
+    "PARQUE JORGE NEWBERY",
+    "MARQUES DE SOBREMONTE",
+    "AEROPUERTO"
+  ],
+  "007D": [
+    "ALTA CORDOBA",
+    "INDEPENDENCIA",
+    "COFICO",
+    "SAN MARTIN",
+    "DUCASSE"
+  ],
+  "007E": [
+    "MARQUES DE SOBREMONTE",
+    "SARGENTO CABRAL",
+    "SAN MARTIN NORTE",
+    "GRANADERO PRINGLES",
+    "JUAN B. JUSTO",
+    "HIPOLITO IRIGOYEN",
+    "ALTA CORDOBA"
+  ],
+  "007F": [
+    "REMEDIOS DE ESCALADA",
+    "PARQUE JORGE NEWBERY",
+    "JERONIMO LUIS DE CABRERA",
+    "JUAN B. JUSTO",
+    "LICEO GENERAL PAZ",
+    "PARQUE LICEO 1A SECCION",
+    "LOS HORNILLOS",
+    "MARQUES DE SOBREMONTE"
+  ],
+  "007G": [
+    "PANAMERICANO",
+    "JUAN B. JUSTO",
+    "MARIANO FRAGUEIRO",
+    "HIPOLITO IRIGOYEN",
+    "AMPLIACION PANAMERICANO",
+    "JERONIMO LUIS DE CABRERA",
+    "MARQUES DE SOBREMONTE",
+    "VILLA AZALAIZ OESTE",
+    "ALTA CORDOBA"
+  ],
+  "008A": [
+    "Sin Barrio - Circuito PALMAR",
+    "PALMAR",
+    "VILLA CLAUDINA",
+    "NUESTRO HOGAR II",
+    "1 DE JULIO",
+    "ZEPA",
+    "AMPLIACION PALMAR",
+    "YOFRE H",
+    "YOFRE I"
+  ],
+  "008B": [
+    "GENERAL PUEYRREDON",
+    "AMPLIACION PUEYRREDON",
+    "Sin Barrio - Circuito PUEYRREDON",
+    "LOS PINOS",
+    "CENTRO",
+    "GENERAL BUSTOS",
+    "TALLERES (O)",
+    "ALTA CORDOBA",
+    "PARQUE DEL ESTE"
+  ],
+  "008C": [
+    "YOFRE SUD",
+    "YOFRE I",
+    "LOS PINOS",
+    "Sin Barrio - Circuito VILLA LOS PINOS",
+    "YOFRE H",
+    "PALMAR",
+    "PARQUE DEL ESTE"
+  ],
+  "009A": [
+    "LA FRANCE",
+    "ALTO VERDE",
+    "CERRO CHICO",
+    "TABLADA PARK",
+    "LAS MAGNOLIAS",
+    "SAN LORENZO NORTE",
+    "LAS MARGARITAS",
+    "ALTOS SAN MARTIN",
+    "ALTO PALERMO"
+  ],
+  "009B": [
+    "LAS MARGARITAS",
+    "ALTO VERDE",
+    "ALTOS SAN MARTIN",
+    "ALTOS DE VILLA CABRERA",
+    "PARQUE CHACABUCO",
+    "SAN LORENZO NORTE",
+    "ALTO PALERMO",
+    "LOMAS DE SAN MARTIN",
+    "VILLA CABRERA",
+    "LA FRANCE",
+    "CERRO DE LAS ROSAS",
+    "Sin Barrio - Circuito LAS MARGARITAS"
+  ],
+  "009C": [
+    "LOS PARAISOS",
+    "ANA MARIA ZUMARAN",
+    "SARGENTO CABRAL",
+    "SAN MARTIN NORTE",
+    "GRANADERO PRINGLES",
+    "SAN MARTIN ANEXO",
+    "SAN MARTIN",
+    "LA FRANCE",
+    "ALTA CORDOBA"
+  ],
+  "009D": [
+    "POETA LUGONES",
+    "LAS MAGNOLIAS",
+    "MARQUES DE SOBREMONTE",
+    "Sin Barrio - Circuito POETA LUGONES",
+    "CERRO CHICO",
+    "ALTO VERDE",
+    "LOS BOULEVARES",
+    "LA FRANCE"
+  ],
+  "009E": [
+    "PROVIDENCIA",
+    "DUCASSE",
+    "BAJO GALAN",
+    "ALBERDI",
+    "VILLA PAEZ",
+    "SAN MARTIN"
+  ],
+  "009F": [
+    "SAN MARTIN",
+    "LOMAS DE SAN MARTIN",
+    "SAN MARTIN ANEXO",
+    "BAJO GALAN",
+    "VILLA CABRERA",
+    "PROVIDENCIA",
+    "DUCASSE",
+    "LAS MARGARITAS",
+    "ALTA CORDOBA",
+    "PARQUE CHACABUCO",
+    "ANA MARIA ZUMARAN",
+    "LOS PARAISOS",
+    "Sin Barrio - Circuito SAN MARTIN"
+  ],
+  "009G": [
+    "VILLA CABRERA",
+    "VILLA PAEZ",
+    "PARQUE CHACABUCO",
+    "OMBU",
+    "BAJO GALAN",
+    "ALTOS DE VILLA CABRERA",
+    "MARECHAL",
+    "LOMAS DE SAN MARTIN"
+  ],
+  "010A": [
+    "EL CABILDO",
+    "Sin Barrio - Circuito CABILDO",
+    "VILLA EL LIBERTADOR",
+    "COUNTRY LOS ALGARROBOS",
+    "SANTA ISABEL 2A SECCION",
+    "LA ESPERANZA"
+  ],
+  "010B": [
+    "RESIDENCIAL VELEZ SARSFIELD",
+    "PARQUE ATLANTICA",
+    "AMPLIACION VELEZ SARSFIELD",
+    "SAN DANIEL",
+    "ALTOS DE VELEZ SARSFIELD",
+    "RENE FAVALORO SUD",
+    "CIUDADELA",
+    "MANANTIALES",
+    "LAS FLORES",
+    "SMATA",
+    "AMPLIACION BENJAMIN MATIENZO",
+    "PARQUE LOS MOLINOS",
+    "CALIFORNIA",
+    "AMPLIACION ROSEDAL",
+    "LOS OLMOS",
+    "PARQUE CAPITAL SUR",
+    "FERRER",
+    "PARQUE LATINO",
+    "Sin Barrio - Circuito CIUDADELA"
+  ],
+  "010C": [
+    "COMERCIAL",
+    "VALLE CERCANO",
+    "VILLA EL LIBERTADOR",
+    "CARBO",
+    "Sin Barrio - Circuito COMERCIAL"
+  ],
+  "010D": [
+    "CONGRESO",
+    "Sin Barrio - Circuito CONGRESO",
+    "MANANTIALES",
+    "SANTA ISABEL 1A SECCION",
+    "SAN PEDRO NOLASCO",
+    "ESTACION FLORES",
+    "MANANTIALES II",
+    "AMPLIACION BENJAMIN MATIENZO"
+  ],
+  "010E": [
+    "CARRARA DE HORIZONTE",
+    "ESTACION FLORES",
+    "VILLA ADELA",
+    "VILLA ASPASIA",
+    "LAS PLAYAS",
+    "SACCHI",
+    "GUARNICION AREA CBA",
+    "CARRARA",
+    "DOCTA",
+    "MANANTIALES II",
+    "TTE. BENJAMIN MATIENZO",
+    "AMPLIACION BENJAMIN MATIENZO",
+    "AMEGHINO SUD",
+    "Sin Barrio - Circuito ESTACION FLORES",
+    "SIETE SOLES"
+  ],
+  "010F": [
+    "TTE. BENJAMIN MATIENZO",
+    "AMEGHINO SUD",
+    "A.T. E.",
+    "RENE FAVALORO SUD",
+    "AMPLIACION BENJAMIN MATIENZO",
+    "AMPLIACION ROSEDAL",
+    "AMEGHINO NORTE",
+    "LOS NARANJOS",
+    "LOS PLATANOS",
+    "Sin Barrio - Circuito MATIENZO"
+  ],
+  "010G": [
+    "GUEMES",
+    "OBSERVATORIO",
+    "CENTRO",
+    "PASO DE LOS ANDES",
+    "ALBERDI",
+    "CUPANI",
+    "NUEVA CORDOBA",
+    "MAURIZI",
+    "BELLA VISTA",
+    "BAJADA SAN ROQUE",
+    "SAN FRANCISCO",
+    "QUINTA SANTA ANA",
+    "ALTO ALBERDI",
+    "RESIDENCIAL OLIVOS"
+  ],
+  "010H": [
+    "PARQUE CAPITAL",
+    "AMPLIACION ROSEDAL",
+    "ROSEDAL",
+    "MARIANO BALCARCE",
+    "PARQUE CAPITAL SUR",
+    "RENE FAVALORO SUD",
+    "LOS NARANJOS",
+    "RESIDENCIAL OLIVOS",
+    "TTE. BENJAMIN MATIENZO",
+    "SUAREZ",
+    "A.T. E.",
+    "AVENIDA",
+    "FERRER",
+    "MANANTIALES",
+    "SAN FRANCISCO",
+    "CAROLA LORENZINI"
+  ],
+  "010I": [
+    "MANANTIALES",
+    "CABO FARINA",
+    "HORIZONTE",
+    "LOS OLMOS",
+    "PARQUE LATINO",
+    "SOLARES DE SANTA MARIA",
+    "SMATA",
+    "MUTUAL DE LOS DOCENTES",
+    "IRUPE",
+    "AMPLIACION FARINA",
+    "Sin Barrio - Circuito PARQUE HORIZONTE",
+    "PARQUE LOS MOLINOS",
+    "PARQUE ATLANTICA",
+    "AMPLIACION BENJAMIN MATIENZO",
+    "LAS FLORES"
+  ],
+  "010J": [
+    "SANTA ISABEL 2A SECCION",
+    "SANTA ISABEL 1A SECCION",
+    "SANTA ISABEL 3A SECCION",
+    "RESIDENCIAL SUD",
+    "V.I.C.O.R.",
+    "VILLA EL LIBERTADOR",
+    "EL CABILDO",
+    "CONGRESO",
+    "Sin Barrio - Circuito SANTA ISABEL",
+    "PARQUE FUTURA"
+  ],
+  "010K": [
+    "PARQUE FUTURA",
+    "UNIVERSITARIO DE HORIZONTE",
+    "V.I.C.O.R.",
+    "MANANTIALES II",
+    "Sin Barrio - Circuito VICOR",
+    "KAIROS",
+    "SANTA ISABEL 1A SECCION",
+    "SAN LUIS DE FRANCIA",
+    "SANTA ISABEL 3A SECCION",
+    "EL CABILDO"
+  ],
+  "010L": [
+    "VILLA EL LIBERTADOR",
+    "SANTA ROSA RESIDENCIAL",
+    "CARBO",
+    "LOS OLMOS SUD",
+    "MIRIZI",
+    "COMERCIAL",
+    "RESIDENCIAL SUD",
+    "Sin Barrio - Circuito VILLA EL LIBERTADOR",
+    "SANTA ISABEL 2A SECCION",
+    "VALLE CERCANO",
+    "SANTA ISABEL 1A SECCION"
+  ],
+  "010M": [
+    "VILLA EL LIBERTADOR",
+    "EL CABILDO",
+    "SANTA ISABEL 2A SECCION",
+    "Sin Barrio - Circuito AMPLIACION CABILDO",
+    "VALLE CERCANO"
+  ],
+  "011A": [
+    "ALTO ALBERDI",
+    "ALBERDI",
+    "MARECHAL",
+    "VILLA PAEZ",
+    "OBRERO",
+    "ESCOBAR",
+    "TRANVIARIOS",
+    "OMBU"
+  ],
+  "011B": [
+    "PARQUE DON BOSCO",
+    "VALLE ESCONDIDO",
+    "GUARNICION MILITAR CBA",
+    "NUEVO URCA",
+    "MIRADOR DEL CHATEAU",
+    "MILITAR GENERAL DEHEZA",
+    "Sin Barrio - Circuito DON BOSCO",
+    "CHATEAU CARRERAS",
+    "LOS ROBLES",
+    "CO.VI.CO.",
+    "VILLA ALBERTO ANEXO"
+  ],
+  "011C": [
+    "LAS PALMAS",
+    "ALTO ALBERDI",
+    "SAN SALVADOR",
+    "AMPLIACION LAS PALMAS",
+    "PUENTE BLANCO",
+    "ALTOS DE SANTA ANA",
+    "DR RENE FAVALORO",
+    "LAS DALIAS",
+    "URITORCO",
+    "VILLA SIBURU",
+    "TEODORO FELS",
+    "TRANVIARIOS",
+    "VILLA GENERAL URQUIZA",
+    "ANEXO LAS PALMAS",
+    "LAMADRID",
+    "VILLA ALBERDI",
+    "LAS VIOLETAS",
+    "VILLA AVALOS",
+    "LOS FILTROS"
+  ],
+  "011D": [
+    "LOS NARANJOS",
+    "SAN RAFAEL",
+    "AVENIDA",
+    "EL TREBOL",
+    "SAN FRANCISCO",
+    "SANTA ANA RESIDENCIAL",
+    "JUAN XXIII",
+    "1RA. JUNTA",
+    "CAROLA LORENZINI",
+    "LOS PLATANOS",
+    "Sin Barrio - Circuito LOS NARANJOS"
+  ],
+  "011E": [
+    "LOS PLATANOS",
+    "AMEGHINO NORTE",
+    "LOS GRANADOS",
+    "LAMADRID",
+    "LOS JACARANDAES",
+    "AMPLIACION LOS PLATANOS",
+    "CONSORCIO ESPERANZA",
+    "RESIDENCIAL SAN ROQUE",
+    "ANEXO LAS PALMAS",
+    "AMEGHINO SUD",
+    "COMANDANTE ESPORA",
+    "LOS NARANJOS",
+    "ALTO ALBERDI",
+    "LAS DALIAS",
+    "PUENTE BLANCO"
+  ],
+  "011F": [
+    "TEODORO FELS",
+    "LOS ROBLES",
+    "ALTOS DE SANTA ANA",
+    "VILLA MAFEKIN",
+    "EL TROPEZON",
+    "QUEBRADA DE LAS ROSAS",
+    "LAS VIOLETAS",
+    "VILLA GENERAL URQUIZA",
+    "GUARNICION MILITAR CBA",
+    "LA TOMA",
+    "SAN IGNACIO"
+  ],
+  "011G": [
+    "PARQUE REPUBLICA",
+    "LOS ROBLES",
+    "INDUSTRIAL OESTE",
+    "EL PUEBLITO",
+    "LAS VIOLETAS",
+    "VILLA ALBERTO",
+    "LA TOMA",
+    "VILLA MAFEKIN",
+    "VILLA UNION",
+    "GUARNICION MILITAR CBA",
+    "ALTOS DE SANTA ANA",
+    "VILLA MARTINEZ",
+    "LOS FILTROS"
+  ],
+  "011H": [
+    "QUEBRADA DE LAS ROSAS",
+    "CHATEAU CARRERAS",
+    "PARQUE CHATEAU CARRERAS",
+    "MIRADOR DEL CHATEAU",
+    "CO.VI.CO.",
+    "COLINAS DEL CERRO",
+    "Sin Barrio - Circuito QUEBRADA LAS ROSAS",
+    "TEODORO FELS",
+    "LOS ROBLES",
+    "VILLA MAFEKIN"
+  ],
+  "011I": [
+    "RESIDENCIAL SAN ROQUE",
+    "VILLA MARTINEZ",
+    "VILLA AVALOS",
+    "ANEXO LAS PALMAS",
+    "LOS FILTROS",
+    "PARQUE REPUBLICA",
+    "VILLA ADELA",
+    "ALTOS DE SANTA ANA",
+    "LAS DALIAS",
+    "LAS PALMAS",
+    "LAS VIOLETAS",
+    "AMEGHINO NORTE",
+    "AERONAUTICO",
+    "EL PUEBLITO"
+  ],
+  "011J": [
+    "ALTO ALBERDI",
+    "OBRERO",
+    "TRANVIARIOS",
+    "CASEROS",
+    "COMANDANTE ESPORA",
+    "SANTA ANA RESIDENCIAL",
+    "SAN RAFAEL",
+    "SAN FRANCISCO",
+    "JUAN XXIII",
+    "PASO DE LOS ANDES",
+    "CUPANI",
+    "LOS PLATANOS"
+  ],
+  "011K": [
+    "VILLA GENERAL URQUIZA",
+    "SAN IGNACIO",
+    "VILLA ALBERDI",
+    "ALTO ALBERDI",
+    "VILLA SIBURU",
+    "URCA",
+    "QUEBRADA DE LAS ROSAS",
+    "LAS ROSAS",
+    "COLINAS DEL CERRO",
+    "SAN SALVADOR",
+    "PARQUE TABLADA",
+    "TEODORO FELS",
+    "URITORCO"
+  ],
+  "011L": [
+    "LOMAS DE LA CAROLINA",
+    "EL BOSQUE",
+    "VILLA WARCALDE",
+    "LAS DELICIAS",
+    "ALTO HERMOSO",
+    "LA CAROLINA",
+    "GUARNICION MILITAR CBA"
+  ],
+  "011M": [
+    "VALLE ESCONDIDO",
+    "PARQUE CHATEAU CARRERAS",
+    "ALTOS DEL CHATEAU",
+    "Sin Barrio - Circuito VALLE ESCONDIDO",
+    "MIRADOR DEL CHATEAU",
+    "GUARNICION MILITAR CBA",
+    "NUEVO URCA",
+    "LA RESERVA",
+    "LAS DELICIAS",
+    "CHATEAU CARRERAS",
+    "LA CAROLINA",
+    "VILLA WARCALDE"
+  ],
+  "012A": [
+    "EL QUEBRACHO",
+    "CAMINO A 60 CUADRAS",
+    "RAMON J. CARCANO",
+    "ESTACION FERREYRA",
+    "EL CARMELO",
+    "JOSE IGNACIO RUCCI",
+    "FERREYRA",
+    "23 DE ABRIL",
+    "SAN FELIPE",
+    "VILLA CORONEL OLMEDO",
+    "JOSE IGNACIO DIAZ 3A SECCION"
+  ],
+  "012B": [
+    "URQUIZA",
+    "COLON",
+    "CRISOL SUD",
+    "RIVADAVIA",
+    "SARMIENTO",
+    "MAIPU 2A SECCION",
+    "MAIPU 1A SECCION",
+    "NUEVA CORDOBA ANEXA",
+    "CRISOL NORTE",
+    "INDUSTRIAL ESTE",
+    "CORRAL DE PALOS",
+    "LOS CEIBOS",
+    "CENTRO",
+    "JOSE HERNANDEZ",
+    "JOSE IGNACIO DIAZ 1A SECCION",
+    "SAN PABLO",
+    "SAN VICENTE",
+    "PARQUE SARMIENTO",
+    "EMAUS",
+    "RESIDENCIAL SAN CARLOS"
+  ],
+  "012C": [
+    "VILLA CORONEL OLMEDO",
+    "CAMINO A 60 CUADRAS",
+    "ESTACION FERREYRA",
+    "EL QUEBRACHO",
+    "CAMINO A SAN CARLOS"
+  ],
+  "012D": [
+    "JOSE IGNACIO DIAZ 3A SECCION",
+    "JOSE IGNACIO DIAZ 1A SECCION",
+    "LAS LILAS",
+    "JOSE IGNACIO DIAZ 2A SECCION",
+    "TALLERES SUD",
+    "SAN FELIPE",
+    "23 DE ABRIL",
+    "CORRAL DE PALOS",
+    "ALTOS SUD DE SAN VICENTE",
+    "RIVADAVIA",
+    "FERROVIARIO  MITRE",
+    "BENJAMIN POLICARPIO CABRAL",
+    "SAN CAYETANO",
+    "EMAUS",
+    "4 DE FEBRERO",
+    "SAN VICENTE",
+    "EMPALME",
+    "Sin Barrio - Circuito JOSE IGNACIO DIAZ",
+    "URQUIZA",
+    "SAN LORENZO (S)",
+    "DEAN FUNES",
+    "CAMINO A 60 CUADRAS",
+    "RAMON J. CARCANO",
+    "CLAROS DEL BOSQUE",
+    "JOSE IGNACIO RUCCI",
+    "EMPALME CASAS DE OBREROS Y EMPLEADOS",
+    "FERREYRA"
+  ],
+  "012E": [
+    "FERREYRA",
+    "ESTACION FERREYRA",
+    "LA CARBONADA",
+    "JOSE IGNACIO RUCCI",
+    "ITUZAINGO II",
+    "DE MIS SUEÑOS",
+    "25 DE MAYO",
+    "Sin Barrio - Circuito FERREYRA",
+    "QUINTAS DE FERREYRA",
+    "JOSE IGNACIO DIAZ 3A SECCION",
+    "NICOLAS AVELLANEDA",
+    "CAMINO A 60 CUADRAS"
+  ],
+  "012F": [
+    "JARDIN DEL PILAR",
+    "JOSE HERNANDEZ",
+    "RESIDENCIAL SAN CARLOS",
+    "AMPLIACION SAN PABLO",
+    "SAN PABLO",
+    "JARDIN DEL SUD",
+    "BIALET MASSE",
+    "CLAROS DEL BOSQUE",
+    "MARCOS SASTRE",
+    "OÑA",
+    "Sin Barrio - Circuito JOSE HERNANDEZ",
+    "PARQUE SAN CARLOS",
+    "CABAÑA DEL PILAR",
+    "S.E.P.",
+    "JOSE IGNACIO DIAZ 2A SECCION",
+    "URQUIZA",
+    "O.S.N.",
+    "JARDIN ESPINOSA",
+    "CRISOL SUD",
+    "SANTA RITA",
+    "JOSE IGNACIO DIAZ 1A SECCION",
+    "4 DE FEBRERO",
+    "VILLA REVOL",
+    "VILLA SAN CARLOS"
+  ],
+  "012G": [
+    "ITUZAINGO ANEXO",
+    "ITUZAINGO",
+    "DE MIS SUEÑOS",
+    "LOS EUCALIPTUS",
+    "ITUZAINGO II",
+    "Sin Barrio - Circuito ITUZAINGO",
+    "LOS FRESNOS",
+    "NICOLAS AVELLANEDA",
+    "BETANIA",
+    "ESTACION FERREYRA",
+    "FERREYRA"
+  ],
+  "012H": [
+    "S.E.P.",
+    "CERVECEROS",
+    "Sin Barrio - Circuito LOS CERVECEROS",
+    "O.S.N.",
+    "LAS CAÑUELAS",
+    "CAMINO A SAN CARLOS",
+    "FINCAS DEL SUR",
+    "CAMINO A 60 CUADRAS",
+    "QUINTAS DE FLORES",
+    "VILLA SAN CARLOS",
+    "VILLA EUCARISTICA",
+    "EL VIEJO ALGARROBO",
+    "QUINTAS DE ITALIA"
+  ],
+  "012I": [
+    "QUINTAS DE FERREYRA",
+    "Sin Barrio - Circuito CIUDAD DE MIS SUEÑOS",
+    "ITUZAINGO II"
+  ],
+  "013A": [
+    "CENTRO AMERICA",
+    "LOS GIGANTES",
+    "AYACUCHO",
+    "MARCELO T. DE ALVEAR",
+    "VILLA AZALAIZ OESTE",
+    "GENERAL SAVIO",
+    "GENERAL BUSTOS",
+    "AMPLIACION RESIDENCIAL AMERICA",
+    "ALTA CORDOBA",
+    "RESIDENCIAL AMERICA",
+    "PANAMERICANO",
+    "AMPLIACION PANAMERICANO",
+    "JUAN B. JUSTO",
+    "Sin Barrio - Circuito AYACUCHO"
+  ],
+  "013B": [
+    "Sin Barrio - Circuito EL GATEADO"
+  ],
+  "013C": [
+    "GENERAL BUSTOS",
+    "20 DE JUNIO",
+    "ALTA CORDOBA",
+    "RESIDENCIAL AMERICA",
+    "AYACUCHO",
+    "TALLERES (O)"
+  ],
+  "013D": [
+    "GENERAL ARENALES",
+    "Sin Barrio - Circuito JARDIN ARENALES",
+    "1 DE JULIO",
+    "EL QUEBRACHAL"
+  ],
+  "013E": [
+    "Sin Barrio - Circuito LA DOROTEA",
+    "YOFRE H",
+    "VILLA ESQUIU",
+    "FINCA LA DOROTEA",
+    "1 DE JULIO"
+  ],
+  "013F": [
+    "NUEVA ITALIA",
+    "LA HORTENSIA",
+    "PARQUE MONTECRISTO",
+    "VIVERO NORTE",
+    "SANTA CLARA DE ASIS",
+    "AMPLIACION PUEYRREDON",
+    "LOS PINOS",
+    "YOFRE SUD",
+    "YOFRE NORTE",
+    "PATRICIOS",
+    "GENERAL PUEYRREDON"
+  ],
+  "013G": [
+    "PARQUE LICEO 2A SECCION",
+    "PARQUE LICEO 3A SECCION",
+    "PARQUE LICEO 1A SECCION",
+    "LOS CHINGOLOS",
+    "Sin Barrio - Circuito PARQUE LICEO",
+    "LOS HORNILLOS",
+    "VILLA RETIRO",
+    "LICEO GENERAL PAZ",
+    "VILLA RETIRO DE HORIZONTE",
+    "LOS GIGANTES",
+    "GENERAL MOSCONI",
+    "PATRICIOS OESTE",
+    "JERONIMO LUIS DE CABRERA"
+  ],
+  "013H": [
+    "PATRICIOS",
+    "PATRICIOS OESTE",
+    "VILLA CORINA",
+    "GENERAL BELGRANO",
+    "PATRICIOS ESTE",
+    "PATRICIOS NORTE",
+    "ARTURO CAPDEVILA",
+    "Sin Barrio - Circuito PATRICIOS",
+    "RESIDENCIAL ARAGON",
+    "QUINTAS DE SAN JORGE",
+    "VIVERO NORTE",
+    "RESIDENCIAL SAN JORGE",
+    "NUEVA ITALIA",
+    "SANTA CLARA DE ASIS"
+  ],
+  "013I": [
+    "Sin Barrio - Circuito SAN JORGE",
+    "VILLA ESQUIU",
+    "RESIDENCIAL ARAGON",
+    "ARTURO CAPDEVILA",
+    "QUINTAS DE SAN JORGE",
+    "RESIDENCIAL SAN JORGE",
+    "PATRICIOS ESTE"
+  ],
+  "013J": [
+    "VILLA AZALAIZ",
+    "RESIDENCIAL AMERICA",
+    "AMPLIACION RESIDENCIAL AMERICA",
+    "LOS ALAMOS",
+    "GENERAL MOSCONI",
+    "CIUDAD DE JUAN PABLO II",
+    "CENTRO AMERICA",
+    "SAN NICOLAS",
+    "GENERAL SAVIO",
+    "GUAYAQUIL",
+    "Sin Barrio - Circuito VILLA AZALAIS",
+    "LOS GIGANTES",
+    "TALLERES (O)",
+    "VILLA CORINA",
+    "PATRICIOS OESTE",
+    "GENERAL BUSTOS",
+    "AYACUCHO",
+    "20 DE JUNIO",
+    "NUEVA ITALIA"
+  ],
+  "013K": [
+    "Sin Barrio - Circuito VILLA ESQUIU",
+    "SAN RAMON",
+    "VILLA ESQUIU"
+  ],
+  "013L": [
+    "VILLA GRAN PARQUE",
+    "Sin Barrio - Circuito VILLA GRAN PARQUE",
+    "LICEO GENERAL PAZ",
+    "RECREO DEL NORTE",
+    "GUIÑAZU",
+    "VILLA RETIRO"
+  ],
+  "013M": [
+    "VILLA RETIRO",
+    "Sin Barrio - Circuito CAMINO A COLONIA TIROLESA"
+  ],
+  "013N": [
+    "YOFRE NORTE",
+    "YOFRE H",
+    "YOFRE SUD",
+    "SANTA CLARA DE ASIS",
+    "ARTURO CAPDEVILA",
+    "PATRICIOS",
+    "YOFRE I",
+    "LA HORTENSIA",
+    "Sin Barrio - Circuito YOFRE",
+    "PARQUE MONTECRISTO"
+  ],
+  "013O": [
+    "DE LOS CUARTETOS",
+    "Sin Barrio - Circuito CHACHAPOYAS"
+  ],
+  "014A": [
+    "ARGUELLO NORTE",
+    "Sin Barrio - Circuito ARGUELLO NORTE",
+    "EL CERRITO",
+    "AUTODROMO",
+    "LOURDES",
+    "LOS BOULEVARES",
+    "VILLA SILVANO FUNES",
+    "U.O.C.R.A.",
+    "VILLA 9 DE JULIO",
+    "MERCANTIL",
+    "POLICIAL",
+    "CONSORCIO 16 DE NOVIEMBRE"
+  ],
+  "014B": [
+    "ARGUELLO",
+    "LA SALLE",
+    "QUINTAS DE ARGUELLO",
+    "ALBORADA (N)",
+    "VILLA SOLFERINO",
+    "VILLA 9 DE JULIO"
+  ],
+  "014C": [
+    "RIVERA INDARTE",
+    "ARGUELLO",
+    "VILLA QUISQUIZACATE",
+    "EL REFUGIO",
+    "SAN JOSE",
+    "ALTO HERMOSO",
+    "VILLA WARCALDE",
+    "VILLA RIVERA INDARTE",
+    "PORTAL DEL JACARANDA",
+    "LA SALLE"
+  ],
+  "014D": [
+    "CERRO DE LAS ROSAS",
+    "VALLE DEL CERRO",
+    "URCA",
+    "PARQUE TABLADA",
+    "Sin Barrio - Circuito CERRO DE LAS ROSAS",
+    "ALTOS DE VILLA CABRERA",
+    "PARQUE CHATEAU CARRERAS"
+  ],
+  "014E": [
+    "CERRO NORTE",
+    "U.O.C.R.A.",
+    "VILLA 9 DE JULIO",
+    "ARGUELLO NORTE",
+    "POLICIAL",
+    "VILLA CORNU",
+    "VILLA ALLENDE PARQUE",
+    "DR REMO M. COPELLO"
+  ],
+  "014F": [
+    "GRANJA DE FUNES",
+    "LOS BOULEVARES",
+    "ARGUELLO NORTE",
+    "VILLA SILVANO FUNES",
+    "PADRE CLARET",
+    "ARGUELLO",
+    "VILLA 9 DE JULIO",
+    "BRIGADIER SAN MARTIN",
+    "VILLA CLARET",
+    "APEADERO LA TABLADA"
+  ],
+  "014G": [
+    "LOS BOULEVARES",
+    "Sin Barrio - Circuito LOS BOULEVARES",
+    "BRIGADIER SAN MARTIN",
+    "APEADERO LA TABLADA",
+    "VILLA CLARET",
+    "PADRE CLARET",
+    "AEROPUERTO"
+  ],
+  "014H": [
+    "POLICIAL",
+    "COOPERATIVA 16 DE NOVIEMBRE",
+    "Sin Barrio - Circuito MERCANTIL",
+    "VILLA CORNU",
+    "MERCANTIL",
+    "CONSORCIO 16 DE NOVIEMBRE",
+    "DR REMO M. COPELLO"
+  ],
+  "014I": [
+    "LOS BOULEVARES",
+    "AMPLIACION POETA LUGONES",
+    "SANTA CECILIA",
+    "POETA LUGONES",
+    "APEADERO LA TABLADA",
+    "PADRE CLARET",
+    "CERRO CHICO",
+    "ALEJANDRO CENTENO",
+    "VILLA MARTA",
+    "ALBORADA (S)",
+    "Sin Barrio - Circuito SANTA CECILIA"
+  ],
+  "014J": [
+    "URCA",
+    "COLINAS DEL CERRO",
+    "PARQUE TABLADA",
+    "VILLA GENERAL URQUIZA",
+    "CERRO DE LAS ROSAS",
+    "LAS ROSAS",
+    "PARQUE CHATEAU CARRERAS",
+    "BAJO PALERMO"
+  ],
+  "014K": [
+    "VILLA ALLENDE PARQUE",
+    "Sin Barrio - Circuito VILLA ALLENDE PARQUE",
+    "VILLA 9 DE JULIO",
+    "VILLA RIVERA INDARTE",
+    "VILLA CORNU"
+  ],
+  "014L": [
+    "VILLA BELGRANO",
+    "PARQUE CHATEAU CARRERAS",
+    "PARQUE MODELO",
+    "CERRO DE LAS ROSAS",
+    "Sin Barrio - Circuito VILLA BELGRANO",
+    "ARGUELLO",
+    "PADRE CLARET"
+  ],
+  "014M": [
+    "VILLA CENTENARIO",
+    "CERRO CHICO",
+    "ALEJANDRO CENTENO",
+    "ALTO PALERMO",
+    "TABLADA PARK",
+    "VILLA MARTA",
+    "PARQUE COREMA",
+    "LOS ANGELES",
+    "SAN MARCELO",
+    "ALBORADA (S)",
+    "PADRE CLARET",
+    "CERRO DE LAS ROSAS"
+  ],
+  "014N": [
+    "VILLA CORNU",
+    "POLICIAL",
+    "DR REMO M. COPELLO",
+    "COOPERATIVA 16 DE NOVIEMBRE",
+    "U.O.C.R.A.",
+    "Sin Barrio - Circuito VILLA CORNU",
+    "CERRO NORTE",
+    "VILLA ALLENDE PARQUE"
+  ],
+  "014O": [
+    "VILLA 9 DE JULIO",
+    "VILLA SERRANA",
+    "VILLA QUISQUIZACATE",
+    "ARGUELLO",
+    "ARGUELLO NORTE",
+    "VILLA RIVERA INDARTE",
+    "CERRO NORTE"
+  ],
+  "014P": [
+    "VILLA RIVERA INDARTE",
+    "RIVERA INDARTE",
+    "VILLA SALDAN",
+    "Sin Barrio - Circuito VILLA RIVERA INDARTE",
+    "VILLA 9 DE JULIO",
+    "VILLA QUISQUIZACATE"
+  ],
+  "014Q": [
+    "VILLA WARCALDE",
+    "ALTO HERMOSO",
+    "PORTAL DEL JACARANDA",
+    "RIVERA INDARTE",
+    "LA CAROLINA",
+    "SAN JOSE",
+    "ARGUELLO"
+  ]
 }
