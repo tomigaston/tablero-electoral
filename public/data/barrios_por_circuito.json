@@ -1,1353 +1,7182 @@
 {
   "0001": [
-    "CENTRO",
-    "NUEVA CORDOBA"
+    {
+      "nombre": "CENTRO",
+      "poblacion": 27456,
+      "porcentaje": 70.9,
+      "orden": 1
+    },
+    {
+      "nombre": "NUEVA CORDOBA",
+      "poblacion": 1856,
+      "porcentaje": 3.8,
+      "orden": 3
+    }
   ],
   "0002": [
-    "CENTRO",
-    "ALTA CORDOBA",
-    "DUCASSE",
-    "ALBERDI",
-    "GENERAL PUEYRREDON"
+    {
+      "nombre": "CENTRO",
+      "poblacion": 6648,
+      "porcentaje": 17.2,
+      "orden": 2
+    },
+    {
+      "nombre": "DUCASSE",
+      "poblacion": 184,
+      "porcentaje": 18.2,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 526,
+      "porcentaje": 1.4,
+      "orden": 3
+    },
+    {
+      "nombre": "ALBERDI",
+      "poblacion": 14,
+      "porcentaje": 0.0,
+      "orden": 5
+    },
+    {
+      "nombre": "GENERAL PUEYRREDON",
+      "poblacion": 10,
+      "porcentaje": 0.0,
+      "orden": 5
+    }
   ],
   "0003": [
-    "ALBERDI",
-    "QUINTA SANTA ANA",
-    "VILLA PAEZ",
-    "CENTRO",
-    "PASO DE LOS ANDES",
-    "CASEROS",
-    "OBRERO",
-    "PROVIDENCIA"
+    {
+      "nombre": "ALBERDI",
+      "poblacion": 29371,
+      "porcentaje": 75.0,
+      "orden": 1
+    },
+    {
+      "nombre": "QUINTA SANTA ANA",
+      "poblacion": 1150,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA PAEZ",
+      "poblacion": 718,
+      "porcentaje": 15.3,
+      "orden": 2
+    },
+    {
+      "nombre": "CASEROS",
+      "poblacion": 42,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "PASO DE LOS ANDES",
+      "poblacion": 56,
+      "porcentaje": 2.0,
+      "orden": 3
+    },
+    {
+      "nombre": "OBRERO",
+      "poblacion": 13,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "PROVIDENCIA",
+      "poblacion": 11,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 567,
+      "porcentaje": 1.5,
+      "orden": 4
+    }
   ],
   "0004": [
-    "NUEVA CORDOBA",
-    "PARQUE SARMIENTO",
-    "VILLA REVOL ANEXO",
-    "CIUDAD UNIVERSITARIA",
-    "ROGELIO MARTINEZ",
-    "LAS FLORES",
-    "CENTRO",
-    "CRISOL SUD",
-    "SAN FERNANDO",
-    "CRISOL NORTE",
-    "IPONA"
+    {
+      "nombre": "NUEVA CORDOBA",
+      "poblacion": 44562,
+      "porcentaje": 90.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE SARMIENTO",
+      "poblacion": 1268,
+      "porcentaje": 99.5,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA REVOL ANEXO",
+      "poblacion": 702,
+      "porcentaje": 94.4,
+      "orden": 1
+    },
+    {
+      "nombre": "CIUDAD UNIVERSITARIA",
+      "poblacion": 585,
+      "porcentaje": 82.9,
+      "orden": 1
+    },
+    {
+      "nombre": "ROGELIO MARTINEZ",
+      "poblacion": 114,
+      "porcentaje": 95.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CRISOL SUD",
+      "poblacion": 28,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN FERNANDO",
+      "poblacion": 23,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "IPONA",
+      "poblacion": 8,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS FLORES",
+      "poblacion": 60,
+      "porcentaje": 1.3,
+      "orden": 3
+    },
+    {
+      "nombre": "CRISOL NORTE",
+      "poblacion": 20,
+      "porcentaje": 1.3,
+      "orden": 3
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 51,
+      "porcentaje": 0.1,
+      "orden": 9
+    }
   ],
   "0005": [
-    "ALTAMIRA",
-    "ACOSTA",
-    "PARQUE SAN VICENTE",
-    "AMPLIACION ALTAMIRA",
-    "SAN VICENTE",
-    "COLONIA LOLA",
-    "VILLA ARGENTINA",
-    "EMPALME",
-    "MULLER"
+    {
+      "nombre": "ALTAMIRA",
+      "poblacion": 6010,
+      "porcentaje": 98.4,
+      "orden": 1
+    },
+    {
+      "nombre": "ACOSTA",
+      "poblacion": 4821,
+      "porcentaje": 82.7,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE SAN VICENTE",
+      "poblacion": 1287,
+      "porcentaje": 96.3,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION ALTAMIRA",
+      "poblacion": 921,
+      "porcentaje": 70.4,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ARGENTINA",
+      "poblacion": 12,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "COLONIA LOLA",
+      "poblacion": 25,
+      "porcentaje": 0.8,
+      "orden": 3
+    },
+    {
+      "nombre": "EMPALME",
+      "poblacion": 6,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 143,
+      "porcentaje": 0.8,
+      "orden": 4
+    },
+    {
+      "nombre": "MULLER",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 5
+    }
   ],
   "0006": [
-    "HOGAR PROPIO",
-    "GENERAL PUEYRREDON",
-    "YAPEYU",
-    "PARQUE DEL ESTE",
-    "PATRIA"
+    {
+      "nombre": "HOGAR PROPIO",
+      "poblacion": 4796,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE DEL ESTE",
+      "poblacion": 517,
+      "porcentaje": 50.3,
+      "orden": 1
+    },
+    {
+      "nombre": "YAPEYU",
+      "poblacion": 881,
+      "porcentaje": 10.8,
+      "orden": 2
+    },
+    {
+      "nombre": "PATRIA",
+      "poblacion": 126,
+      "porcentaje": 5.2,
+      "orden": 2
+    },
+    {
+      "nombre": "GENERAL PUEYRREDON",
+      "poblacion": 992,
+      "porcentaje": 4.1,
+      "orden": 3
+    }
   ],
   "0007": [
-    "VILLA ALICIA RISLER",
-    "AEROPUERTO",
-    "Sin Barrio - Circuito AEROPUERTO",
-    "MARIA LASTENIA",
-    "LOS BOULEVARES",
-    "REMEDIOS DE ESCALADA"
+    {
+      "nombre": "AEROPUERTO",
+      "poblacion": 430,
+      "porcentaje": 97.7,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ALICIA RISLER",
+      "poblacion": 601,
+      "porcentaje": 15.0,
+      "orden": 2
+    },
+    {
+      "nombre": "MARIA LASTENIA",
+      "poblacion": 12,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "REMEDIOS DE ESCALADA",
+      "poblacion": 4,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 5,
+      "porcentaje": 0.0,
+      "orden": 7
+    },
+    {
+      "nombre": "Sin Barrio - Circuito AEROPUERTO",
+      "poblacion": 12,
+      "porcentaje": 0.0,
+      "orden": 58
+    }
   ],
   "0008": [
-    "GENERAL ARENALES",
-    "LA FLORESTA",
-    "Sin Barrio - Circuito LA FLORESTA NORTE",
-    "1 DE JULIO"
+    {
+      "nombre": "GENERAL ARENALES",
+      "poblacion": 1058,
+      "porcentaje": 37.3,
+      "orden": 2
+    },
+    {
+      "nombre": "LA FLORESTA",
+      "poblacion": 887,
+      "porcentaje": 16.6,
+      "orden": 2
+    },
+    {
+      "nombre": "1 DE JULIO",
+      "poblacion": 411,
+      "porcentaje": 23.3,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LA FLORESTA NORTE",
+      "poblacion": 668,
+      "porcentaje": 1.8,
+      "orden": 21
+    }
   ],
   "0009": [
-    "ESCOBAR",
-    "BAJO PALERMO",
-    "OMBU",
-    "LAS ROSAS",
-    "PARQUE TABLADA",
-    "ALTO ALBERDI",
-    "CERRO DE LAS ROSAS",
-    "MARECHAL",
-    "VILLA CABRERA",
-    "VILLA SIBURU",
-    "ALTOS DE VILLA CABRERA",
-    "VILLA ALBERDI"
+    {
+      "nombre": "ESCOBAR",
+      "poblacion": 1987,
+      "porcentaje": 96.9,
+      "orden": 1
+    },
+    {
+      "nombre": "BAJO PALERMO",
+      "poblacion": 1905,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "OMBU",
+      "poblacion": 1516,
+      "porcentaje": 98.3,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS ROSAS",
+      "poblacion": 1155,
+      "porcentaje": 98.4,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE TABLADA",
+      "poblacion": 103,
+      "porcentaje": 9.8,
+      "orden": 2
+    },
+    {
+      "nombre": "MARECHAL",
+      "poblacion": 20,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA CABRERA",
+      "poblacion": 17,
+      "porcentaje": 0.3,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA SIBURU",
+      "poblacion": 15,
+      "porcentaje": 0.9,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA ALBERDI",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "CERRO DE LAS ROSAS",
+      "poblacion": 25,
+      "porcentaje": 0.5,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTOS DE VILLA CABRERA",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 71,
+      "porcentaje": 0.2,
+      "orden": 5
+    }
   ],
   "0010": [
-    "BELLA VISTA",
-    "GUEMES",
-    "PARQUE VELEZ SARSFIELD",
-    "SUAREZ",
-    "NUEVA CORDOBA",
-    "FERRER",
-    "BELLA VISTA OESTE",
-    "COLINAS DE VELEZ SARSFIELD",
-    "CACERES",
-    "RESIDENCIAL OLIVOS",
-    "ACHAVAL PEÑA",
-    "COLINAS DE BELLA VISTA",
-    "CIUDAD UNIVERSITARIA",
-    "CIUDADELA",
-    "RESIDENCIAL VELEZ SARSFIELD",
-    "MAURIZI",
-    "SAN FRANCISCO",
-    "PARQUE CAPITAL"
+    {
+      "nombre": "BELLA VISTA",
+      "poblacion": 3980,
+      "porcentaje": 89.4,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE VELEZ SARSFIELD",
+      "poblacion": 3262,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SUAREZ",
+      "poblacion": 2556,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "FERRER",
+      "poblacion": 1758,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "BELLA VISTA OESTE",
+      "poblacion": 1689,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "COLINAS DE VELEZ SARSFIELD",
+      "poblacion": 1321,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CACERES",
+      "poblacion": 1200,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL OLIVOS",
+      "poblacion": 1095,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "ACHAVAL PEÑA",
+      "poblacion": 821,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "COLINAS DE BELLA VISTA",
+      "poblacion": 677,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GUEMES",
+      "poblacion": 3276,
+      "porcentaje": 20.6,
+      "orden": 2
+    },
+    {
+      "nombre": "NUEVA CORDOBA",
+      "poblacion": 1862,
+      "porcentaje": 3.8,
+      "orden": 2
+    },
+    {
+      "nombre": "CIUDAD UNIVERSITARIA",
+      "poblacion": 120,
+      "porcentaje": 17.0,
+      "orden": 2
+    },
+    {
+      "nombre": "CIUDADELA",
+      "poblacion": 87,
+      "porcentaje": 6.3,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL VELEZ SARSFIELD",
+      "poblacion": 34,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "MAURIZI",
+      "poblacion": 29,
+      "porcentaje": 4.6,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE CAPITAL",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN FRANCISCO",
+      "poblacion": 22,
+      "porcentaje": 1.5,
+      "orden": 4
+    }
   ],
   "0011": [
-    "VILLA UNION",
-    "VILLA ZEPPELIN",
-    "AERONAUTICO",
-    "GUARNICION MILITAR CBA",
-    "LAS DELICIAS",
-    "PARQUE REPUBLICA",
-    "GUARNICION AREA CBA",
-    "ARSENALES ANEXO",
-    "VILLA DERNA"
+    {
+      "nombre": "VILLA UNION",
+      "poblacion": 5423,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ZEPPELIN",
+      "poblacion": 214,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AERONAUTICO",
+      "poblacion": 180,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS DELICIAS",
+      "poblacion": 22,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ARSENALES ANEXO",
+      "poblacion": 4,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA DERNA",
+      "poblacion": 4,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GUARNICION AREA CBA",
+      "poblacion": 6,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE REPUBLICA",
+      "poblacion": 10,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 57,
+      "porcentaje": 2.4,
+      "orden": 4
+    }
   ],
   "0012": [
-    "BETANIA",
-    "QUINTAS DEL SUR",
-    "LOS SAUCES",
-    "Sin Barrio - Circuito AVELLANEDA",
-    "NICOLAS AVELLANEDA",
-    "ALMIRANTE BROWN",
-    "ITUZAINGO ANEXO",
-    "ITUZAINGO",
-    "SAN JAVIER"
+    {
+      "nombre": "BETANIA",
+      "poblacion": 1762,
+      "porcentaje": 95.4,
+      "orden": 1
+    },
+    {
+      "nombre": "QUINTAS DEL SUR",
+      "poblacion": 1602,
+      "porcentaje": 96.5,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS SAUCES",
+      "poblacion": 1528,
+      "porcentaje": 98.3,
+      "orden": 1
+    },
+    {
+      "nombre": "NICOLAS AVELLANEDA",
+      "poblacion": 1344,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito AVELLANEDA",
+      "poblacion": 1204,
+      "porcentaje": 91.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ALMIRANTE BROWN",
+      "poblacion": 622,
+      "porcentaje": 94.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ITUZAINGO ANEXO",
+      "poblacion": 232,
+      "porcentaje": 4.4,
+      "orden": 2
+    },
+    {
+      "nombre": "ITUZAINGO",
+      "poblacion": 110,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN JAVIER",
+      "poblacion": 40,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito AVELLANEDA",
+      "poblacion": 1504,
+      "porcentaje": 4.1,
+      "orden": 8
+    }
   ],
   "0013": [
-    "TALLERES (O)",
-    "TALLERES (E)",
-    "GENERAL PUEYRREDON",
-    "NUEVA ITALIA",
-    "GENERAL BUSTOS",
-    "AMPLIACION PUEYRREDON"
+    {
+      "nombre": "TALLERES (O)",
+      "poblacion": 5669,
+      "porcentaje": 97.4,
+      "orden": 1
+    },
+    {
+      "nombre": "TALLERES (E)",
+      "poblacion": 5136,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "NUEVA ITALIA",
+      "poblacion": 151,
+      "porcentaje": 4.5,
+      "orden": 2
+    },
+    {
+      "nombre": "GENERAL BUSTOS",
+      "poblacion": 102,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION PUEYRREDON",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "GENERAL PUEYRREDON",
+      "poblacion": 436,
+      "porcentaje": 1.8,
+      "orden": 4
+    }
   ],
   "0014": [
-    "ARGUELLO",
-    "LA CAROLINA",
-    "PARQUE CHATEAU CARRERAS",
-    "VILLA BELGRANO",
-    "GUARNICION MILITAR CBA",
-    "VALLE ESCONDIDO",
-    "PORTAL DEL JACARANDA",
-    "LA SALLE",
-    "GRANJA DE FUNES",
-    "Sin Barrio - Circuito ARGUELLO",
-    "EL REFUGIO"
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 7687,
+      "porcentaje": 49.4,
+      "orden": 1
+    },
+    {
+      "nombre": "LA CAROLINA",
+      "poblacion": 1016,
+      "porcentaje": 96.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA BELGRANO",
+      "poblacion": 23,
+      "porcentaje": 0.4,
+      "orden": 2
+    },
+    {
+      "nombre": "GRANJA DE FUNES",
+      "poblacion": 4,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "EL REFUGIO",
+      "poblacion": 3,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "VALLE ESCONDIDO",
+      "poblacion": 8,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "PORTAL DEL JACARANDA",
+      "poblacion": 7,
+      "porcentaje": 3.3,
+      "orden": 3
+    },
+    {
+      "nombre": "LA SALLE",
+      "poblacion": 5,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "PARQUE CHATEAU CARRERAS",
+      "poblacion": 118,
+      "porcentaje": 4.6,
+      "orden": 4
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 15,
+      "porcentaje": 0.6,
+      "orden": 6
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ARGUELLO",
+      "poblacion": 3,
+      "porcentaje": 0.0,
+      "orden": 63
+    }
   ],
   "004A": [
-    "SAN FERNANDO",
-    "LAS FLORES",
-    "AMPLIACION SAN FERNANDO",
-    "AMPLIACION GENERAL ARTIGAS",
-    "GENERAL ARTIGAS",
-    "VILLA SAN ISIDRO",
-    "TEJAS DEL SUR",
-    "EJERCITO ARGENTINO",
-    "KENNEDY",
-    "IPONA",
-    "JARDIN HIPODROMO",
-    "PARQUE LOS MOLINOS",
-    "AMPLIACION KENNEDY",
-    "LAS CAÑITAS",
-    "IRUPE",
-    "LAS HUERTILLAS",
-    "JARDIN",
-    "SAN DANIEL",
-    "CABO FARINA",
-    "CIUDADELA",
-    "SAN ANTONIO",
-    "Sin Barrio - Circuito PUEBLO LAS FLORES",
-    "PARQUE ALAMEDA",
-    "VILLA EUCARISTICA"
+    {
+      "nombre": "SAN FERNANDO",
+      "poblacion": 4397,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS FLORES",
+      "poblacion": 3181,
+      "porcentaje": 71.5,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION SAN FERNANDO",
+      "poblacion": 3094,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION GENERAL ARTIGAS",
+      "poblacion": 2712,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL ARTIGAS",
+      "poblacion": 1808,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SAN ISIDRO",
+      "poblacion": 1200,
+      "porcentaje": 97.6,
+      "orden": 1
+    },
+    {
+      "nombre": "TEJAS DEL SUR",
+      "poblacion": 1136,
+      "porcentaje": 98.2,
+      "orden": 1
+    },
+    {
+      "nombre": "EJERCITO ARGENTINO",
+      "poblacion": 1133,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "KENNEDY",
+      "poblacion": 1014,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "IPONA",
+      "poblacion": 873,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "JARDIN HIPODROMO",
+      "poblacion": 646,
+      "porcentaje": 82.3,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION KENNEDY",
+      "poblacion": 483,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS CAÑITAS",
+      "poblacion": 473,
+      "porcentaje": 97.5,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE LOS MOLINOS",
+      "poblacion": 483,
+      "porcentaje": 45.4,
+      "orden": 2
+    },
+    {
+      "nombre": "IRUPE",
+      "poblacion": 42,
+      "porcentaje": 6.0,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS HUERTILLAS",
+      "poblacion": 29,
+      "porcentaje": 2.2,
+      "orden": 2
+    },
+    {
+      "nombre": "JARDIN",
+      "poblacion": 23,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN DANIEL",
+      "poblacion": 20,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "CABO FARINA",
+      "poblacion": 15,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE ALAMEDA",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "CIUDADELA",
+      "poblacion": 10,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN ANTONIO",
+      "poblacion": 8,
+      "porcentaje": 0.8,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA EUCARISTICA",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito PUEBLO LAS FLORES",
+      "poblacion": 4,
+      "porcentaje": 0.0,
+      "orden": 62
+    }
   ],
   "004B": [
-    "JARDIN",
-    "VILLA REVOL",
-    "JOCKEY",
-    "JARDIN ESPINOSA",
-    "JOCKEY CLUB",
-    "SANTA RITA",
-    "PARQUE ALAMEDA",
-    "AMPLIACION JARDIN ESPINOSA",
-    "JARDIN HIPODROMO",
-    "VILLA SAN CARLOS",
-    "VILLA EUCARISTICA",
-    "VILLA REVOL ANEXO",
-    "VILLA SAN ISIDRO",
-    "TEJAS DEL SUR",
-    "SAN FERNANDO",
-    "LAS CAÑITAS",
-    "CABAÑA DEL PILAR",
-    "ROGELIO MARTINEZ",
-    "RESIDENCIAL SAN CARLOS",
-    "PARQUE SARMIENTO",
-    "CIUDAD UNIVERSITARIA"
+    {
+      "nombre": "JARDIN",
+      "poblacion": 6666,
+      "porcentaje": 99.7,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA REVOL",
+      "poblacion": 4234,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JOCKEY",
+      "poblacion": 2290,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JARDIN ESPINOSA",
+      "poblacion": 1667,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "JOCKEY CLUB",
+      "poblacion": 1084,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA RITA",
+      "poblacion": 1030,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE ALAMEDA",
+      "poblacion": 751,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION JARDIN ESPINOSA",
+      "poblacion": 386,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JARDIN HIPODROMO",
+      "poblacion": 139,
+      "porcentaje": 17.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA SAN CARLOS",
+      "poblacion": 135,
+      "porcentaje": 20.0,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA REVOL ANEXO",
+      "poblacion": 42,
+      "porcentaje": 5.6,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA SAN ISIDRO",
+      "poblacion": 29,
+      "porcentaje": 2.4,
+      "orden": 2
+    },
+    {
+      "nombre": "TEJAS DEL SUR",
+      "poblacion": 21,
+      "porcentaje": 1.8,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS CAÑITAS",
+      "poblacion": 12,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "CABAÑA DEL PILAR",
+      "poblacion": 8,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "ROGELIO MARTINEZ",
+      "poblacion": 6,
+      "porcentaje": 5.0,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL SAN CARLOS",
+      "poblacion": 5,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA EUCARISTICA",
+      "poblacion": 54,
+      "porcentaje": 1.2,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN FERNANDO",
+      "poblacion": 18,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "PARQUE SARMIENTO",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "CIUDAD UNIVERSITARIA",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    }
   ],
   "004C": [
-    "Sin Barrio - Circuito INAUDI",
-    "INAUDI",
-    "LAS HUERTILLAS",
-    "TEJAS DE LA CANDELARIA",
-    "SAN ANTONIO",
-    "SANTA ROSA RESIDENCIAL",
-    "CARBO",
-    "POSTA DE VARGAS",
-    "COMERCIAL",
-    "ROCIO DEL SUR",
-    "MIRIZI",
-    "VILLA EUCARISTICA"
+    {
+      "nombre": "INAUDI",
+      "poblacion": 1576,
+      "porcentaje": 99.7,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS HUERTILLAS",
+      "poblacion": 1318,
+      "porcentaje": 97.8,
+      "orden": 1
+    },
+    {
+      "nombre": "TEJAS DE LA CANDELARIA",
+      "poblacion": 1175,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN ANTONIO",
+      "poblacion": 939,
+      "porcentaje": 94.2,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito INAUDI",
+      "poblacion": 80,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito INAUDI",
+      "poblacion": 78,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "POSTA DE VARGAS",
+      "poblacion": 70,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ROCIO DEL SUR",
+      "poblacion": 47,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA ROSA RESIDENCIAL",
+      "poblacion": 144,
+      "porcentaje": 5.0,
+      "orden": 2
+    },
+    {
+      "nombre": "MIRIZI",
+      "poblacion": 13,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "CARBO",
+      "poblacion": 91,
+      "porcentaje": 5.4,
+      "orden": 3
+    },
+    {
+      "nombre": "COMERCIAL",
+      "poblacion": 68,
+      "porcentaje": 1.1,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA EUCARISTICA",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 5
+    },
+    {
+      "nombre": "Sin Barrio - Circuito INAUDI",
+      "poblacion": 1701,
+      "porcentaje": 4.7,
+      "orden": 6
+    }
   ],
   "004D": [
-    "VILLA EUCARISTICA",
-    "CAMINO A SAN CARLOS",
-    "QUINTAS DE ITALIA",
-    "SAN ANTONIO",
-    "Sin Barrio - Circuito VILLA EUCARISTICA",
-    "OBISPO ANGELELLI",
-    "INAUDI"
+    {
+      "nombre": "VILLA EUCARISTICA",
+      "poblacion": 4363,
+      "porcentaje": 97.5,
+      "orden": 1
+    },
+    {
+      "nombre": "CAMINO A SAN CARLOS",
+      "poblacion": 1225,
+      "porcentaje": 66.8,
+      "orden": 1
+    },
+    {
+      "nombre": "QUINTAS DE ITALIA",
+      "poblacion": 991,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN ANTONIO",
+      "poblacion": 50,
+      "porcentaje": 5.0,
+      "orden": 2
+    },
+    {
+      "nombre": "OBISPO ANGELELLI",
+      "poblacion": 32,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "INAUDI",
+      "poblacion": 4,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA EUCARISTICA",
+      "poblacion": 32,
+      "porcentaje": 0.1,
+      "orden": 53
+    }
   ],
   "004E": [
-    "NUESTRO HOGAR III",
-    "Sin Barrio - Circuito NUESTRO HOGAR III"
+    {
+      "nombre": "NUESTRO HOGAR III",
+      "poblacion": 6534,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito NUESTRO HOGAR III",
+      "poblacion": 667,
+      "porcentaje": 1.8,
+      "orden": 22
+    }
   ],
   "004F": [
-    "Sin Barrio - Circuito CIUDAD OBISPO ANGELELLI",
-    "OBISPO ANGELELLI",
-    "VILLA RIVADAVIA ANEXO \"A\"",
-    "CAMINO A SAN CARLOS"
+    {
+      "nombre": "OBISPO ANGELELLI",
+      "poblacion": 2231,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA RIVADAVIA ANEXO \"A\"",
+      "poblacion": 899,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "OBISPO ANGELELLI",
+      "poblacion": 152,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CIUDAD OBISPO ANGELELLI",
+      "poblacion": 2471,
+      "porcentaje": 6.8,
+      "orden": 2
+    },
+    {
+      "nombre": "CAMINO A SAN CARLOS",
+      "poblacion": 6,
+      "porcentaje": 0.3,
+      "orden": 4
+    }
   ],
   "005A": [
-    "MIRALTA",
-    "COLONIA LOLA",
-    "1º DE MAYO",
-    "Sin Barrio - Circuito COLONIA LOLA",
-    "BOEDO"
+    {
+      "nombre": "MIRALTA",
+      "poblacion": 3533,
+      "porcentaje": 96.6,
+      "orden": 1
+    },
+    {
+      "nombre": "COLONIA LOLA",
+      "poblacion": 2869,
+      "porcentaje": 96.2,
+      "orden": 1
+    },
+    {
+      "nombre": "1º DE MAYO",
+      "poblacion": 182,
+      "porcentaje": 1.6,
+      "orden": 3
+    },
+    {
+      "nombre": "BOEDO",
+      "poblacion": 4,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito COLONIA LOLA",
+      "poblacion": 145,
+      "porcentaje": 0.4,
+      "orden": 39
+    }
   ],
   "005B": [
-    "DEAN FUNES",
-    "SAN LORENZO (S)",
-    "Sin Barrio - Circuito DEAN FUNES",
-    "1º DE MAYO",
-    "VILLA BUSTOS"
+    {
+      "nombre": "DEAN FUNES",
+      "poblacion": 2403,
+      "porcentaje": 96.6,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN LORENZO (S)",
+      "poblacion": 201,
+      "porcentaje": 8.5,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA BUSTOS",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "1º DE MAYO",
+      "poblacion": 17,
+      "porcentaje": 0.2,
+      "orden": 5
+    },
+    {
+      "nombre": "Sin Barrio - Circuito DEAN FUNES",
+      "poblacion": 163,
+      "porcentaje": 0.4,
+      "orden": 37
+    }
   ],
   "005C": [
-    "1º DE MAYO",
-    "EMPALME",
-    "MIRADOR",
-    "AMPLIACION EMPALME",
-    "EMPALME CASAS DE OBREROS Y EMPLEADOS",
-    "VILLA ARGENTINA",
-    "FERROVIARIO  MITRE",
-    "SAN VICENTE",
-    "Sin Barrio - Circuito EMPALME",
-    "ALTAMIRA",
-    "ACOSTA",
-    "BOEDO",
-    "TALLERES SUD",
-    "PARQUE SAN VICENTE",
-    "DEAN FUNES"
+    {
+      "nombre": "1º DE MAYO",
+      "poblacion": 9447,
+      "porcentaje": 83.6,
+      "orden": 1
+    },
+    {
+      "nombre": "EMPALME",
+      "poblacion": 3379,
+      "porcentaje": 97.7,
+      "orden": 1
+    },
+    {
+      "nombre": "MIRADOR",
+      "poblacion": 2566,
+      "porcentaje": 79.5,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION EMPALME",
+      "poblacion": 2496,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "EMPALME CASAS DE OBREROS Y EMPLEADOS",
+      "poblacion": 1429,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ARGENTINA",
+      "poblacion": 801,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "FERROVIARIO  MITRE",
+      "poblacion": 432,
+      "porcentaje": 36.8,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 259,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTAMIRA",
+      "poblacion": 79,
+      "porcentaje": 1.3,
+      "orden": 2
+    },
+    {
+      "nombre": "TALLERES SUD",
+      "poblacion": 26,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE SAN VICENTE",
+      "poblacion": 26,
+      "porcentaje": 1.9,
+      "orden": 2
+    },
+    {
+      "nombre": "ACOSTA",
+      "poblacion": 48,
+      "porcentaje": 0.8,
+      "orden": 3
+    },
+    {
+      "nombre": "BOEDO",
+      "poblacion": 46,
+      "porcentaje": 2.0,
+      "orden": 3
+    },
+    {
+      "nombre": "DEAN FUNES",
+      "poblacion": 8,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito EMPALME",
+      "poblacion": 126,
+      "porcentaje": 0.3,
+      "orden": 41
+    }
   ],
   "005D": [
-    "MULLER",
-    "MALDONADO",
-    "ACOSTA",
-    "AMPLIACION ALTAMIRA",
-    "LOS JOSEFINOS",
-    "SAN VICENTE",
-    "Sin Barrio - Circuito MALDONADO",
-    "RENACIMIENTO",
-    "ALTAMIRA"
+    {
+      "nombre": "MULLER",
+      "poblacion": 5754,
+      "porcentaje": 95.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MALDONADO",
+      "poblacion": 5127,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MALDONADO",
+      "poblacion": 2285,
+      "porcentaje": 51.9,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS JOSEFINOS",
+      "poblacion": 113,
+      "porcentaje": 91.1,
+      "orden": 1
+    },
+    {
+      "nombre": "ACOSTA",
+      "poblacion": 930,
+      "porcentaje": 16.0,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION ALTAMIRA",
+      "poblacion": 387,
+      "porcentaje": 29.6,
+      "orden": 2
+    },
+    {
+      "nombre": "RENACIMIENTO",
+      "poblacion": 17,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTAMIRA",
+      "poblacion": 5,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 63,
+      "porcentaje": 0.4,
+      "orden": 6
+    },
+    {
+      "nombre": "Sin Barrio - Circuito MALDONADO",
+      "poblacion": 20,
+      "porcentaje": 0.1,
+      "orden": 55
+    }
   ],
   "005E": [
-    "VILLA BUSTOS",
-    "1º DE MAYO",
-    "Sin Barrio - Circuito VILLA BUSTOS",
-    "BOEDO",
-    "DEAN FUNES"
+    {
+      "nombre": "VILLA BUSTOS",
+      "poblacion": 3213,
+      "porcentaje": 96.9,
+      "orden": 1
+    },
+    {
+      "nombre": "1º DE MAYO",
+      "poblacion": 1638,
+      "porcentaje": 14.5,
+      "orden": 2
+    },
+    {
+      "nombre": "BOEDO",
+      "poblacion": 165,
+      "porcentaje": 7.1,
+      "orden": 2
+    },
+    {
+      "nombre": "DEAN FUNES",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 5
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA BUSTOS",
+      "poblacion": 215,
+      "porcentaje": 0.6,
+      "orden": 34
+    }
   ],
   "005F": [
-    "RENACIMIENTO",
-    "COLONIA LOLA",
-    "MALDONADO",
-    "Sin Barrio - Circuito RENACIMIENTO",
-    "MIRALTA",
-    "ACOSTA",
-    "LOS JOSEFINOS"
+    {
+      "nombre": "RENACIMIENTO",
+      "poblacion": 2416,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "COLONIA LOLA",
+      "poblacion": 2158,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito RENACIMIENTO",
+      "poblacion": 28,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MALDONADO",
+      "poblacion": 1397,
+      "porcentaje": 31.7,
+      "orden": 2
+    },
+    {
+      "nombre": "MIRALTA",
+      "poblacion": 126,
+      "porcentaje": 3.4,
+      "orden": 2
+    },
+    {
+      "nombre": "COLONIA LOLA",
+      "poblacion": 89,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS JOSEFINOS",
+      "poblacion": 11,
+      "porcentaje": 8.9,
+      "orden": 2
+    },
+    {
+      "nombre": "ACOSTA",
+      "poblacion": 31,
+      "porcentaje": 0.5,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito RENACIMIENTO",
+      "poblacion": 565,
+      "porcentaje": 1.5,
+      "orden": 25
+    }
   ],
   "005G": [
-    "SAN VICENTE",
-    "LOS CEIBOS",
-    "MIRADOR",
-    "JUNIORS",
-    "CENTRO",
-    "MULLER",
-    "SARMIENTO",
-    "MAIPU 2A SECCION",
-    "CRISOL NORTE",
-    "PARQUE SAN VICENTE",
-    "BAJO GENERAL PAZ",
-    "ALTAMIRA",
-    "INDUSTRIAL ESTE",
-    "BAJADA DE PIEDRA"
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 17088,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS CEIBOS",
+      "poblacion": 818,
+      "porcentaje": 97.4,
+      "orden": 1
+    },
+    {
+      "nombre": "MIRADOR",
+      "poblacion": 660,
+      "porcentaje": 20.5,
+      "orden": 2
+    },
+    {
+      "nombre": "JUNIORS",
+      "poblacion": 233,
+      "porcentaje": 3.4,
+      "orden": 2
+    },
+    {
+      "nombre": "MULLER",
+      "poblacion": 154,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "SARMIENTO",
+      "poblacion": 80,
+      "porcentaje": 3.4,
+      "orden": 2
+    },
+    {
+      "nombre": "MAIPU 2A SECCION",
+      "poblacion": 53,
+      "porcentaje": 2.3,
+      "orden": 2
+    },
+    {
+      "nombre": "CRISOL NORTE",
+      "poblacion": 48,
+      "porcentaje": 3.1,
+      "orden": 2
+    },
+    {
+      "nombre": "BAJO GENERAL PAZ",
+      "poblacion": 16,
+      "porcentaje": 1.3,
+      "orden": 2
+    },
+    {
+      "nombre": "INDUSTRIAL ESTE",
+      "poblacion": 10,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE SAN VICENTE",
+      "poblacion": 23,
+      "porcentaje": 1.7,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTAMIRA",
+      "poblacion": 13,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "BAJADA DE PIEDRA",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 229,
+      "porcentaje": 0.6,
+      "orden": 6
+    }
   ],
   "005H": [
-    "BOEDO",
-    "Sin Barrio - Circuito VILLA BOEDO",
-    "VILLA BUSTOS",
-    "1º DE MAYO"
+    {
+      "nombre": "BOEDO",
+      "poblacion": 2106,
+      "porcentaje": 90.7,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA BUSTOS",
+      "poblacion": 50,
+      "porcentaje": 1.5,
+      "orden": 3
+    },
+    {
+      "nombre": "1º DE MAYO",
+      "poblacion": 19,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA BOEDO",
+      "poblacion": 162,
+      "porcentaje": 0.4,
+      "orden": 38
+    }
   ],
   "005I": [
-    "SAN JAVIER",
-    "SAN LORENZO (S)",
-    "EVITA",
-    "CAMINO A VILLA POSE",
-    "PORTAL DE CORDOBA",
-    "Sin Barrio - Circuito COLINAS DEL SUR",
-    "AMPLIACION 1º DE MAYO",
-    "BETANIA",
-    "QUINTAS DEL SUR",
-    "DEAN FUNES",
-    "VILLA BUSTOS",
-    "ALMIRANTE BROWN",
-    "LOS SAUCES",
-    "NICOLAS AVELLANEDA"
+    {
+      "nombre": "SAN JAVIER",
+      "poblacion": 2419,
+      "porcentaje": 98.4,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN LORENZO (S)",
+      "poblacion": 2124,
+      "porcentaje": 89.5,
+      "orden": 1
+    },
+    {
+      "nombre": "EVITA",
+      "poblacion": 2119,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CAMINO A VILLA POSE",
+      "poblacion": 1266,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PORTAL DE CORDOBA",
+      "poblacion": 967,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION 1º DE MAYO",
+      "poblacion": 555,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "BETANIA",
+      "poblacion": 188,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito COLINAS DEL SUR",
+      "poblacion": 6,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito COLINAS DEL SUR",
+      "poblacion": 4,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "BETANIA",
+      "poblacion": 82,
+      "porcentaje": 4.4,
+      "orden": 2
+    },
+    {
+      "nombre": "QUINTAS DEL SUR",
+      "poblacion": 58,
+      "porcentaje": 3.5,
+      "orden": 2
+    },
+    {
+      "nombre": "DEAN FUNES",
+      "poblacion": 57,
+      "porcentaje": 2.3,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA BUSTOS",
+      "poblacion": 53,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "ALMIRANTE BROWN",
+      "poblacion": 34,
+      "porcentaje": 5.2,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS SAUCES",
+      "poblacion": 27,
+      "porcentaje": 1.7,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito COLINAS DEL SUR",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "NICOLAS AVELLANEDA",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito COLINAS DEL SUR",
+      "poblacion": 907,
+      "porcentaje": 2.5,
+      "orden": 14
+    }
   ],
   "006A": [
-    "Sin Barrio - Circuito BAJADA DE PIEDRA",
-    "MALDONADO",
-    "PARQUE DEL ESTE",
-    "YAPEYU",
-    "BAJADA DE PIEDRA",
-    "MULLER"
+    {
+      "nombre": "PARQUE DEL ESTE",
+      "poblacion": 497,
+      "porcentaje": 48.4,
+      "orden": 2
+    },
+    {
+      "nombre": "BAJADA DE PIEDRA",
+      "poblacion": 343,
+      "porcentaje": 27.0,
+      "orden": 2
+    },
+    {
+      "nombre": "MALDONADO",
+      "poblacion": 723,
+      "porcentaje": 16.4,
+      "orden": 3
+    },
+    {
+      "nombre": "YAPEYU",
+      "poblacion": 404,
+      "porcentaje": 5.0,
+      "orden": 3
+    },
+    {
+      "nombre": "MULLER",
+      "poblacion": 136,
+      "porcentaje": 2.2,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito BAJADA DE PIEDRA",
+      "poblacion": 1162,
+      "porcentaje": 3.2,
+      "orden": 11
+    }
   ],
   "006B": [
-    "Sin Barrio - Circuito CHACRA DE LA MERCED"
+    {
+      "nombre": "Sin Barrio - Circuito CHACRA DE LA MERCED",
+      "poblacion": 67,
+      "porcentaje": 0.2,
+      "orden": 50
+    }
   ],
   "006C": [
-    "GENERAL PAZ",
-    "PATRIA",
-    "GENERAL PUEYRREDON",
-    "CENTRO",
-    "BAJO GENERAL PAZ"
+    {
+      "nombre": "GENERAL PAZ",
+      "poblacion": 15979,
+      "porcentaje": 95.9,
+      "orden": 1
+    },
+    {
+      "nombre": "PATRIA",
+      "poblacion": 2289,
+      "porcentaje": 94.7,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL PUEYRREDON",
+      "poblacion": 1892,
+      "porcentaje": 7.9,
+      "orden": 2
+    },
+    {
+      "nombre": "BAJO GENERAL PAZ",
+      "poblacion": 15,
+      "porcentaje": 1.2,
+      "orden": 4
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 469,
+      "porcentaje": 1.2,
+      "orden": 5
+    }
   ],
   "006D": [
-    "JUNIORS",
-    "BAJO GENERAL PAZ",
-    "GENERAL PAZ",
-    "CENTRO",
-    "SAN VICENTE"
+    {
+      "nombre": "JUNIORS",
+      "poblacion": 6522,
+      "porcentaje": 96.6,
+      "orden": 1
+    },
+    {
+      "nombre": "BAJO GENERAL PAZ",
+      "poblacion": 1155,
+      "porcentaje": 96.2,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL PAZ",
+      "poblacion": 561,
+      "porcentaje": 3.4,
+      "orden": 2
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 191,
+      "porcentaje": 0.5,
+      "orden": 7
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 8,
+      "porcentaje": 0.0,
+      "orden": 8
+    }
   ],
   "006E": [
-    "LA FLORESTA",
-    "Sin Barrio - Circuito LA FLORESTA SUD"
+    {
+      "nombre": "LA FLORESTA",
+      "poblacion": 4444,
+      "porcentaje": 83.4,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LA FLORESTA SUD",
+      "poblacion": 626,
+      "porcentaje": 1.7,
+      "orden": 23
+    }
   ],
   "006F": [
-    "YAPEYU",
-    "BAJADA DE PIEDRA",
-    "SAN VICENTE",
-    "GENERAL PAZ",
-    "BAJO GENERAL PAZ",
-    "MULLER",
-    "HOGAR PROPIO",
-    "PATRIA"
+    {
+      "nombre": "YAPEYU",
+      "poblacion": 6864,
+      "porcentaje": 84.2,
+      "orden": 1
+    },
+    {
+      "nombre": "BAJADA DE PIEDRA",
+      "poblacion": 926,
+      "porcentaje": 72.9,
+      "orden": 1
+    },
+    {
+      "nombre": "HOGAR PROPIO",
+      "poblacion": 5,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "GENERAL PAZ",
+      "poblacion": 121,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "BAJO GENERAL PAZ",
+      "poblacion": 15,
+      "porcentaje": 1.2,
+      "orden": 3
+    },
+    {
+      "nombre": "PATRIA",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "MULLER",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 138,
+      "porcentaje": 0.8,
+      "orden": 5
+    }
   ],
   "007A": [
-    "VILLA ALICIA RISLER",
-    "RECREO DEL NORTE",
-    "GUIÑAZU",
-    "MARIA LASTENIA",
-    "REMEDIOS DE ESCALADA",
-    "Sin Barrio - Circuito GUIÑAZU",
-    "GUIÑAZU SUD",
-    "LICEO GENERAL PAZ",
-    "VILLA GRAN PARQUE",
-    "AEROPUERTO"
+    {
+      "nombre": "VILLA ALICIA RISLER",
+      "poblacion": 3398,
+      "porcentaje": 85.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RECREO DEL NORTE",
+      "poblacion": 2025,
+      "porcentaje": 98.8,
+      "orden": 1
+    },
+    {
+      "nombre": "GUIÑAZU",
+      "poblacion": 1615,
+      "porcentaje": 98.8,
+      "orden": 1
+    },
+    {
+      "nombre": "MARIA LASTENIA",
+      "poblacion": 962,
+      "porcentaje": 98.8,
+      "orden": 1
+    },
+    {
+      "nombre": "GUIÑAZU SUD",
+      "poblacion": 22,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA GRAN PARQUE",
+      "poblacion": 5,
+      "porcentaje": 1.0,
+      "orden": 2
+    },
+    {
+      "nombre": "REMEDIOS DE ESCALADA",
+      "poblacion": 222,
+      "porcentaje": 4.5,
+      "orden": 3
+    },
+    {
+      "nombre": "AEROPUERTO",
+      "poblacion": 4,
+      "porcentaje": 0.9,
+      "orden": 3
+    },
+    {
+      "nombre": "LICEO GENERAL PAZ",
+      "poblacion": 20,
+      "porcentaje": 2.2,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito GUIÑAZU",
+      "poblacion": 78,
+      "porcentaje": 0.2,
+      "orden": 47
+    }
   ],
   "007B": [
-    "ALTA CORDOBA",
-    "LA FRATERNIDAD",
-    "LOS PARAISOS",
-    "HIPOLITO IRIGOYEN",
-    "PANAMERICANO",
-    "SARGENTO CABRAL",
-    "SAN MARTIN",
-    "GENERAL BUSTOS"
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 26205,
+      "porcentaje": 67.5,
+      "orden": 1
+    },
+    {
+      "nombre": "LA FRATERNIDAD",
+      "poblacion": 449,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS PARAISOS",
+      "poblacion": 219,
+      "porcentaje": 4.3,
+      "orden": 2
+    },
+    {
+      "nombre": "HIPOLITO IRIGOYEN",
+      "poblacion": 94,
+      "porcentaje": 3.5,
+      "orden": 2
+    },
+    {
+      "nombre": "PANAMERICANO",
+      "poblacion": 66,
+      "porcentaje": 1.8,
+      "orden": 2
+    },
+    {
+      "nombre": "SARGENTO CABRAL",
+      "poblacion": 48,
+      "porcentaje": 1.4,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN MARTIN",
+      "poblacion": 34,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "GENERAL BUSTOS",
+      "poblacion": 19,
+      "porcentaje": 0.1,
+      "orden": 6
+    }
   ],
   "007C": [
-    "LOS BOULEVARES",
-    "REMEDIOS DE ESCALADA",
-    "PARQUE JORGE NEWBERY",
-    "MARQUES DE SOBREMONTE",
-    "AEROPUERTO"
+    {
+      "nombre": "REMEDIOS DE ESCALADA",
+      "poblacion": 426,
+      "porcentaje": 8.7,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE JORGE NEWBERY",
+      "poblacion": 203,
+      "porcentaje": 6.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 587,
+      "porcentaje": 3.1,
+      "orden": 4
+    },
+    {
+      "nombre": "MARQUES DE SOBREMONTE",
+      "poblacion": 15,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "AEROPUERTO",
+      "poblacion": 1,
+      "porcentaje": 0.2,
+      "orden": 4
+    }
   ],
   "007D": [
-    "ALTA CORDOBA",
-    "INDEPENDENCIA",
-    "COFICO",
-    "SAN MARTIN",
-    "DUCASSE"
+    {
+      "nombre": "INDEPENDENCIA",
+      "poblacion": 764,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "COFICO",
+      "poblacion": 396,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 12021,
+      "porcentaje": 31.0,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN MARTIN",
+      "poblacion": 178,
+      "porcentaje": 1.3,
+      "orden": 2
+    },
+    {
+      "nombre": "DUCASSE",
+      "poblacion": 72,
+      "porcentaje": 7.1,
+      "orden": 3
+    }
   ],
   "007E": [
-    "MARQUES DE SOBREMONTE",
-    "SARGENTO CABRAL",
-    "SAN MARTIN NORTE",
-    "GRANADERO PRINGLES",
-    "JUAN B. JUSTO",
-    "HIPOLITO IRIGOYEN",
-    "ALTA CORDOBA"
+    {
+      "nombre": "MARQUES DE SOBREMONTE",
+      "poblacion": 21139,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SARGENTO CABRAL",
+      "poblacion": 141,
+      "porcentaje": 4.2,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN MARTIN NORTE",
+      "poblacion": 57,
+      "porcentaje": 2.6,
+      "orden": 2
+    },
+    {
+      "nombre": "GRANADERO PRINGLES",
+      "poblacion": 28,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "JUAN B. JUSTO",
+      "poblacion": 12,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "HIPOLITO IRIGOYEN",
+      "poblacion": 5,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 10
+    }
   ],
   "007F": [
-    "REMEDIOS DE ESCALADA",
-    "PARQUE JORGE NEWBERY",
-    "JERONIMO LUIS DE CABRERA",
-    "JUAN B. JUSTO",
-    "LICEO GENERAL PAZ",
-    "PARQUE LICEO 1A SECCION",
-    "LOS HORNILLOS",
-    "MARQUES DE SOBREMONTE"
+    {
+      "nombre": "REMEDIOS DE ESCALADA",
+      "poblacion": 4260,
+      "porcentaje": 86.7,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE JORGE NEWBERY",
+      "poblacion": 3147,
+      "porcentaje": 93.9,
+      "orden": 1
+    },
+    {
+      "nombre": "JERONIMO LUIS DE CABRERA",
+      "poblacion": 1451,
+      "porcentaje": 85.2,
+      "orden": 1
+    },
+    {
+      "nombre": "JUAN B. JUSTO",
+      "poblacion": 94,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE LICEO 1A SECCION",
+      "poblacion": 29,
+      "porcentaje": 0.4,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS HORNILLOS",
+      "poblacion": 14,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LICEO GENERAL PAZ",
+      "poblacion": 38,
+      "porcentaje": 4.1,
+      "orden": 3
+    },
+    {
+      "nombre": "MARQUES DE SOBREMONTE",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 5
+    }
   ],
   "007G": [
-    "PANAMERICANO",
-    "JUAN B. JUSTO",
-    "MARIANO FRAGUEIRO",
-    "HIPOLITO IRIGOYEN",
-    "AMPLIACION PANAMERICANO",
-    "JERONIMO LUIS DE CABRERA",
-    "MARQUES DE SOBREMONTE",
-    "VILLA AZALAIZ OESTE",
-    "ALTA CORDOBA"
+    {
+      "nombre": "PANAMERICANO",
+      "poblacion": 3509,
+      "porcentaje": 97.6,
+      "orden": 1
+    },
+    {
+      "nombre": "JUAN B. JUSTO",
+      "poblacion": 3011,
+      "porcentaje": 96.6,
+      "orden": 1
+    },
+    {
+      "nombre": "MARIANO FRAGUEIRO",
+      "poblacion": 2900,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "HIPOLITO IRIGOYEN",
+      "poblacion": 2614,
+      "porcentaje": 96.4,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION PANAMERICANO",
+      "poblacion": 1744,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "JERONIMO LUIS DE CABRERA",
+      "poblacion": 251,
+      "porcentaje": 14.7,
+      "orden": 2
+    },
+    {
+      "nombre": "MARQUES DE SOBREMONTE",
+      "poblacion": 111,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA AZALAIZ OESTE",
+      "poblacion": 5,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 9
+    }
   ],
   "008A": [
-    "Sin Barrio - Circuito PALMAR",
-    "PALMAR",
-    "VILLA CLAUDINA",
-    "NUESTRO HOGAR II",
-    "1 DE JULIO",
-    "ZEPA",
-    "AMPLIACION PALMAR",
-    "YOFRE H",
-    "YOFRE I"
+    {
+      "nombre": "Sin Barrio - Circuito PALMAR",
+      "poblacion": 3102,
+      "porcentaje": 8.5,
+      "orden": 1
+    },
+    {
+      "nombre": "PALMAR",
+      "poblacion": 723,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA CLAUDINA",
+      "poblacion": 458,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "NUESTRO HOGAR II",
+      "poblacion": 361,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ZEPA",
+      "poblacion": 292,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION PALMAR",
+      "poblacion": 231,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ZEPA",
+      "poblacion": 50,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "YOFRE I",
+      "poblacion": 52,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "1 DE JULIO",
+      "poblacion": 303,
+      "porcentaje": 17.2,
+      "orden": 3
+    },
+    {
+      "nombre": "YOFRE H",
+      "poblacion": 74,
+      "porcentaje": 2.5,
+      "orden": 3
+    }
   ],
   "008B": [
-    "GENERAL PUEYRREDON",
-    "AMPLIACION PUEYRREDON",
-    "Sin Barrio - Circuito PUEYRREDON",
-    "LOS PINOS",
-    "CENTRO",
-    "GENERAL BUSTOS",
-    "TALLERES (O)",
-    "ALTA CORDOBA",
-    "PARQUE DEL ESTE"
+    {
+      "nombre": "GENERAL PUEYRREDON",
+      "poblacion": 20670,
+      "porcentaje": 86.1,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION PUEYRREDON",
+      "poblacion": 1522,
+      "porcentaje": 89.6,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito PUEYRREDON",
+      "poblacion": 1153,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS PINOS",
+      "poblacion": 249,
+      "porcentaje": 13.3,
+      "orden": 2
+    },
+    {
+      "nombre": "TALLERES (O)",
+      "poblacion": 18,
+      "porcentaje": 0.3,
+      "orden": 3
+    },
+    {
+      "nombre": "PARQUE DEL ESTE",
+      "poblacion": 12,
+      "porcentaje": 1.2,
+      "orden": 3
+    },
+    {
+      "nombre": "GENERAL BUSTOS",
+      "poblacion": 22,
+      "porcentaje": 0.1,
+      "orden": 5
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 14,
+      "porcentaje": 0.0,
+      "orden": 5
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 84,
+      "porcentaje": 0.2,
+      "orden": 8
+    },
+    {
+      "nombre": "Sin Barrio - Circuito PUEYRREDON",
+      "poblacion": 435,
+      "porcentaje": 1.2,
+      "orden": 29
+    }
   ],
   "008C": [
-    "YOFRE SUD",
-    "YOFRE I",
-    "LOS PINOS",
-    "Sin Barrio - Circuito VILLA LOS PINOS",
-    "YOFRE H",
-    "PALMAR",
-    "PARQUE DEL ESTE"
+    {
+      "nombre": "YOFRE SUD",
+      "poblacion": 5102,
+      "porcentaje": 96.1,
+      "orden": 1
+    },
+    {
+      "nombre": "YOFRE I",
+      "poblacion": 2024,
+      "porcentaje": 96.3,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS PINOS",
+      "poblacion": 1499,
+      "porcentaje": 79.9,
+      "orden": 1
+    },
+    {
+      "nombre": "PALMAR",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "YOFRE H",
+      "poblacion": 10,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "PARQUE DEL ESTE",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA LOS PINOS",
+      "poblacion": 734,
+      "porcentaje": 2.0,
+      "orden": 20
+    }
   ],
   "009A": [
-    "LA FRANCE",
-    "ALTO VERDE",
-    "CERRO CHICO",
-    "TABLADA PARK",
-    "LAS MAGNOLIAS",
-    "SAN LORENZO NORTE",
-    "LAS MARGARITAS",
-    "ALTOS SAN MARTIN",
-    "ALTO PALERMO"
+    {
+      "nombre": "LA FRANCE",
+      "poblacion": 2728,
+      "porcentaje": 98.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTO VERDE",
+      "poblacion": 2033,
+      "porcentaje": 48.5,
+      "orden": 2
+    },
+    {
+      "nombre": "CERRO CHICO",
+      "poblacion": 539,
+      "porcentaje": 24.4,
+      "orden": 2
+    },
+    {
+      "nombre": "TABLADA PARK",
+      "poblacion": 40,
+      "porcentaje": 4.6,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS MAGNOLIAS",
+      "poblacion": 5,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN LORENZO NORTE",
+      "poblacion": 3,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTOS SAN MARTIN",
+      "poblacion": 2,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS MARGARITAS",
+      "poblacion": 3,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTO PALERMO",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    }
   ],
   "009B": [
-    "LAS MARGARITAS",
-    "ALTO VERDE",
-    "ALTOS SAN MARTIN",
-    "ALTOS DE VILLA CABRERA",
-    "PARQUE CHACABUCO",
-    "SAN LORENZO NORTE",
-    "ALTO PALERMO",
-    "LOMAS DE SAN MARTIN",
-    "VILLA CABRERA",
-    "LA FRANCE",
-    "CERRO DE LAS ROSAS",
-    "Sin Barrio - Circuito LAS MARGARITAS"
+    {
+      "nombre": "LAS MARGARITAS",
+      "poblacion": 2283,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTO VERDE",
+      "poblacion": 2127,
+      "porcentaje": 50.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS SAN MARTIN",
+      "poblacion": 1316,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS DE VILLA CABRERA",
+      "poblacion": 1220,
+      "porcentaje": 98.7,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE CHACABUCO",
+      "poblacion": 1218,
+      "porcentaje": 96.8,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN LORENZO NORTE",
+      "poblacion": 334,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTO PALERMO",
+      "poblacion": 56,
+      "porcentaje": 5.9,
+      "orden": 2
+    },
+    {
+      "nombre": "LOMAS DE SAN MARTIN",
+      "poblacion": 16,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA CABRERA",
+      "poblacion": 13,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "LA FRANCE",
+      "poblacion": 9,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "CERRO DE LAS ROSAS",
+      "poblacion": 3,
+      "porcentaje": 0.1,
+      "orden": 6
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LAS MARGARITAS",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 67
+    }
   ],
   "009C": [
-    "LOS PARAISOS",
-    "ANA MARIA ZUMARAN",
-    "SARGENTO CABRAL",
-    "SAN MARTIN NORTE",
-    "GRANADERO PRINGLES",
-    "SAN MARTIN ANEXO",
-    "SAN MARTIN",
-    "LA FRANCE",
-    "ALTA CORDOBA"
+    {
+      "nombre": "LOS PARAISOS",
+      "poblacion": 4902,
+      "porcentaje": 95.7,
+      "orden": 1
+    },
+    {
+      "nombre": "ANA MARIA ZUMARAN",
+      "poblacion": 3667,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "SARGENTO CABRAL",
+      "poblacion": 3185,
+      "porcentaje": 94.4,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN MARTIN NORTE",
+      "poblacion": 2139,
+      "porcentaje": 97.4,
+      "orden": 1
+    },
+    {
+      "nombre": "GRANADERO PRINGLES",
+      "poblacion": 1811,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN MARTIN ANEXO",
+      "poblacion": 49,
+      "porcentaje": 2.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LA FRANCE",
+      "poblacion": 31,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN MARTIN",
+      "poblacion": 46,
+      "porcentaje": 0.3,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 3,
+      "porcentaje": 0.0,
+      "orden": 8
+    }
   ],
   "009D": [
-    "POETA LUGONES",
-    "LAS MAGNOLIAS",
-    "MARQUES DE SOBREMONTE",
-    "Sin Barrio - Circuito POETA LUGONES",
-    "CERRO CHICO",
-    "ALTO VERDE",
-    "LOS BOULEVARES",
-    "LA FRANCE"
+    {
+      "nombre": "POETA LUGONES",
+      "poblacion": 9633,
+      "porcentaje": 97.1,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS MAGNOLIAS",
+      "poblacion": 2436,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "MARQUES DE SOBREMONTE",
+      "poblacion": 96,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTO VERDE",
+      "poblacion": 31,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "LA FRANCE",
+      "poblacion": 17,
+      "porcentaje": 0.6,
+      "orden": 3
+    },
+    {
+      "nombre": "CERRO CHICO",
+      "poblacion": 35,
+      "porcentaje": 1.6,
+      "orden": 4
+    },
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 30,
+      "porcentaje": 0.2,
+      "orden": 6
+    },
+    {
+      "nombre": "Sin Barrio - Circuito POETA LUGONES",
+      "poblacion": 50,
+      "porcentaje": 0.1,
+      "orden": 51
+    }
   ],
   "009E": [
-    "PROVIDENCIA",
-    "DUCASSE",
-    "BAJO GALAN",
-    "ALBERDI",
-    "VILLA PAEZ",
-    "SAN MARTIN"
+    {
+      "nombre": "PROVIDENCIA",
+      "poblacion": 5916,
+      "porcentaje": 98.0,
+      "orden": 1
+    },
+    {
+      "nombre": "DUCASSE",
+      "poblacion": 705,
+      "porcentaje": 69.7,
+      "orden": 1
+    },
+    {
+      "nombre": "BAJO GALAN",
+      "poblacion": 428,
+      "porcentaje": 35.4,
+      "orden": 2
+    },
+    {
+      "nombre": "ALBERDI",
+      "poblacion": 217,
+      "porcentaje": 0.6,
+      "orden": 4
+    },
+    {
+      "nombre": "VILLA PAEZ",
+      "poblacion": 111,
+      "porcentaje": 2.4,
+      "orden": 4
+    },
+    {
+      "nombre": "SAN MARTIN",
+      "poblacion": 3,
+      "porcentaje": 0.0,
+      "orden": 5
+    }
   ],
   "009F": [
-    "SAN MARTIN",
-    "LOMAS DE SAN MARTIN",
-    "SAN MARTIN ANEXO",
-    "BAJO GALAN",
-    "VILLA CABRERA",
-    "PROVIDENCIA",
-    "DUCASSE",
-    "LAS MARGARITAS",
-    "ALTA CORDOBA",
-    "PARQUE CHACABUCO",
-    "ANA MARIA ZUMARAN",
-    "LOS PARAISOS",
-    "Sin Barrio - Circuito SAN MARTIN"
+    {
+      "nombre": "SAN MARTIN",
+      "poblacion": 13780,
+      "porcentaje": 98.1,
+      "orden": 1
+    },
+    {
+      "nombre": "LOMAS DE SAN MARTIN",
+      "poblacion": 3053,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN MARTIN ANEXO",
+      "poblacion": 2257,
+      "porcentaje": 97.9,
+      "orden": 1
+    },
+    {
+      "nombre": "BAJO GALAN",
+      "poblacion": 760,
+      "porcentaje": 62.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA CABRERA",
+      "poblacion": 170,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "PROVIDENCIA",
+      "poblacion": 108,
+      "porcentaje": 1.8,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS MARGARITAS",
+      "poblacion": 20,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "ANA MARIA ZUMARAN",
+      "poblacion": 3,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE CHACABUCO",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "LOS PARAISOS",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "DUCASSE",
+      "poblacion": 51,
+      "porcentaje": 5.0,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 8,
+      "porcentaje": 0.0,
+      "orden": 7
+    },
+    {
+      "nombre": "Sin Barrio - Circuito SAN MARTIN",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 70
+    }
   ],
   "009G": [
-    "VILLA CABRERA",
-    "VILLA PAEZ",
-    "PARQUE CHACABUCO",
-    "OMBU",
-    "BAJO GALAN",
-    "ALTOS DE VILLA CABRERA",
-    "MARECHAL",
-    "LOMAS DE SAN MARTIN"
+    {
+      "nombre": "VILLA CABRERA",
+      "poblacion": 6499,
+      "porcentaje": 97.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE CHACABUCO",
+      "poblacion": 37,
+      "porcentaje": 2.9,
+      "orden": 2
+    },
+    {
+      "nombre": "OMBU",
+      "poblacion": 24,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTOS DE VILLA CABRERA",
+      "poblacion": 8,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA PAEZ",
+      "poblacion": 120,
+      "porcentaje": 2.5,
+      "orden": 3
+    },
+    {
+      "nombre": "BAJO GALAN",
+      "poblacion": 20,
+      "porcentaje": 1.7,
+      "orden": 3
+    },
+    {
+      "nombre": "MARECHAL",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "LOMAS DE SAN MARTIN",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 3
+    }
   ],
   "010A": [
-    "EL CABILDO",
-    "Sin Barrio - Circuito CABILDO",
-    "VILLA EL LIBERTADOR",
-    "COUNTRY LOS ALGARROBOS",
-    "SANTA ISABEL 2A SECCION",
-    "LA ESPERANZA"
+    {
+      "nombre": "EL CABILDO",
+      "poblacion": 4824,
+      "porcentaje": 89.2,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CABILDO",
+      "poblacion": 107,
+      "porcentaje": 98.2,
+      "orden": 1
+    },
+    {
+      "nombre": "COUNTRY LOS ALGARROBOS",
+      "poblacion": 48,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CABILDO",
+      "poblacion": 28,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LA ESPERANZA",
+      "poblacion": 14,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 372,
+      "porcentaje": 6.3,
+      "orden": 3
+    },
+    {
+      "nombre": "SANTA ISABEL 2A SECCION",
+      "poblacion": 42,
+      "porcentaje": 0.7,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CABILDO",
+      "poblacion": 603,
+      "porcentaje": 1.6,
+      "orden": 24
+    }
   ],
   "010B": [
-    "RESIDENCIAL VELEZ SARSFIELD",
-    "PARQUE ATLANTICA",
-    "AMPLIACION VELEZ SARSFIELD",
-    "SAN DANIEL",
-    "ALTOS DE VELEZ SARSFIELD",
-    "RENE FAVALORO SUD",
-    "CIUDADELA",
-    "MANANTIALES",
-    "LAS FLORES",
-    "SMATA",
-    "AMPLIACION BENJAMIN MATIENZO",
-    "PARQUE LOS MOLINOS",
-    "CALIFORNIA",
-    "AMPLIACION ROSEDAL",
-    "LOS OLMOS",
-    "PARQUE CAPITAL SUR",
-    "FERRER",
-    "PARQUE LATINO",
-    "Sin Barrio - Circuito CIUDADELA"
+    {
+      "nombre": "RESIDENCIAL VELEZ SARSFIELD",
+      "poblacion": 3046,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE ATLANTICA",
+      "poblacion": 2288,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION VELEZ SARSFIELD",
+      "poblacion": 1783,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN DANIEL",
+      "poblacion": 1652,
+      "porcentaje": 98.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS DE VELEZ SARSFIELD",
+      "poblacion": 1615,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RENE FAVALORO SUD",
+      "poblacion": 1595,
+      "porcentaje": 60.2,
+      "orden": 1
+    },
+    {
+      "nombre": "CIUDADELA",
+      "poblacion": 1293,
+      "porcentaje": 93.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION BENJAMIN MATIENZO",
+      "poblacion": 592,
+      "porcentaje": 49.2,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE LOS MOLINOS",
+      "poblacion": 559,
+      "porcentaje": 52.6,
+      "orden": 1
+    },
+    {
+      "nombre": "CALIFORNIA",
+      "poblacion": 396,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MANANTIALES",
+      "poblacion": 1218,
+      "porcentaje": 24.8,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS FLORES",
+      "poblacion": 1209,
+      "porcentaje": 27.2,
+      "orden": 2
+    },
+    {
+      "nombre": "SMATA",
+      "poblacion": 647,
+      "porcentaje": 36.7,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS OLMOS",
+      "poblacion": 33,
+      "porcentaje": 2.0,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE CAPITAL SUR",
+      "poblacion": 15,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE LATINO",
+      "poblacion": 9,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION ROSEDAL",
+      "poblacion": 117,
+      "porcentaje": 3.0,
+      "orden": 3
+    },
+    {
+      "nombre": "FERRER",
+      "poblacion": 9,
+      "porcentaje": 0.5,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CIUDADELA",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 64
+    }
   ],
   "010C": [
-    "COMERCIAL",
-    "VALLE CERCANO",
-    "VILLA EL LIBERTADOR",
-    "CARBO",
-    "Sin Barrio - Circuito COMERCIAL"
+    {
+      "nombre": "COMERCIAL",
+      "poblacion": 5920,
+      "porcentaje": 95.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VALLE CERCANO",
+      "poblacion": 1849,
+      "porcentaje": 98.3,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 673,
+      "porcentaje": 11.3,
+      "orden": 2
+    },
+    {
+      "nombre": "CARBO",
+      "poblacion": 460,
+      "porcentaje": 27.2,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 12,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito COMERCIAL",
+      "poblacion": 270,
+      "porcentaje": 0.7,
+      "orden": 31
+    }
   ],
   "010D": [
-    "CONGRESO",
-    "Sin Barrio - Circuito CONGRESO",
-    "MANANTIALES",
-    "SANTA ISABEL 1A SECCION",
-    "SAN PEDRO NOLASCO",
-    "ESTACION FLORES",
-    "MANANTIALES II",
-    "AMPLIACION BENJAMIN MATIENZO"
+    {
+      "nombre": "CONGRESO",
+      "poblacion": 2185,
+      "porcentaje": 91.8,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN PEDRO NOLASCO",
+      "poblacion": 292,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ESTACION FLORES",
+      "poblacion": 104,
+      "porcentaje": 2.6,
+      "orden": 2
+    },
+    {
+      "nombre": "MANANTIALES",
+      "poblacion": 849,
+      "porcentaje": 17.3,
+      "orden": 3
+    },
+    {
+      "nombre": "SANTA ISABEL 1A SECCION",
+      "poblacion": 331,
+      "porcentaje": 6.3,
+      "orden": 3
+    },
+    {
+      "nombre": "MANANTIALES II",
+      "poblacion": 29,
+      "porcentaje": 1.7,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CONGRESO",
+      "poblacion": 1786,
+      "porcentaje": 4.9,
+      "orden": 5
+    },
+    {
+      "nombre": "AMPLIACION BENJAMIN MATIENZO",
+      "poblacion": 4,
+      "porcentaje": 0.3,
+      "orden": 5
+    }
   ],
   "010E": [
-    "CARRARA DE HORIZONTE",
-    "ESTACION FLORES",
-    "VILLA ADELA",
-    "VILLA ASPASIA",
-    "LAS PLAYAS",
-    "SACCHI",
-    "GUARNICION AREA CBA",
-    "CARRARA",
-    "DOCTA",
-    "MANANTIALES II",
-    "TTE. BENJAMIN MATIENZO",
-    "AMPLIACION BENJAMIN MATIENZO",
-    "AMEGHINO SUD",
-    "Sin Barrio - Circuito ESTACION FLORES",
-    "SIETE SOLES"
+    {
+      "nombre": "CARRARA DE HORIZONTE",
+      "poblacion": 5762,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ESTACION FLORES",
+      "poblacion": 3864,
+      "porcentaje": 97.4,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ADELA",
+      "poblacion": 3586,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ASPASIA",
+      "poblacion": 2951,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS PLAYAS",
+      "poblacion": 2655,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SACCHI",
+      "poblacion": 1115,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GUARNICION AREA CBA",
+      "poblacion": 830,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "CARRARA",
+      "poblacion": 499,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "DOCTA",
+      "poblacion": 257,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SIETE SOLES",
+      "poblacion": 10,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MANANTIALES II",
+      "poblacion": 218,
+      "porcentaje": 12.8,
+      "orden": 2
+    },
+    {
+      "nombre": "TTE. BENJAMIN MATIENZO",
+      "poblacion": 102,
+      "porcentaje": 1.3,
+      "orden": 2
+    },
+    {
+      "nombre": "AMEGHINO SUD",
+      "poblacion": 23,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION BENJAMIN MATIENZO",
+      "poblacion": 93,
+      "porcentaje": 7.7,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ESTACION FLORES",
+      "poblacion": 15,
+      "porcentaje": 0.0,
+      "orden": 57
+    }
   ],
   "010F": [
-    "TTE. BENJAMIN MATIENZO",
-    "AMEGHINO SUD",
-    "A.T. E.",
-    "RENE FAVALORO SUD",
-    "AMPLIACION BENJAMIN MATIENZO",
-    "AMPLIACION ROSEDAL",
-    "AMEGHINO NORTE",
-    "LOS NARANJOS",
-    "LOS PLATANOS",
-    "Sin Barrio - Circuito MATIENZO"
+    {
+      "nombre": "TTE. BENJAMIN MATIENZO",
+      "poblacion": 7828,
+      "porcentaje": 98.1,
+      "orden": 1
+    },
+    {
+      "nombre": "AMEGHINO SUD",
+      "poblacion": 3731,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "A.T. E.",
+      "poblacion": 1028,
+      "porcentaje": 96.4,
+      "orden": 1
+    },
+    {
+      "nombre": "RENE FAVALORO SUD",
+      "poblacion": 686,
+      "porcentaje": 25.9,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION BENJAMIN MATIENZO",
+      "poblacion": 509,
+      "porcentaje": 42.3,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION ROSEDAL",
+      "poblacion": 150,
+      "porcentaje": 3.8,
+      "orden": 2
+    },
+    {
+      "nombre": "AMEGHINO NORTE",
+      "poblacion": 14,
+      "porcentaje": 0.4,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS NARANJOS",
+      "poblacion": 9,
+      "porcentaje": 0.3,
+      "orden": 3
+    },
+    {
+      "nombre": "LOS PLATANOS",
+      "poblacion": 9,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito MATIENZO",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 68
+    }
   ],
   "010G": [
-    "GUEMES",
-    "OBSERVATORIO",
-    "CENTRO",
-    "PASO DE LOS ANDES",
-    "ALBERDI",
-    "CUPANI",
-    "NUEVA CORDOBA",
-    "MAURIZI",
-    "BELLA VISTA",
-    "BAJADA SAN ROQUE",
-    "SAN FRANCISCO",
-    "QUINTA SANTA ANA",
-    "ALTO ALBERDI",
-    "RESIDENCIAL OLIVOS"
+    {
+      "nombre": "GUEMES",
+      "poblacion": 12664,
+      "porcentaje": 79.4,
+      "orden": 1
+    },
+    {
+      "nombre": "OBSERVATORIO",
+      "poblacion": 8090,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PASO DE LOS ANDES",
+      "poblacion": 2658,
+      "porcentaje": 95.8,
+      "orden": 1
+    },
+    {
+      "nombre": "CUPANI",
+      "poblacion": 2074,
+      "porcentaje": 98.4,
+      "orden": 1
+    },
+    {
+      "nombre": "MAURIZI",
+      "poblacion": 604,
+      "porcentaje": 95.4,
+      "orden": 1
+    },
+    {
+      "nombre": "BAJADA SAN ROQUE",
+      "poblacion": 444,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "BELLA VISTA",
+      "poblacion": 472,
+      "porcentaje": 10.6,
+      "orden": 2
+    },
+    {
+      "nombre": "QUINTA SANTA ANA",
+      "poblacion": 10,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 3015,
+      "porcentaje": 7.8,
+      "orden": 3
+    },
+    {
+      "nombre": "ALBERDI",
+      "poblacion": 2361,
+      "porcentaje": 6.0,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN FRANCISCO",
+      "poblacion": 92,
+      "porcentaje": 6.2,
+      "orden": 3
+    },
+    {
+      "nombre": "RESIDENCIAL OLIVOS",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "NUEVA CORDOBA",
+      "poblacion": 1210,
+      "porcentaje": 2.4,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 4,
+      "porcentaje": 0.0,
+      "orden": 6
+    }
   ],
   "010H": [
-    "PARQUE CAPITAL",
-    "AMPLIACION ROSEDAL",
-    "ROSEDAL",
-    "MARIANO BALCARCE",
-    "PARQUE CAPITAL SUR",
-    "RENE FAVALORO SUD",
-    "LOS NARANJOS",
-    "RESIDENCIAL OLIVOS",
-    "TTE. BENJAMIN MATIENZO",
-    "SUAREZ",
-    "A.T. E.",
-    "AVENIDA",
-    "FERRER",
-    "MANANTIALES",
-    "SAN FRANCISCO",
-    "CAROLA LORENZINI"
+    {
+      "nombre": "PARQUE CAPITAL",
+      "poblacion": 4712,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION ROSEDAL",
+      "poblacion": 3657,
+      "porcentaje": 93.2,
+      "orden": 1
+    },
+    {
+      "nombre": "ROSEDAL",
+      "poblacion": 2285,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MARIANO BALCARCE",
+      "poblacion": 1804,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE CAPITAL SUR",
+      "poblacion": 1752,
+      "porcentaje": 99.2,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS NARANJOS",
+      "poblacion": 53,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL OLIVOS",
+      "poblacion": 49,
+      "porcentaje": 4.3,
+      "orden": 2
+    },
+    {
+      "nombre": "SUAREZ",
+      "poblacion": 38,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "A.T. E.",
+      "poblacion": 38,
+      "porcentaje": 3.6,
+      "orden": 2
+    },
+    {
+      "nombre": "AVENIDA",
+      "poblacion": 26,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "FERRER",
+      "poblacion": 16,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "CAROLA LORENZINI",
+      "poblacion": 8,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "RENE FAVALORO SUD",
+      "poblacion": 367,
+      "porcentaje": 13.9,
+      "orden": 3
+    },
+    {
+      "nombre": "TTE. BENJAMIN MATIENZO",
+      "poblacion": 48,
+      "porcentaje": 0.6,
+      "orden": 3
+    },
+    {
+      "nombre": "MANANTIALES",
+      "poblacion": 15,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "SAN FRANCISCO",
+      "poblacion": 13,
+      "porcentaje": 0.9,
+      "orden": 5
+    }
   ],
   "010I": [
-    "MANANTIALES",
-    "CABO FARINA",
-    "HORIZONTE",
-    "LOS OLMOS",
-    "PARQUE LATINO",
-    "SOLARES DE SANTA MARIA",
-    "SMATA",
-    "MUTUAL DE LOS DOCENTES",
-    "IRUPE",
-    "AMPLIACION FARINA",
-    "Sin Barrio - Circuito PARQUE HORIZONTE",
-    "PARQUE LOS MOLINOS",
-    "PARQUE ATLANTICA",
-    "AMPLIACION BENJAMIN MATIENZO",
-    "LAS FLORES"
+    {
+      "nombre": "MANANTIALES",
+      "poblacion": 2823,
+      "porcentaje": 57.6,
+      "orden": 1
+    },
+    {
+      "nombre": "CABO FARINA",
+      "poblacion": 2293,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "HORIZONTE",
+      "poblacion": 1905,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS OLMOS",
+      "poblacion": 1656,
+      "porcentaje": 98.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE LATINO",
+      "poblacion": 1404,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "SOLARES DE SANTA MARIA",
+      "poblacion": 1201,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SMATA",
+      "poblacion": 1115,
+      "porcentaje": 63.3,
+      "orden": 1
+    },
+    {
+      "nombre": "MUTUAL DE LOS DOCENTES",
+      "poblacion": 1027,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "IRUPE",
+      "poblacion": 654,
+      "porcentaje": 94.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION FARINA",
+      "poblacion": 544,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE ATLANTICA",
+      "poblacion": 15,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE LOS MOLINOS",
+      "poblacion": 21,
+      "porcentaje": 2.0,
+      "orden": 3
+    },
+    {
+      "nombre": "AMPLIACION BENJAMIN MATIENZO",
+      "poblacion": 5,
+      "porcentaje": 0.4,
+      "orden": 4
+    },
+    {
+      "nombre": "LAS FLORES",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito PARQUE HORIZONTE",
+      "poblacion": 484,
+      "porcentaje": 1.3,
+      "orden": 27
+    }
   ],
   "010J": [
-    "SANTA ISABEL 2A SECCION",
-    "SANTA ISABEL 1A SECCION",
-    "SANTA ISABEL 3A SECCION",
-    "RESIDENCIAL SUD",
-    "V.I.C.O.R.",
-    "VILLA EL LIBERTADOR",
-    "EL CABILDO",
-    "CONGRESO",
-    "Sin Barrio - Circuito SANTA ISABEL",
-    "PARQUE FUTURA"
+    {
+      "nombre": "SANTA ISABEL 2A SECCION",
+      "poblacion": 6167,
+      "porcentaje": 96.5,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA ISABEL 1A SECCION",
+      "poblacion": 4368,
+      "porcentaje": 83.6,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA ISABEL 3A SECCION",
+      "poblacion": 3422,
+      "porcentaje": 96.1,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL SUD",
+      "poblacion": 682,
+      "porcentaje": 79.7,
+      "orden": 1
+    },
+    {
+      "nombre": "V.I.C.O.R.",
+      "poblacion": 413,
+      "porcentaje": 18.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 256,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "CONGRESO",
+      "poblacion": 195,
+      "porcentaje": 8.2,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE FUTURA",
+      "poblacion": 7,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "EL CABILDO",
+      "poblacion": 218,
+      "porcentaje": 4.0,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito SANTA ISABEL",
+      "poblacion": 94,
+      "porcentaje": 0.3,
+      "orden": 45
+    }
   ],
   "010K": [
-    "PARQUE FUTURA",
-    "UNIVERSITARIO DE HORIZONTE",
-    "V.I.C.O.R.",
-    "MANANTIALES II",
-    "Sin Barrio - Circuito VICOR",
-    "KAIROS",
-    "SANTA ISABEL 1A SECCION",
-    "SAN LUIS DE FRANCIA",
-    "SANTA ISABEL 3A SECCION",
-    "EL CABILDO"
+    {
+      "nombre": "PARQUE FUTURA",
+      "poblacion": 2922,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "UNIVERSITARIO DE HORIZONTE",
+      "poblacion": 2254,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "V.I.C.O.R.",
+      "poblacion": 1795,
+      "porcentaje": 81.3,
+      "orden": 1
+    },
+    {
+      "nombre": "MANANTIALES II",
+      "poblacion": 1452,
+      "porcentaje": 85.5,
+      "orden": 1
+    },
+    {
+      "nombre": "KAIROS",
+      "poblacion": 545,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN LUIS DE FRANCIA",
+      "poblacion": 218,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VICOR",
+      "poblacion": 193,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VICOR",
+      "poblacion": 22,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA ISABEL 1A SECCION",
+      "poblacion": 513,
+      "porcentaje": 9.8,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA ISABEL 3A SECCION",
+      "poblacion": 140,
+      "porcentaje": 3.9,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VICOR",
+      "poblacion": 2,
+      "porcentaje": 1.8,
+      "orden": 2
+    },
+    {
+      "nombre": "EL CABILDO",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VICOR",
+      "poblacion": 1053,
+      "porcentaje": 2.9,
+      "orden": 12
+    }
   ],
   "010L": [
-    "VILLA EL LIBERTADOR",
-    "SANTA ROSA RESIDENCIAL",
-    "CARBO",
-    "LOS OLMOS SUD",
-    "MIRIZI",
-    "COMERCIAL",
-    "RESIDENCIAL SUD",
-    "Sin Barrio - Circuito VILLA EL LIBERTADOR",
-    "SANTA ISABEL 2A SECCION",
-    "VALLE CERCANO",
-    "SANTA ISABEL 1A SECCION"
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 27281,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA ROSA RESIDENCIAL",
+      "poblacion": 2729,
+      "porcentaje": 95.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CARBO",
+      "poblacion": 1141,
+      "porcentaje": 67.4,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS OLMOS SUD",
+      "poblacion": 1107,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MIRIZI",
+      "poblacion": 422,
+      "porcentaje": 97.0,
+      "orden": 1
+    },
+    {
+      "nombre": "COMERCIAL",
+      "poblacion": 184,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL SUD",
+      "poblacion": 174,
+      "porcentaje": 20.3,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA ISABEL 2A SECCION",
+      "poblacion": 136,
+      "porcentaje": 2.1,
+      "orden": 2
+    },
+    {
+      "nombre": "VALLE CERCANO",
+      "poblacion": 22,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 37,
+      "porcentaje": 0.6,
+      "orden": 4
+    },
+    {
+      "nombre": "SANTA ISABEL 1A SECCION",
+      "poblacion": 11,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA EL LIBERTADOR",
+      "poblacion": 141,
+      "porcentaje": 0.4,
+      "orden": 40
+    }
   ],
   "010M": [
-    "VILLA EL LIBERTADOR",
-    "EL CABILDO",
-    "SANTA ISABEL 2A SECCION",
-    "Sin Barrio - Circuito AMPLIACION CABILDO",
-    "VALLE CERCANO"
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 4869,
+      "porcentaje": 81.8,
+      "orden": 1
+    },
+    {
+      "nombre": "EL CABILDO",
+      "poblacion": 364,
+      "porcentaje": 6.7,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA ISABEL 2A SECCION",
+      "poblacion": 44,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "VALLE CERCANO",
+      "poblacion": 10,
+      "porcentaje": 0.5,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA EL LIBERTADOR",
+      "poblacion": 4,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito AMPLIACION CABILDO",
+      "poblacion": 22,
+      "porcentaje": 0.1,
+      "orden": 54
+    }
   ],
   "011A": [
-    "ALTO ALBERDI",
-    "ALBERDI",
-    "MARECHAL",
-    "VILLA PAEZ",
-    "OBRERO",
-    "ESCOBAR",
-    "TRANVIARIOS",
-    "OMBU"
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 14594,
+      "porcentaje": 45.8,
+      "orden": 1
+    },
+    {
+      "nombre": "MARECHAL",
+      "poblacion": 3981,
+      "porcentaje": 99.5,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA PAEZ",
+      "poblacion": 3759,
+      "porcentaje": 79.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ALBERDI",
+      "poblacion": 7195,
+      "porcentaje": 18.4,
+      "orden": 2
+    },
+    {
+      "nombre": "OBRERO",
+      "poblacion": 76,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "ESCOBAR",
+      "poblacion": 63,
+      "porcentaje": 3.1,
+      "orden": 2
+    },
+    {
+      "nombre": "TRANVIARIOS",
+      "poblacion": 5,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "OMBU",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 3
+    }
   ],
   "011B": [
-    "PARQUE DON BOSCO",
-    "VALLE ESCONDIDO",
-    "GUARNICION MILITAR CBA",
-    "NUEVO URCA",
-    "MIRADOR DEL CHATEAU",
-    "MILITAR GENERAL DEHEZA",
-    "Sin Barrio - Circuito DON BOSCO",
-    "CHATEAU CARRERAS",
-    "LOS ROBLES",
-    "CO.VI.CO.",
-    "VILLA ALBERTO ANEXO"
+    {
+      "nombre": "PARQUE DON BOSCO",
+      "poblacion": 4579,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 1786,
+      "porcentaje": 74.8,
+      "orden": 1
+    },
+    {
+      "nombre": "NUEVO URCA",
+      "poblacion": 1219,
+      "porcentaje": 83.9,
+      "orden": 1
+    },
+    {
+      "nombre": "MIRADOR DEL CHATEAU",
+      "poblacion": 984,
+      "porcentaje": 44.7,
+      "orden": 1
+    },
+    {
+      "nombre": "MILITAR GENERAL DEHEZA",
+      "poblacion": 533,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ALBERTO ANEXO",
+      "poblacion": 6,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VALLE ESCONDIDO",
+      "poblacion": 1814,
+      "porcentaje": 20.3,
+      "orden": 2
+    },
+    {
+      "nombre": "CHATEAU CARRERAS",
+      "poblacion": 57,
+      "porcentaje": 5.1,
+      "orden": 2
+    },
+    {
+      "nombre": "CO.VI.CO.",
+      "poblacion": 9,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS ROBLES",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito DON BOSCO",
+      "poblacion": 67,
+      "porcentaje": 0.2,
+      "orden": 49
+    }
   ],
   "011C": [
-    "LAS PALMAS",
-    "ALTO ALBERDI",
-    "SAN SALVADOR",
-    "AMPLIACION LAS PALMAS",
-    "PUENTE BLANCO",
-    "ALTOS DE SANTA ANA",
-    "DR RENE FAVALORO",
-    "LAS DALIAS",
-    "URITORCO",
-    "VILLA SIBURU",
-    "TEODORO FELS",
-    "TRANVIARIOS",
-    "VILLA GENERAL URQUIZA",
-    "ANEXO LAS PALMAS",
-    "LAMADRID",
-    "VILLA ALBERDI",
-    "LAS VIOLETAS",
-    "VILLA AVALOS",
-    "LOS FILTROS"
+    {
+      "nombre": "LAS PALMAS",
+      "poblacion": 6859,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN SALVADOR",
+      "poblacion": 2264,
+      "porcentaje": 99.7,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION LAS PALMAS",
+      "poblacion": 2095,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PUENTE BLANCO",
+      "poblacion": 1260,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "DR RENE FAVALORO",
+      "poblacion": 825,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS DALIAS",
+      "poblacion": 716,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "URITORCO",
+      "poblacion": 473,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS DE SANTA ANA",
+      "poblacion": 933,
+      "porcentaje": 33.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA SIBURU",
+      "poblacion": 368,
+      "porcentaje": 21.4,
+      "orden": 2
+    },
+    {
+      "nombre": "TEODORO FELS",
+      "poblacion": 97,
+      "porcentaje": 2.1,
+      "orden": 2
+    },
+    {
+      "nombre": "TRANVIARIOS",
+      "poblacion": 66,
+      "porcentaje": 3.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ANEXO LAS PALMAS",
+      "poblacion": 24,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "LAMADRID",
+      "poblacion": 24,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA ALBERDI",
+      "poblacion": 20,
+      "porcentaje": 1.0,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA AVALOS",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 2771,
+      "porcentaje": 8.7,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA GENERAL URQUIZA",
+      "poblacion": 51,
+      "porcentaje": 0.8,
+      "orden": 3
+    },
+    {
+      "nombre": "LAS VIOLETAS",
+      "poblacion": 16,
+      "porcentaje": 0.6,
+      "orden": 3
+    },
+    {
+      "nombre": "LOS FILTROS",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    }
   ],
   "011D": [
-    "LOS NARANJOS",
-    "SAN RAFAEL",
-    "AVENIDA",
-    "EL TREBOL",
-    "SAN FRANCISCO",
-    "SANTA ANA RESIDENCIAL",
-    "JUAN XXIII",
-    "1RA. JUNTA",
-    "CAROLA LORENZINI",
-    "LOS PLATANOS",
-    "Sin Barrio - Circuito LOS NARANJOS"
+    {
+      "nombre": "LOS NARANJOS",
+      "poblacion": 3490,
+      "porcentaje": 98.1,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN RAFAEL",
+      "poblacion": 2906,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "AVENIDA",
+      "poblacion": 1729,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "EL TREBOL",
+      "poblacion": 1308,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN FRANCISCO",
+      "poblacion": 1262,
+      "porcentaje": 85.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA ANA RESIDENCIAL",
+      "poblacion": 1213,
+      "porcentaje": 89.7,
+      "orden": 1
+    },
+    {
+      "nombre": "JUAN XXIII",
+      "poblacion": 883,
+      "porcentaje": 92.7,
+      "orden": 1
+    },
+    {
+      "nombre": "1RA. JUNTA",
+      "poblacion": 791,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CAROLA LORENZINI",
+      "poblacion": 256,
+      "porcentaje": 97.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS PLATANOS",
+      "poblacion": 20,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LOS NARANJOS",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 69
+    }
   ],
   "011E": [
-    "LOS PLATANOS",
-    "AMEGHINO NORTE",
-    "LOS GRANADOS",
-    "LAMADRID",
-    "LOS JACARANDAES",
-    "AMPLIACION LOS PLATANOS",
-    "CONSORCIO ESPERANZA",
-    "RESIDENCIAL SAN ROQUE",
-    "ANEXO LAS PALMAS",
-    "AMEGHINO SUD",
-    "COMANDANTE ESPORA",
-    "LOS NARANJOS",
-    "ALTO ALBERDI",
-    "LAS DALIAS",
-    "PUENTE BLANCO"
+    {
+      "nombre": "LOS PLATANOS",
+      "poblacion": 7023,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "AMEGHINO NORTE",
+      "poblacion": 3899,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS GRANADOS",
+      "poblacion": 3292,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LAMADRID",
+      "poblacion": 2848,
+      "porcentaje": 99.2,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS JACARANDAES",
+      "poblacion": 1311,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION LOS PLATANOS",
+      "poblacion": 863,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CONSORCIO ESPERANZA",
+      "poblacion": 448,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL SAN ROQUE",
+      "poblacion": 99,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "COMANDANTE ESPORA",
+      "poblacion": 11,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "PUENTE BLANCO",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ANEXO LAS PALMAS",
+      "poblacion": 23,
+      "porcentaje": 1.6,
+      "orden": 3
+    },
+    {
+      "nombre": "AMEGHINO SUD",
+      "poblacion": 12,
+      "porcentaje": 0.3,
+      "orden": 3
+    },
+    {
+      "nombre": "LAS DALIAS",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "LOS NARANJOS",
+      "poblacion": 4,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 7
+    }
   ],
   "011F": [
-    "TEODORO FELS",
-    "LOS ROBLES",
-    "ALTOS DE SANTA ANA",
-    "VILLA MAFEKIN",
-    "EL TROPEZON",
-    "QUEBRADA DE LAS ROSAS",
-    "LAS VIOLETAS",
-    "VILLA GENERAL URQUIZA",
-    "GUARNICION MILITAR CBA",
-    "LA TOMA",
-    "SAN IGNACIO"
+    {
+      "nombre": "TEODORO FELS",
+      "poblacion": 4586,
+      "porcentaje": 97.2,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS DE SANTA ANA",
+      "poblacion": 1794,
+      "porcentaje": 64.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA MAFEKIN",
+      "poblacion": 1151,
+      "porcentaje": 93.1,
+      "orden": 1
+    },
+    {
+      "nombre": "EL TROPEZON",
+      "poblacion": 862,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS ROBLES",
+      "poblacion": 2214,
+      "porcentaje": 37.3,
+      "orden": 2
+    },
+    {
+      "nombre": "QUEBRADA DE LAS ROSAS",
+      "poblacion": 734,
+      "porcentaje": 10.3,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS VIOLETAS",
+      "poblacion": 374,
+      "porcentaje": 13.6,
+      "orden": 2
+    },
+    {
+      "nombre": "LA TOMA",
+      "poblacion": 16,
+      "porcentaje": 2.6,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN IGNACIO",
+      "poblacion": 13,
+      "porcentaje": 0.4,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA GENERAL URQUIZA",
+      "poblacion": 33,
+      "porcentaje": 0.5,
+      "orden": 4
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 18,
+      "porcentaje": 0.8,
+      "orden": 5
+    }
   ],
   "011G": [
-    "PARQUE REPUBLICA",
-    "LOS ROBLES",
-    "INDUSTRIAL OESTE",
-    "EL PUEBLITO",
-    "LAS VIOLETAS",
-    "VILLA ALBERTO",
-    "LA TOMA",
-    "VILLA MAFEKIN",
-    "VILLA UNION",
-    "GUARNICION MILITAR CBA",
-    "ALTOS DE SANTA ANA",
-    "VILLA MARTINEZ",
-    "LOS FILTROS"
+    {
+      "nombre": "PARQUE REPUBLICA",
+      "poblacion": 8268,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS ROBLES",
+      "poblacion": 3704,
+      "porcentaje": 62.4,
+      "orden": 1
+    },
+    {
+      "nombre": "INDUSTRIAL OESTE",
+      "poblacion": 2826,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "EL PUEBLITO",
+      "poblacion": 2739,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS VIOLETAS",
+      "poblacion": 2359,
+      "porcentaje": 85.7,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ALBERTO",
+      "poblacion": 1134,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LA TOMA",
+      "poblacion": 607,
+      "porcentaje": 97.4,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA MAFEKIN",
+      "poblacion": 82,
+      "porcentaje": 6.6,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA UNION",
+      "poblacion": 78,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA MARTINEZ",
+      "poblacion": 17,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS FILTROS",
+      "poblacion": 15,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 67,
+      "porcentaje": 2.8,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTOS DE SANTA ANA",
+      "poblacion": 21,
+      "porcentaje": 0.8,
+      "orden": 3
+    }
   ],
   "011H": [
-    "QUEBRADA DE LAS ROSAS",
-    "CHATEAU CARRERAS",
-    "PARQUE CHATEAU CARRERAS",
-    "MIRADOR DEL CHATEAU",
-    "CO.VI.CO.",
-    "COLINAS DEL CERRO",
-    "Sin Barrio - Circuito QUEBRADA LAS ROSAS",
-    "TEODORO FELS",
-    "LOS ROBLES",
-    "VILLA MAFEKIN"
+    {
+      "nombre": "QUEBRADA DE LAS ROSAS",
+      "poblacion": 6369,
+      "porcentaje": 89.3,
+      "orden": 1
+    },
+    {
+      "nombre": "CHATEAU CARRERAS",
+      "poblacion": 1063,
+      "porcentaje": 94.2,
+      "orden": 1
+    },
+    {
+      "nombre": "CO.VI.CO.",
+      "poblacion": 290,
+      "porcentaje": 97.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE CHATEAU CARRERAS",
+      "poblacion": 554,
+      "porcentaje": 21.8,
+      "orden": 2
+    },
+    {
+      "nombre": "COLINAS DEL CERRO",
+      "poblacion": 131,
+      "porcentaje": 5.5,
+      "orden": 2
+    },
+    {
+      "nombre": "MIRADOR DEL CHATEAU",
+      "poblacion": 486,
+      "porcentaje": 22.1,
+      "orden": 3
+    },
+    {
+      "nombre": "TEODORO FELS",
+      "poblacion": 31,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA MAFEKIN",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "LOS ROBLES",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito QUEBRADA LAS ROSAS",
+      "poblacion": 112,
+      "porcentaje": 0.3,
+      "orden": 43
+    }
   ],
   "011I": [
-    "RESIDENCIAL SAN ROQUE",
-    "VILLA MARTINEZ",
-    "VILLA AVALOS",
-    "ANEXO LAS PALMAS",
-    "LOS FILTROS",
-    "PARQUE REPUBLICA",
-    "VILLA ADELA",
-    "ALTOS DE SANTA ANA",
-    "LAS DALIAS",
-    "LAS PALMAS",
-    "LAS VIOLETAS",
-    "AMEGHINO NORTE",
-    "AERONAUTICO",
-    "EL PUEBLITO"
+    {
+      "nombre": "RESIDENCIAL SAN ROQUE",
+      "poblacion": 13727,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA MARTINEZ",
+      "poblacion": 2933,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA AVALOS",
+      "poblacion": 1869,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "ANEXO LAS PALMAS",
+      "poblacion": 1429,
+      "porcentaje": 96.8,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS FILTROS",
+      "poblacion": 1229,
+      "porcentaje": 98.7,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE REPUBLICA",
+      "poblacion": 78,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA ADELA",
+      "poblacion": 39,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS DALIAS",
+      "poblacion": 6,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS PALMAS",
+      "poblacion": 4,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "AERONAUTICO",
+      "poblacion": 2,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "EL PUEBLITO",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 2
+    },
+    {
+      "nombre": "AMEGHINO NORTE",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTOS DE SANTA ANA",
+      "poblacion": 18,
+      "porcentaje": 0.7,
+      "orden": 4
+    },
+    {
+      "nombre": "LAS VIOLETAS",
+      "poblacion": 3,
+      "porcentaje": 0.1,
+      "orden": 4
+    }
   ],
   "011J": [
-    "ALTO ALBERDI",
-    "OBRERO",
-    "TRANVIARIOS",
-    "CASEROS",
-    "COMANDANTE ESPORA",
-    "SANTA ANA RESIDENCIAL",
-    "SAN RAFAEL",
-    "SAN FRANCISCO",
-    "JUAN XXIII",
-    "PASO DE LOS ANDES",
-    "CUPANI",
-    "LOS PLATANOS"
+    {
+      "nombre": "OBRERO",
+      "poblacion": 2962,
+      "porcentaje": 97.1,
+      "orden": 1
+    },
+    {
+      "nombre": "TRANVIARIOS",
+      "poblacion": 2056,
+      "porcentaje": 96.7,
+      "orden": 1
+    },
+    {
+      "nombre": "CASEROS",
+      "poblacion": 1623,
+      "porcentaje": 97.5,
+      "orden": 1
+    },
+    {
+      "nombre": "COMANDANTE ESPORA",
+      "poblacion": 1380,
+      "porcentaje": 99.2,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 12575,
+      "porcentaje": 39.5,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA ANA RESIDENCIAL",
+      "poblacion": 140,
+      "porcentaje": 10.3,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN RAFAEL",
+      "poblacion": 135,
+      "porcentaje": 4.4,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN FRANCISCO",
+      "poblacion": 95,
+      "porcentaje": 6.4,
+      "orden": 2
+    },
+    {
+      "nombre": "JUAN XXIII",
+      "poblacion": 70,
+      "porcentaje": 7.3,
+      "orden": 2
+    },
+    {
+      "nombre": "PASO DE LOS ANDES",
+      "poblacion": 60,
+      "porcentaje": 2.2,
+      "orden": 2
+    },
+    {
+      "nombre": "CUPANI",
+      "poblacion": 34,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS PLATANOS",
+      "poblacion": 16,
+      "porcentaje": 0.2,
+      "orden": 3
+    }
   ],
   "011K": [
-    "VILLA GENERAL URQUIZA",
-    "SAN IGNACIO",
-    "VILLA ALBERDI",
-    "ALTO ALBERDI",
-    "VILLA SIBURU",
-    "URCA",
-    "QUEBRADA DE LAS ROSAS",
-    "LAS ROSAS",
-    "COLINAS DEL CERRO",
-    "SAN SALVADOR",
-    "PARQUE TABLADA",
-    "TEODORO FELS",
-    "URITORCO"
+    {
+      "nombre": "VILLA GENERAL URQUIZA",
+      "poblacion": 6310,
+      "porcentaje": 97.8,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN IGNACIO",
+      "poblacion": 2933,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ALBERDI",
+      "poblacion": 1950,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SIBURU",
+      "poblacion": 1336,
+      "porcentaje": 77.7,
+      "orden": 1
+    },
+    {
+      "nombre": "URCA",
+      "poblacion": 138,
+      "porcentaje": 2.7,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS ROSAS",
+      "poblacion": 14,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN SALVADOR",
+      "poblacion": 7,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "URITORCO",
+      "poblacion": 1,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "QUEBRADA DE LAS ROSAS",
+      "poblacion": 26,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "COLINAS DEL CERRO",
+      "poblacion": 9,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTO ALBERDI",
+      "poblacion": 1857,
+      "porcentaje": 5.8,
+      "orden": 4
+    },
+    {
+      "nombre": "PARQUE TABLADA",
+      "poblacion": 5,
+      "porcentaje": 0.5,
+      "orden": 4
+    },
+    {
+      "nombre": "TEODORO FELS",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 4
+    }
   ],
   "011L": [
-    "LOMAS DE LA CAROLINA",
-    "EL BOSQUE",
-    "VILLA WARCALDE",
-    "LAS DELICIAS",
-    "ALTO HERMOSO",
-    "LA CAROLINA",
-    "GUARNICION MILITAR CBA"
+    {
+      "nombre": "LOMAS DE LA CAROLINA",
+      "poblacion": 907,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "EL BOSQUE",
+      "poblacion": 717,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS DELICIAS",
+      "poblacion": 246,
+      "porcentaje": 93.5,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA WARCALDE",
+      "poblacion": 483,
+      "porcentaje": 32.4,
+      "orden": 2
+    },
+    {
+      "nombre": "ALTO HERMOSO",
+      "poblacion": 155,
+      "porcentaje": 30.2,
+      "orden": 2
+    },
+    {
+      "nombre": "LA CAROLINA",
+      "poblacion": 18,
+      "porcentaje": 1.7,
+      "orden": 2
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 7,
+      "porcentaje": 0.3,
+      "orden": 7
+    }
   ],
   "011M": [
-    "VALLE ESCONDIDO",
-    "PARQUE CHATEAU CARRERAS",
-    "ALTOS DEL CHATEAU",
-    "Sin Barrio - Circuito VALLE ESCONDIDO",
-    "MIRADOR DEL CHATEAU",
-    "GUARNICION MILITAR CBA",
-    "NUEVO URCA",
-    "LA RESERVA",
-    "LAS DELICIAS",
-    "CHATEAU CARRERAS",
-    "LA CAROLINA",
-    "VILLA WARCALDE"
+    {
+      "nombre": "VALLE ESCONDIDO",
+      "poblacion": 7095,
+      "porcentaje": 79.6,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE CHATEAU CARRERAS",
+      "poblacion": 1643,
+      "porcentaje": 64.5,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS DEL CHATEAU",
+      "poblacion": 1080,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LA RESERVA",
+      "poblacion": 143,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "MIRADOR DEL CHATEAU",
+      "poblacion": 729,
+      "porcentaje": 33.2,
+      "orden": 2
+    },
+    {
+      "nombre": "GUARNICION MILITAR CBA",
+      "poblacion": 437,
+      "porcentaje": 18.3,
+      "orden": 2
+    },
+    {
+      "nombre": "NUEVO URCA",
+      "poblacion": 234,
+      "porcentaje": 16.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS DELICIAS",
+      "poblacion": 17,
+      "porcentaje": 6.5,
+      "orden": 2
+    },
+    {
+      "nombre": "CHATEAU CARRERAS",
+      "poblacion": 8,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "LA CAROLINA",
+      "poblacion": 5,
+      "porcentaje": 0.5,
+      "orden": 4
+    },
+    {
+      "nombre": "VILLA WARCALDE",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VALLE ESCONDIDO",
+      "poblacion": 740,
+      "porcentaje": 2.0,
+      "orden": 19
+    }
   ],
   "012A": [
-    "EL QUEBRACHO",
-    "CAMINO A 60 CUADRAS",
-    "RAMON J. CARCANO",
-    "ESTACION FERREYRA",
-    "EL CARMELO",
-    "JOSE IGNACIO RUCCI",
-    "FERREYRA",
-    "23 DE ABRIL",
-    "SAN FELIPE",
-    "VILLA CORONEL OLMEDO",
-    "JOSE IGNACIO DIAZ 3A SECCION"
+    {
+      "nombre": "EL QUEBRACHO",
+      "poblacion": 4226,
+      "porcentaje": 99.5,
+      "orden": 1
+    },
+    {
+      "nombre": "CAMINO A 60 CUADRAS",
+      "poblacion": 1654,
+      "porcentaje": 57.3,
+      "orden": 1
+    },
+    {
+      "nombre": "RAMON J. CARCANO",
+      "poblacion": 1637,
+      "porcentaje": 99.7,
+      "orden": 1
+    },
+    {
+      "nombre": "EL CARMELO",
+      "poblacion": 502,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JOSE IGNACIO RUCCI",
+      "poblacion": 455,
+      "porcentaje": 82.9,
+      "orden": 1
+    },
+    {
+      "nombre": "ESTACION FERREYRA",
+      "poblacion": 762,
+      "porcentaje": 34.0,
+      "orden": 2
+    },
+    {
+      "nombre": "FERREYRA",
+      "poblacion": 38,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "23 DE ABRIL",
+      "poblacion": 25,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN FELIPE",
+      "poblacion": 14,
+      "porcentaje": 0.4,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA CORONEL OLMEDO",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 3A SECCION",
+      "poblacion": 5,
+      "porcentaje": 0.1,
+      "orden": 3
+    }
   ],
   "012B": [
-    "URQUIZA",
-    "COLON",
-    "CRISOL SUD",
-    "RIVADAVIA",
-    "SARMIENTO",
-    "MAIPU 2A SECCION",
-    "MAIPU 1A SECCION",
-    "NUEVA CORDOBA ANEXA",
-    "CRISOL NORTE",
-    "INDUSTRIAL ESTE",
-    "CORRAL DE PALOS",
-    "LOS CEIBOS",
-    "CENTRO",
-    "JOSE HERNANDEZ",
-    "JOSE IGNACIO DIAZ 1A SECCION",
-    "SAN PABLO",
-    "SAN VICENTE",
-    "PARQUE SARMIENTO",
-    "EMAUS",
-    "RESIDENCIAL SAN CARLOS"
+    {
+      "nombre": "URQUIZA",
+      "poblacion": 6225,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "COLON",
+      "poblacion": 4201,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CRISOL SUD",
+      "poblacion": 3485,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RIVADAVIA",
+      "poblacion": 2360,
+      "porcentaje": 73.4,
+      "orden": 1
+    },
+    {
+      "nombre": "SARMIENTO",
+      "poblacion": 2296,
+      "porcentaje": 96.6,
+      "orden": 1
+    },
+    {
+      "nombre": "MAIPU 2A SECCION",
+      "poblacion": 2282,
+      "porcentaje": 97.7,
+      "orden": 1
+    },
+    {
+      "nombre": "MAIPU 1A SECCION",
+      "poblacion": 1953,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "NUEVA CORDOBA ANEXA",
+      "poblacion": 1685,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CRISOL NORTE",
+      "poblacion": 1502,
+      "porcentaje": 95.7,
+      "orden": 1
+    },
+    {
+      "nombre": "INDUSTRIAL ESTE",
+      "poblacion": 1079,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "CORRAL DE PALOS",
+      "poblacion": 112,
+      "porcentaje": 9.0,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS CEIBOS",
+      "poblacion": 22,
+      "porcentaje": 2.6,
+      "orden": 2
+    },
+    {
+      "nombre": "JOSE HERNANDEZ",
+      "poblacion": 17,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 1A SECCION",
+      "poblacion": 16,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN PABLO",
+      "poblacion": 12,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE SARMIENTO",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "EMAUS",
+      "poblacion": 2,
+      "porcentaje": 1.0,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL SAN CARLOS",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 11,
+      "porcentaje": 0.1,
+      "orden": 7
+    },
+    {
+      "nombre": "CENTRO",
+      "poblacion": 18,
+      "porcentaje": 0.0,
+      "orden": 10
+    }
   ],
   "012C": [
-    "VILLA CORONEL OLMEDO",
-    "CAMINO A 60 CUADRAS",
-    "ESTACION FERREYRA",
-    "EL QUEBRACHO",
-    "CAMINO A SAN CARLOS"
+    {
+      "nombre": "VILLA CORONEL OLMEDO",
+      "poblacion": 4866,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA CORONEL OLMEDO",
+      "poblacion": 326,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "EL QUEBRACHO",
+      "poblacion": 23,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "CAMINO A 60 CUADRAS",
+      "poblacion": 349,
+      "porcentaje": 12.1,
+      "orden": 3
+    },
+    {
+      "nombre": "ESTACION FERREYRA",
+      "poblacion": 345,
+      "porcentaje": 15.4,
+      "orden": 3
+    },
+    {
+      "nombre": "CAMINO A SAN CARLOS",
+      "poblacion": 9,
+      "porcentaje": 0.5,
+      "orden": 3
+    }
   ],
   "012D": [
-    "JOSE IGNACIO DIAZ 3A SECCION",
-    "JOSE IGNACIO DIAZ 1A SECCION",
-    "LAS LILAS",
-    "JOSE IGNACIO DIAZ 2A SECCION",
-    "TALLERES SUD",
-    "SAN FELIPE",
-    "23 DE ABRIL",
-    "CORRAL DE PALOS",
-    "ALTOS SUD DE SAN VICENTE",
-    "RIVADAVIA",
-    "FERROVIARIO  MITRE",
-    "BENJAMIN POLICARPIO CABRAL",
-    "SAN CAYETANO",
-    "EMAUS",
-    "4 DE FEBRERO",
-    "SAN VICENTE",
-    "EMPALME",
-    "Sin Barrio - Circuito JOSE IGNACIO DIAZ",
-    "URQUIZA",
-    "SAN LORENZO (S)",
-    "DEAN FUNES",
-    "CAMINO A 60 CUADRAS",
-    "RAMON J. CARCANO",
-    "CLAROS DEL BOSQUE",
-    "JOSE IGNACIO RUCCI",
-    "EMPALME CASAS DE OBREROS Y EMPLEADOS",
-    "FERREYRA"
+    {
+      "nombre": "JOSE IGNACIO DIAZ 3A SECCION",
+      "poblacion": 7164,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 1A SECCION",
+      "poblacion": 5094,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS LILAS",
+      "poblacion": 5038,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 2A SECCION",
+      "poblacion": 4694,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "TALLERES SUD",
+      "poblacion": 3607,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN FELIPE",
+      "poblacion": 3142,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "23 DE ABRIL",
+      "poblacion": 1718,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "CORRAL DE PALOS",
+      "poblacion": 1139,
+      "porcentaje": 91.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTOS SUD DE SAN VICENTE",
+      "poblacion": 969,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "FERROVIARIO  MITRE",
+      "poblacion": 742,
+      "porcentaje": 63.2,
+      "orden": 1
+    },
+    {
+      "nombre": "BENJAMIN POLICARPIO CABRAL",
+      "poblacion": 583,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN CAYETANO",
+      "poblacion": 520,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "EMAUS",
+      "poblacion": 202,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "4 DE FEBRERO",
+      "poblacion": 201,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RIVADAVIA",
+      "poblacion": 856,
+      "porcentaje": 26.6,
+      "orden": 2
+    },
+    {
+      "nombre": "EMPALME",
+      "poblacion": 73,
+      "porcentaje": 2.1,
+      "orden": 2
+    },
+    {
+      "nombre": "URQUIZA",
+      "poblacion": 53,
+      "porcentaje": 0.8,
+      "orden": 2
+    },
+    {
+      "nombre": "RAMON J. CARCANO",
+      "poblacion": 5,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "CLAROS DEL BOSQUE",
+      "poblacion": 4,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "EMPALME CASAS DE OBREROS Y EMPLEADOS",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN VICENTE",
+      "poblacion": 167,
+      "porcentaje": 0.9,
+      "orden": 3
+    },
+    {
+      "nombre": "SAN LORENZO (S)",
+      "poblacion": 47,
+      "porcentaje": 2.0,
+      "orden": 3
+    },
+    {
+      "nombre": "DEAN FUNES",
+      "poblacion": 19,
+      "porcentaje": 0.8,
+      "orden": 3
+    },
+    {
+      "nombre": "JOSE IGNACIO RUCCI",
+      "poblacion": 3,
+      "porcentaje": 0.5,
+      "orden": 3
+    },
+    {
+      "nombre": "FERREYRA",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "CAMINO A 60 CUADRAS",
+      "poblacion": 8,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito JOSE IGNACIO DIAZ",
+      "poblacion": 69,
+      "porcentaje": 0.2,
+      "orden": 48
+    }
   ],
   "012E": [
-    "FERREYRA",
-    "ESTACION FERREYRA",
-    "LA CARBONADA",
-    "JOSE IGNACIO RUCCI",
-    "ITUZAINGO II",
-    "DE MIS SUEÑOS",
-    "25 DE MAYO",
-    "Sin Barrio - Circuito FERREYRA",
-    "QUINTAS DE FERREYRA",
-    "JOSE IGNACIO DIAZ 3A SECCION",
-    "NICOLAS AVELLANEDA",
-    "CAMINO A 60 CUADRAS"
+    {
+      "nombre": "FERREYRA",
+      "poblacion": 4646,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "ESTACION FERREYRA",
+      "poblacion": 1130,
+      "porcentaje": 50.5,
+      "orden": 1
+    },
+    {
+      "nombre": "LA CARBONADA",
+      "poblacion": 394,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "25 DE MAYO",
+      "poblacion": 12,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JOSE IGNACIO RUCCI",
+      "poblacion": 91,
+      "porcentaje": 16.6,
+      "orden": 2
+    },
+    {
+      "nombre": "DE MIS SUEÑOS",
+      "poblacion": 44,
+      "porcentaje": 1.9,
+      "orden": 2
+    },
+    {
+      "nombre": "QUINTAS DE FERREYRA",
+      "poblacion": 9,
+      "porcentaje": 1.3,
+      "orden": 2
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 7,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 3A SECCION",
+      "poblacion": 6,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 1,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 64,
+      "porcentaje": 6.9,
+      "orden": 3
+    },
+    {
+      "nombre": "NICOLAS AVELLANEDA",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "CAMINO A 60 CUADRAS",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 5
+    },
+    {
+      "nombre": "Sin Barrio - Circuito FERREYRA",
+      "poblacion": 11,
+      "porcentaje": 0.0,
+      "orden": 60
+    }
   ],
   "012F": [
-    "JARDIN DEL PILAR",
-    "JOSE HERNANDEZ",
-    "RESIDENCIAL SAN CARLOS",
-    "AMPLIACION SAN PABLO",
-    "SAN PABLO",
-    "JARDIN DEL SUD",
-    "BIALET MASSE",
-    "CLAROS DEL BOSQUE",
-    "MARCOS SASTRE",
-    "OÑA",
-    "Sin Barrio - Circuito JOSE HERNANDEZ",
-    "PARQUE SAN CARLOS",
-    "CABAÑA DEL PILAR",
-    "S.E.P.",
-    "JOSE IGNACIO DIAZ 2A SECCION",
-    "URQUIZA",
-    "O.S.N.",
-    "JARDIN ESPINOSA",
-    "CRISOL SUD",
-    "SANTA RITA",
-    "JOSE IGNACIO DIAZ 1A SECCION",
-    "4 DE FEBRERO",
-    "VILLA REVOL",
-    "VILLA SAN CARLOS"
+    {
+      "nombre": "JARDIN DEL PILAR",
+      "poblacion": 3457,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "JOSE HERNANDEZ",
+      "poblacion": 2938,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL SAN CARLOS",
+      "poblacion": 2878,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION SAN PABLO",
+      "poblacion": 2877,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN PABLO",
+      "poblacion": 2351,
+      "porcentaje": 99.5,
+      "orden": 1
+    },
+    {
+      "nombre": "JARDIN DEL SUD",
+      "poblacion": 1981,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "BIALET MASSE",
+      "poblacion": 1766,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CLAROS DEL BOSQUE",
+      "poblacion": 1630,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "MARCOS SASTRE",
+      "poblacion": 1507,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "OÑA",
+      "poblacion": 1287,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE SAN CARLOS",
+      "poblacion": 813,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CABAÑA DEL PILAR",
+      "poblacion": 519,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "S.E.P.",
+      "poblacion": 136,
+      "porcentaje": 3.8,
+      "orden": 2
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 2A SECCION",
+      "poblacion": 65,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "O.S.N.",
+      "poblacion": 25,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "JARDIN ESPINOSA",
+      "poblacion": 25,
+      "porcentaje": 1.5,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA RITA",
+      "poblacion": 4,
+      "porcentaje": 0.4,
+      "orden": 2
+    },
+    {
+      "nombre": "4 DE FEBRERO",
+      "poblacion": 2,
+      "porcentaje": 1.0,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA REVOL",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 2
+    },
+    {
+      "nombre": "URQUIZA",
+      "poblacion": 35,
+      "porcentaje": 0.6,
+      "orden": 3
+    },
+    {
+      "nombre": "CRISOL SUD",
+      "poblacion": 8,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "JOSE IGNACIO DIAZ 1A SECCION",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA SAN CARLOS",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito JOSE HERNANDEZ",
+      "poblacion": 838,
+      "porcentaje": 2.3,
+      "orden": 16
+    }
   ],
   "012G": [
-    "ITUZAINGO ANEXO",
-    "ITUZAINGO",
-    "DE MIS SUEÑOS",
-    "LOS EUCALIPTUS",
-    "ITUZAINGO II",
-    "Sin Barrio - Circuito ITUZAINGO",
-    "LOS FRESNOS",
-    "NICOLAS AVELLANEDA",
-    "BETANIA",
-    "ESTACION FERREYRA",
-    "FERREYRA"
+    {
+      "nombre": "ITUZAINGO ANEXO",
+      "poblacion": 5056,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "ITUZAINGO",
+      "poblacion": 3597,
+      "porcentaje": 97.0,
+      "orden": 1
+    },
+    {
+      "nombre": "DE MIS SUEÑOS",
+      "poblacion": 2320,
+      "porcentaje": 98.1,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS EUCALIPTUS",
+      "poblacion": 1720,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 749,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 714,
+      "porcentaje": 77.3,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ITUZAINGO",
+      "poblacion": 681,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 341,
+      "porcentaje": 99.7,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS FRESNOS",
+      "poblacion": 323,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ITUZAINGO",
+      "poblacion": 106,
+      "porcentaje": 8.1,
+      "orden": 2
+    },
+    {
+      "nombre": "NICOLAS AVELLANEDA",
+      "poblacion": 3,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "BETANIA",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "ESTACION FERREYRA",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "FERREYRA",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ITUZAINGO",
+      "poblacion": 278,
+      "porcentaje": 0.8,
+      "orden": 30
+    }
   ],
   "012H": [
-    "S.E.P.",
-    "CERVECEROS",
-    "Sin Barrio - Circuito LOS CERVECEROS",
-    "O.S.N.",
-    "LAS CAÑUELAS",
-    "CAMINO A SAN CARLOS",
-    "FINCAS DEL SUR",
-    "CAMINO A 60 CUADRAS",
-    "QUINTAS DE FLORES",
-    "VILLA SAN CARLOS",
-    "VILLA EUCARISTICA",
-    "EL VIEJO ALGARROBO",
-    "QUINTAS DE ITALIA"
+    {
+      "nombre": "S.E.P.",
+      "poblacion": 3457,
+      "porcentaje": 96.2,
+      "orden": 1
+    },
+    {
+      "nombre": "CERVECEROS",
+      "poblacion": 3390,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "O.S.N.",
+      "poblacion": 1552,
+      "porcentaje": 98.4,
+      "orden": 1
+    },
+    {
+      "nombre": "LAS CAÑUELAS",
+      "poblacion": 1500,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CAMINO A SAN CARLOS",
+      "poblacion": 1314,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "FINCAS DEL SUR",
+      "poblacion": 1131,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "QUINTAS DE FLORES",
+      "poblacion": 768,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SAN CARLOS",
+      "poblacion": 538,
+      "porcentaje": 79.8,
+      "orden": 1
+    },
+    {
+      "nombre": "EL VIEJO ALGARROBO",
+      "poblacion": 15,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CAMINO A 60 CUADRAS",
+      "poblacion": 877,
+      "porcentaje": 30.4,
+      "orden": 2
+    },
+    {
+      "nombre": "CAMINO A SAN CARLOS",
+      "poblacion": 593,
+      "porcentaje": 32.4,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA EUCARISTICA",
+      "poblacion": 58,
+      "porcentaje": 1.3,
+      "orden": 2
+    },
+    {
+      "nombre": "QUINTAS DE ITALIA",
+      "poblacion": 7,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LOS CERVECEROS",
+      "poblacion": 2158,
+      "porcentaje": 5.9,
+      "orden": 3
+    }
   ],
   "012I": [
-    "QUINTAS DE FERREYRA",
-    "Sin Barrio - Circuito CIUDAD DE MIS SUEÑOS",
-    "ITUZAINGO II"
+    {
+      "nombre": "QUINTAS DE FERREYRA",
+      "poblacion": 709,
+      "porcentaje": 98.7,
+      "orden": 1
+    },
+    {
+      "nombre": "ITUZAINGO II",
+      "poblacion": 146,
+      "porcentaje": 15.8,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CIUDAD DE MIS SUEÑOS",
+      "poblacion": 549,
+      "porcentaje": 1.5,
+      "orden": 26
+    }
   ],
   "013A": [
-    "CENTRO AMERICA",
-    "LOS GIGANTES",
-    "AYACUCHO",
-    "MARCELO T. DE ALVEAR",
-    "VILLA AZALAIZ OESTE",
-    "GENERAL SAVIO",
-    "GENERAL BUSTOS",
-    "AMPLIACION RESIDENCIAL AMERICA",
-    "ALTA CORDOBA",
-    "RESIDENCIAL AMERICA",
-    "PANAMERICANO",
-    "AMPLIACION PANAMERICANO",
-    "JUAN B. JUSTO",
-    "Sin Barrio - Circuito AYACUCHO"
+    {
+      "nombre": "CENTRO AMERICA",
+      "poblacion": 5423,
+      "porcentaje": 73.5,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS GIGANTES",
+      "poblacion": 4437,
+      "porcentaje": 94.8,
+      "orden": 1
+    },
+    {
+      "nombre": "AYACUCHO",
+      "poblacion": 4253,
+      "porcentaje": 98.5,
+      "orden": 1
+    },
+    {
+      "nombre": "MARCELO T. DE ALVEAR",
+      "poblacion": 2678,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA AZALAIZ OESTE",
+      "poblacion": 1078,
+      "porcentaje": 99.5,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL SAVIO",
+      "poblacion": 79,
+      "porcentaje": 4.4,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION RESIDENCIAL AMERICA",
+      "poblacion": 42,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL AMERICA",
+      "poblacion": 37,
+      "porcentaje": 0.6,
+      "orden": 2
+    },
+    {
+      "nombre": "AMPLIACION PANAMERICANO",
+      "poblacion": 4,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "PANAMERICANO",
+      "poblacion": 19,
+      "porcentaje": 0.5,
+      "orden": 3
+    },
+    {
+      "nombre": "GENERAL BUSTOS",
+      "poblacion": 56,
+      "porcentaje": 0.4,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 38,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "JUAN B. JUSTO",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito AYACUCHO",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 66
+    }
   ],
   "013B": [
-    "Sin Barrio - Circuito EL GATEADO"
+    {
+      "nombre": "Sin Barrio - Circuito EL GATEADO",
+      "poblacion": 754,
+      "porcentaje": 2.1,
+      "orden": 18
+    }
   ],
   "013C": [
-    "GENERAL BUSTOS",
-    "20 DE JUNIO",
-    "ALTA CORDOBA",
-    "RESIDENCIAL AMERICA",
-    "AYACUCHO",
-    "TALLERES (O)"
+    {
+      "nombre": "GENERAL BUSTOS",
+      "poblacion": 15642,
+      "porcentaje": 98.3,
+      "orden": 1
+    },
+    {
+      "nombre": "20 DE JUNIO",
+      "poblacion": 357,
+      "porcentaje": 91.3,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL AMERICA",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "AYACUCHO",
+      "poblacion": 5,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "TALLERES (O)",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 4
+    },
+    {
+      "nombre": "ALTA CORDOBA",
+      "poblacion": 12,
+      "porcentaje": 0.0,
+      "orden": 6
+    }
   ],
   "013D": [
-    "GENERAL ARENALES",
-    "Sin Barrio - Circuito JARDIN ARENALES",
-    "1 DE JULIO",
-    "EL QUEBRACHAL"
+    {
+      "nombre": "GENERAL ARENALES",
+      "poblacion": 1781,
+      "porcentaje": 62.7,
+      "orden": 1
+    },
+    {
+      "nombre": "1 DE JULIO",
+      "poblacion": 873,
+      "porcentaje": 49.5,
+      "orden": 1
+    },
+    {
+      "nombre": "EL QUEBRACHAL",
+      "poblacion": 97,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito JARDIN ARENALES",
+      "poblacion": 1018,
+      "porcentaje": 2.8,
+      "orden": 13
+    }
   ],
   "013E": [
-    "Sin Barrio - Circuito LA DOROTEA",
-    "YOFRE H",
-    "VILLA ESQUIU",
-    "FINCA LA DOROTEA",
-    "1 DE JULIO"
+    {
+      "nombre": "FINCA LA DOROTEA",
+      "poblacion": 209,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "FINCA LA DOROTEA",
+      "poblacion": 75,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "YOFRE H",
+      "poblacion": 344,
+      "porcentaje": 11.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA ESQUIU",
+      "poblacion": 214,
+      "porcentaje": 11.2,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LA DOROTEA",
+      "poblacion": 2009,
+      "porcentaje": 5.5,
+      "orden": 4
+    },
+    {
+      "nombre": "1 DE JULIO",
+      "poblacion": 178,
+      "porcentaje": 10.1,
+      "orden": 4
+    }
   ],
   "013F": [
-    "NUEVA ITALIA",
-    "LA HORTENSIA",
-    "PARQUE MONTECRISTO",
-    "VIVERO NORTE",
-    "SANTA CLARA DE ASIS",
-    "AMPLIACION PUEYRREDON",
-    "LOS PINOS",
-    "YOFRE SUD",
-    "YOFRE NORTE",
-    "PATRICIOS",
-    "GENERAL PUEYRREDON"
+    {
+      "nombre": "NUEVA ITALIA",
+      "poblacion": 3184,
+      "porcentaje": 94.7,
+      "orden": 1
+    },
+    {
+      "nombre": "LA HORTENSIA",
+      "poblacion": 1669,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE MONTECRISTO",
+      "poblacion": 1548,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VIVERO NORTE",
+      "poblacion": 1533,
+      "porcentaje": 97.5,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA CLARA DE ASIS",
+      "poblacion": 1485,
+      "porcentaje": 95.3,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION PUEYRREDON",
+      "poblacion": 176,
+      "porcentaje": 10.4,
+      "orden": 2
+    },
+    {
+      "nombre": "YOFRE NORTE",
+      "poblacion": 6,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS PINOS",
+      "poblacion": 129,
+      "porcentaje": 6.9,
+      "orden": 3
+    },
+    {
+      "nombre": "YOFRE SUD",
+      "poblacion": 88,
+      "porcentaje": 1.7,
+      "orden": 3
+    },
+    {
+      "nombre": "PATRICIOS",
+      "poblacion": 5,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "GENERAL PUEYRREDON",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 6
+    }
   ],
   "013G": [
-    "PARQUE LICEO 2A SECCION",
-    "PARQUE LICEO 3A SECCION",
-    "PARQUE LICEO 1A SECCION",
-    "LOS CHINGOLOS",
-    "Sin Barrio - Circuito PARQUE LICEO",
-    "LOS HORNILLOS",
-    "VILLA RETIRO",
-    "LICEO GENERAL PAZ",
-    "VILLA RETIRO DE HORIZONTE",
-    "LOS GIGANTES",
-    "GENERAL MOSCONI",
-    "PATRICIOS OESTE",
-    "JERONIMO LUIS DE CABRERA"
+    {
+      "nombre": "PARQUE LICEO 2A SECCION",
+      "poblacion": 8052,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE LICEO 3A SECCION",
+      "poblacion": 7014,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE LICEO 1A SECCION",
+      "poblacion": 6875,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS CHINGOLOS",
+      "poblacion": 3012,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS HORNILLOS",
+      "poblacion": 1210,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA RETIRO",
+      "poblacion": 936,
+      "porcentaje": 83.1,
+      "orden": 1
+    },
+    {
+      "nombre": "LICEO GENERAL PAZ",
+      "poblacion": 782,
+      "porcentaje": 85.2,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA RETIRO DE HORIZONTE",
+      "poblacion": 169,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL MOSCONI",
+      "poblacion": 46,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS GIGANTES",
+      "poblacion": 62,
+      "porcentaje": 1.3,
+      "orden": 3
+    },
+    {
+      "nombre": "PATRICIOS OESTE",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "JERONIMO LUIS DE CABRERA",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito PARQUE LICEO",
+      "poblacion": 1412,
+      "porcentaje": 3.9,
+      "orden": 9
+    }
   ],
   "013H": [
-    "PATRICIOS",
-    "PATRICIOS OESTE",
-    "VILLA CORINA",
-    "GENERAL BELGRANO",
-    "PATRICIOS ESTE",
-    "PATRICIOS NORTE",
-    "ARTURO CAPDEVILA",
-    "Sin Barrio - Circuito PATRICIOS",
-    "RESIDENCIAL ARAGON",
-    "QUINTAS DE SAN JORGE",
-    "VIVERO NORTE",
-    "RESIDENCIAL SAN JORGE",
-    "NUEVA ITALIA",
-    "SANTA CLARA DE ASIS"
+    {
+      "nombre": "PATRICIOS",
+      "poblacion": 5196,
+      "porcentaje": 99.4,
+      "orden": 1
+    },
+    {
+      "nombre": "PATRICIOS OESTE",
+      "poblacion": 4314,
+      "porcentaje": 97.5,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA CORINA",
+      "poblacion": 3993,
+      "porcentaje": 97.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL BELGRANO",
+      "poblacion": 3223,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PATRICIOS ESTE",
+      "poblacion": 1970,
+      "porcentaje": 94.8,
+      "orden": 1
+    },
+    {
+      "nombre": "PATRICIOS NORTE",
+      "poblacion": 1856,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ARTURO CAPDEVILA",
+      "poblacion": 421,
+      "porcentaje": 25.5,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL ARAGON",
+      "poblacion": 59,
+      "porcentaje": 4.1,
+      "orden": 2
+    },
+    {
+      "nombre": "QUINTAS DE SAN JORGE",
+      "poblacion": 50,
+      "porcentaje": 4.4,
+      "orden": 2
+    },
+    {
+      "nombre": "VIVERO NORTE",
+      "poblacion": 39,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "RESIDENCIAL SAN JORGE",
+      "poblacion": 33,
+      "porcentaje": 4.0,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA CLARA DE ASIS",
+      "poblacion": 8,
+      "porcentaje": 0.5,
+      "orden": 3
+    },
+    {
+      "nombre": "NUEVA ITALIA",
+      "poblacion": 10,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito PATRICIOS",
+      "poblacion": 269,
+      "porcentaje": 0.7,
+      "orden": 32
+    }
   ],
   "013I": [
-    "Sin Barrio - Circuito SAN JORGE",
-    "VILLA ESQUIU",
-    "RESIDENCIAL ARAGON",
-    "ARTURO CAPDEVILA",
-    "QUINTAS DE SAN JORGE",
-    "RESIDENCIAL SAN JORGE",
-    "PATRICIOS ESTE"
+    {
+      "nombre": "VILLA ESQUIU",
+      "poblacion": 1476,
+      "porcentaje": 77.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL ARAGON",
+      "poblacion": 1397,
+      "porcentaje": 95.9,
+      "orden": 1
+    },
+    {
+      "nombre": "ARTURO CAPDEVILA",
+      "poblacion": 1176,
+      "porcentaje": 71.1,
+      "orden": 1
+    },
+    {
+      "nombre": "QUINTAS DE SAN JORGE",
+      "poblacion": 1087,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL SAN JORGE",
+      "poblacion": 793,
+      "porcentaje": 96.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito SAN JORGE",
+      "poblacion": 16,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PATRICIOS ESTE",
+      "poblacion": 109,
+      "porcentaje": 5.2,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito SAN JORGE",
+      "poblacion": 1697,
+      "porcentaje": 4.6,
+      "orden": 7
+    }
   ],
   "013J": [
-    "VILLA AZALAIZ",
-    "RESIDENCIAL AMERICA",
-    "AMPLIACION RESIDENCIAL AMERICA",
-    "LOS ALAMOS",
-    "GENERAL MOSCONI",
-    "CIUDAD DE JUAN PABLO II",
-    "CENTRO AMERICA",
-    "SAN NICOLAS",
-    "GENERAL SAVIO",
-    "GUAYAQUIL",
-    "Sin Barrio - Circuito VILLA AZALAIS",
-    "LOS GIGANTES",
-    "TALLERES (O)",
-    "VILLA CORINA",
-    "PATRICIOS OESTE",
-    "GENERAL BUSTOS",
-    "AYACUCHO",
-    "20 DE JUNIO",
-    "NUEVA ITALIA"
+    {
+      "nombre": "VILLA AZALAIZ",
+      "poblacion": 7656,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RESIDENCIAL AMERICA",
+      "poblacion": 6404,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "AMPLIACION RESIDENCIAL AMERICA",
+      "poblacion": 5743,
+      "porcentaje": 99.3,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS ALAMOS",
+      "poblacion": 3703,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL MOSCONI",
+      "poblacion": 3150,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "CIUDAD DE JUAN PABLO II",
+      "poblacion": 2733,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN NICOLAS",
+      "poblacion": 1875,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL SAVIO",
+      "poblacion": 1726,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "CIUDAD DE JUAN PABLO II",
+      "poblacion": 1483,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GENERAL SAVIO",
+      "poblacion": 1301,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "GUAYAQUIL",
+      "poblacion": 580,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CENTRO AMERICA",
+      "poblacion": 1953,
+      "porcentaje": 26.5,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS GIGANTES",
+      "poblacion": 179,
+      "porcentaje": 3.8,
+      "orden": 2
+    },
+    {
+      "nombre": "TALLERES (O)",
+      "poblacion": 132,
+      "porcentaje": 2.3,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA CORINA",
+      "poblacion": 123,
+      "porcentaje": 3.0,
+      "orden": 2
+    },
+    {
+      "nombre": "PATRICIOS OESTE",
+      "poblacion": 109,
+      "porcentaje": 2.5,
+      "orden": 2
+    },
+    {
+      "nombre": "AYACUCHO",
+      "poblacion": 59,
+      "porcentaje": 1.4,
+      "orden": 2
+    },
+    {
+      "nombre": "20 DE JUNIO",
+      "poblacion": 34,
+      "porcentaje": 8.7,
+      "orden": 2
+    },
+    {
+      "nombre": "GENERAL BUSTOS",
+      "poblacion": 70,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "NUEVA ITALIA",
+      "poblacion": 17,
+      "porcentaje": 0.5,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA AZALAIS",
+      "poblacion": 236,
+      "porcentaje": 0.6,
+      "orden": 33
+    }
   ],
   "013K": [
-    "Sin Barrio - Circuito VILLA ESQUIU",
-    "SAN RAMON",
-    "VILLA ESQUIU"
+    {
+      "nombre": "SAN RAMON",
+      "poblacion": 365,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA ESQUIU",
+      "poblacion": 226,
+      "porcentaje": 11.8,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA ESQUIU",
+      "poblacion": 824,
+      "porcentaje": 2.3,
+      "orden": 17
+    }
   ],
   "013L": [
-    "VILLA GRAN PARQUE",
-    "Sin Barrio - Circuito VILLA GRAN PARQUE",
-    "LICEO GENERAL PAZ",
-    "RECREO DEL NORTE",
-    "GUIÑAZU",
-    "VILLA RETIRO"
+    {
+      "nombre": "VILLA GRAN PARQUE",
+      "poblacion": 504,
+      "porcentaje": 99.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LICEO GENERAL PAZ",
+      "poblacion": 78,
+      "porcentaje": 8.5,
+      "orden": 2
+    },
+    {
+      "nombre": "RECREO DEL NORTE",
+      "poblacion": 24,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "GUIÑAZU",
+      "poblacion": 19,
+      "porcentaje": 1.2,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA RETIRO",
+      "poblacion": 7,
+      "porcentaje": 0.6,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA GRAN PARQUE",
+      "poblacion": 206,
+      "porcentaje": 0.6,
+      "orden": 35
+    }
   ],
   "013M": [
-    "VILLA RETIRO",
-    "Sin Barrio - Circuito CAMINO A COLONIA TIROLESA"
+    {
+      "nombre": "VILLA RETIRO",
+      "poblacion": 184,
+      "porcentaje": 16.3,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CAMINO A COLONIA TIROLESA",
+      "poblacion": 113,
+      "porcentaje": 0.3,
+      "orden": 42
+    }
   ],
   "013N": [
-    "YOFRE NORTE",
-    "YOFRE H",
-    "YOFRE SUD",
-    "SANTA CLARA DE ASIS",
-    "ARTURO CAPDEVILA",
-    "PATRICIOS",
-    "YOFRE I",
-    "LA HORTENSIA",
-    "Sin Barrio - Circuito YOFRE",
-    "PARQUE MONTECRISTO"
+    {
+      "nombre": "YOFRE NORTE",
+      "poblacion": 5680,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "YOFRE H",
+      "poblacion": 2516,
+      "porcentaje": 85.5,
+      "orden": 1
+    },
+    {
+      "nombre": "YOFRE SUD",
+      "poblacion": 121,
+      "porcentaje": 2.3,
+      "orden": 2
+    },
+    {
+      "nombre": "SANTA CLARA DE ASIS",
+      "poblacion": 66,
+      "porcentaje": 4.2,
+      "orden": 2
+    },
+    {
+      "nombre": "PATRICIOS",
+      "poblacion": 25,
+      "porcentaje": 0.5,
+      "orden": 2
+    },
+    {
+      "nombre": "LA HORTENSIA",
+      "poblacion": 18,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "PARQUE MONTECRISTO",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ARTURO CAPDEVILA",
+      "poblacion": 56,
+      "porcentaje": 3.4,
+      "orden": 3
+    },
+    {
+      "nombre": "YOFRE I",
+      "poblacion": 25,
+      "porcentaje": 1.2,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito YOFRE",
+      "poblacion": 12,
+      "porcentaje": 0.0,
+      "orden": 59
+    }
   ],
   "013O": [
-    "DE LOS CUARTETOS",
-    "Sin Barrio - Circuito CHACHAPOYAS"
+    {
+      "nombre": "DE LOS CUARTETOS",
+      "poblacion": 839,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CHACHAPOYAS",
+      "poblacion": 454,
+      "porcentaje": 1.2,
+      "orden": 28
+    }
   ],
   "014A": [
-    "ARGUELLO NORTE",
-    "Sin Barrio - Circuito ARGUELLO NORTE",
-    "EL CERRITO",
-    "AUTODROMO",
-    "LOURDES",
-    "LOS BOULEVARES",
-    "VILLA SILVANO FUNES",
-    "U.O.C.R.A.",
-    "VILLA 9 DE JULIO",
-    "MERCANTIL",
-    "POLICIAL",
-    "CONSORCIO 16 DE NOVIEMBRE"
+    {
+      "nombre": "ARGUELLO NORTE",
+      "poblacion": 15250,
+      "porcentaje": 91.5,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ARGUELLO NORTE",
+      "poblacion": 3984,
+      "porcentaje": 97.3,
+      "orden": 1
+    },
+    {
+      "nombre": "EL CERRITO",
+      "poblacion": 3645,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "AUTODROMO",
+      "poblacion": 3364,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOURDES",
+      "poblacion": 1075,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SILVANO FUNES",
+      "poblacion": 109,
+      "porcentaje": 11.4,
+      "orden": 2
+    },
+    {
+      "nombre": "MERCANTIL",
+      "poblacion": 14,
+      "porcentaje": 2.2,
+      "orden": 2
+    },
+    {
+      "nombre": "CONSORCIO 16 DE NOVIEMBRE",
+      "poblacion": 4,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ARGUELLO NORTE",
+      "poblacion": 1,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "U.O.C.R.A.",
+      "poblacion": 81,
+      "porcentaje": 4.1,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ARGUELLO NORTE",
+      "poblacion": 6,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 36,
+      "porcentaje": 0.3,
+      "orden": 4
+    },
+    {
+      "nombre": "POLICIAL",
+      "poblacion": 11,
+      "porcentaje": 0.4,
+      "orden": 4
+    },
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 129,
+      "porcentaje": 0.7,
+      "orden": 5
+    },
+    {
+      "nombre": "Sin Barrio - Circuito ARGUELLO NORTE",
+      "poblacion": 185,
+      "porcentaje": 0.5,
+      "orden": 36
+    }
   ],
   "014B": [
-    "ARGUELLO",
-    "LA SALLE",
-    "QUINTAS DE ARGUELLO",
-    "ALBORADA (N)",
-    "VILLA SOLFERINO",
-    "VILLA 9 DE JULIO"
+    {
+      "nombre": "LA SALLE",
+      "poblacion": 715,
+      "porcentaje": 98.6,
+      "orden": 1
+    },
+    {
+      "nombre": "QUINTAS DE ARGUELLO",
+      "poblacion": 500,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALBORADA (N)",
+      "poblacion": 436,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SOLFERINO",
+      "poblacion": 417,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 6024,
+      "porcentaje": 38.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 10,
+      "porcentaje": 0.1,
+      "orden": 6
+    }
   ],
   "014C": [
-    "RIVERA INDARTE",
-    "ARGUELLO",
-    "VILLA QUISQUIZACATE",
-    "EL REFUGIO",
-    "SAN JOSE",
-    "ALTO HERMOSO",
-    "VILLA WARCALDE",
-    "VILLA RIVERA INDARTE",
-    "PORTAL DEL JACARANDA",
-    "LA SALLE"
+    {
+      "nombre": "RIVERA INDARTE",
+      "poblacion": 2123,
+      "porcentaje": 91.7,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA QUISQUIZACATE",
+      "poblacion": 1395,
+      "porcentaje": 90.6,
+      "orden": 1
+    },
+    {
+      "nombre": "EL REFUGIO",
+      "poblacion": 1028,
+      "porcentaje": 99.7,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN JOSE",
+      "poblacion": 426,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "PORTAL DEL JACARANDA",
+      "poblacion": 7,
+      "porcentaje": 3.3,
+      "orden": 2
+    },
+    {
+      "nombre": "LA SALLE",
+      "poblacion": 5,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 1667,
+      "porcentaje": 10.7,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTO HERMOSO",
+      "poblacion": 79,
+      "porcentaje": 15.4,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA WARCALDE",
+      "poblacion": 23,
+      "porcentaje": 1.5,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA RIVERA INDARTE",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 4
+    }
   ],
   "014D": [
-    "CERRO DE LAS ROSAS",
-    "VALLE DEL CERRO",
-    "URCA",
-    "PARQUE TABLADA",
-    "Sin Barrio - Circuito CERRO DE LAS ROSAS",
-    "ALTOS DE VILLA CABRERA",
-    "PARQUE CHATEAU CARRERAS"
+    {
+      "nombre": "CERRO DE LAS ROSAS",
+      "poblacion": 5156,
+      "porcentaje": 95.6,
+      "orden": 1
+    },
+    {
+      "nombre": "VALLE DEL CERRO",
+      "poblacion": 644,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "URCA",
+      "poblacion": 37,
+      "porcentaje": 0.7,
+      "orden": 3
+    },
+    {
+      "nombre": "PARQUE TABLADA",
+      "poblacion": 30,
+      "porcentaje": 2.9,
+      "orden": 3
+    },
+    {
+      "nombre": "ALTOS DE VILLA CABRERA",
+      "poblacion": 5,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "PARQUE CHATEAU CARRERAS",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 6
+    },
+    {
+      "nombre": "Sin Barrio - Circuito CERRO DE LAS ROSAS",
+      "poblacion": 7,
+      "porcentaje": 0.0,
+      "orden": 61
+    }
   ],
   "014E": [
-    "CERRO NORTE",
-    "U.O.C.R.A.",
-    "VILLA 9 DE JULIO",
-    "ARGUELLO NORTE",
-    "POLICIAL",
-    "VILLA CORNU",
-    "VILLA ALLENDE PARQUE",
-    "DR REMO M. COPELLO"
+    {
+      "nombre": "CERRO NORTE",
+      "poblacion": 6160,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "U.O.C.R.A.",
+      "poblacion": 1776,
+      "porcentaje": 89.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 118,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "POLICIAL",
+      "poblacion": 28,
+      "porcentaje": 1.0,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA CORNU",
+      "poblacion": 21,
+      "porcentaje": 0.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA ALLENDE PARQUE",
+      "poblacion": 8,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ARGUELLO NORTE",
+      "poblacion": 29,
+      "porcentaje": 0.2,
+      "orden": 3
+    },
+    {
+      "nombre": "DR REMO M. COPELLO",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    }
   ],
   "014F": [
-    "GRANJA DE FUNES",
-    "LOS BOULEVARES",
-    "ARGUELLO NORTE",
-    "VILLA SILVANO FUNES",
-    "PADRE CLARET",
-    "ARGUELLO",
-    "VILLA 9 DE JULIO",
-    "BRIGADIER SAN MARTIN",
-    "VILLA CLARET",
-    "APEADERO LA TABLADA"
+    {
+      "nombre": "GRANJA DE FUNES",
+      "poblacion": 4160,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SILVANO FUNES",
+      "poblacion": 848,
+      "porcentaje": 88.6,
+      "orden": 1
+    },
+    {
+      "nombre": "PADRE CLARET",
+      "poblacion": 565,
+      "porcentaje": 56.8,
+      "orden": 1
+    },
+    {
+      "nombre": "ARGUELLO NORTE",
+      "poblacion": 1377,
+      "porcentaje": 8.3,
+      "orden": 2
+    },
+    {
+      "nombre": "BRIGADIER SAN MARTIN",
+      "poblacion": 10,
+      "porcentaje": 1.9,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA CLARET",
+      "poblacion": 1,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 2713,
+      "porcentaje": 14.2,
+      "orden": 3
+    },
+    {
+      "nombre": "APEADERO LA TABLADA",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 114,
+      "porcentaje": 0.7,
+      "orden": 4
+    },
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 25,
+      "porcentaje": 0.2,
+      "orden": 5
+    }
   ],
   "014G": [
-    "LOS BOULEVARES",
-    "Sin Barrio - Circuito LOS BOULEVARES",
-    "BRIGADIER SAN MARTIN",
-    "APEADERO LA TABLADA",
-    "VILLA CLARET",
-    "PADRE CLARET",
-    "AEROPUERTO"
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 11298,
+      "porcentaje": 58.9,
+      "orden": 1
+    },
+    {
+      "nombre": "BRIGADIER SAN MARTIN",
+      "poblacion": 514,
+      "porcentaje": 98.1,
+      "orden": 1
+    },
+    {
+      "nombre": "APEADERO LA TABLADA",
+      "poblacion": 468,
+      "porcentaje": 66.2,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA CLARET",
+      "poblacion": 419,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LOS BOULEVARES",
+      "poblacion": 11,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LOS BOULEVARES",
+      "poblacion": 109,
+      "porcentaje": 2.7,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LOS BOULEVARES",
+      "poblacion": 13,
+      "porcentaje": 1.6,
+      "orden": 2
+    },
+    {
+      "nombre": "AEROPUERTO",
+      "poblacion": 5,
+      "porcentaje": 1.1,
+      "orden": 2
+    },
+    {
+      "nombre": "PADRE CLARET",
+      "poblacion": 37,
+      "porcentaje": 3.7,
+      "orden": 4
+    },
+    {
+      "nombre": "Sin Barrio - Circuito LOS BOULEVARES",
+      "poblacion": 889,
+      "porcentaje": 2.4,
+      "orden": 15
+    }
   ],
   "014H": [
-    "POLICIAL",
-    "COOPERATIVA 16 DE NOVIEMBRE",
-    "Sin Barrio - Circuito MERCANTIL",
-    "VILLA CORNU",
-    "MERCANTIL",
-    "CONSORCIO 16 DE NOVIEMBRE",
-    "DR REMO M. COPELLO"
+    {
+      "nombre": "POLICIAL",
+      "poblacion": 2822,
+      "porcentaje": 98.0,
+      "orden": 1
+    },
+    {
+      "nombre": "COOPERATIVA 16 DE NOVIEMBRE",
+      "poblacion": 2497,
+      "porcentaje": 91.4,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito MERCANTIL",
+      "poblacion": 1168,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA CORNU",
+      "poblacion": 960,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito MERCANTIL",
+      "poblacion": 808,
+      "porcentaje": 97.7,
+      "orden": 1
+    },
+    {
+      "nombre": "MERCANTIL",
+      "poblacion": 612,
+      "porcentaje": 97.8,
+      "orden": 1
+    },
+    {
+      "nombre": "CONSORCIO 16 DE NOVIEMBRE",
+      "poblacion": 440,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "Sin Barrio - Circuito MERCANTIL",
+      "poblacion": 112,
+      "porcentaje": 99.1,
+      "orden": 1
+    },
+    {
+      "nombre": "DR REMO M. COPELLO",
+      "poblacion": 23,
+      "porcentaje": 1.8,
+      "orden": 2
+    },
+    {
+      "nombre": "POLICIAL",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "Sin Barrio - Circuito MERCANTIL",
+      "poblacion": 1309,
+      "porcentaje": 3.6,
+      "orden": 10
+    }
   ],
   "014I": [
-    "LOS BOULEVARES",
-    "AMPLIACION POETA LUGONES",
-    "SANTA CECILIA",
-    "POETA LUGONES",
-    "APEADERO LA TABLADA",
-    "PADRE CLARET",
-    "CERRO CHICO",
-    "ALEJANDRO CENTENO",
-    "VILLA MARTA",
-    "ALBORADA (S)",
-    "Sin Barrio - Circuito SANTA CECILIA"
+    {
+      "nombre": "AMPLIACION POETA LUGONES",
+      "poblacion": 2710,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SANTA CECILIA",
+      "poblacion": 1031,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS BOULEVARES",
+      "poblacion": 4407,
+      "porcentaje": 23.0,
+      "orden": 2
+    },
+    {
+      "nombre": "POETA LUGONES",
+      "poblacion": 291,
+      "porcentaje": 2.9,
+      "orden": 2
+    },
+    {
+      "nombre": "APEADERO LA TABLADA",
+      "poblacion": 238,
+      "porcentaje": 33.7,
+      "orden": 2
+    },
+    {
+      "nombre": "PADRE CLARET",
+      "poblacion": 222,
+      "porcentaje": 22.3,
+      "orden": 2
+    },
+    {
+      "nombre": "ALEJANDRO CENTENO",
+      "poblacion": 72,
+      "porcentaje": 5.7,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA MARTA",
+      "poblacion": 58,
+      "porcentaje": 6.8,
+      "orden": 2
+    },
+    {
+      "nombre": "ALBORADA (S)",
+      "poblacion": 43,
+      "porcentaje": 16.7,
+      "orden": 2
+    },
+    {
+      "nombre": "CERRO CHICO",
+      "poblacion": 83,
+      "porcentaje": 3.8,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito SANTA CECILIA",
+      "poblacion": 15,
+      "porcentaje": 0.0,
+      "orden": 56
+    }
   ],
   "014J": [
-    "URCA",
-    "COLINAS DEL CERRO",
-    "PARQUE TABLADA",
-    "VILLA GENERAL URQUIZA",
-    "CERRO DE LAS ROSAS",
-    "LAS ROSAS",
-    "PARQUE CHATEAU CARRERAS",
-    "BAJO PALERMO"
+    {
+      "nombre": "URCA",
+      "poblacion": 4922,
+      "porcentaje": 96.6,
+      "orden": 1
+    },
+    {
+      "nombre": "COLINAS DEL CERRO",
+      "poblacion": 2243,
+      "porcentaje": 94.1,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE TABLADA",
+      "poblacion": 913,
+      "porcentaje": 86.9,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA GENERAL URQUIZA",
+      "poblacion": 57,
+      "porcentaje": 0.9,
+      "orden": 2
+    },
+    {
+      "nombre": "BAJO PALERMO",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "LAS ROSAS",
+      "poblacion": 5,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "CERRO DE LAS ROSAS",
+      "poblacion": 10,
+      "porcentaje": 0.2,
+      "orden": 5
+    },
+    {
+      "nombre": "PARQUE CHATEAU CARRERAS",
+      "poblacion": 2,
+      "porcentaje": 0.1,
+      "orden": 5
+    }
   ],
   "014K": [
-    "VILLA ALLENDE PARQUE",
-    "Sin Barrio - Circuito VILLA ALLENDE PARQUE",
-    "VILLA 9 DE JULIO",
-    "VILLA RIVERA INDARTE",
-    "VILLA CORNU"
+    {
+      "nombre": "VILLA ALLENDE PARQUE",
+      "poblacion": 5966,
+      "porcentaje": 99.8,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 45,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA RIVERA INDARTE",
+      "poblacion": 15,
+      "porcentaje": 0.3,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA CORNU",
+      "poblacion": 13,
+      "porcentaje": 0.4,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA ALLENDE PARQUE",
+      "poblacion": 102,
+      "porcentaje": 0.3,
+      "orden": 44
+    }
   ],
   "014L": [
-    "VILLA BELGRANO",
-    "PARQUE CHATEAU CARRERAS",
-    "PARQUE MODELO",
-    "CERRO DE LAS ROSAS",
-    "Sin Barrio - Circuito VILLA BELGRANO",
-    "ARGUELLO",
-    "PADRE CLARET"
+    {
+      "nombre": "VILLA BELGRANO",
+      "poblacion": 5427,
+      "porcentaje": 99.6,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE MODELO",
+      "poblacion": 209,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE CHATEAU CARRERAS",
+      "poblacion": 228,
+      "porcentaje": 9.0,
+      "orden": 3
+    },
+    {
+      "nombre": "CERRO DE LAS ROSAS",
+      "poblacion": 69,
+      "porcentaje": 1.3,
+      "orden": 3
+    },
+    {
+      "nombre": "PADRE CLARET",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 5
+    },
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 13,
+      "porcentaje": 0.1,
+      "orden": 6
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA BELGRANO",
+      "poblacion": 43,
+      "porcentaje": 0.1,
+      "orden": 52
+    }
   ],
   "014M": [
-    "VILLA CENTENARIO",
-    "CERRO CHICO",
-    "ALEJANDRO CENTENO",
-    "ALTO PALERMO",
-    "TABLADA PARK",
-    "VILLA MARTA",
-    "PARQUE COREMA",
-    "LOS ANGELES",
-    "SAN MARCELO",
-    "ALBORADA (S)",
-    "PADRE CLARET",
-    "CERRO DE LAS ROSAS"
+    {
+      "nombre": "VILLA CENTENARIO",
+      "poblacion": 2139,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "CERRO CHICO",
+      "poblacion": 1552,
+      "porcentaje": 70.3,
+      "orden": 1
+    },
+    {
+      "nombre": "ALEJANDRO CENTENO",
+      "poblacion": 1191,
+      "porcentaje": 94.3,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTO PALERMO",
+      "poblacion": 900,
+      "porcentaje": 94.0,
+      "orden": 1
+    },
+    {
+      "nombre": "TABLADA PARK",
+      "poblacion": 821,
+      "porcentaje": 95.4,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA MARTA",
+      "poblacion": 796,
+      "porcentaje": 93.2,
+      "orden": 1
+    },
+    {
+      "nombre": "PARQUE COREMA",
+      "poblacion": 628,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "LOS ANGELES",
+      "poblacion": 585,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "SAN MARCELO",
+      "poblacion": 289,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALBORADA (S)",
+      "poblacion": 214,
+      "porcentaje": 83.3,
+      "orden": 1
+    },
+    {
+      "nombre": "CERRO DE LAS ROSAS",
+      "poblacion": 132,
+      "porcentaje": 2.4,
+      "orden": 2
+    },
+    {
+      "nombre": "PADRE CLARET",
+      "poblacion": 169,
+      "porcentaje": 17.0,
+      "orden": 3
+    }
   ],
   "014N": [
-    "VILLA CORNU",
-    "POLICIAL",
-    "DR REMO M. COPELLO",
-    "COOPERATIVA 16 DE NOVIEMBRE",
-    "U.O.C.R.A.",
-    "Sin Barrio - Circuito VILLA CORNU",
-    "CERRO NORTE",
-    "VILLA ALLENDE PARQUE"
+    {
+      "nombre": "VILLA CORNU",
+      "poblacion": 3158,
+      "porcentaje": 98.9,
+      "orden": 1
+    },
+    {
+      "nombre": "POLICIAL",
+      "poblacion": 1739,
+      "porcentaje": 99.9,
+      "orden": 1
+    },
+    {
+      "nombre": "DR REMO M. COPELLO",
+      "poblacion": 1234,
+      "porcentaje": 98.1,
+      "orden": 1
+    },
+    {
+      "nombre": "COOPERATIVA 16 DE NOVIEMBRE",
+      "poblacion": 235,
+      "porcentaje": 8.6,
+      "orden": 2
+    },
+    {
+      "nombre": "U.O.C.R.A.",
+      "poblacion": 138,
+      "porcentaje": 6.9,
+      "orden": 2
+    },
+    {
+      "nombre": "POLICIAL",
+      "poblacion": 18,
+      "porcentaje": 0.6,
+      "orden": 3
+    },
+    {
+      "nombre": "CERRO NORTE",
+      "poblacion": 3,
+      "porcentaje": 0.0,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA ALLENDE PARQUE",
+      "poblacion": 3,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA CORNU",
+      "poblacion": 83,
+      "porcentaje": 0.2,
+      "orden": 46
+    }
   ],
   "014O": [
-    "VILLA 9 DE JULIO",
-    "VILLA SERRANA",
-    "VILLA QUISQUIZACATE",
-    "ARGUELLO",
-    "ARGUELLO NORTE",
-    "VILLA RIVERA INDARTE",
-    "CERRO NORTE"
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 10275,
+      "porcentaje": 97.8,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SERRANA",
+      "poblacion": 1056,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA QUISQUIZACATE",
+      "poblacion": 143,
+      "porcentaje": 9.3,
+      "orden": 2
+    },
+    {
+      "nombre": "VILLA RIVERA INDARTE",
+      "poblacion": 18,
+      "porcentaje": 0.3,
+      "orden": 2
+    },
+    {
+      "nombre": "CERRO NORTE",
+      "poblacion": 5,
+      "porcentaje": 0.1,
+      "orden": 2
+    },
+    {
+      "nombre": "ARGUELLO NORTE",
+      "poblacion": 18,
+      "porcentaje": 0.1,
+      "orden": 4
+    },
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 70,
+      "porcentaje": 0.4,
+      "orden": 5
+    }
   ],
   "014P": [
-    "VILLA RIVERA INDARTE",
-    "RIVERA INDARTE",
-    "VILLA SALDAN",
-    "Sin Barrio - Circuito VILLA RIVERA INDARTE",
-    "VILLA 9 DE JULIO",
-    "VILLA QUISQUIZACATE"
+    {
+      "nombre": "VILLA RIVERA INDARTE",
+      "poblacion": 5605,
+      "porcentaje": 99.2,
+      "orden": 1
+    },
+    {
+      "nombre": "VILLA SALDAN",
+      "poblacion": 9,
+      "porcentaje": 100.0,
+      "orden": 1
+    },
+    {
+      "nombre": "RIVERA INDARTE",
+      "poblacion": 32,
+      "porcentaje": 1.4,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA QUISQUIZACATE",
+      "poblacion": 1,
+      "porcentaje": 0.1,
+      "orden": 3
+    },
+    {
+      "nombre": "VILLA 9 DE JULIO",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 7
+    },
+    {
+      "nombre": "Sin Barrio - Circuito VILLA RIVERA INDARTE",
+      "poblacion": 2,
+      "porcentaje": 0.0,
+      "orden": 65
+    }
   ],
   "014Q": [
-    "VILLA WARCALDE",
-    "ALTO HERMOSO",
-    "PORTAL DEL JACARANDA",
-    "RIVERA INDARTE",
-    "LA CAROLINA",
-    "SAN JOSE",
-    "ARGUELLO"
+    {
+      "nombre": "VILLA WARCALDE",
+      "poblacion": 986,
+      "porcentaje": 66.0,
+      "orden": 1
+    },
+    {
+      "nombre": "ALTO HERMOSO",
+      "poblacion": 280,
+      "porcentaje": 54.5,
+      "orden": 1
+    },
+    {
+      "nombre": "PORTAL DEL JACARANDA",
+      "poblacion": 197,
+      "porcentaje": 93.4,
+      "orden": 1
+    },
+    {
+      "nombre": "RIVERA INDARTE",
+      "poblacion": 160,
+      "porcentaje": 6.9,
+      "orden": 2
+    },
+    {
+      "nombre": "SAN JOSE",
+      "poblacion": 1,
+      "porcentaje": 0.2,
+      "orden": 2
+    },
+    {
+      "nombre": "LA CAROLINA",
+      "poblacion": 9,
+      "porcentaje": 0.9,
+      "orden": 3
+    },
+    {
+      "nombre": "ARGUELLO",
+      "poblacion": 1,
+      "porcentaje": 0.0,
+      "orden": 7
+    }
   ]
 }
