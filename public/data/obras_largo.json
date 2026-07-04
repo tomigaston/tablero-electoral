@@ -1,0 +1,1898 @@
+[
+  {
+    "barrio": "Villa Allende Parque",
+    "barrio_normalizado": "VILLA ALLENDE PARQUE",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 9 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Rivera Indarte",
+    "barrio_normalizado": "VILLA RIVERA INDARTE",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 22 o 52 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cerro Norte",
+    "barrio_normalizado": "CERRO NORTE",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 12 o  44 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Zepa C",
+    "barrio_normalizado": "ZEPA C",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación 8 o 18 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Felipe Varela",
+    "barrio_normalizado": "FELIPE VARELA",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 36 o 55 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "El Dorado - Nuevo Progreso",
+    "barrio_normalizado": "EL DORADO - NUEVO PROGRESO",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 32 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Ávalos",
+    "barrio_normalizado": "VILLA AVALOS",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 10 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Manantiales y Marta Juana Gonzalez",
+    "barrio_normalizado": "MANANTIALES Y MARTA JUANA GONZALEZ",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 10 o 27 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Las Tablitas",
+    "barrio_normalizado": "LAS TABLITAS",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 4 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Autódromo",
+    "barrio_normalizado": "AUTODROMO",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 9 cuadras",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Parque Liceo 3° Sección",
+    "barrio_normalizado": "PARQUE LICEO 3 SECCION",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 45 cuadras",
+    "estado": "0.47"
+  },
+  {
+    "barrio": "Patricios Oeste",
+    "barrio_normalizado": "PATRICIOS OESTE",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 37 cuadras",
+    "estado": "0.18"
+  },
+  {
+    "barrio": "Residencial San Roque",
+    "barrio_normalizado": "RESIDENCIAL SAN ROQUE",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 36 cuadras",
+    "estado": "0.2"
+  },
+  {
+    "barrio": "Residencial San Roque",
+    "barrio_normalizado": "RESIDENCIAL SAN ROQUE",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA MAURO FERNANDEZ: Recalce de fundaciones",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "El Quebracho",
+    "barrio_normalizado": "EL QUEBRACHO",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 38 cuadras",
+    "estado": "0.92"
+  },
+  {
+    "barrio": "Villa Unión",
+    "barrio_normalizado": "VILLA UNION",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 77 cuadras",
+    "estado": "0.31"
+  },
+  {
+    "barrio": "Parque Futura",
+    "barrio_normalizado": "PARQUE FUTURA",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 44 cuadras",
+    "estado": "0.55"
+  },
+  {
+    "barrio": "Policial",
+    "barrio_normalizado": "POLICIAL",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 72 cuadras",
+    "estado": "0.26"
+  },
+  {
+    "barrio": "Villa 9 de Julio",
+    "barrio_normalizado": "VILLA 9 DE JULIO",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 50 cuadras",
+    "estado": "0.4"
+  },
+  {
+    "barrio": "Carrara",
+    "barrio_normalizado": "CARRARA",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 31 cuadras",
+    "estado": "0.45"
+  },
+  {
+    "barrio": "San Felipe",
+    "barrio_normalizado": "SAN FELIPE",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 51 cuadras",
+    "estado": "0.7"
+  },
+  {
+    "barrio": "Yapeyú",
+    "barrio_normalizado": "YAPEYU",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 38 cuadras",
+    "estado": "0.65"
+  },
+  {
+    "barrio": "Los Artesanos",
+    "barrio_normalizado": "LOS ARTESANOS",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación - 30 cuadras",
+    "estado": null
+  },
+  {
+    "barrio": "Cerrito",
+    "barrio_normalizado": "CERRITO",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 18 cuadras",
+    "estado": null
+  },
+  {
+    "barrio": "Los Boulevares",
+    "barrio_normalizado": "LOS BOULEVARES",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 15 cuadras",
+    "estado": null
+  },
+  {
+    "barrio": "Coop. La Unidad y Coop. Miralta",
+    "barrio_normalizado": "COOP. LA UNIDAD Y COOP. MIRALTA",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 4 cuadras",
+    "estado": null
+  },
+  {
+    "barrio": "Favaloro Sur",
+    "barrio_normalizado": "FAVALORO SUR",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 2 cuadras",
+    "estado": null
+  },
+  {
+    "barrio": "Sachi",
+    "barrio_normalizado": "SACHI",
+    "match_poligono": false,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 2 cuadras",
+    "estado": null
+  },
+  {
+    "barrio": "Villa Bustos",
+    "barrio_normalizado": "VILLA BUSTOS",
+    "match_poligono": true,
+    "programa": "PLAN DE PAVIMENTACIÓN 800 CUADRAS",
+    "descripcion": "Pavimentación y cordón cuneta - 33 cuadras",
+    "estado": "0.15"
+  },
+  {
+    "barrio": "Villa Unión",
+    "barrio_normalizado": "VILLA UNION",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "José Ignacio Díaz II",
+    "barrio_normalizado": "JOSE IGNACIO DIAZ II",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Coronel Olmedo",
+    "barrio_normalizado": "CORONEL OLMEDO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ampliación Coronel Olmedo",
+    "barrio_normalizado": "AMPLIACION CORONEL OLMEDO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "José Ignacio Díaz III",
+    "barrio_normalizado": "JOSE IGNACIO DIAZ III",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "José Ignacio Díaz III",
+    "barrio_normalizado": "JOSE IGNACIO DIAZ III",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA MARÍA EVA DUARTE (EX-DE FAMILIAS UNIDAS): Intervención integral del sistema pluvial",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "José Ignacio Díaz I",
+    "barrio_normalizado": "JOSE IGNACIO DIAZ I",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "General Arenales",
+    "barrio_normalizado": "GENERAL ARENALES",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Floresta Norte",
+    "barrio_normalizado": "FLORESTA NORTE",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Las Lilas",
+    "barrio_normalizado": "LAS LILAS",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Dean Funes",
+    "barrio_normalizado": "DEAN FUNES",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Rivadavia Anexo",
+    "barrio_normalizado": "VILLA RIVADAVIA ANEXO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Floresta Sur",
+    "barrio_normalizado": "FLORESTA SUR",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "La Dorotea / Las Quintas y Las Toscas",
+    "barrio_normalizado": "LA DOROTEA / LAS QUINTAS Y LAS TOSCAS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Bajo Pueyrredón",
+    "barrio_normalizado": "BAJO PUEYRREDON",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "El Gateado",
+    "barrio_normalizado": "EL GATEADO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Esquiú",
+    "barrio_normalizado": "VILLA ESQUIU",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Esquiú",
+    "barrio_normalizado": "VILLA ESQUIU",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.M. Nº 192 DR. JOSE RAMON IBAÑEZ: Medianera",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Chacra La Merced",
+    "barrio_normalizado": "CHACRA LA MERCED",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Chacra La Merced",
+    "barrio_normalizado": "CHACRA LA MERCED",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA ADOLFO VAN GELDEREN : Restitucion de solados en patio, pluvial",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Calingasta",
+    "barrio_normalizado": "CALINGASTA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Martinez",
+    "barrio_normalizado": "VILLA MARTINEZ",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Quintas de Ferreyra",
+    "barrio_normalizado": "QUINTAS DE FERREYRA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Los Fresnos",
+    "barrio_normalizado": "LOS FRESNOS",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Betania",
+    "barrio_normalizado": "BETANIA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ituizangó",
+    "barrio_normalizado": "ITUIZANGO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Beatriz Camino",
+    "barrio_normalizado": "BEATRIZ CAMINO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "San Javier",
+    "barrio_normalizado": "SAN JAVIER",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Joison",
+    "barrio_normalizado": "JOISON",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ampliación Cabildo",
+    "barrio_normalizado": "AMPLIACION CABILDO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ampliación Cabildo",
+    "barrio_normalizado": "AMPLIACION CABILDO",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA GRACIELA DEL RIO: Medianera y desagues pluviales",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Manantiales I",
+    "barrio_normalizado": "MANANTIALES I",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa Manantiales II",
+    "barrio_normalizado": "COOPERATIVA MANANTIALES II",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Felipe Varela",
+    "barrio_normalizado": "FELIPE VARELA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa Marta Juana",
+    "barrio_normalizado": "COOPERATIVA MARTA JUANA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Congreso",
+    "barrio_normalizado": "CONGRESO",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Asentamiento Renault",
+    "barrio_normalizado": "ASENTAMIENTO RENAULT",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Colina Los Pinos",
+    "barrio_normalizado": "COLINA LOS PINOS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Carrara",
+    "barrio_normalizado": "CARRARA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ampliación Altos Velez Sarsfield",
+    "barrio_normalizado": "AMPLIACION ALTOS VELEZ SARSFIELD",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Parque Universidad",
+    "barrio_normalizado": "PARQUE UNIVERSIDAD",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa El Milagro",
+    "barrio_normalizado": "COOPERATIVA EL MILAGRO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa 12 de Septiembre",
+    "barrio_normalizado": "COOPERATIVA 12 DE SEPTIEMBRE",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Huertas",
+    "barrio_normalizado": "HUERTAS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa San Carlos",
+    "barrio_normalizado": "COOPERATIVA SAN CARLOS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Eucarística",
+    "barrio_normalizado": "VILLA EUCARISTICA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Posta de Vargas",
+    "barrio_normalizado": "POSTA DE VARGAS",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Huertillas",
+    "barrio_normalizado": "HUERTILLAS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Las Magdalenas",
+    "barrio_normalizado": "LAS MAGDALENAS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Las Moras",
+    "barrio_normalizado": "LAS MORAS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "San Alberto",
+    "barrio_normalizado": "SAN ALBERTO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Industrial Oeste",
+    "barrio_normalizado": "INDUSTRIAL OESTE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ecotierra",
+    "barrio_normalizado": "ECOTIERRA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Almirante Brown",
+    "barrio_normalizado": "ALMIRANTE BROWN",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Almirante Brown",
+    "barrio_normalizado": "ALMIRANTE BROWN",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA HEROES DE MALVINAS (EX B° ALMIRANTE BROWN): Medianera completa",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Ampliación Santa Rosa",
+    "barrio_normalizado": "AMPLIACION SANTA ROSA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa Camoatí",
+    "barrio_normalizado": "COOPERATIVA CAMOATI",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Arpeboch / Los Jacarandaes",
+    "barrio_normalizado": "ARPEBOCH / LOS JACARANDAES",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Parque Los Molinos",
+    "barrio_normalizado": "PARQUE LOS MOLINOS",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Nuestro Hogar I y II",
+    "barrio_normalizado": "NUESTRO HOGAR I Y II",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "El Cerrito",
+    "barrio_normalizado": "EL CERRITO",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Los Polacos e/ De Los Genoveses",
+    "barrio_normalizado": "LOS POLACOS E/ DE LOS GENOVESES",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Los Polacos / Cno. Alto Perú",
+    "barrio_normalizado": "LOS POLACOS / CNO. ALTO PERU",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa 9 de Julio",
+    "barrio_normalizado": "VILLA 9 DE JULIO",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "La Carolina",
+    "barrio_normalizado": "LA CAROLINA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Nueva Esperanza",
+    "barrio_normalizado": "NUEVA ESPERANZA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Yofre Norte",
+    "barrio_normalizado": "YOFRE NORTE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "San Ramón",
+    "barrio_normalizado": "SAN RAMON",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Parque Monte Cristo",
+    "barrio_normalizado": "PARQUE MONTE CRISTO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Gran Parque",
+    "barrio_normalizado": "VILLA GRAN PARQUE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Maria Lastenia",
+    "barrio_normalizado": "MARIA LASTENIA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Alicia Risler Sector 1",
+    "barrio_normalizado": "ALICIA RISLER SECTOR 1",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Alicia Risler Sector 2",
+    "barrio_normalizado": "ALICIA RISLER SECTOR 2",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Recreo Norte",
+    "barrio_normalizado": "RECREO NORTE",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "San Felipe",
+    "barrio_normalizado": "SAN FELIPE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Remedios de Escalada",
+    "barrio_normalizado": "REMEDIOS DE ESCALADA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Cooperativa El Hornero",
+    "barrio_normalizado": "COOPERATIVA EL HORNERO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "El Chingolo",
+    "barrio_normalizado": "EL CHINGOLO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Callejón de Tokio y Pjes. paralelos",
+    "barrio_normalizado": "CALLEJON DE TOKIO Y PJES. PARALELOS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Los Robles",
+    "barrio_normalizado": "LOS ROBLES",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ampliación General Artigas",
+    "barrio_normalizado": "AMPLIACION GENERAL ARTIGAS",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Cornú",
+    "barrio_normalizado": "VILLA CORNU",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Rivera Indarte",
+    "barrio_normalizado": "RIVERA INDARTE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Mantenimiento de calles firme natural",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Humberto Primo e/Maipú y Rivera Indarte",
+    "barrio_normalizado": "HUMBERTO PRIMO E/MAIPU Y RIVERA INDARTE",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Rehabilitación con Asfalto",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Siburú",
+    "barrio_normalizado": "VILLA SIBURU",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Rehabilitación con Asfalto -  - Entre Sagrada Familia y Manuel de Porto y Mariño - 300 metros",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Alta Córdoba",
+    "barrio_normalizado": "ALTA CORDOBA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Rehabilitación con Asfalto - Mariano Fragueiro desde Francisco Quevedo hasta Castelar",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Nueva Córdoba",
+    "barrio_normalizado": "NUEVA CORDOBA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Rehabiliatación con Asfalto - Ambrosio Olmos entre Chile y Plaza España y Ambrosio Olmos entre Chile y Crisol",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Nueva Córdoba",
+    "barrio_normalizado": "NUEVA CORDOBA",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "IPEM 268 DEAN FUNES: Restitución de piso interior, carpinterias, pintura",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Nueva Córdoba",
+    "barrio_normalizado": "NUEVA CORDOBA",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.T. Nº 248 LEOPOLDO LUGONES: Cambio de aberturas, pintura interior",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Cornelio Saavedra e/ Pimentel y Perez Correa",
+    "barrio_normalizado": "CORNELIO SAAVEDRA E/ PIMENTEL Y PEREZ CORREA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Galeotti",
+    "barrio_normalizado": "GALEOTTI",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Poeta Lugones",
+    "barrio_normalizado": "POETA LUGONES",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Defensa e/ Rio Negro y Forestieri",
+    "barrio_normalizado": "DEFENSA E/ RIO NEGRO Y FORESTIERI",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Finochietto e/ Lamartine y Elpidio gonzalez",
+    "barrio_normalizado": "FINOCHIETTO E/ LAMARTINE Y ELPIDIO GONZALEZ",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Marqués de Sobremonte",
+    "barrio_normalizado": "MARQUES DE SOBREMONTE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto -  entre Diego Celiz de Quiroga y Tomás Irobi",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Marqués de Sobremonte",
+    "barrio_normalizado": "MARQUES DE SOBREMONTE",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto - entre Tristán de Tejeda y Suarez de Figueroa",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Naciones Unidas desde Friuli hasta Dag Hammarskjold",
+    "barrio_normalizado": "NACIONES UNIDAS DESDE FRIULI HASTA DAG HAMMARSKJOLD",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Naciones Unidas desde Friuli hasta Lamartine",
+    "barrio_normalizado": "NACIONES UNIDAS DESDE FRIULI HASTA LAMARTINE",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Naciones Unidas y Friuli",
+    "barrio_normalizado": "NACIONES UNIDAS Y FRIULI",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Asfalto",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Procear Liceo",
+    "barrio_normalizado": "PROCEAR LICEO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Rodriguez Del Busto E/ Pettorutti y Castagnino",
+    "barrio_normalizado": "RODRIGUEZ DEL BUSTO E/ PETTORUTTI Y CASTAGNINO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Javier López esq. Bv. Los Granaderos",
+    "barrio_normalizado": "JAVIER LOPEZ ESQ. BV. LOS GRANADEROS",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Francisco de Quevedo e/ Avellaneda y Escobedo",
+    "barrio_normalizado": "FRANCISCO DE QUEVEDO E/ AVELLANEDA Y ESCOBEDO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Lavalleja e/Manuel Lucero e Isabel La Catolica",
+    "barrio_normalizado": "LAVALLEJA E/MANUEL LUCERO E ISABEL LA CATOLICA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Manuel Lucero e/ Sucre y Jujuy",
+    "barrio_normalizado": "MANUEL LUCERO E/ SUCRE Y JUJUY",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Constancio Vigil al 3686 y 3880",
+    "barrio_normalizado": "CONSTANCIO VIGIL AL 3686 Y 3880",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Palestina y Bv. Los Andes",
+    "barrio_normalizado": "PALESTINA Y BV. LOS ANDES",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Goycochea y Albornoz",
+    "barrio_normalizado": "GOYCOCHEA Y ALBORNOZ",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Santa Isabel 3ra Sección",
+    "barrio_normalizado": "SANTA ISABEL 3RA SECCION",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Atlántida y Armada Argentina",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Santa Isabel 3ra Sección",
+    "barrio_normalizado": "SANTA ISABEL 3RA SECCION",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA CEFERINO NAMUNCURA: Recambio de cubierta completa",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Cleveland y Carmen de Patagones",
+    "barrio_normalizado": "CLEVELAND Y CARMEN DE PATAGONES",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Pettirossi y Estocolmo",
+    "barrio_normalizado": "PETTIROSSI Y ESTOCOLMO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Aspacia",
+    "barrio_normalizado": "VILLA ASPACIA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Alianza y Aviador Mira",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Aviador Mira 2758",
+    "barrio_normalizado": "AVIADOR MIRA 2758",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Manantiales II",
+    "barrio_normalizado": "MANANTIALES II",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Impira y Cañada de Gomez",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Altamira",
+    "barrio_normalizado": "ALTAMIRA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Homigón - Ariza 4861",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Santa Ana y García Martínez",
+    "barrio_normalizado": "SANTA ANA Y GARCIA MARTINEZ",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Santa Ana y Padre Lozano",
+    "barrio_normalizado": "SANTA ANA Y PADRE LOZANO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Santa Ana y Haedo",
+    "barrio_normalizado": "SANTA ANA Y HAEDO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Santa Ana y Sol de Mayo",
+    "barrio_normalizado": "SANTA ANA Y SOL DE MAYO",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Alta Córdoba",
+    "barrio_normalizado": "ALTA CORDOBA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Zelaya y Bv. Los Andes",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Alta Córdoba",
+    "barrio_normalizado": "ALTA CORDOBA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Francisco de Quevedo entre Avellaneda y Escobedo",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Alta Córdoba",
+    "barrio_normalizado": "ALTA CORDOBA",
+    "match_poligono": true,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Manuel Lucero entre Sucre y Jujuy",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Paula Albarracín esquina Glauce Baldovin",
+    "barrio_normalizado": "PAULA ALBARRACIN ESQUINA GLAUCE BALDOVIN",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Río Colorado y Carmen de Patagones",
+    "barrio_normalizado": "RIO COLORADO Y CARMEN DE PATAGONES",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Villa Aspacia",
+    "barrio_normalizado": "VILLA ASPACIA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Alianza entre Pettirossi y Kingley",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Aspacia",
+    "barrio_normalizado": "VILLA ASPACIA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Kingley esquina Antártida Argentina",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Aspacia",
+    "barrio_normalizado": "VILLA ASPACIA",
+    "match_poligono": false,
+    "programa": "PLAN DE REPARACIÓN VIAL INTEGRAL",
+    "descripcion": "Bacheo con Hormigón - Kingley esquina Esmeralda",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Altos de Santa Ana",
+    "barrio_normalizado": "ALTOS DE SANTA ANA",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Altos de Santa Ana - 18 artefactos instalados",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Los Plátanos",
+    "barrio_normalizado": "LOS PLATANOS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Los Tártaron Jerusalem - 22 artefactos instalados",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Parque Latino",
+    "barrio_normalizado": "PARQUE LATINO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Parque Latino - 20 artefactos instalados",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Mariano Balcarce",
+    "barrio_normalizado": "MARIANO BALCARCE",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza La Plazona - 18 artefactos instalados",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Observatorio",
+    "barrio_normalizado": "OBSERVATORIO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Luis Vernet - 11 artefactos instalados",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Parque Capital",
+    "barrio_normalizado": "PARQUE CAPITAL",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza del Agua - 27 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Nicolás Avellaneda",
+    "barrio_normalizado": "NICOLAS AVELLANEDA",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Barrio Nicolás Avellaneda - 27 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Nicolás Avellaneda",
+    "barrio_normalizado": "NICOLAS AVELLANEDA",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA JUAN XXIII: Restitucion de contrapiso de patio, sistema pluvial",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Parque Jorge Newbery",
+    "barrio_normalizado": "PARQUE JORGE NEWBERY",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Soldado Aeronáutica - 54 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Alta Córdoba",
+    "barrio_normalizado": "ALTA CORDOBA",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Gerónimo Luis de Cabrera - 22 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Colinas del Cerro",
+    "barrio_normalizado": "COLINAS DEL CERRO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Pablo Bracamonte - 6 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "San Martín",
+    "barrio_normalizado": "SAN MARTIN",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Eleodoro Fierro - 12 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "San Martín",
+    "barrio_normalizado": "SAN MARTIN",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "J. DE INF. MERCEDITAS BALCARCE DE SAN MARTIN: Rehabilitacion de aulas abandonas (albañileria, carpinteria, pisos)",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Alejandro Centeno",
+    "barrio_normalizado": "ALEJANDRO CENTENO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Paseo de la Solidaridad - 13 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Parque Liceo 3º Sección",
+    "barrio_normalizado": "PARQUE LICEO 3o SECCION",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza José Evaristo Fernández - 18 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Los Pinos",
+    "barrio_normalizado": "LOS PINOS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Tierra del Fuego - 12 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Marqués de Sobremonte",
+    "barrio_normalizado": "MARQUES DE SOBREMONTE",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Marqués de Sobremonte - 12 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Poeta Lugones",
+    "barrio_normalizado": "POETA LUGONES",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Poeta Lugones - 46 artefactos por instalar",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Los Boulevares",
+    "barrio_normalizado": "LOS BOULEVARES",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Alberto Pio Augusto Cognini",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Nuevo Argüello",
+    "barrio_normalizado": "NUEVO ARGUELLO",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Nueva Argüello",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Nuevo Argüello",
+    "barrio_normalizado": "NUEVO ARGUELLO",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza de la Virgen Nuevo Argüello",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Industrial Oeste",
+    "barrio_normalizado": "INDUSTRIAL OESTE",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Los Tártaros",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Ampliación Cabildo",
+    "barrio_normalizado": "AMPLIACION CABILDO",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Ampliación Cabildo (Ushuaia esq. José Cottolengo)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Valle Escondido",
+    "barrio_normalizado": "VALLE ESCONDIDO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Malvavisco",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Renacimiento",
+    "barrio_normalizado": "RENACIMIENTO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Renacimiento (Matheu esq. Mario Bravo)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Bialet Massé",
+    "barrio_normalizado": "BIALET MASSE",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Cerro Colorado (Patio de una escuela)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "San Cayetano",
+    "barrio_normalizado": "SAN CAYETANO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en San Cayetano (Obispo Castellano, Alejandro Danel, Learte y Asturias)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Vicor",
+    "barrio_normalizado": "VICOR",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Polideportivo Vicor",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Colinas de Bella Vista",
+    "barrio_normalizado": "COLINAS DE BELLA VISTA",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Colinas de Villa Vista (Paraguay esq. Marcelo de Alvear)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Jardines del Jockey",
+    "barrio_normalizado": "JARDINES DEL JOCKEY",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Hípica",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Teodoro Fels",
+    "barrio_normalizado": "TEODORO FELS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Barcena",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Los Plátanos",
+    "barrio_normalizado": "LOS PLATANOS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Vuelta de Plazoleta Periodista Rene Avila",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Los Plátanos",
+    "barrio_normalizado": "LOS PLATANOS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plazoleta Periodista Rene Avila",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Ampliación Las Palmas",
+    "barrio_normalizado": "AMPLIACION LAS PALMAS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Ampliación Las Palmas",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Puente Blanco",
+    "barrio_normalizado": "PUENTE BLANCO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Candiotti",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Consorcio Esperanza",
+    "barrio_normalizado": "CONSORCIO ESPERANZA",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Consorcio Esperanza",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Argüello",
+    "barrio_normalizado": "ARGUELLO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Yahuar Huacac",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Escobar",
+    "barrio_normalizado": "ESCOBAR",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Chamical",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Argüello",
+    "barrio_normalizado": "ARGUELLO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Roberto Koch",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Cerro Chico",
+    "barrio_normalizado": "CERRO CHICO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Guillermo Butler",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Altos San Martín",
+    "barrio_normalizado": "ALTOS SAN MARTIN",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plazoleta Padre Luis Galeano",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Altos San Martín",
+    "barrio_normalizado": "ALTOS SAN MARTIN",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Roberto Viola",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Las Margaritas",
+    "barrio_normalizado": "LAS MARGARITAS",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plazoleta Facundo Quiroga",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Escobar",
+    "barrio_normalizado": "ESCOBAR",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Barrio Escobar",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Argüello",
+    "barrio_normalizado": "ARGUELLO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Federico Godoy",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Alto Verde",
+    "barrio_normalizado": "ALTO VERDE",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plazoleta Mercedes de San Martín",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Ferroviario Mitre",
+    "barrio_normalizado": "FERROVIARIO MITRE",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Martín Barizonzi",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Quintas de Italia",
+    "barrio_normalizado": "QUINTAS DE ITALIA",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Cistrense",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Ampliación Cabildo",
+    "barrio_normalizado": "AMPLIACION CABILDO",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Congreso esquina Choele Choel",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Jardines del Jockey",
+    "barrio_normalizado": "JARDINES DEL JOCKEY",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Eridanus esquina Caballeriza",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Parque Liceo 3º Sección",
+    "barrio_normalizado": "PARQUE LICEO 3o SECCION",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en San Luis Orrego esquina Bartolomé Hidalgo",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Cooperativa Futuro",
+    "barrio_normalizado": "COOPERATIVA FUTURO",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en José de Arca y Díaz",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Poeta Lugones",
+    "barrio_normalizado": "POETA LUGONES",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Baravino - Categoría Cantera",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Las Flores II",
+    "barrio_normalizado": "LAS FLORES II",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Vecelli, Carlos Bunge y Domingo Uriarte",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Las Flores",
+    "barrio_normalizado": "LAS FLORES",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza en Bonatti y Vecelli",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Las Flores",
+    "barrio_normalizado": "LAS FLORES",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA PROVINCIA DE CATAMARCA: Desagues pluviales con pozo de infiltración, pintura integral exterior, patio",
+    "estado": "FINALIZADA"
+  },
+  {
+    "barrio": "Ampliación Artigas",
+    "barrio_normalizado": "AMPLIACION ARTIGAS",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Bunge",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Jardín Hipódromo",
+    "barrio_normalizado": "JARDIN HIPODROMO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Vecelli (Valparaíso entre Rafael Sanzio y Vecelli)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Jardín Hipódromo",
+    "barrio_normalizado": "JARDIN HIPODROMO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Valparaíso (Valparaíso y Vecelli)",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Jardines del Valle",
+    "barrio_normalizado": "JARDINES DEL VALLE",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Jardines del Valle",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Ituizangó",
+    "barrio_normalizado": "ITUIZANGO",
+    "match_poligono": false,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Salvador Mazza",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "Ituizangó",
+    "barrio_normalizado": "ITUIZANGO",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.M. Nº 207 EDUARDO RAUL REQUENA: Sobretecho (por filtraciones)",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Argüello",
+    "barrio_normalizado": "ARGUELLO",
+    "match_poligono": true,
+    "programa": "PROGRAMA NOS VEMOS EN LA PLAZA",
+    "descripcion": "Plaza Federico Hopkins",
+    "estado": "PENDIENTE DE EJECUCIÓN"
+  },
+  {
+    "barrio": "San Vicente",
+    "barrio_normalizado": "SAN VICENTE",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA MARIANO FRAGUEIRO: Aberturas, pintura integral interior exterior",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Santa Isabel 2da Sección",
+    "barrio_normalizado": "SANTA ISABEL 2DA SECCION",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.M. Nº 9 DR. ERNESTO CHE GUEVARA: Hundimientos, pisos exteriores, pintura interior, arreglo de cielorrazos",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Libertador",
+    "barrio_normalizado": "VILLA LIBERTADOR",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA PATRICIAS MENDOCINAS: Hundimeintos, baño y cocina, pluvial. Pintura integral exterior",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Libertador",
+    "barrio_normalizado": "VILLA LIBERTADOR",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.M. Nº 123 BLANCA ETCHEMENDY: Submuraciones, desagues pluviales, conexión a cloacas",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Libertador",
+    "barrio_normalizado": "VILLA LIBERTADOR",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "J.DE INF. ADELA ZAMUDIO (EX-V.FORESTIERI): Ingreso peatonal, pluviales, medianeras",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Libertador",
+    "barrio_normalizado": "VILLA LIBERTADOR",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.M. Nº 295 AGUSTIN TOSCO: Baños, cegado de hundimiento cloacal y conexión a red clocal",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Libertador",
+    "barrio_normalizado": "VILLA LIBERTADOR",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA PCIA. SANTIAGO DEL ESTERO: Recalce de fundaciones, hundimiento, baños, conexion a cloaca, patio",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Adela",
+    "barrio_normalizado": "VILLA ADELA",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA CADETES DE LA FUERZA AÉREA: Nucleos sanitarios, hundimiento en patio, cambio de carpinteria, recalce fundacion",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Centro",
+    "barrio_normalizado": "CENTRO",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "J.DE INF. GENERAL FRANCISCO ORTIZ DE OCAMPO: Demolición de espacio en deshuso y nueva galeria, resitucipon de solado en patio",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Villa Posse",
+    "barrio_normalizado": "VILLA POSSE",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA CORNELIO SAAVEDRA: Intervencion integral en cubierta",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "1º de Mayo",
+    "barrio_normalizado": "1o DE MAYO",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA FRAY JUSTO SANTA MARIA DE ORO: Cubierta, restitucion de sistema cloacal, hundimientos",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Empalme",
+    "barrio_normalizado": "EMPALME",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA VICTOR MERCANTE: Intervencion integral en cubierta",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "General Artigas",
+    "barrio_normalizado": "GENERAL ARTIGAS",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA ERNESTO BANCALARI: Baños, pluviales, hundimiento",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "San Carlos",
+    "barrio_normalizado": "SAN CARLOS",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.M. Nº 12 PTE.JUAN DOMINGO PERON (ESCUELA JOSE MANUEL ESTRADA: Cloaca, nivelación de patio",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Santa Isabel 1ra Sección",
+    "barrio_normalizado": "SANTA ISABEL 1RA SECCION",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA BANDERA ARGENTINA: Pluviales",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Matienzo",
+    "barrio_normalizado": "MATIENZO",
+    "match_poligono": false,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "I.P.E.T. N° 383: Baños integral",
+    "estado": "EN EJECUCIÓN"
+  },
+  {
+    "barrio": "Güemes",
+    "barrio_normalizado": "GUEMES",
+    "match_poligono": true,
+    "programa": "ESCUELAS EN CAPITAL",
+    "descripcion": "ESCUELA ADOLFO SALDIAS: Nucleo sanitarios PA y PB, cambio de solado de patio y readecuacion pluvial",
+    "estado": "EN EJECUCIÓN"
+  }
+]
