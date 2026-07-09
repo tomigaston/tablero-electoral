@@ -1,0 +1,840 @@
+{
+  "0001": {
+    "nombre": "SECCIONAL PRIMERA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0002": {
+    "nombre": "SECCIONAL SEGUNDA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0003": {
+    "nombre": "SECCIONAL TERCERA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0004": {
+    "nombre": "NUEVA CORDOBA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-07-03"
+    ]
+  },
+  "0005": {
+    "nombre": "ALTAMIRA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-21"
+    ]
+  },
+  "0006": {
+    "nombre": "ALTO GRAL PAZ",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0007": {
+    "nombre": "AEROPUERTO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0008": {
+    "nombre": "LA FLORESTA NORTE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0009": {
+    "nombre": "ESCOBAR",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0010": {
+    "nombre": "BELLA VISTA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-17"
+    ]
+  },
+  "0011": {
+    "nombre": "AERONAUTICO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-07-03"
+    ]
+  },
+  "0012": {
+    "nombre": "AVELLANEDA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-23"
+    ]
+  },
+  "0013": {
+    "nombre": "LEANDRO N. ALEM",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "0014": {
+    "nombre": "ARGUELLO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-10"
+    ]
+  },
+  "004A": {
+    "nombre": "PUEBLO LAS FLORES",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-17"
+    ]
+  },
+  "004B": {
+    "nombre": "VILLA REVOL",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "004C": {
+    "nombre": "INAUDI",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "004D": {
+    "nombre": "VILLA EUCARISTICA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "004E": {
+    "nombre": "NUESTRO HOGAR III",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "004F": {
+    "nombre": "CIUDAD OBISPO ANGELELLI",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-07"
+    ]
+  },
+  "005A": {
+    "nombre": "COLONIA LOLA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "005B": {
+    "nombre": "DEAN FUNES",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "005C": {
+    "nombre": "EMPALME",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-17"
+    ]
+  },
+  "005D": {
+    "nombre": "MALDONADO",
+    "encuestado": true,
+    "cantidad_rondas": 3,
+    "fechas_rondas": [
+      "2026-04-07",
+      "2026-04-17",
+      "2026-07-03"
+    ]
+  },
+  "005E": {
+    "nombre": "VILLA BUSTOS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "005F": {
+    "nombre": "RENACIMIENTO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-07"
+    ]
+  },
+  "005G": {
+    "nombre": "SAN VICENTE",
+    "encuestado": true,
+    "cantidad_rondas": 4,
+    "fechas_rondas": [
+      "2026-04-07",
+      "2026-04-17",
+      "2026-04-21",
+      "2026-07-03"
+    ]
+  },
+  "005H": {
+    "nombre": "VILLA BOEDO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "005I": {
+    "nombre": "COLINAS DEL SUR",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "006A": {
+    "nombre": "BAJADA DE PIEDRA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "006B": {
+    "nombre": "CHACRA DE LA MERCED",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "006C": {
+    "nombre": "GRAL PAZ",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "006D": {
+    "nombre": "JUNIORS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "006E": {
+    "nombre": "LA FLORESTA SUD",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "006F": {
+    "nombre": "YAPEYU",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "007A": {
+    "nombre": "GUIÑAZU",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "007B": {
+    "nombre": "ALTA CORDOBA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-17"
+    ]
+  },
+  "007C": {
+    "nombre": "CNO. A PAJAS BLANCAS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "007D": {
+    "nombre": "COFICO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "007E": {
+    "nombre": "MARQUES DE SOBREMONTE",
+    "encuestado": true,
+    "cantidad_rondas": 3,
+    "fechas_rondas": [
+      "2026-04-17",
+      "2026-04-20",
+      "2026-07-03"
+    ]
+  },
+  "007F": {
+    "nombre": "JORGE NEWBERY",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-07-03"
+    ]
+  },
+  "007G": {
+    "nombre": "PANAMERICANO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-22"
+    ]
+  },
+  "008A": {
+    "nombre": "PALMAR",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "008B": {
+    "nombre": "PUEYRREDON",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-09"
+    ]
+  },
+  "008C": {
+    "nombre": "VILLA LOS PINOS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "009A": {
+    "nombre": "LA FRANCE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "009B": {
+    "nombre": "LAS MARGARITAS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "009C": {
+    "nombre": "LOS PARAISOS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-21"
+    ]
+  },
+  "009D": {
+    "nombre": "POETA LUGONES",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "009E": {
+    "nombre": "PROVIDENCIA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "009F": {
+    "nombre": "SAN MARTIN",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "009G": {
+    "nombre": "VILLA CABRERA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010A": {
+    "nombre": "CABILDO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010B": {
+    "nombre": "CIUDADELA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010C": {
+    "nombre": "COMERCIAL",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010D": {
+    "nombre": "CONGRESO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010E": {
+    "nombre": "ESTACION FLORES",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010F": {
+    "nombre": "MATIENZO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-22"
+    ]
+  },
+  "010G": {
+    "nombre": "OBSERVATORIO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010H": {
+    "nombre": "PARQUE CAPITAL",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-07-03"
+    ]
+  },
+  "010I": {
+    "nombre": "PARQUE HORIZONTE",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-23"
+    ]
+  },
+  "010J": {
+    "nombre": "SANTA ISABEL",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-22"
+    ]
+  },
+  "010K": {
+    "nombre": "VICOR",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "010L": {
+    "nombre": "VILLA EL LIBERTADOR",
+    "encuestado": true,
+    "cantidad_rondas": 4,
+    "fechas_rondas": [
+      "2026-04-08",
+      "2026-04-17",
+      "2026-04-23",
+      "2026-07-03"
+    ]
+  },
+  "010M": {
+    "nombre": "AMPLIACION CABILDO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-08"
+    ]
+  },
+  "011A": {
+    "nombre": "ALTO ALBERDI",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-09"
+    ]
+  },
+  "011B": {
+    "nombre": "DON BOSCO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "011C": {
+    "nombre": "LAS PALMAS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-21"
+    ]
+  },
+  "011D": {
+    "nombre": "LOS NARANJOS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "011E": {
+    "nombre": "LOS PLATANOS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-20"
+    ]
+  },
+  "011F": {
+    "nombre": "LOS ROBLES",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "011G": {
+    "nombre": "PARQUE REPUBLICA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-21"
+    ]
+  },
+  "011H": {
+    "nombre": "QUEBRADA LAS ROSAS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "011I": {
+    "nombre": "RESIDENCIAL SAN ROQUE",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-20"
+    ]
+  },
+  "011J": {
+    "nombre": "SANTA ANA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "011K": {
+    "nombre": "VILLA GRAL URQUIZA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-23"
+    ]
+  },
+  "011L": {
+    "nombre": "COUNTRYS DEL OESTE",
+    "encuestado": true,
+    "cantidad_rondas": 2,
+    "fechas_rondas": [
+      "2026-04-10",
+      "2026-04-20"
+    ]
+  },
+  "011M": {
+    "nombre": "VALLE ESCONDIDO",
+    "encuestado": true,
+    "cantidad_rondas": 2,
+    "fechas_rondas": [
+      "2026-03-26",
+      "2026-04-27"
+    ]
+  },
+  "012A": {
+    "nombre": "CARCANO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "012B": {
+    "nombre": "COLON",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-17"
+    ]
+  },
+  "012C": {
+    "nombre": "CORONEL OLMEDO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "012D": {
+    "nombre": "JOSE IGNACIO DIAZ",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-08"
+    ]
+  },
+  "012E": {
+    "nombre": "FERREYRA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "012F": {
+    "nombre": "JOSE HERNANDEZ",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-09"
+    ]
+  },
+  "012G": {
+    "nombre": "ITUZAINGO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-23"
+    ]
+  },
+  "012H": {
+    "nombre": "LOS CERVECEROS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-22"
+    ]
+  },
+  "012I": {
+    "nombre": "CIUDAD DE MIS SUEÑOS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013A": {
+    "nombre": "AYACUCHO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-20"
+    ]
+  },
+  "013B": {
+    "nombre": "EL GATEADO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013C": {
+    "nombre": "GENERAL BUSTOS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-22"
+    ]
+  },
+  "013D": {
+    "nombre": "JARDIN ARENALES",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013E": {
+    "nombre": "LA DOROTEA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013F": {
+    "nombre": "NUEVA ITALIA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013G": {
+    "nombre": "PARQUE LICEO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-09"
+    ]
+  },
+  "013H": {
+    "nombre": "PATRICIOS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-20"
+    ]
+  },
+  "013I": {
+    "nombre": "SAN JORGE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013J": {
+    "nombre": "VILLA AZALAIS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-08"
+    ]
+  },
+  "013K": {
+    "nombre": "VILLA ESQUIU",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013L": {
+    "nombre": "VILLA GRAN PARQUE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013M": {
+    "nombre": "CAMINO A COLONIA TIROLESA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013N": {
+    "nombre": "YOFRE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "013O": {
+    "nombre": "CHACHAPOYAS",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014A": {
+    "nombre": "ARGUELLO NORTE",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-07"
+    ]
+  },
+  "014B": {
+    "nombre": "ARGUELLO PRIMERO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014C": {
+    "nombre": "ARGUELLO SEGUNDO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014D": {
+    "nombre": "CERRO DE LAS ROSAS",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-10"
+    ]
+  },
+  "014E": {
+    "nombre": "CERRO NORTE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014F": {
+    "nombre": "GRANJA DE FUNES",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014G": {
+    "nombre": "LOS BOULEVARES",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-23"
+    ]
+  },
+  "014H": {
+    "nombre": "MERCANTIL",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014I": {
+    "nombre": "SANTA CECILIA",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014J": {
+    "nombre": "URCA",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-10"
+    ]
+  },
+  "014K": {
+    "nombre": "VILLA ALLENDE PARQUE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014L": {
+    "nombre": "VILLA BELGRANO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-10"
+    ]
+  },
+  "014M": {
+    "nombre": "VILLA CENTENARIO",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-09"
+    ]
+  },
+  "014N": {
+    "nombre": "VILLA CORNU",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014O": {
+    "nombre": "VILLA 9 DE JULIO",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014P": {
+    "nombre": "VILLA RIVERA INDARTE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "014Q": {
+    "nombre": "VILLA WARCALDE",
+    "encuestado": false,
+    "cantidad_rondas": 0,
+    "fechas_rondas": []
+  },
+  "012J": {
+    "nombre": "Mal escrito, hay que rastrearlo",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-08"
+    ]
+  },
+  "005L": {
+    "nombre": "Mal escrito, hay que rastrearlo",
+    "encuestado": true,
+    "cantidad_rondas": 1,
+    "fechas_rondas": [
+      "2026-04-07"
+    ]
+  }
+}
