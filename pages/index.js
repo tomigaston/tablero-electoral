@@ -570,6 +570,452 @@ const SolapaComparativas = ({ circuito, datos }) => {
   );
 };
 
+// ============================================
+// ENCUESTAS DE CIRCUITO
+// ============================================
+
+// encuestas_circuitos.json a veces tiene la clave con letra y número invertidos
+// respecto a CircuitoKey (ej. "A14" en vez de "14A") — se prueba directo y,
+// si falla, con el swap. Las claves que ni así matchean (circuitos que no
+// existen en este tablero) quedan descartadas sin intentar adivinar a cuál corresponden.
+function buscarEncuestaCircuito(encuestasData, circuitoKey) {
+  if (!encuestasData || !circuitoKey) return null;
+  const key = String(circuitoKey);
+  if (encuestasData[key]) return encuestasData[key];
+  const m = /^(\d+)([A-Za-z]+)$/.exec(key);
+  if (m) {
+    const swapped = `${m[2]}${m[1]}`;
+    if (encuestasData[swapped]) return encuestasData[swapped];
+  }
+  return null;
+}
+
+const COLOR_GESTION = { 'Positiva': '#22C55E', 'Regular': '#FBBF24', 'Negativa': '#EF4444', 'Ns/Nc': '#CBD5E1' };
+
+const formatFechaLarga = (iso) => {
+  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${d} de ${meses[m - 1]} de ${y}`;
+};
+
+const BarraProblemas = ({ problemas }) => {
+  if (!problemas) return null;
+  const entradas = Object.entries(problemas).sort((a, b) => b[1] - a[1]);
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Principales problemas</h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {entradas.map(([nombre, pct]) => (
+          <div key={nombre} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '190px', flexShrink: 0, fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'right' }}>{nombre}</div>
+            <div style={{ flex: 1, backgroundColor: 'var(--bg-secondary)', borderRadius: '5px', height: '20px', position: 'relative' }}>
+              <div style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: '#1976D2', height: '100%', borderRadius: '5px' }} />
+              {(() => {
+                const anchoPct = Math.min(pct, 100);
+                const cabeAdentro = anchoPct >= 15; // suficiente lugar para el texto dentro del relleno
+                return (
+                  <span style={{
+                    position: 'absolute', top: '2px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
+                    ...(cabeAdentro
+                      ? { left: '8px', color: '#fff' }
+                      : { left: `calc(${anchoPct}% + 6px)`, color: 'var(--text-primary)' }),
+                  }}>{pct}%</span>
+                );
+              })()}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const BarraGestion = ({ label, data }) => {
+  if (!data) return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
+  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  return (
+    <div style={{ marginBottom: '10px' }}>
+      <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
+      <div style={{ display: 'flex', height: '26px', borderRadius: '6px', overflow: 'hidden' }}>
+        {categorias.map(cat => {
+          const v = data[cat];
+          if (!v || v <= 0) return null;
+          const esNsNc = cat === 'Ns/Nc';
+          return (
+            <div
+              key={cat}
+              title={esNsNc ? `${cat}: ${v}%` : undefined}
+              style={{ width: `${v}%`, backgroundColor: COLOR_GESTION[cat], display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {!esNsNc && v > 8 && <span style={{ fontSize: '11px', color: '#fff', fontWeight: 600 }}>{v}%</span>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const SeccionGestionFuncionarios = ({ gestiones }) => (
+  <div>
+    <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
+    {Object.entries(gestiones).map(([label, data]) => <BarraGestion key={label} label={`Calificación de gestión: ${label}`} data={data} />)}
+    <div style={{ display: 'flex', gap: '14px', marginTop: '6px' }}>
+      {['Positiva', 'Regular', 'Negativa'].map(cat => (
+        <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: COLOR_GESTION[cat] }} />
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{cat}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const GaugeAprobacion = ({ label, data }) => {
+  if (!data || data.Apruebo == null) {
+    return <div style={{ flex: '1 1 140px', padding: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>Aprobación {label}: sin dato</div>;
+  }
+  const pct = data.Apruebo;
+  const color = pct >= 40 ? '#0DCE1D' : pct >= 25 ? '#D9B300' : '#D64550';
+  const r = 40, mediaCircunferencia = Math.PI * r;
+  const progreso = (Math.min(pct, 100) / 100) * mediaCircunferencia;
+  return (
+    <div style={{ flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
+      <svg viewBox="0 0 100 60" style={{ width: '100%', maxWidth: '160px' }}>
+        <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--border)" strokeWidth="10" strokeLinecap="round" />
+        <path
+          d="M 10 50 A 40 40 0 0 1 90 50"
+          fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
+          strokeDasharray={`${mediaCircunferencia} ${mediaCircunferencia}`}
+          strokeDashoffset={mediaCircunferencia - progreso}
+        />
+        <text x="50" y="45" textAnchor="middle" fontSize="18" fontWeight="700" fill="var(--text-primary)">{pct}%</text>
+      </svg>
+      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>Aprobación {label}</div>
+    </div>
+  );
+};
+
+const DonutReeleccion = ({ label, data }) => {
+  if (!data || data.Si == null) {
+    return <div style={{ flex: '1 1 140px', padding: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
+  }
+  const si = data.Si;
+  const r = 35, cx = 50, cy = 50, circunferencia = 2 * Math.PI * r;
+  const siLen = (Math.min(si, 100) / 100) * circunferencia;
+  return (
+    <div style={{ flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
+      <svg viewBox="0 0 100 100" style={{ width: '100%', maxWidth: '140px' }}>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#EF4444" strokeWidth="16" />
+        <circle
+          cx={cx} cy={cy} r={r} fill="none" stroke="#22C55E" strokeWidth="16"
+          strokeDasharray={`${siLen} ${circunferencia}`}
+          transform={`rotate(-90 ${cx} ${cy})`}
+        />
+        <text x="50" y="55" textAnchor="middle" fontSize="16" fontWeight="700" fill="var(--text-primary)">{si}%</text>
+      </svg>
+      <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginTop: '4px' }}>{label}</div>
+      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sí</div>
+    </div>
+  );
+};
+
+const ResumenEncuesta = ({ preguntas }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <BarraProblemas problemas={preguntas['Problemas principales']} />
+    <SeccionGestionFuncionarios gestiones={{
+      Intendente: preguntas['Gestión del Intendente'],
+      Gobernador: preguntas['Gestión del Gobernador'],
+      Presidente: preguntas['Gestión del Presidente'],
+    }} />
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Aprobación de gestión</h4>
+      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+        <GaugeAprobacion label="Intendente" data={preguntas['Aprobación Intendente']} />
+        <GaugeAprobacion label="Gobernador" data={preguntas['Aprobación Gobernador']} />
+        <GaugeAprobacion label="Presidente" data={preguntas['Aprobación Presidente']} />
+      </div>
+    </div>
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Reelección</h4>
+      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+        <DonutReeleccion label="Llaryora (Gobernador)" data={preguntas['Reelección Llaryora']} />
+        <DonutReeleccion label="Milei (Presidente)" data={preguntas['Reelección Milei']} />
+      </div>
+    </div>
+  </div>
+);
+
+// Conversión Catmull-Rom -> Bézier cúbica, estándar para curvas suaves que pasan
+// exactamente por cada punto. Con 2 puntos da una línea recta (no hay curvatura que inferir).
+function pathSuave(puntos) {
+  if (puntos.length < 2) return '';
+  let d = `M ${puntos[0][0]},${puntos[0][1]}`;
+  for (let i = 0; i < puntos.length - 1; i++) {
+    const p0 = puntos[i - 1] || puntos[i];
+    const p1 = puntos[i];
+    const p2 = puntos[i + 1];
+    const p3 = puntos[i + 2] || p2;
+    const b1x = p1[0] + (p2[0] - p0[0]) / 6, b1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const b2x = p2[0] - (p3[0] - p1[0]) / 6, b2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C ${b1x},${b1y} ${b2x},${b2y} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+
+// datos: [{ fecha, valor }], ya ordenado cronológicamente. Cada punto es hoverable
+// (mouse) / tocable (click) y muestra fecha + valor puntual en un tooltip.
+const Sparkline = ({ datos, width = 100, height = 28, color = '#1976D2' }) => {
+  const [hoverIdx, setHoverIdx] = useState(null);
+  if (!datos || datos.length < 2) return null;
+  const valores = datos.map(d => d.valor);
+  const min = Math.min(...valores), max = Math.max(...valores);
+  const rango = max - min || 1;
+  const pad = 4;
+  const puntos = datos.map((d, i) => [
+    pad + (i / (datos.length - 1)) * (width - pad * 2),
+    pad + (1 - (d.valor - min) / rango) * (height - pad * 2),
+  ]);
+  return (
+    <div style={{ position: 'relative' }}>
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ display: 'block', overflow: 'visible' }}>
+        <path d={pathSuave(puntos)} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {puntos.map(([x, y], i) => (
+          <g key={i}>
+            <circle cx={x} cy={y} r={hoverIdx === i ? 4 : 2.5} fill={color} />
+            <circle
+              cx={x} cy={y} r="8" fill="transparent" style={{ cursor: 'pointer' }}
+              onMouseEnter={() => setHoverIdx(i)}
+              onMouseLeave={() => setHoverIdx(null)}
+              onClick={() => setHoverIdx(hoverIdx === i ? null : i)}
+            />
+          </g>
+        ))}
+      </svg>
+      {hoverIdx != null && (
+        <div style={{
+          position: 'absolute', bottom: `${height - puntos[hoverIdx][1] + 10}px`, left: `${puntos[hoverIdx][0]}px`, transform: 'translateX(-50%)',
+          backgroundColor: '#1a1a1a', color: '#fff', padding: '3px 7px', borderRadius: '5px',
+          fontSize: '10px', whiteSpace: 'nowrap', zIndex: 50, pointerEvents: 'none',
+        }}>
+          {datos[hoverIdx].fecha} · {datos[hoverIdx].valor}%
+        </div>
+      )}
+    </div>
+  );
+};
+
+const KPIComparativo = ({ label, pregunta, categoria, rondas }) => {
+  const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
+  if (datos.length < 2) return null;
+  const vActual = datos[datos.length - 1].valor;
+  const delta = vActual - datos[datos.length - 2].valor;
+  return (
+    <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', minWidth: '150px' }}>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{label}</div>
+      <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)' }}>{vActual}%</div>
+      <div style={{ fontSize: '12px', fontWeight: 600, color: delta > 0 ? '#2E7D32' : delta < 0 ? '#C62828' : 'var(--text-tertiary)' }}>
+        {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} {delta > 0 ? '+' : ''}{delta.toFixed(1)} pp
+      </div>
+      <div style={{ marginTop: '6px' }}><Sparkline datos={datos} width={110} height={26} /></div>
+    </div>
+  );
+};
+
+const KPIGestionComparativo = ({ funcionario, rondas }) => {
+  const pregunta = `Gestión del ${funcionario}`;
+  const series = ['Positiva', 'Regular', 'Negativa'].map(cat => ({
+    cat,
+    datos: rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[cat] })).filter(d => d.valor != null),
+  }));
+  if (series.every(s => s.datos.length < 2)) return null;
+  return (
+    <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', minWidth: '210px' }}>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Calificación de gestión: {funcionario}</div>
+      <div style={{ display: 'flex', gap: '12px' }}>
+        {series.map(({ cat, datos }) => {
+          if (datos.length < 2) return null;
+          const vA = datos[datos.length - 1].valor, vB = datos[datos.length - 2].valor;
+          const delta = vA - vB;
+          return (
+            <div key={cat} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>{cat}</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{vA}%</div>
+              <div style={{ fontSize: '11px', fontWeight: 500, color: delta > 0 ? '#2E7D32' : delta < 0 ? '#C62828' : 'var(--text-tertiary)' }}>
+                {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'}{Math.abs(delta).toFixed(1)}
+              </div>
+              <Sparkline datos={datos} width={56} height={20} color={COLOR_GESTION[cat]} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const TarjetaProblemaEvolucion = ({ nombre, datos, umbral }) => {
+  const primero = datos[0].valor, ultimo = datos[datos.length - 1].valor;
+  const delta = ultimo - primero;
+  const significativo = Math.abs(delta) >= umbral;
+  return (
+    <div style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+        <div style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 500 }}>{nombre}</div>
+        <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', flexShrink: 0 }}>{ultimo}%</div>
+      </div>
+      <div style={{ marginTop: '6px' }}><Sparkline datos={datos} width={130} height={36} /></div>
+      {significativo && (
+        <div style={{ fontSize: '11px', fontWeight: 600, color: delta > 0 ? '#C62828' : '#2E7D32', marginTop: '4px' }}>
+          {delta > 0 ? '↑' : '↓'} {delta > 0 ? '+' : ''}{delta.toFixed(1)} pp
+        </div>
+      )}
+    </div>
+  );
+};
+
+const GridProblemasEvolucion = ({ rondas, umbral }) => {
+  const categorias = Array.from(new Set(rondas.flatMap(r => Object.keys(r.preguntas?.['Problemas principales'] || {}))));
+  const conDatos = categorias
+    .map(cat => ({
+      nombre: cat,
+      datos: rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.['Problemas principales']?.[cat] })).filter(d => d.valor != null),
+    }))
+    .filter(c => c.datos.length >= 2)
+    .sort((a, b) => b.datos[b.datos.length - 1].valor - a.datos[a.datos.length - 1].valor);
+
+  if (conDatos.length === 0) return null;
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '12px' }}>
+      {conDatos.map(c => <TarjetaProblemaEvolucion key={c.nombre} nombre={c.nombre} datos={c.datos} umbral={umbral} />)}
+    </div>
+  );
+};
+
+const ResumenAutomaticoProblemas = ({ actual, anterior, umbral }) => {
+  const probActual = actual.preguntas?.['Problemas principales'];
+  const probAnterior = anterior.preguntas?.['Problemas principales'];
+  if (!probActual || !probAnterior) return null;
+
+  const categorias = new Set([...Object.keys(probActual), ...Object.keys(probAnterior)]);
+  const variaciones = [];
+  categorias.forEach(cat => {
+    const vA = probActual[cat], vB = probAnterior[cat];
+    if (vA == null || vB == null) return;
+    const delta = vA - vB;
+    if (Math.abs(delta) >= umbral) variaciones.push({ cat, delta });
+  });
+  const suben = variaciones.filter(v => v.delta > 0).sort((a, b) => b.delta - a.delta);
+  const bajan = variaciones.filter(v => v.delta < 0).sort((a, b) => a.delta - b.delta);
+
+  if (suben.length === 0 && bajan.length === 0) {
+    return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>Sin variaciones significativas (≥{umbral}pp) entre rondas.</div>;
+  }
+  return (
+    <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+      {suben.length > 0 && <span>🔺 Subió: {suben.map(v => `${v.cat} (+${v.delta.toFixed(1)}pp)`).join(' · ')}</span>}
+      {bajan.length > 0 && <span>🔻 Bajó: {bajan.map(v => `${v.cat} (${v.delta.toFixed(1)}pp)`).join(' · ')}</span>}
+    </div>
+  );
+};
+
+const ComparativoEncuesta = ({ encuesta, umbral }) => {
+  const rondas = encuesta.rondas;
+  const actual = rondas[rondas.length - 1];
+  const anterior = rondas[rondas.length - 2];
+
+  const kpis = [
+    { label: 'Aprobación Intendente', pregunta: 'Aprobación Intendente', categoria: 'Apruebo' },
+    { label: 'Aprobación Gobernador', pregunta: 'Aprobación Gobernador', categoria: 'Apruebo' },
+    { label: 'Aprobación Presidente', pregunta: 'Aprobación Presidente', categoria: 'Apruebo' },
+    { label: 'Reelección Llaryora', pregunta: 'Reelección Llaryora', categoria: 'Si' },
+    { label: 'Reelección Milei', pregunta: 'Reelección Milei', categoria: 'Si' },
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Comparativo · {anterior.fecha} → {actual.fecha}</h4>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {kpis.map(k => <KPIComparativo key={k.label} {...k} rondas={rondas} />)}
+          {['Intendente', 'Gobernador', 'Presidente'].map(func => (
+            <KPIGestionComparativo key={func} funcionario={func} rondas={rondas} />
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Principales problemas — evolución</h4>
+        <ResumenAutomaticoProblemas actual={actual} anterior={anterior} umbral={umbral} />
+        <GridProblemasEvolucion rondas={rondas} umbral={umbral} />
+      </div>
+    </div>
+  );
+};
+
+const SolapaEncuestas = ({ encuesta, metadata }) => {
+  const [rondaIdx, setRondaIdx] = useState(encuesta.rondas.length - 1);
+  const [vista, setVista] = useState('resumen');
+  const ronda = encuesta.rondas[rondaIdx];
+  const umbral = metadata?.umbral_variacion_pp ?? 2.5;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
+          {vista === 'resumen' ? `Encuesta · ${formatFechaLarga(ronda.fecha)}` : 'Comparativo entre rondas'}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {vista === 'resumen' && encuesta.rondas.length > 1 && (
+            <select value={rondaIdx} onChange={(e) => setRondaIdx(Number(e.target.value))} style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '12px', backgroundColor: '#fff' }}>
+              {encuesta.rondas.map((r, i) => <option key={i} value={i}>{r.fecha}</option>)}
+            </select>
+          )}
+          {encuesta.tiene_comparativo && (
+            <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', padding: '3px' }}>
+              <button onClick={() => setVista('resumen')} style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', backgroundColor: vista === 'resumen' ? '#1976D2' : 'transparent', color: vista === 'resumen' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Resumen</button>
+              <button onClick={() => setVista('comparativo')} style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', backgroundColor: vista === 'comparativo' ? '#1976D2' : 'transparent', color: vista === 'comparativo' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Comparativo</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {vista === 'resumen'
+        ? <ResumenEncuesta preguntas={ronda.preguntas} />
+        : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} />}
+    </div>
+  );
+};
+
+const ListadoEncuestasCircuitos = ({ datos, encuestasData, onSelectCircuito }) => {
+  const filas = useMemo(() => {
+    return datos
+      .map(d => ({ circuito: d, encuesta: buscarEncuestaCircuito(encuestasData, d.CircuitoKey) }))
+      .filter(f => f.encuesta)
+      .map(f => ({ ...f, fechaReciente: f.encuesta.rondas[f.encuesta.rondas.length - 1].fecha }))
+      .sort((a, b) => compararMapkey(a.circuito.CircuitoKey, b.circuito.CircuitoKey));
+  }, [datos, encuestasData]);
+
+  return (
+    <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
+      {filas.map(({ circuito, encuesta, fechaReciente }) => (
+        <div
+          key={circuito.CircuitoKey}
+          onClick={() => onSelectCircuito(circuito.CircuitoKey)}
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>{circuito.CircuitoKey} · {circuito.cirn_nom}</span>
+          <span style={{ display: 'flex', gap: '18px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+            <span>{encuesta.cantidad_rondas} ronda{encuesta.cantidad_rondas !== 1 ? 's' : ''}</span>
+            <span>{fechaReciente}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
 const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCategoria }) => {
   const [ordenColumna, setOrdenColumna] = useState('Share_G23');
   const [ordenAsc, setOrdenAsc] = useState(false);
@@ -1240,9 +1686,13 @@ export default function Home() {
   const [recorridosData, setRecorridosData] = useState(null);
   const [coberturaData, setCoberturaData] = useState(null);
   const [pautaData] = useState(null); // reservado: sin fuente de datos todavía
+  const [encuestasData, setEncuestasData] = useState(null);
+  const [encuestasMetadata, setEncuestasMetadata] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [mostrarInfo, setMostrarInfo] = useState(false);
+  const [mostrarMenu, setMostrarMenu] = useState(false);
+  const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
   const [vistaExpandida, setVistaExpandida] = useState(false);
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [panelTab, setPanelTab] = useState('circuito');
@@ -1250,18 +1700,20 @@ export default function Home() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, coberturaRes] = await Promise.all([
+        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, coberturaRes, encuestasRes, encuestasMetaRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
           fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
           fetch('/data/circuito_barrios_cruce.json'),
           fetch('/data/recorridos_barrios.json'), fetch('/data/cobertura_circuitos.json'),
+          fetch('/data/encuestas_circuitos.json'), fetch('/data/encuestas_metadata.json'),
         ]);
         setDatos(await datosRes.json()); setPartidos(await partidosRes.json());
         setBarrios(await barriosRes.json()); setGeoData(await geoRes.json());
         setBarriosGeoData(await barriosGeoRes.json()); setObrasData(await obrasRes.json());
         setCruceData(await cruceRes.json());
         setRecorridosData(await recorridosRes.json()); setCoberturaData(await coberturaRes.json());
+        setEncuestasData(await encuestasRes.json()); setEncuestasMetadata(await encuestasMetaRes.json());
       } catch (e) { console.error('Error cargando datos:', e); }
       setCargando(false);
     };
@@ -1269,6 +1721,13 @@ export default function Home() {
   }, []);
 
   const datosCircuito = useMemo(() => datos.find(d => d.CircuitoKey === circuitoSeleccionado), [datos, circuitoSeleccionado]);
+  const encuestaCircuito = useMemo(() => buscarEncuestaCircuito(encuestasData, circuitoSeleccionado), [encuestasData, circuitoSeleccionado]);
+
+  // Si cambiamos de circuito estando en la solapa Encuestas y el nuevo no tiene datos, volvemos a Resumen.
+  useEffect(() => {
+    if (solapaActiva === 'encuestas' && !encuestaCircuito) setSolapaActiva('resumen');
+  }, [circuitoSeleccionado, encuestaCircuito, solapaActiva]);
+
   const circuitosFiltrados = useMemo(() => {
     if (!busqueda) return [];
     const lower = busqueda.toLowerCase();
@@ -1352,7 +1811,19 @@ export default function Home() {
     setVistaExpandida(false);
   };
 
-  const solapas = [{ key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' }, { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' }];
+  // Click en una fila del listado de "Circuitos con encuesta": va directo a la
+  // ficha del circuito, solapa Encuestas.
+  const irACircuitoDesdeListadoEncuestas = (circuitoKey) => {
+    handleSelectCircuito(circuitoKey);
+    setVistaExpandida(true);
+    setSolapaActiva('encuestas');
+  };
+
+  const solapas = [
+    { key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' },
+    { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' },
+    ...(encuestaCircuito ? [{ key: 'encuestas', label: 'Encuestas' }] : []),
+  ];
 
   const exportarPDF = () => {
     if (!datosCircuito) return;
@@ -1386,8 +1857,24 @@ export default function Home() {
             <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '3px' }}>Córdoba Capital — 119 circuitos</p>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <button onClick={() => setMostrarInfo(true)} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>ℹ️ Info</button>
-            {!(vistaExpandida && !circuitoSeleccionado) && <button onClick={() => { setVistaExpandida(true); setCircuitoSeleccionado(null); }} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📊 Estadísticas de Capital</button>}
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setMostrarMenu(!mostrarMenu)} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>☰ Menú</button>
+              {mostrarMenu && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 1998 }} onClick={() => setMostrarMenu(false)} />
+                  <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '6px', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 1999, minWidth: '210px', overflow: 'hidden' }}>
+                    <button onClick={() => { setMostrarInfo(true); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>ℹ️ Info</button>
+                    <button onClick={() => { setVistaExpandida(true); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📊 Estadísticas de Capital</button>
+                    <button
+                      onClick={() => { setMostrarListadoEncuestas(true); setMostrarMenu(false); }}
+                      style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}
+                    >
+                      📋 Encuestas
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             {circuitoSeleccionado && <button onClick={exportarPDF} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📄 Exportar ficha</button>}
             <div style={{ position: 'relative' }}>
               <input type="text" placeholder="Buscar circuito..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ padding: '12px 18px', paddingLeft: '44px', width: '300px', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '15px', backgroundColor: 'var(--bg-secondary)' }} />
@@ -1406,6 +1893,16 @@ export default function Home() {
           </div>
         </header>
 
+        {mostrarListadoEncuestas && (
+          <div style={{ backgroundColor: '#fff', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>Circuitos con encuesta</span>
+              <button onClick={() => setMostrarListadoEncuestas(false)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
+            </div>
+            <ListadoEncuestasCircuitos datos={datos} encuestasData={encuestasData} onSelectCircuito={(c) => { irACircuitoDesdeListadoEncuestas(c); setMostrarListadoEncuestas(false); }} />
+          </div>
+        )}
+
         <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={irACircuitoDesdeGrilla} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
@@ -1423,7 +1920,14 @@ export default function Home() {
                         </div>
                         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>{datosCircuito.cirn_nom}</p>
                       </div>
-                      <Badge categoria={datosCircuito.Categoria_v4} tipo="v4" />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Badge categoria={datosCircuito.Categoria_v4} tipo="v4" />
+                        {encuestaCircuito && (
+                          <span onClick={() => setSolapaActiva('encuestas')} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', backgroundColor: '#1976D218', color: '#1565C0', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+                            📊 Tiene encuesta
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
                       {solapas.map(s => <button key={s.key} onClick={() => setSolapaActiva(s.key)} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
@@ -1434,6 +1938,7 @@ export default function Home() {
                       {solapaActiva === 'partidos' && <SolapaPartidos circuito={circuitoSeleccionado} datos={datosCircuito} partidos={partidos} />}
                       {solapaActiva === 'territorio' && <SolapaTerritorio circuito={circuitoSeleccionado} datos={datosCircuito} barrios={barrios} todosLosDatos={datos} onSelectCircuito={handleSelectCircuito} />}
                       {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
+                      {solapaActiva === 'encuestas' && encuestaCircuito && <SolapaEncuestas encuesta={encuestaCircuito} metadata={encuestasMetadata} />}
                     </div>
                   </>
                 ) : (

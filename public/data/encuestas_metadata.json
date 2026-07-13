@@ -1,0 +1,129 @@
+{
+  "preguntas": {
+    "Problemas principales": {
+      "tipo": "Problemas",
+      "pregunta_original": "¿Cuál es el principal problema en tu barrio?",
+      "orden_categorias": {
+        "Recolección de residuos": 99,
+        "Estado de las calles": 99,
+        "Iluminación de las calles": 99,
+        "Iluminación de espacios públicos": 99,
+        "Falta de pavimento": 99,
+        "Falta de cloacas": 99,
+        "Falta de agua potable": 99,
+        "Seguridad": 99,
+        "Transporte urbano": 99,
+        "Otro": 99
+      }
+    },
+    "Funcionamiento Centro Vecinal": {
+      "tipo": "Imagen_Institucion",
+      "pregunta_original": "¿Cómo calificas el funcionamiento del Centro Vecinal?",
+      "orden_categorias": {
+        "Positiva": 1,
+        "Regular": 2,
+        "Negativa": 3,
+        "Ns/Nc": 4
+      }
+    },
+    "Funcionamiento CPC": {
+      "tipo": "Imagen_Institucion",
+      "pregunta_original": "¿Cómo calificas el funcionamiento del CPC al que pertenece tu barrio?",
+      "orden_categorias": {
+        "Positiva": 1,
+        "Regular": 2,
+        "Negativa": 3,
+        "Ns/Nc": 4
+      }
+    },
+    "Cordobeses en Alerta (existencia)": {
+      "tipo": "Servicio",
+      "pregunta_original": "¿Tu barrio tiene el servicio de CORDOBESES EN ALERTA?",
+      "orden_categorias": {
+        "Si": 1,
+        "No": 2
+      }
+    },
+    "Calificación Cordobeses en Alerta": {
+      "tipo": "Imagen_Institucion",
+      "pregunta_original": "¿Cómo calificas el servicio de CORDOBESES EN ALERTA?",
+      "orden_categorias": {
+        "Positiva": 1,
+        "Regular": 2,
+        "Negativa": 3,
+        "Ns/Nc": 4
+      }
+    },
+    "Gestión del Intendente": {
+      "tipo": "Imagen_Funcionario",
+      "pregunta_original": "¿Cómo calificas la gestión del intendente Passerini?",
+      "orden_categorias": {
+        "Positiva": 1,
+        "Regular": 2,
+        "Negativa": 3,
+        "Ns/Nc": 4
+      }
+    },
+    "Gestión del Gobernador": {
+      "tipo": "Imagen_Funcionario",
+      "pregunta_original": "¿Cómo califica la gestión del gobernador Llaryora?",
+      "orden_categorias": {
+        "Positiva": 1,
+        "Regular": 2,
+        "Negativa": 3,
+        "Ns/Nc": 4
+      }
+    },
+    "Gestión del Presidente": {
+      "tipo": "Imagen_Funcionario",
+      "pregunta_original": "¿Cómo califica la gestión del presidente Milei?",
+      "orden_categorias": {
+        "Positiva": 1,
+        "Regular": 2,
+        "Negativa": 3,
+        "Ns/Nc": 4
+      }
+    },
+    "Aprobación Intendente": {
+      "tipo": "Aprobacion",
+      "pregunta_original": "En términos generales ¿Aprueba o desaprueba la gestión de Passerini?",
+      "orden_categorias": {
+        "Apruebo": 1,
+        "Desapruebo": 2
+      }
+    },
+    "Aprobación Gobernador": {
+      "tipo": "Aprobacion",
+      "pregunta_original": "¿En términos general aprueba o desaprueba la gestión del gobernador Llaryora?",
+      "orden_categorias": {
+        "Apruebo": 1,
+        "Desapruebo": 2
+      }
+    },
+    "Aprobación Presidente": {
+      "tipo": "Aprobacion",
+      "pregunta_original": "¿En términos generales aprueba o desaprueba la gestión del presidente Milei?",
+      "orden_categorias": {
+        "Apruebo": 1,
+        "Desapruebo": 2
+      }
+    },
+    "Reelección Llaryora": {
+      "tipo": "Reeleccion",
+      "pregunta_original": "¿Si el gobernador Llaryora se presentara a la re elección lo votaría?",
+      "orden_categorias": {
+        "Si": 1,
+        "No": 2
+      }
+    },
+    "Reelección Milei": {
+      "tipo": "Reeleccion",
+      "pregunta_original": "¿Si el presidente Milei se presentara a la re elección lo votaría?",
+      "orden_categorias": {
+        "Si": 1,
+        "No": 2
+      }
+    }
+  },
+  "umbral_variacion_pp": 2.5
+}
