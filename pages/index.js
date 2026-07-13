@@ -82,7 +82,7 @@ const VictoriaIndicator = ({ label, gano }) => (
 // Modal de información
 const InfoModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
-
+  
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
@@ -90,7 +90,7 @@ const InfoModal = ({ isOpen, onClose }) => {
           <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666' }}>×</button>
         </div>
-
+        
         <div style={{ marginBottom: '28px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Diagnóstico Territorial</h3>
           <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px' }}>Basado en resultados de: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.</p>
@@ -104,7 +104,7 @@ const InfoModal = ({ isOpen, onClose }) => {
             </div>
           ))}
         </div>
-
+        
         <div>
           <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Evolución Llaryora</h3>
           <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px' }}>Compara el desempeño de Llaryora entre Int. 2019 (como candidato a intendente) y Gob. 2023 (como candidato a gobernador).</p>
@@ -1758,7 +1758,7 @@ export default function Home() {
     };
     cargarDatos();
   }, []);
-
+  
   const datosCircuito = useMemo(() => datos.find(d => d.CircuitoKey === circuitoSeleccionado), [datos, circuitoSeleccionado]);
   const encuestaCircuito = useMemo(() => buscarEncuestaCircuito(encuestasData, circuitoSeleccionado), [encuestasData, circuitoSeleccionado]);
 
@@ -1871,7 +1871,7 @@ export default function Home() {
     { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' },
     ...(encuestaCircuito ? [{ key: 'encuestas', label: 'Encuestas' }] : []),
   ];
-
+  
   const exportarPDF = () => {
     if (!datosCircuito) return;
     const html = generarFichaPDF(datosCircuito, barrios, partidos, padronTotal);
@@ -1880,11 +1880,11 @@ export default function Home() {
     ventana.document.close();
     setTimeout(() => ventana.print(), 500);
   };
-
+  
   if (cargando) {
     return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f0f0', fontFamily: '-apple-system, sans-serif' }}><div style={{ textAlign: 'center' }}><div style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>Cargando datos...</div><div style={{ fontSize: '14px', color: '#999' }}>119 circuitos electorales</div></div></div>;
   }
-
+  
   return (
     <>
       <Head><title>Diagnóstico Territorial - Córdoba Capital</title><meta name="viewport" content="width=device-width, initial-scale=1" /></Head>
@@ -1894,9 +1894,9 @@ export default function Home() {
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f0; }
         .leaflet-container { z-index: 1 !important; }
       `}</style>
-
+      
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
-
+      
       <div style={{ minHeight: '100vh' }}>
         <header style={{ padding: '14px 24px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
           <div>
