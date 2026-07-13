@@ -134,16 +134,85 @@ const getNumeroBase = (circuitoKey) => {
 const normalizarNombreBarrio = (s) => (s || '')
   .toUpperCase()
   .replace(/[ºª]/g, 'O')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   .replace(/\s+/g, ' ')
   .trim();
+
+// Compara IDs de circuito (Mapkey) en orden natural: primero el numero base,
+// despues la letra como desempate (evita que "0014" quede antes que "004A").
+const compararMapkey = (a, b) => {
+  const numA = parseInt(a, 10);
+  const numB = parseInt(b, 10);
+  if (numA !== numB) return numA - numB;
+  return String(a).localeCompare(String(b));
+};
+
+const esFechaValida = (f) => typeof f === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(f) && !isNaN(new Date(f).getTime());
+
+const TIPOS_EVENTO_COBERTURA = {
+  medicion: { label: 'Medicion', color: '#2E7D32', bg: '#4CAF5022' },
+  visita: { label: 'Visita Gob.', color: '#1565C0', bg: '#1976D222' },
+  pauta: { label: 'Pauta', color: '#E65100', bg: '#FF980022' },
+};
+
+const formatFechaCorta = (iso) => {
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y.slice(2)}`;
+};
+
+// Arma, para cada circuito (por Mapkey), la lista de eventos de cobertura ya
+// ordenada cronologicamente. Disenado para que sumar "pauta" el dia que haya
+// datos reales sea: 1 fetch + unas lineas aca, sin tocar el resto de la tabla.
+function construirEventosPorCircuito(datos, coberturaData, recorridosLookup, cruceData, pautaData) {
+  const eventosPorMapkey = {};
+  datos.forEach(d => { eventosPorMapkey[d.Mapkey] = []; });
+
+  // Medicion: fechas_rondas de cobertura_circuitos.json
+  datos.forEach(d => {
+    const c = coberturaData?.[d.Mapkey];
+    (c?.fechas_rondas || []).forEach((f, i) => {
+      if (esFechaValida(f)) {
+        eventosPorMapkey[d.Mapkey].push({ tipo: 'medicion', fecha: f, detalle: { ronda: i + 1, totalRondas: c.cantidad_rondas } });
+      }
+    });
+  });
+
+  // Visita Gob.: solo el/los barrio(s) donde ESTE circuito es su barrio principal
+  // (orden_importancia: 1 en circuito_to_barrios) - evita inflar circuitos que
+  // solo rozan el borde de un barrio grande y populoso.
+  datos.forEach(d => {
+    const clave = `${d.Mapkey} - ${d.cirn_nom}`;
+    const barriosPrincipales = (cruceData?.circuito_to_barrios?.[clave] || []).filter(b => b.orden_importancia === 1);
+    barriosPrincipales.forEach(b => {
+      const key = normalizarNombreBarrio(b.barrio_normalizado);
+      const info = recorridosLookup?.[key];
+      (info?.visitas || []).forEach(v => {
+        if (esFechaValida(v.fecha)) {
+          eventosPorMapkey[d.Mapkey].push({ tipo: 'visita', fecha: v.fecha, detalle: v });
+        }
+      });
+    });
+  });
+
+  // Pauta: reservado, sin datos todavia.
+  datos.forEach(d => {
+    (pautaData?.[d.Mapkey] || []).forEach(p => {
+      if (esFechaValida(p.fecha)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.fecha, detalle: p });
+    });
+  });
+
+  Object.values(eventosPorMapkey).forEach(lista => lista.sort((a, b) => a.fecha.localeCompare(b.fecha)));
+  return eventosPorMapkey;
+}
 
 // ============================================
 // SOLAPAS
 // ============================================
-const SolapaResumen = ({ circuito, datos, padronTotal }) => {
+const SolapaResumen = ({ circuito, datos, padronTotal, coberturaData }) => {
   if (!datos) return null;
   const pctPadron = padronTotal > 0 ? ((datos.Padron_G23 / padronTotal) * 100).toFixed(2) : 0;
-  
+  const cobertura = coberturaData?.[datos.Mapkey];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
@@ -153,49 +222,68 @@ const SolapaResumen = ({ circuito, datos, padronTotal }) => {
       </div>
       
       <div>
-        <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Tendencias electorales</h4>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Tendencias electorales</h4>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '280px', padding: '18px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+          <div style={{ flex: 1, minWidth: '280px', padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text-primary)' }}>Tendencia Gobernador</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Gob. 2019 → Gob. 2023</div>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>Tendencia Gobernador</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Gob. 2019 → Gob. 2023</div>
             </div>
-            <div style={{ display: 'inline-block', padding: '8px 16px', borderRadius: '8px', backgroundColor: datos.Residual_Gov >= 0 ? '#4CAF5022' : '#EF535022', color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', fontSize: '14px', fontWeight: 600 }}>
+            <div style={{ display: 'inline-block', padding: '8px 16px', borderRadius: '8px', backgroundColor: datos.Residual_Gov >= 0 ? '#4CAF5022' : '#EF535022', color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', fontSize: '13px', fontWeight: 600 }}>
               {formatPP(datos.Residual_Gov)} {datos.Residual_Gov >= 0 ? '▲' : '▼'}
             </div>
             <div style={{ marginTop: '20px', marginBottom: '16px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text-primary)' }}>Tendencia Legislativa</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Dip. 2021 → Dip. 2025</div>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>Tendencia Legislativa</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Dip. 2021 → Dip. 2025</div>
             </div>
-            <div style={{ display: 'inline-block', padding: '8px 16px', borderRadius: '8px', backgroundColor: datos.Residual_Leg >= 0 ? '#4CAF5022' : '#EF535022', color: datos.Residual_Leg >= 0 ? '#2E7D32' : '#C62828', fontSize: '14px', fontWeight: 600 }}>
+            <div style={{ display: 'inline-block', padding: '8px 16px', borderRadius: '8px', backgroundColor: datos.Residual_Leg >= 0 ? '#4CAF5022' : '#EF535022', color: datos.Residual_Leg >= 0 ? '#2E7D32' : '#C62828', fontSize: '13px', fontWeight: 600 }}>
               {formatPP(datos.Residual_Leg)} {datos.Residual_Leg >= 0 ? '▲' : '▼'}
             </div>
           </div>
-          <div style={{ flex: 1, minWidth: '280px', padding: '18px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-            <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '16px' }}>Victorias (de 4 elecciones)</div>
+          <div style={{ flex: 1, minWidth: '280px', padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+            <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '16px' }}>Victorias (de 4 elecciones)</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <VictoriaIndicator label="Gob. 2019" gano={datos.Gano_G19 === 1} />
               <VictoriaIndicator label="Gob. 2023" gano={datos.Gano_G23 === 1} />
               <VictoriaIndicator label="Dip. 2021" gano={datos.Gano_L21 === 1} />
               <VictoriaIndicator label="Dip. 2025" gano={datos.Gano_L25 === 1} />
             </div>
-            <div style={{ marginTop: '18px', fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center' }}>{datos.Victorias_Total}/4</div>
+            <div style={{ marginTop: '18px', fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center' }}>{datos.Victorias_Total}/4</div>
           </div>
         </div>
       </div>
       
+      {coberturaData && (
+        <div>
+          <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Cobertura de encuesta</h4>
+          <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <BadgeCobertura encuestado={!!cobertura?.encuestado} />
+            {cobertura?.encuestado && (
+              <div>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{cobertura.cantidad_rondas} ronda{cobertura.cantidad_rondas !== 1 ? 's' : ''}</div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {(cobertura.fechas_rondas || []).map((f, i) => (
+                    <span key={i} style={{ fontSize: '12px', padding: '5px 12px', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontWeight: 500 }}>{f}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div style={{ padding: '18px 22px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>Última elección: Dip. 2025</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>Última elección: Dip. 2025</div>
         <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <div><span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>% Votos peronismo: </span><span style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L25)}</span></div>
-          <div><span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Posición: </span><span style={{ fontSize: '18px', fontWeight: 600, color: datos.Posicion_L25 === 1 ? '#2E7D32' : '#FF8F00' }}>{datos.Posicion_L25}°</span></div>
-          <div><span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>vs Capital: </span><span style={{ fontSize: '14px', fontWeight: 500, color: (datos.Share_L25 - datos.ShareCap_L25) >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Share_L25 - datos.ShareCap_L25)}</span></div>
+          <div><span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>% Votos peronismo: </span><span style={{ fontSize: '17px', fontWeight: 600, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L25)}</span></div>
+          <div><span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Posición: </span><span style={{ fontSize: '15px', fontWeight: 600, color: datos.Posicion_L25 === 1 ? '#2E7D32' : '#FF8F00' }}>{datos.Posicion_L25}°</span></div>
+          <div><span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>vs Capital: </span><span style={{ fontSize: '13px', fontWeight: 500, color: (datos.Share_L25 - datos.ShareCap_L25) >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Share_L25 - datos.ShareCap_L25)}</span></div>
         </div>
       </div>
       
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '10px 18px', backgroundColor: datos.Volatilidad_Cat === 'Estable' ? '#4CAF5015' : datos.Volatilidad_Cat === 'Moderado' ? '#FF980015' : '#EF535015', borderRadius: '10px', alignSelf: 'flex-start' }}>
-        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Estabilidad histórica:</span>
-        <span style={{ fontSize: '14px', fontWeight: 600, color: datos.Volatilidad_Cat === 'Estable' ? '#2E7D32' : datos.Volatilidad_Cat === 'Moderado' ? '#E65100' : '#C62828' }}>{datos.Volatilidad_Cat}</span>
+        <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Estabilidad histórica:</span>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: datos.Volatilidad_Cat === 'Estable' ? '#2E7D32' : datos.Volatilidad_Cat === 'Moderado' ? '#E65100' : '#C62828' }}>{datos.Volatilidad_Cat}</span>
       </div>
     </div>
   );
@@ -239,14 +327,14 @@ const SolapaEvolucion = ({ circuito, datos }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Evolución histórica del % de votos peronismo</span>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--text-secondary)' }}>
+        <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Evolución histórica del % de votos peronismo</span>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}>
           <input type="checkbox" checked={mostrarCapital} onChange={(e) => setMostrarCapital(e.target.checked)} style={{ accentColor: '#1976D2', width: '18px', height: '18px' }} />
           Mostrar Capital
         </label>
       </div>
       
-      <div style={{ padding: '20px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
         <svg width="100%" viewBox={`0 0 ${chartWidth} ${chartHeight + padding.top + padding.bottom}`} style={{ overflow: 'visible' }}>
           {[0.2, 0.4, 0.6].map(val => (
             <g key={val}>
@@ -265,24 +353,24 @@ const SolapaEvolucion = ({ circuito, datos }) => {
           ))}
         </svg>
         <div style={{ display: 'flex', gap: '28px', marginTop: '16px', paddingLeft: '50px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '28px', height: '3px', backgroundColor: '#1976D2', borderRadius: '2px' }} /><span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>Circuito {circuito}</span></div>
-          {mostrarCapital && <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '28px', height: '0', borderTop: '2px dashed #78909C' }} /><span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Capital</span></div>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '28px', height: '3px', backgroundColor: '#1976D2', borderRadius: '2px' }} /><span style={{ fontSize: '12px', color: 'var(--text-primary)' }}>Circuito {circuito}</span></div>
+          {mostrarCapital && <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '28px', height: '0', borderTop: '2px dashed #78909C' }} /><span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Capital</span></div>}
         </div>
       </div>
       
       <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>Resumen</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>Resumen</div>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Elección</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Circuito</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Capital</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Diferencia</th><th style={{ padding: '12px 18px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Resultado</th></tr></thead>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Elección</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Circuito</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Capital</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Diferencia</th><th style={{ padding: '8px 14px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Resultado</th></tr></thead>
             <tbody>
               {todasElecciones.map((row, i) => (
                 <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: '12px 18px', fontWeight: 500 }}>{row.label}</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600 }}>{formatPct(row.share)}</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', color: 'var(--text-secondary)' }}>{formatPct(row.cap)}</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', color: row.share != null && row.cap != null ? ((row.share - row.cap) >= 0 ? '#2E7D32' : '#C62828') : 'var(--text-tertiary)', fontWeight: 500 }}>{row.share != null && row.cap != null ? formatPP(row.share - row.cap) : '—'}</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'center' }}>{row.gano != null ? <span style={{ display: 'inline-block', padding: '5px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, backgroundColor: row.gano ? '#4CAF5022' : '#EF535022', color: row.gano ? '#2E7D32' : '#C62828' }}>{row.gano ? 'GANÓ' : 'PERDIÓ'}</span> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
+                  <td style={{ padding: '8px 14px', fontWeight: 500 }}>{row.label}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 600 }}>{formatPct(row.share)}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right', color: 'var(--text-secondary)' }}>{formatPct(row.cap)}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right', color: row.share != null && row.cap != null ? ((row.share - row.cap) >= 0 ? '#2E7D32' : '#C62828') : 'var(--text-tertiary)', fontWeight: 500 }}>{row.share != null && row.cap != null ? formatPP(row.share - row.cap) : '—'}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'center' }}>{row.gano != null ? <span style={{ display: 'inline-block', padding: '5px 14px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, backgroundColor: row.gano ? '#4CAF5022' : '#EF535022', color: row.gano ? '#2E7D32' : '#C62828' }}>{row.gano ? 'GANÓ' : 'PERDIÓ'}</span> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
                 </tr>
               ))}
             </tbody>
@@ -311,18 +399,18 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Composición del voto por elección</span>
-        <select value={eleccionSeleccionada} onChange={(e) => setEleccionSeleccionada(e.target.value)} style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '14px', cursor: 'pointer' }}>
+        <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Composición del voto por elección</span>
+        <select value={eleccionSeleccionada} onChange={(e) => setEleccionSeleccionada(e.target.value)} style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' }}>
           {elecciones.map(e => <option key={e} value={e}>{nombresEleccion[e]}</option>)}
         </select>
       </div>
-      <div style={{ padding: '20px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
         {elecciones.slice(0, 4).map(elec => {
           const parts = partidosCircuito[elec] || [];
           return (
             <div key={elec} style={{ marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <span style={{ fontSize: '13px', color: elec === eleccionSeleccionada ? 'var(--text-primary)' : 'var(--text-tertiary)', fontWeight: elec === eleccionSeleccionada ? 600 : 400, minWidth: '80px' }}>{nombresEleccion[elec]}</span>
+                <span style={{ fontSize: '12px', color: elec === eleccionSeleccionada ? 'var(--text-primary)' : 'var(--text-tertiary)', fontWeight: elec === eleccionSeleccionada ? 600 : 400, minWidth: '80px' }}>{nombresEleccion[elec]}</span>
                 <div style={{ flex: 1, height: '30px', display: 'flex', borderRadius: '6px', overflow: 'hidden' }}>
                   {parts.map((p, i) => (
                     <div key={i} style={{ width: `${p.share * 100}%`, backgroundColor: getColorPartido(p.partido, p.es_peronismo), display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }} title={`${p.partido}: ${(p.share * 100).toFixed(1)}%`}>
@@ -336,21 +424,21 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
         })}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
           {[{ label: 'Peronismo', color: '#1565C0' }, { label: 'JxC/Cambiemos', color: '#FFC107' }, { label: 'LLA', color: '#7B1FA2' }, { label: 'FdT/UP', color: '#E53935' }, { label: 'Otros', color: '#78909C' }].map(l => (
-            <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '14px', height: '14px', borderRadius: '3px', backgroundColor: l.color }} /><span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{l.label}</span></div>
+            <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '14px', height: '14px', borderRadius: '3px', backgroundColor: l.color }} /><span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{l.label}</span></div>
           ))}
         </div>
       </div>
       <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>Ranking {nombresEleccion[eleccionSeleccionada]}</div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-          <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', width: '50px' }}>#</th><th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Partido</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Votos</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% Votos</th></tr></thead>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>Ranking {nombresEleccion[eleccionSeleccionada]}</div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', width: '50px' }}>#</th><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Partido</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Votos</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% Votos</th></tr></thead>
           <tbody>
             {partidosEleccion.map((p, i) => (
               <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                <td style={{ padding: '12px 18px' }}><div style={{ width: '26px', height: '26px', borderRadius: '50%', backgroundColor: getColorPartido(p.partido, p.es_peronismo), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px', fontWeight: 600 }}>{i + 1}</div></td>
-                <td style={{ padding: '12px 18px', fontWeight: p.es_peronismo ? 600 : 400, color: p.es_peronismo ? '#1565C0' : 'var(--text-primary)' }}>{p.partido.length > 40 ? p.partido.substring(0, 40) + '...' : p.partido}</td>
-                <td style={{ padding: '12px 18px', textAlign: 'right' }}>{p.votos?.toLocaleString()}</td>
-                <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600 }}>{(p.share * 100).toFixed(1)}%</td>
+                <td style={{ padding: '8px 14px' }}><div style={{ width: '26px', height: '26px', borderRadius: '50%', backgroundColor: getColorPartido(p.partido, p.es_peronismo), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '11px', fontWeight: 600 }}>{i + 1}</div></td>
+                <td style={{ padding: '8px 14px', fontWeight: p.es_peronismo ? 600 : 400, color: p.es_peronismo ? '#1565C0' : 'var(--text-primary)' }}>{p.partido.length > 40 ? p.partido.substring(0, 40) + '...' : p.partido}</td>
+                <td style={{ padding: '8px 14px', textAlign: 'right' }}>{p.votos?.toLocaleString()}</td>
+                <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 600 }}>{(p.share * 100).toFixed(1)}%</td>
               </tr>
             ))}
           </tbody>
@@ -373,12 +461,12 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
-        <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Barrios del circuito</h4>
-        <div style={{ padding: '20px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Barrios del circuito</h4>
+        <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           {barriosCircuito.length > 0 ? (
             <>
               <div style={{ maxHeight: '250px', overflowY: 'auto', marginBottom: '16px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
                     <tr><th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% en circuito</th></tr>
                   </thead>
@@ -393,29 +481,29 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
                   </tbody>
                 </table>
               </div>
-              <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>
+              <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                 Total barrios: <strong style={{ color: 'var(--text-primary)' }}>{barriosCircuito.length}</strong>
                 <span style={{ margin: '0 14px' }}>│</span>
                 Padrón: <strong style={{ color: 'var(--text-primary)' }}>{datos?.Padron_G23?.toLocaleString() || '—'}</strong>
               </div>
             </>
-          ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>No hay información de barrios disponible</div>}
+          ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>No hay información de barrios disponible</div>}
         </div>
       </div>
       <div>
-        <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Circuitos de la zona ({vecinos.length} relacionados)</h4>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Circuitos de la zona ({vecinos.length} relacionados)</h4>
         <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Circuito</th><th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Diagnóstico</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% Votos G23</th><th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Tendencia</th></tr></thead>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Circuito</th><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Diagnóstico</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% Votos G23</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Tendencia</th></tr></thead>
             <tbody>
               {vecinos.length > 0 ? vecinos.map((v, i) => (
                 <tr key={i} style={{ borderTop: '1px solid var(--border)', cursor: 'pointer' }} onClick={() => onSelectCircuito(v.CircuitoKey)} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                  <td style={{ padding: '12px 18px', fontWeight: 500 }}>{v.CircuitoKey} - {v.cirn_nom}</td>
-                  <td style={{ padding: '12px 18px' }}><Badge categoria={v.Categoria_v4} tipo="v4" /></td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600 }}>{formatPct(v.Share_G23)}</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', color: v.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', fontWeight: 500 }}>{v.Residual_Gov >= 0 ? '▲' : '▼'} {Math.abs(v.Residual_Gov * 100).toFixed(1)} pp</td>
+                  <td style={{ padding: '8px 14px', fontWeight: 500 }}>{v.CircuitoKey} - {v.cirn_nom}</td>
+                  <td style={{ padding: '8px 14px' }}><Badge categoria={v.Categoria_v4} tipo="v4" /></td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 600 }}>{formatPct(v.Share_G23)}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right', color: v.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', fontWeight: 500 }}>{v.Residual_Gov >= 0 ? '▲' : '▼'} {Math.abs(v.Residual_Gov * 100).toFixed(1)} pp</td>
                 </tr>
-              )) : <tr><td colSpan={4} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-tertiary)' }}>Este circuito no tiene variantes (A, B, C, etc.)</td></tr>}
+              )) : <tr><td colSpan={4} style={{ padding: '16px', textAlign: 'center', color: 'var(--text-tertiary)' }}>Este circuito no tiene variantes (A, B, C, etc.)</td></tr>}
             </tbody>
           </table>
         </div>
@@ -430,61 +518,58 @@ const SolapaComparativas = ({ circuito, datos }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       <div>
-        <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Comparativa Gobernador: 2019 vs 2023</h4>
-        <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Comparativa Gobernador: 2019 vs 2023</h4>
+        <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2019</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G19)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G19}°</div></div>
-            <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: (datos.Share_G23 - datos.Share_G19) >= 0 ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Variación</div><div style={{ fontSize: '32px', fontWeight: 700, color: (datos.Share_G23 - datos.Share_G19) >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Share_G23 - datos.Share_G19)}</div><div style={{ fontSize: '13px', color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Residual_Gov)}</div></div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2019</div><div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G19)}</div><div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G19}°</div></div>
+            <div style={{ fontSize: '22px', color: '#1976D2' }}>→</div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: (datos.Share_G23 - datos.Share_G19) >= 0 ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Variación</div><div style={{ fontSize: '24px', fontWeight: 700, color: (datos.Share_G23 - datos.Share_G19) >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Share_G23 - datos.Share_G19)}</div><div style={{ fontSize: '12px', color: datos.Residual_Gov >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Residual_Gov)}</div></div>
           </div>
         </div>
       </div>
       
       <div>
-        <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Evolución Llaryora: Int. 2019 → Gob. 2023</h4>
-        <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Evolución Llaryora: Int. 2019 → Gob. 2023</h4>
+        <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Int. 2019</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_Int19)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_Int19}°</div></div>
-            <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: '#1976D218', border: '1px solid #1976D240', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: '#1976D2', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '32px', fontWeight: 700, color: '#1565C0' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '13px', color: '#1976D2', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Crecio_vs_Capital ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div><div style={{ fontSize: '32px', fontWeight: 700, color: datos.Efecto_ML >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Efecto_ML / 100)}</div><div style={{ fontSize: '13px', color: datos.Crecio_vs_Capital ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Efecto_ML_vs_Capital / 100)}</div></div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Int. 2019</div><div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_Int19)}</div><div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_Int19}°</div></div>
+            <div style={{ fontSize: '22px', color: '#1976D2' }}>→</div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: '#1976D218', border: '1px solid #1976D240', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: '#1976D2', marginBottom: '10px' }}>Gob. 2023</div><div style={{ fontSize: '24px', fontWeight: 700, color: '#1565C0' }}>{formatPct(datos.Share_G23)}</div><div style={{ fontSize: '12px', color: '#1976D2', marginTop: '6px' }}>Posición: {datos.Posicion_G23}°</div></div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: datos.Crecio_vs_Capital ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div><div style={{ fontSize: '24px', fontWeight: 700, color: datos.Efecto_ML >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Efecto_ML / 100)}</div><div style={{ fontSize: '12px', color: datos.Crecio_vs_Capital ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Efecto_ML_vs_Capital / 100)}</div></div>
           </div>
           <div style={{ marginTop: '18px' }}><Badge categoria={datos.Categoria_ML} tipo="ml" /></div>
-          {datos.Categoria_ML === 'ML.4' && <div style={{ marginTop: '12px', padding: '10px 14px', backgroundColor: '#26A69A15', borderRadius: '8px', fontSize: '13px', color: '#00695C' }}>ℹ️ ML subió su % de votos ({formatPP(datos.Efecto_ML / 100)}), pero perdió la elección por irrupción de terceros.</div>}
+          {datos.Categoria_ML === 'ML.4' && <div style={{ marginTop: '12px', padding: '10px 14px', backgroundColor: '#26A69A15', borderRadius: '8px', fontSize: '12px', color: '#00695C' }}>ℹ️ ML subió su % de votos ({formatPP(datos.Efecto_ML / 100)}), pero perdió la elección por irrupción de terceros.</div>}
         </div>
       </div>
       
       <div>
-        <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Efecto Schiaretti: Dip. 2021 → Dip. 2025</h4>
-        <div style={{ padding: '24px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-primary)', marginBottom: '14px', fontWeight: 600 }}>Efecto Schiaretti: Dip. 2021 → Dip. 2025</h4>
+        <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2021</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L21)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L21}°</div></div>
-            <div style={{ fontSize: '28px', color: '#1976D2' }}>→</div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2025</div><div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L25)}</div><div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L25}°</div></div>
-            <div style={{ flex: '1 1 160px', padding: '20px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div><div style={{ fontSize: '32px', fontWeight: 700, color: datos.Sch_Efecto >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Sch_Efecto)}</div><div style={{ fontSize: '13px', color: datos.Sch_Efecto_vs_Capital >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Sch_Efecto_vs_Capital)}</div></div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2021</div><div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L21)}</div><div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L21}°</div></div>
+            <div style={{ fontSize: '22px', color: '#1976D2' }}>→</div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Dip. 2025</div><div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>{formatPct(datos.Share_L25)}</div><div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '6px' }}>Posición: {datos.Posicion_L25}°</div></div>
+            <div style={{ flex: '1 1 160px', padding: '14px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5018' : '#EF535018', borderRadius: '10px', textAlign: 'center' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Δ Circuito</div><div style={{ fontSize: '24px', fontWeight: 700, color: datos.Sch_Efecto >= 0 ? '#2E7D32' : '#C62828' }}>{formatPP(datos.Sch_Efecto)}</div><div style={{ fontSize: '12px', color: datos.Sch_Efecto_vs_Capital >= 0 ? '#2E7D32' : '#C62828', marginTop: '6px' }}>vs Capital: {formatPP(datos.Sch_Efecto_vs_Capital)}</div></div>
           </div>
-          <div style={{ marginTop: '18px' }}><span style={{ display: 'inline-block', padding: '7px 16px', borderRadius: '8px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5022' : '#EF535022', color: datos.Sch_Mejoro ? '#2E7D32' : '#C62828', fontSize: '13px', fontWeight: 600 }}>{datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'}</span></div>
+          <div style={{ marginTop: '18px' }}><span style={{ display: 'inline-block', padding: '7px 16px', borderRadius: '8px', backgroundColor: datos.Sch_Mejoro ? '#4CAF5022' : '#EF535022', color: datos.Sch_Mejoro ? '#2E7D32' : '#C62828', fontSize: '12px', fontWeight: 600 }}>{datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'}</span></div>
         </div>
       </div>
       
-      <div style={{ padding: '24px', backgroundColor: datos.Victorias_Total >= 2 ? '#4CAF5012' : '#EF535012', border: `1px solid ${datos.Victorias_Total >= 2 ? '#4CAF5040' : '#EF535040'}`, borderRadius: '12px' }}>
-        <h4 style={{ fontSize: '15px', color: 'var(--text-primary)', marginBottom: '18px', fontWeight: 600 }}>Tendencias del circuito</h4>
+      <div style={{ padding: '16px', backgroundColor: datos.Victorias_Total >= 2 ? '#4CAF5012' : '#EF535012', border: `1px solid ${datos.Victorias_Total >= 2 ? '#4CAF5040' : '#EF535040'}`, borderRadius: '12px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-primary)', marginBottom: '18px', fontWeight: 600 }}>Tendencias del circuito</h4>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '18px' }}>
-          <div style={{ padding: '14px 18px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Diagnóstico</div><Badge categoria={datos.Categoria_v4} tipo="v4" /></div>
-          <div style={{ padding: '14px 18px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Evolución Llaryora</div><Badge categoria={datos.Categoria_ML} tipo="ml" /></div>
-          <div style={{ padding: '14px 18px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Efecto legislativo</div><span style={{ fontSize: '14px', fontWeight: 600, color: datos.Sch_Mejoro ? '#2E7D32' : '#C62828' }}>{datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'} ({formatPP(datos.Sch_Efecto)})</span></div>
+          <div style={{ padding: '10px 14px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Diagnóstico</div><Badge categoria={datos.Categoria_v4} tipo="v4" /></div>
+          <div style={{ padding: '10px 14px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Evolución Llaryora</div><Badge categoria={datos.Categoria_ML} tipo="ml" /></div>
+          <div style={{ padding: '10px 14px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Efecto legislativo</div><span style={{ fontSize: '13px', fontWeight: 600, color: datos.Sch_Mejoro ? '#2E7D32' : '#C62828' }}>{datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'} ({formatPP(datos.Sch_Efecto)})</span></div>
         </div>
-        <div style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: 500 }}>{datos.Victorias_Total >= 3 ? '✓' : datos.Victorias_Total >= 2 ? '○' : '✗'} {datos.Victorias_Total >= 3 ? 'Circuito sólido para el oficialismo' : datos.Victorias_Total >= 2 ? 'Circuito con potencial de recuperación' : 'Circuito difícil, requiere estrategia específica'}</div>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '10px' }}>Ganó {datos.Victorias_Total}/4 elecciones. {datos.Crecio_vs_Capital ? 'Creció más que Capital con Llaryora.' : 'Creció menos que Capital con Llaryora.'} {datos.Sch_Mejoro ? 'Mejoró en legislativas.' : 'Empeoró en legislativas.'}</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>{datos.Victorias_Total >= 3 ? '✓' : datos.Victorias_Total >= 2 ? '○' : '✗'} {datos.Victorias_Total >= 3 ? 'Circuito sólido para el oficialismo' : datos.Victorias_Total >= 2 ? 'Circuito con potencial de recuperación' : 'Circuito difícil, requiere estrategia específica'}</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>Ganó {datos.Victorias_Total}/4 elecciones. {datos.Crecio_vs_Capital ? 'Creció más que Capital con Llaryora.' : 'Creció menos que Capital con Llaryora.'} {datos.Sch_Mejoro ? 'Mejoró en legislativas.' : 'Empeoró en legislativas.'}</div>
       </div>
     </div>
   );
 };
 
-// ============================================
-// VISTA CAPITAL
-// ============================================
 const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCategoria }) => {
   const [ordenColumna, setOrdenColumna] = useState('Share_G23');
   const [ordenAsc, setOrdenAsc] = useState(false);
@@ -508,50 +593,50 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ padding: '24px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>CÓRDOBA CAPITAL</h2>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '10px' }}>119 circuitos │ {totalPadron.toLocaleString()} electores</div>
+      <div style={{ padding: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>CÓRDOBA CAPITAL</h2>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>119 circuitos │ {totalPadron.toLocaleString()} electores</div>
       </div>
       
-      <div style={{ padding: '20px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px' }}>Resultados Capital - % Votos Peronismo</div>
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>Resultados Capital - % Votos Peronismo</div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {[{ label: 'Gob. 2023', value: 0.458 }, { label: 'Gob. 2019', value: 0.515 }, { label: 'Dip. 2025', value: 0.255 }, { label: 'Dip. 2021', value: 0.222 }, { label: 'Int. 2019', value: 0.402 }].map(e => (
             <div key={e.label} style={{ flex: '1 1 140px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>{e.label}</div>
-              <div style={{ fontSize: '22px', fontWeight: 600, color: e.value >= 0.45 ? '#2E7D32' : e.value >= 0.25 ? '#FF8F00' : '#C62828' }}>{formatPct(e.value)}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>{e.label}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: e.value >= 0.45 ? '#2E7D32' : e.value >= 0.25 ? '#FF8F00' : '#C62828' }}>{formatPct(e.value)}</div>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '13px' }}>
+        <div style={{ marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '12px' }}>
           <div><span style={{ color: 'var(--text-secondary)' }}>Tendencia Gob (19→23): </span><span style={{ color: '#C62828', fontWeight: 500 }}>-5.7 pp</span></div>
           <div><span style={{ color: 'var(--text-secondary)' }}>Tendencia Dip (21→25): </span><span style={{ color: '#2E7D32', fontWeight: 500 }}>+3.3 pp</span></div>
           <div><span style={{ color: 'var(--text-secondary)' }}>Efecto ML (Int19→G23): </span><span style={{ color: '#2E7D32', fontWeight: 500 }}>+5.6 pp</span></div>
         </div>
       </div>
       
-      <div style={{ padding: '20px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
           Filtrar por diagnóstico
-          {filtroCategoria && <button onClick={() => setFiltroCategoria(null)} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '12px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtro</button>}
+          {filtroCategoria && <button onClick={() => setFiltroCategoria(null)} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtro</button>}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
           {categoriasUnicas.map(([cat, config]) => (
             <div key={cat} onClick={() => setFiltroCategoria(filtroCategoria === cat ? null : cat)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', backgroundColor: filtroCategoria === cat ? `${config.bg}30` : 'var(--bg-secondary)', border: filtroCategoria === cat ? `2px solid ${config.bg}` : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s' }}>
               <div style={{ width: '14px', height: '14px', borderRadius: '4px', backgroundColor: config.bg }} />
-              <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: filtroCategoria === cat ? 600 : 400 }}>{config.label} ({conteoCategoria[cat] || 0})</span>
+              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: filtroCategoria === cat ? 600 : 400 }}>{config.label} ({conteoCategoria[cat] || 0})</span>
             </div>
           ))}
         </div>
       </div>
       
       <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
-        <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{filtroCategoria ? `Mostrando ${datosFiltrados.length} circuitos` : 'Todos los circuitos (119)'}</span>
-          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Click en columna para ordenar</span>
+        <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{filtroCategoria ? `Mostrando ${datosFiltrados.length} circuitos` : 'Todos los circuitos (119)'}</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Click en columna para ordenar</span>
         </div>
         <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
             <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
               <tr>
                 <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('CircuitoKey')}>Circuito</th>
@@ -579,7 +664,7 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
       </div>
       
       <div style={{ padding: '18px 24px', backgroundColor: '#1976D218', borderRadius: '12px', textAlign: 'center' }}>
-        <span style={{ fontSize: '15px', color: '#1565C0' }}>Hacé click en el mapa o en una fila para ver el detalle del circuito</span>
+        <span style={{ fontSize: '13px', color: '#1565C0' }}>Hacé click en el mapa o en una fila para ver el detalle del circuito</span>
       </div>
     </div>
   );
@@ -599,11 +684,18 @@ const MetricCardMini = ({ label, value, subtitle, trend, trendPositive }) => (
   </div>
 );
 
-const ResumenCircuitoMini = ({ datos, padronTotal }) => {
+const BadgeCobertura = ({ encuestado }) => (
+  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', backgroundColor: encuestado ? '#4CAF5022' : 'var(--bg-secondary)', color: encuestado ? '#2E7D32' : 'var(--text-tertiary)', fontSize: '11px', fontWeight: 600 }}>
+    {encuestado ? '✓ Encuestado' : '○ Sin encuestar'}
+  </span>
+);
+
+const ResumenCircuitoMini = ({ datos, padronTotal, coberturaData }) => {
   if (!datos) {
     return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin circuito asociado.</div>;
   }
   const pctPadron = padronTotal > 0 ? ((datos.Padron_G23 / padronTotal) * 100).toFixed(1) : 0;
+  const cobertura = coberturaData?.[datos.Mapkey];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <div>
@@ -614,6 +706,17 @@ const ResumenCircuitoMini = ({ datos, padronTotal }) => {
       <MetricCardMini label="Padrón 2023" value={datos.Padron_G23?.toLocaleString() || '—'} subtitle={`${pctPadron}% Capital`} />
       <MetricCardMini label="Participación G23" value={formatPct(datos.Turnout_G23)} trend={`${formatPP(datos.Turnout_G23 - 0.67)} vs Capital`} trendPositive={(datos.Turnout_G23 - 0.67) > 0} />
       <MetricCardMini label="Tendencia Gob. 19→23" value={formatPP(datos.Residual_Gov)} trendPositive={datos.Residual_Gov >= 0} />
+      {coberturaData && (
+        <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Cobertura de encuesta</div>
+          <BadgeCobertura encuestado={!!cobertura?.encuestado} />
+          {cobertura?.encuestado && (
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '6px' }}>
+              {cobertura.cantidad_rondas} ronda{cobertura.cantidad_rondas !== 1 ? 's' : ''}: {(cobertura.fechas_rondas || []).join(', ')}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -637,7 +740,7 @@ const ListaCruceColapsable = ({ titulo, items }) => {
   );
 };
 
-const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio }) => {
+const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, coberturaData }) => {
   if (!datos) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
   }
@@ -649,7 +752,7 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} />
+      <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} coberturaData={coberturaData} />
       <button onClick={onVerFicha} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
       <ListaCruceColapsable
         titulo="Otros barrios en este circuito"
@@ -670,7 +773,13 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
   );
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito }) => {
+const TIPO_VISITA_COLOR = {
+  'TERRITORIAL': { bg: '#4CAF5022', text: '#2E7D32' },
+  'INSTITUCIONAL': { bg: '#42A5F522', text: '#1565C0' },
+  'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
+};
+
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, coberturaData, recorridosLookup }) => {
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -685,6 +794,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
     .filter(c => c.circuito !== claveSel)
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
   const obras = props.obras || [];
+  const recorridos = recorridosLookup?.[key];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -697,7 +807,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
       <div>
         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Circuito</div>
         {datosCircuito ? (
-          <ResumenCircuitoMini datos={datosCircuito} padronTotal={padronTotal} />
+          <ResumenCircuitoMini datos={datosCircuito} padronTotal={padronTotal} coberturaData={coberturaData} />
         ) : props.circuito_principal ? (
           <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{props.circuito_principal}</div>
         ) : (
@@ -735,11 +845,39 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
           </div>
         </div>
       )}
+
+      {recorridosLookup && (
+        <div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Recorridos del Gobernador</div>
+          {recorridos && recorridos.total_visitas > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-primary)', fontWeight: 600 }}>{recorridos.total_visitas} visita{recorridos.total_visitas !== 1 ? 's' : ''}</div>
+              {(recorridos.visitas || []).map((v, i) => {
+                const colorTipo = TIPO_VISITA_COLOR[v.tipo_visita] || TIPO_VISITA_COLOR['NO HAY DATOS certeros'];
+                return (
+                  <div key={i} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{v.fecha}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: colorTipo.bg, color: colorTipo.text }}>{v.tipo_visita}</span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>Contacto con vecinos: <strong>{v.contacto_vecinos || 'NO'}</strong></div>
+                    {v.link && (
+                      <a href={v.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#1976D2', marginTop: '4px', display: 'inline-block' }}>Ver nota →</a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin visitas registradas.</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito }) => (
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, coberturaData, recorridosLookup }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -747,11 +885,192 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     </div>
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
-        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} />}
+        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} coberturaData={coberturaData} />
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} coberturaData={coberturaData} recorridosLookup={recorridosLookup} />}
     </div>
   </div>
 );
+
+// ============================================
+// BARRA DE COBERTURA DE ENCUESTA
+// ============================================
+const PillFiltro = ({ activo, color, onClick, children }) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: '5px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+      border: `1px solid ${activo ? color : 'var(--border)'}`,
+      backgroundColor: activo ? `${color}18` : 'transparent',
+      color: activo ? color : 'var(--text-tertiary)',
+      whiteSpace: 'nowrap',
+    }}
+  >
+    {children}
+  </button>
+);
+
+const CeldaEvento = ({ evento }) => {
+  const [hover, setHover] = useState(false);
+  if (!evento) return <td style={{ padding: '4px', borderBottom: '1px solid var(--border)' }} />;
+  const tipo = TIPOS_EVENTO_COBERTURA[evento.tipo];
+  return (
+    <td
+      style={{ padding: '4px', borderBottom: '1px solid var(--border)', position: 'relative' }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div style={{ backgroundColor: tipo.bg, color: tipo.color, borderRadius: '6px', padding: '5px 8px', fontSize: '11px', fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
+        {tipo.label} · {formatFechaCorta(evento.fecha)}
+      </div>
+      {hover && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 30, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 12px', boxShadow: '0 4px 12px rgba(0,0,0,0.18)', minWidth: '220px', maxWidth: '280px', fontSize: '12px', marginTop: '4px' }}>
+          <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>{tipo.label} · {evento.fecha}</div>
+          {evento.tipo === 'medicion' && (
+            <div style={{ color: 'var(--text-secondary)' }}>Ronda {evento.detalle.ronda} de {evento.detalle.totalRondas}</div>
+          )}
+          {evento.tipo === 'visita' && (
+            <>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Tipo: {evento.detalle.tipo_visita}</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '6px' }}>Contacto con vecinos: {evento.detalle.contacto_vecinos}</div>
+              {evento.detalle.info && <div style={{ color: 'var(--text-primary)', marginBottom: '6px' }}>{evento.detalle.info}</div>}
+              {evento.detalle.link && <a href={evento.detalle.link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver nota →</a>}
+            </>
+          )}
+        </div>
+      )}
+    </td>
+  );
+};
+
+const TablaEventosCobertura = ({ datos, eventosPorCircuito, onSelectCircuito }) => {
+  const [tiposActivos, setTiposActivos] = useState({ medicion: true, visita: true, pauta: true });
+  const [rangoSeleccionado, setRangoSeleccionado] = useState(null);
+  const [orden, setOrden] = useState('id');
+
+  const toggleTipo = (tipo) => setTiposActivos(prev => ({ ...prev, [tipo]: !prev[tipo] }));
+
+  const aniosDisponibles = useMemo(() => {
+    const set = new Set();
+    Object.values(eventosPorCircuito).forEach(lista => lista.forEach(e => set.add(e.fecha.slice(0, 4))));
+    return Array.from(set).sort((a, b) => b.localeCompare(a));
+  }, [eventosPorCircuito]);
+
+  const rangoEfectivo = rangoSeleccionado || aniosDisponibles[0] || 'todo';
+
+  const filas = useMemo(() => {
+    return datos.map(d => {
+      const eventos = (eventosPorCircuito[d.Mapkey] || [])
+        .filter(e => tiposActivos[e.tipo])
+        .filter(e => rangoEfectivo === 'todo' || e.fecha.startsWith(rangoEfectivo));
+      return { circuito: d, eventos };
+    });
+  }, [datos, eventosPorCircuito, tiposActivos, rangoEfectivo]);
+
+  const filasOrdenadas = useMemo(() => {
+    const copia = [...filas];
+    if (orden === 'reciente') {
+      copia.sort((a, b) => {
+        const fa = a.eventos.length ? a.eventos[a.eventos.length - 1].fecha : '';
+        const fb = b.eventos.length ? b.eventos[b.eventos.length - 1].fecha : '';
+        return fb.localeCompare(fa);
+      });
+    } else {
+      copia.sort((a, b) => compararMapkey(a.circuito.Mapkey, b.circuito.Mapkey));
+    }
+    return copia;
+  }, [filas, orden]);
+
+  const maxColumnas = Math.max(1, ...filas.map(f => f.eventos.length));
+
+  return (
+    <div style={{ padding: '14px' }}>
+      <style>{`
+        .fila-tabla-cobertura td { background-color: #fff; }
+        .fila-tabla-cobertura:hover td { background-color: var(--bg-secondary); }
+      `}</style>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          {Object.entries(TIPOS_EVENTO_COBERTURA).map(([key, tipo]) => (
+            <PillFiltro key={key} activo={tiposActivos[key]} color={tipo.color} onClick={() => toggleTipo(key)}>
+              {tiposActivos[key] ? '✓ ' : ''}{tipo.label}
+            </PillFiltro>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {aniosDisponibles.map(anio => (
+            <PillFiltro key={anio} activo={rangoEfectivo === anio} color="#1976D2" onClick={() => setRangoSeleccionado(anio)}>
+              {anio}
+            </PillFiltro>
+          ))}
+          <PillFiltro activo={rangoEfectivo === 'todo'} color="#1976D2" onClick={() => setRangoSeleccionado('todo')}>
+            Todo
+          </PillFiltro>
+          <select value={orden} onChange={(e) => setOrden(e.target.value)} style={{ padding: '5px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', color: 'var(--text-secondary)', backgroundColor: '#fff' }}>
+            <option value="id">Orden: ID circuito</option>
+            <option value="reciente">Orden: más reciente</option>
+          </select>
+        </div>
+      </div>
+
+      <div style={{ overflow: 'auto', maxHeight: '420px', border: '1px solid var(--border)', borderRadius: '10px' }}>
+        <table style={{ borderCollapse: 'collapse', fontSize: '12px', width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ position: 'sticky', left: 0, top: 0, zIndex: 3, backgroundColor: '#fff', borderBottom: '1px solid var(--border)', padding: '8px 10px', textAlign: 'left', minWidth: '190px' }}>Circuito</th>
+              {Array.from({ length: maxColumnas }).map((_, i) => (
+                <th key={i} style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#fff', borderBottom: '1px solid var(--border)', padding: '8px 10px', fontWeight: 500, color: 'var(--text-tertiary)', minWidth: '120px' }}>
+                  Evento {i + 1}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filasOrdenadas.map(({ circuito, eventos }) => (
+              <tr key={circuito.Mapkey} className="fila-tabla-cobertura" onClick={() => onSelectCircuito(circuito.CircuitoKey)} style={{ cursor: 'pointer' }}>
+                <td style={{ position: 'sticky', left: 0, zIndex: 1, borderBottom: '1px solid var(--border)', padding: '8px 10px', fontWeight: 500, color: 'var(--text-primary)' }}>
+                  {circuito.Mapkey} · {circuito.cirn_nom}
+                </td>
+                {Array.from({ length: maxColumnas }).map((_, i) => (
+                  <CeldaEvento key={i} evento={eventos[i]} />
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+const BarraCobertura = ({ resumen, datos, eventosPorCircuito, onSelectCircuito }) => {
+  const [expandida, setExpandida] = useState(false);
+  if (!resumen) return null;
+  const pct = resumen.total > 0 ? Math.round((resumen.encuestados / resumen.total) * 100) : 0;
+
+  return (
+    <div style={{ position: 'relative', backgroundColor: '#fff', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Cobertura de encuesta</span>
+        <div style={{ flex: '0 1 220px', minWidth: '140px', height: '8px', borderRadius: '4px', backgroundColor: 'var(--bg-secondary)', overflow: 'hidden' }}>
+          <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#4CAF50', borderRadius: '4px' }} />
+        </div>
+        <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 600 }}>{resumen.encuestados} / {resumen.total} circuitos encuestados ({pct}%)</span>
+        {resumen.fechaMasReciente && (
+          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Última ronda: {resumen.fechaMasReciente}</span>
+        )}
+        <button onClick={() => setExpandida(!expandida)} style={{ marginLeft: 'auto', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+          Ver detalle {expandida ? '▲' : '▼'}
+        </button>
+      </div>
+      {expandida && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderTop: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 900 }}>
+          <TablaEventosCobertura datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={(c) => { onSelectCircuito(c); setExpandida(false); }} />
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ============================================
 // FUNCIÓN EXPORTAR FICHA PDF MEJORADA
@@ -918,6 +1237,9 @@ export default function Home() {
   const [barriosGeoData, setBarriosGeoData] = useState(null);
   const [obrasData, setObrasData] = useState([]);
   const [cruceData, setCruceData] = useState(null);
+  const [recorridosData, setRecorridosData] = useState(null);
+  const [coberturaData, setCoberturaData] = useState(null);
+  const [pautaData] = useState(null); // reservado: sin fuente de datos todavía
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [mostrarInfo, setMostrarInfo] = useState(false);
@@ -928,16 +1250,18 @@ export default function Home() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes] = await Promise.all([
+        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, coberturaRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
           fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
           fetch('/data/circuito_barrios_cruce.json'),
+          fetch('/data/recorridos_barrios.json'), fetch('/data/cobertura_circuitos.json'),
         ]);
         setDatos(await datosRes.json()); setPartidos(await partidosRes.json());
         setBarrios(await barriosRes.json()); setGeoData(await geoRes.json());
         setBarriosGeoData(await barriosGeoRes.json()); setObrasData(await obrasRes.json());
         setCruceData(await cruceRes.json());
+        setRecorridosData(await recorridosRes.json()); setCoberturaData(await coberturaRes.json());
       } catch (e) { console.error('Error cargando datos:', e); }
       setCargando(false);
     };
@@ -960,6 +1284,36 @@ export default function Home() {
     });
     return lookup;
   }, [barriosGeoData]);
+
+  const recorridosLookup = useMemo(() => {
+    const lookup = {};
+    Object.entries(recorridosData || {}).forEach(([nombre, info]) => {
+      const key = normalizarNombreBarrio(nombre);
+      if (key) lookup[key] = info;
+    });
+    return lookup;
+  }, [recorridosData]);
+
+  const eventosPorCircuito = useMemo(
+    () => construirEventosPorCircuito(datos, coberturaData, recorridosLookup, cruceData, pautaData),
+    [datos, coberturaData, recorridosLookup, cruceData, pautaData]
+  );
+
+  const coberturaResumen = useMemo(() => {
+    if (!coberturaData) return null;
+    let encuestados = 0;
+    let fechaMasReciente = null;
+    datos.forEach(d => {
+      const c = coberturaData[d.Mapkey];
+      if (c?.encuestado) {
+        encuestados++;
+        (c.fechas_rondas || []).forEach(f => {
+          if (!fechaMasReciente || f > fechaMasReciente) fechaMasReciente = f;
+        });
+      }
+    });
+    return { encuestados, total: datos.length, fechaMasReciente };
+  }, [coberturaData, datos]);
 
   // Selección de circuito por vías no geográficas (buscador, tabla, "zona", links del panel):
   // no hay un punto clickeado, así que el barrio se deriva del principal según el cruce (orden_importancia: 1).
@@ -989,6 +1343,13 @@ export default function Home() {
     setCircuitoSeleccionado(circuitoKey);
     setBarrioSeleccionado(nombreBarrio);
     setFiltroCategoria(null);
+  };
+
+  // Click en una celda de la grilla de cobertura: selecciona el circuito y vuelve
+  // a la vista de mapa (Estado 1) para verlo resaltado ahí.
+  const irACircuitoDesdeGrilla = (circuitoKey) => {
+    handleSelectCircuito(circuitoKey);
+    setVistaExpandida(false);
   };
 
   const solapas = [{ key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' }, { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' }];
@@ -1045,7 +1406,9 @@ export default function Home() {
           </div>
         </header>
 
-        <div style={{ display: 'flex', height: 'calc(100vh - 76px)' }}>
+        <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={irACircuitoDesdeGrilla} />
+
+        <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
           {vistaExpandida ? (
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
@@ -1066,7 +1429,7 @@ export default function Home() {
                       {solapas.map(s => <button key={s.key} onClick={() => setSolapaActiva(s.key)} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
                     </div>
                     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', minHeight: '400px' }}>
-                      {solapaActiva === 'resumen' && <SolapaResumen circuito={circuitoSeleccionado} datos={datosCircuito} padronTotal={padronTotal} />}
+                      {solapaActiva === 'resumen' && <SolapaResumen circuito={circuitoSeleccionado} datos={datosCircuito} padronTotal={padronTotal} coberturaData={coberturaData} />}
                       {solapaActiva === 'evolucion' && <SolapaEvolucion circuito={circuitoSeleccionado} datos={datosCircuito} />}
                       {solapaActiva === 'partidos' && <SolapaPartidos circuito={circuitoSeleccionado} datos={datosCircuito} partidos={partidos} />}
                       {solapaActiva === 'territorio' && <SolapaTerritorio circuito={circuitoSeleccionado} datos={datosCircuito} barrios={barrios} todosLosDatos={datos} onSelectCircuito={handleSelectCircuito} />}
@@ -1111,6 +1474,8 @@ export default function Home() {
                     cruceData={cruceData}
                     onSelectBarrio={handleSelectBarrio}
                     onSelectCircuito={handleSelectCircuito}
+                    coberturaData={coberturaData}
+                    recorridosLookup={recorridosLookup}
                   />
                 </div>
               </div>
