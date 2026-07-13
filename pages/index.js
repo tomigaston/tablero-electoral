@@ -740,19 +740,24 @@ export default function Home() {
   const [partidos, setPartidos] = useState({});
   const [barrios, setBarrios] = useState({});
   const [geoData, setGeoData] = useState(null);
+  const [barriosGeoData, setBarriosGeoData] = useState(null);
+  const [obrasData, setObrasData] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [mostrarInfo, setMostrarInfo] = useState(false);
-  
+  const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [datosRes, partidosRes, barriosRes, geoRes] = await Promise.all([
+        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
+          fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
         ]);
         setDatos(await datosRes.json()); setPartidos(await partidosRes.json());
         setBarrios(await barriosRes.json()); setGeoData(await geoRes.json());
+        setBarriosGeoData(await barriosGeoRes.json()); setObrasData(await obrasRes.json());
       } catch (e) { console.error('Error cargando datos:', e); }
       setCargando(false);
     };
@@ -855,7 +860,7 @@ export default function Home() {
           <div style={{ flex: '1', padding: '24px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
             <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '14px', padding: '18px', display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>Mapa de circuitos</div>
-              <MapaCircuitos datos={datos} geoData={geoData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={(c) => { setCircuitoSeleccionado(c); setFiltroCategoria(null); }} filtroCategoria={filtroCategoria} />
+              <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={(c) => { setCircuitoSeleccionado(c); setFiltroCategoria(null); }} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={setBarrioSeleccionado} filtroCategoria={filtroCategoria} />
               <div style={{ marginTop: '14px' }}>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Leyenda (click para filtrar)</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
