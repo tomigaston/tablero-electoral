@@ -64,7 +64,7 @@ function MapController({ mapkeySeleccionado, geoJsonData }) {
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, circuitoSeleccionado, onSelectCircuito, barrioSeleccionado, onSelectBarrio, filtroCategoria }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, circuitoSeleccionado, onSelectCircuito, barrioSeleccionado, onSelectBarrio, filtroCategoria, setFiltroCategoria, coloresCategoria }) {
   const geoJsonRef = useRef(null);
 
   const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true });
@@ -250,6 +250,21 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
           Escuelas <span style={{ fontSize: '11px' }}>(próximamente)</span>
         </label>
       </div>
+
+      {coloresCategoria && (
+        <div style={{ position: 'absolute', bottom: '10px', left: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '190px' }}>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Leyenda (click para filtrar)</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px' }}>
+            {Object.entries(coloresCategoria).filter(([k]) => k !== 'B.2').map(([cat, config]) => (
+              <div key={cat} onClick={() => setFiltroCategoria && setFiltroCategoria(filtroCategoria === cat ? null : cat)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', backgroundColor: filtroCategoria === cat ? `${config.bg}20` : 'transparent', border: filtroCategoria === cat ? `1px solid ${config.bg}` : '1px solid transparent' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: config.bg, flexShrink: 0 }} />
+                <span style={{ fontSize: '9px', color: '#546E7A', lineHeight: 1.2 }}>{config.label}</span>
+              </div>
+            ))}
+          </div>
+          {filtroCategoria && <button onClick={() => setFiltroCategoria && setFiltroCategoria(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
+        </div>
+      )}
 
       <MapContainer center={[-31.42, -64.18]} zoom={12} style={{ height: '100%', width: '100%' }} zoomControl={true} scrollWheelZoom={true}>
         <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

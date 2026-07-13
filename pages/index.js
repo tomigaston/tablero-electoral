@@ -55,65 +55,65 @@ const Badge = ({ categoria, tipo = 'v4' }) => {
   const colores = tipo === 'v4' ? COLORES_CATEGORIA : COLORES_ML;
   const config = colores[categoria] || { bg: '#9E9E9E', text: '#424242', label: categoria || '—' };
   return (
-    <span style={{ display: 'inline-block', padding: '5px 14px', borderRadius: '6px', backgroundColor: `${config.bg}22`, color: config.text, fontSize: '12px', fontWeight: 600, letterSpacing: '0.3px' }}>
+    <span style={{ display: 'inline-block', padding: '4px 11px', borderRadius: '6px', backgroundColor: `${config.bg}22`, color: config.text, fontSize: '11px', fontWeight: 600, letterSpacing: '0.3px' }}>
       {config.label}
     </span>
   );
 };
 
 const MetricCard = ({ label, value, subtitle, trend, trendPositive }) => (
-  <div style={{ flex: 1, minWidth: '180px', padding: '18px 22px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px' }}>
-    <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>{label}</div>
-    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-      <span style={{ fontSize: '28px', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
-      {subtitle && <span style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>{subtitle}</span>}
+  <div style={{ flex: 1, minWidth: '160px', padding: '14px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
+    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{label}</div>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+      <span style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
+      {subtitle && <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{subtitle}</span>}
     </div>
-    {trend && <div style={{ marginTop: '8px', fontSize: '13px', color: trendPositive ? '#2E7D32' : '#C62828', fontWeight: 500 }}>{trendPositive ? '▲' : '▼'} {trend}</div>}
+    {trend && <div style={{ marginTop: '6px', fontSize: '12px', color: trendPositive ? '#2E7D32' : '#C62828', fontWeight: 500 }}>{trendPositive ? '▲' : '▼'} {trend}</div>}
   </div>
 );
 
 const VictoriaIndicator = ({ label, gano }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-    <span style={{ fontSize: '14px', color: 'var(--text-secondary)', minWidth: '75px' }}>{label}</span>
-    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: gano ? '#4CAF50' : '#EF5350', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '13px', fontWeight: 600 }}>{gano ? '✓' : '✗'}</div>
+    <span style={{ fontSize: '13px', color: 'var(--text-secondary)', minWidth: '75px' }}>{label}</span>
+    <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: gano ? '#4CAF50' : '#EF5350', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px', fontWeight: 600 }}>{gano ? '✓' : '✗'}</div>
   </div>
 );
 
 // Modal de información
 const InfoModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
-  
+
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#666' }}>×</button>
+          <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666' }}>×</button>
         </div>
-        
+
         <div style={{ marginBottom: '28px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Diagnóstico Territorial</h3>
-          <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Basado en resultados de: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.</p>
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Diagnóstico Territorial</h3>
+          <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px' }}>Basado en resultados de: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.</p>
           {Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2').map(([cat, config]) => (
             <div key={cat} style={{ display: 'flex', gap: '12px', marginBottom: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
               <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: config.bg, flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <div style={{ fontWeight: 600, fontSize: '14px', color: config.text }}>{config.label}</div>
-                <div style={{ fontSize: '13px', color: '#666', marginTop: '4px' }}>{DESCRIPCIONES_CATEGORIA[cat]}</div>
+                <div style={{ fontWeight: 600, fontSize: '13px', color: config.text }}>{config.label}</div>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>{DESCRIPCIONES_CATEGORIA[cat]}</div>
               </div>
             </div>
           ))}
         </div>
-        
+
         <div>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Evolución Llaryora</h3>
-          <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Compara el desempeño de Llaryora entre Int. 2019 (como candidato a intendente) y Gob. 2023 (como candidato a gobernador).</p>
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px', color: '#1976D2' }}>Evolución Llaryora</h3>
+          <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px' }}>Compara el desempeño de Llaryora entre Int. 2019 (como candidato a intendente) y Gob. 2023 (como candidato a gobernador).</p>
           {Object.entries(COLORES_ML).map(([cat, config]) => (
             <div key={cat} style={{ display: 'flex', gap: '12px', marginBottom: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
               <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: config.bg, flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <div style={{ fontWeight: 600, fontSize: '14px', color: config.text }}>{config.label}</div>
-                <div style={{ fontSize: '13px', color: '#666', marginTop: '4px' }}>{DESCRIPCIONES_ML[cat]}</div>
+                <div style={{ fontWeight: 600, fontSize: '13px', color: config.text }}>{config.label}</div>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>{DESCRIPCIONES_ML[cat]}</div>
               </div>
             </div>
           ))}
@@ -129,6 +129,13 @@ const getNumeroBase = (circuitoKey) => {
   if (!circuitoKey) return '';
   return String(circuitoKey).replace(/[A-Za-z]/g, '');
 };
+// Mismo criterio de normalización usado en components/MapaCircuitos.js para cruzar
+// barrios_por_circuito.json / obras_largo.json con barrios_geo.json
+const normalizarNombreBarrio = (s) => (s || '')
+  .toUpperCase()
+  .replace(/[ºª]/g, 'O')
+  .replace(/\s+/g, ' ')
+  .trim();
 
 // ============================================
 // SOLAPAS
@@ -579,6 +586,174 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
 };
 
 // ============================================
+// PANEL LATERAL (VISTA MAPA)
+// ============================================
+const MetricCardMini = ({ label, value, subtitle, trend, trendPositive }) => (
+  <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>{label}</div>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+      <span style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
+      {subtitle && <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{subtitle}</span>}
+    </div>
+    {trend && <div style={{ marginTop: '3px', fontSize: '11px', color: trendPositive ? '#2E7D32' : '#C62828', fontWeight: 500 }}>{trendPositive ? '▲' : '▼'} {trend}</div>}
+  </div>
+);
+
+const ResumenCircuitoMini = ({ datos, padronTotal }) => {
+  if (!datos) {
+    return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin circuito asociado.</div>;
+  }
+  const pctPadron = padronTotal > 0 ? ((datos.Padron_G23 / padronTotal) * 100).toFixed(1) : 0;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div>
+        <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>Circuito {datos.CircuitoKey}</div>
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{datos.cirn_nom}</div>
+      </div>
+      <Badge categoria={datos.Categoria_v4} tipo="v4" />
+      <MetricCardMini label="Padrón 2023" value={datos.Padron_G23?.toLocaleString() || '—'} subtitle={`${pctPadron}% Capital`} />
+      <MetricCardMini label="Participación G23" value={formatPct(datos.Turnout_G23)} trend={`${formatPP(datos.Turnout_G23 - 0.67)} vs Capital`} trendPositive={(datos.Turnout_G23 - 0.67) > 0} />
+      <MetricCardMini label="Tendencia Gob. 19→23" value={formatPP(datos.Residual_Gov)} trendPositive={datos.Residual_Gov >= 0} />
+    </div>
+  );
+};
+
+const FilaCruce = ({ label, sublabel, onClick }) => (
+  <div onClick={onClick} style={{ padding: '6px 8px', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', cursor: 'pointer', fontSize: '11px' }}>
+    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{label}</div>
+    {sublabel && <div style={{ color: 'var(--text-tertiary)', marginTop: '1px' }}>{sublabel}</div>}
+  </div>
+);
+
+const ListaCruceColapsable = ({ titulo, items }) => {
+  if (!items || items.length === 0) return null;
+  return (
+    <details>
+      <summary style={{ cursor: 'pointer', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 500, padding: '4px 0' }}>{titulo} ({items.length})</summary>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+        {items}
+      </div>
+    </details>
+  );
+};
+
+const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio }) => {
+  if (!datos) {
+    return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
+  }
+  const clave = `${datos.Mapkey} - ${datos.cirn_nom}`;
+  const claveSel = barrioSeleccionado ? normalizarNombreBarrio(barrioSeleccionado) : null;
+  const otrosBarrios = (cruceData?.circuito_to_barrios?.[clave] || [])
+    .filter(b => normalizarNombreBarrio(b.barrio_normalizado) !== claveSel)
+    .sort((a, b) => a.orden_importancia - b.orden_importancia);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} />
+      <button onClick={onVerFicha} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
+      <ListaCruceColapsable
+        titulo="Otros barrios en este circuito"
+        items={otrosBarrios.map((b, i) => (
+          <FilaCruce
+            key={i}
+            label={b.barrio}
+            sublabel={`${b.pct_poblacion_en_circuito?.toFixed(1)}% del circuito`}
+            onClick={() => {
+              const key = normalizarNombreBarrio(b.barrio_normalizado);
+              const feature = barriosGeoLookup[key];
+              onSelectBarrio(feature ? feature.nombre_barrio : b.barrio_normalizado);
+            }}
+          />
+        ))}
+      />
+    </div>
+  );
+};
+
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito }) => {
+  if (!nombreBarrio) {
+    return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
+  }
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const props = barriosGeoLookup[key];
+  if (!props) {
+    return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Sin datos para "{nombreBarrio}".</div>;
+  }
+  const listaCircuitos = cruceData?.barrio_to_circuitos?.[nombreBarrio];
+  const claveSel = datosCircuito ? `${datosCircuito.Mapkey} - ${datosCircuito.cirn_nom}` : null;
+  const otrosCircuitos = (listaCircuitos || [])
+    .filter(c => c.circuito !== claveSel)
+    .sort((a, b) => a.orden_importancia - b.orden_importancia);
+  const obras = props.obras || [];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div>
+        <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>{nombreBarrio}</div>
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{props.tipo_barrio === 'BarrioOficial' ? 'Barrio oficial' : 'Barrio no oficial'}</div>
+      </div>
+      <MetricCardMini label="Población" value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% del circuito` : undefined} />
+
+      <div>
+        <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Circuito</div>
+        {datosCircuito ? (
+          <ResumenCircuitoMini datos={datosCircuito} padronTotal={padronTotal} />
+        ) : props.circuito_principal ? (
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{props.circuito_principal}</div>
+        ) : (
+          <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin circuito asociado.</div>
+        )}
+      </div>
+
+      <ListaCruceColapsable
+        titulo="Otros circuitos en este barrio"
+        items={otrosCircuitos.map((c, i) => (
+          <FilaCruce
+            key={i}
+            label={c.circuito.split(' - ').slice(1).join(' - ')}
+            sublabel={`≈${c.pct_poblacion_en_circuito?.toFixed(1)}% de la población del barrio`}
+            onClick={() => {
+              const mapkeyClicked = c.circuito.split(' - ')[0].trim();
+              const circuitoRecord = todosLosDatos.find(d => d.Mapkey === mapkeyClicked);
+              if (circuitoRecord) onSelectCircuito(circuitoRecord.CircuitoKey);
+            }}
+          />
+        ))}
+      />
+
+      {props.cantidad_obras > 0 && (
+        <div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Obras ({props.cantidad_obras})</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {obras.map((o, i) => (
+              <div key={i} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{o.programa || '—'}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{o.descripcion || '—'}</div>
+                <div style={{ fontSize: '11px', color: '#5C6BC0', fontWeight: 600, marginTop: '3px' }}>{o.estado || 'Sin dato'}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
+      <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
+      <button onClick={() => setPanelTab('barrio')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'barrio' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'barrio' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Barrio</button>
+    </div>
+    <div style={{ flex: 1, overflowY: 'auto' }}>
+      {panelTab === 'circuito'
+        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} />
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} />}
+    </div>
+  </div>
+);
+
+// ============================================
 // FUNCIÓN EXPORTAR FICHA PDF MEJORADA
 // ============================================
 const generarFichaPDF = (datos, barrios, partidos, padronTotal) => {
@@ -742,28 +917,33 @@ export default function Home() {
   const [geoData, setGeoData] = useState(null);
   const [barriosGeoData, setBarriosGeoData] = useState(null);
   const [obrasData, setObrasData] = useState([]);
+  const [cruceData, setCruceData] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [mostrarInfo, setMostrarInfo] = useState(false);
+  const [vistaExpandida, setVistaExpandida] = useState(false);
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
+  const [panelTab, setPanelTab] = useState('circuito');
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes] = await Promise.all([
+        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
           fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
+          fetch('/data/circuito_barrios_cruce.json'),
         ]);
         setDatos(await datosRes.json()); setPartidos(await partidosRes.json());
         setBarrios(await barriosRes.json()); setGeoData(await geoRes.json());
         setBarriosGeoData(await barriosGeoRes.json()); setObrasData(await obrasRes.json());
+        setCruceData(await cruceRes.json());
       } catch (e) { console.error('Error cargando datos:', e); }
       setCargando(false);
     };
     cargarDatos();
   }, []);
-  
+
   const datosCircuito = useMemo(() => datos.find(d => d.CircuitoKey === circuitoSeleccionado), [datos, circuitoSeleccionado]);
   const circuitosFiltrados = useMemo(() => {
     if (!busqueda) return [];
@@ -771,9 +951,40 @@ export default function Home() {
     return datos.filter(d => d.CircuitoKey?.toString().toLowerCase().includes(lower) || d.cirn_nom?.toLowerCase().includes(lower)).slice(0, 10);
   }, [datos, busqueda]);
   const padronTotal = useMemo(() => datos.reduce((sum, d) => sum + (d.Padron_G23 || 0), 0), [datos]);
-  
+
+  const barriosGeoLookup = useMemo(() => {
+    const lookup = {};
+    (barriosGeoData?.features || []).forEach(f => {
+      const key = normalizarNombreBarrio(f.properties?.nombre_barrio);
+      if (key) lookup[key] = f.properties;
+    });
+    return lookup;
+  }, [barriosGeoData]);
+
+  // Selección de circuito por vías no geográficas (buscador, tabla, "zona", links del panel):
+  // no hay un punto clickeado, así que el barrio se deriva del principal según el cruce (orden_importancia: 1).
+  const handleSelectCircuito = (c) => {
+    setCircuitoSeleccionado(c);
+    setFiltroCategoria(null);
+    setPanelTab('circuito');
+    const d = datos.find(x => x.CircuitoKey === c);
+    const clave = d ? `${d.Mapkey} - ${d.cirn_nom}` : null;
+    const lista = clave ? cruceData?.circuito_to_barrios?.[clave] : null;
+    const principal = lista?.find(b => b.orden_importancia === 1);
+    if (principal) {
+      const key = normalizarNombreBarrio(principal.barrio_normalizado);
+      const feature = barriosGeoLookup[key];
+      setBarrioSeleccionado(feature ? feature.nombre_barrio : principal.barrio_normalizado);
+    } else {
+      setBarrioSeleccionado(null);
+    }
+  };
+  // Usado por los links "Otros barrios en este circuito": solo cambia el barrio, el circuito
+  // actual no se toca (seguimos en el mismo circuito, solo mostrando otro barrio suyo).
+  const handleSelectBarrio = (nombre) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); };
+
   const solapas = [{ key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' }, { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' }];
-  
+
   const exportarPDF = () => {
     if (!datosCircuito) return;
     const html = generarFichaPDF(datosCircuito, barrios, partidos, padronTotal);
@@ -782,11 +993,11 @@ export default function Home() {
     ventana.document.close();
     setTimeout(() => ventana.print(), 500);
   };
-  
+
   if (cargando) {
     return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f0f0', fontFamily: '-apple-system, sans-serif' }}><div style={{ textAlign: 'center' }}><div style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>Cargando datos...</div><div style={{ fontSize: '14px', color: '#999' }}>119 circuitos electorales</div></div></div>;
   }
-  
+
   return (
     <>
       <Head><title>Diagnóstico Territorial - Córdoba Capital</title><meta name="viewport" content="width=device-width, initial-scale=1" /></Head>
@@ -796,25 +1007,26 @@ export default function Home() {
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f0; }
         .leaflet-container { z-index: 1 !important; }
       `}</style>
-      
+
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
-      
+
       <div style={{ minHeight: '100vh' }}>
-        <header style={{ padding: '18px 28px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
+        <header style={{ padding: '14px 24px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
           <div>
-            <h1 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>Diagnóstico Territorial</h1>
-            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>Córdoba Capital — 119 circuitos</p>
+            <h1 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--text-primary)' }}>Diagnóstico Territorial</h1>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '3px' }}>Córdoba Capital — 119 circuitos</p>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <button onClick={() => setMostrarInfo(true)} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>ℹ️ Info</button>
-            {circuitoSeleccionado && <button onClick={exportarPDF} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📄 Exportar ficha</button>}
+            <button onClick={() => setMostrarInfo(true)} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>ℹ️ Info</button>
+            {!(vistaExpandida && !circuitoSeleccionado) && <button onClick={() => { setVistaExpandida(true); setCircuitoSeleccionado(null); }} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📊 Estadísticas de Capital</button>}
+            {circuitoSeleccionado && <button onClick={exportarPDF} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📄 Exportar ficha</button>}
             <div style={{ position: 'relative' }}>
               <input type="text" placeholder="Buscar circuito..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ padding: '12px 18px', paddingLeft: '44px', width: '300px', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '15px', backgroundColor: 'var(--bg-secondary)' }} />
               <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '16px' }}>🔍</span>
               {busqueda && circuitosFiltrados.length > 0 && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', marginTop: '6px', maxHeight: '350px', overflowY: 'auto', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 9999 }}>
                   {circuitosFiltrados.map(d => (
-                    <div key={d.CircuitoKey} onClick={() => { setCircuitoSeleccionado(d.CircuitoKey); setBusqueda(''); setFiltroCategoria(null); }} style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={d.CircuitoKey} onClick={() => { handleSelectCircuito(d.CircuitoKey); setBusqueda(''); }} style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '15px' }}><strong>{d.CircuitoKey}</strong> - {d.cirn_nom}</span>
                       <Badge categoria={d.Categoria_v4} tipo="v4" />
                     </div>
@@ -824,57 +1036,78 @@ export default function Home() {
             </div>
           </div>
         </header>
-        
+
         <div style={{ display: 'flex', height: 'calc(100vh - 76px)' }}>
-          <div style={{ flex: '2', padding: '24px', overflowY: 'auto' }}>
-            {circuitoSeleccionado && datosCircuito ? (
-              <>
-                <div style={{ padding: '24px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <h2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)' }}>CIRCUITO {circuitoSeleccionado}</h2>
-                      <button onClick={() => { setCircuitoSeleccionado(null); setFiltroCategoria(null); }} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '13px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
+          {vistaExpandida ? (
+            <>
+              <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
+                {circuitoSeleccionado && datosCircuito ? (
+                  <>
+                    <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>CIRCUITO {circuitoSeleccionado}</h2>
+                          <button onClick={() => { setCircuitoSeleccionado(null); setFiltroCategoria(null); setVistaExpandida(false); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
+                          <button onClick={() => setVistaExpandida(false)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                        </div>
+                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>{datosCircuito.cirn_nom}</p>
+                      </div>
+                      <Badge categoria={datosCircuito.Categoria_v4} tipo="v4" />
                     </div>
-                    <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginTop: '8px' }}>{datosCircuito.cirn_nom}</p>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+                      {solapas.map(s => <button key={s.key} onClick={() => setSolapaActiva(s.key)} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
+                    </div>
+                    <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', minHeight: '400px' }}>
+                      {solapaActiva === 'resumen' && <SolapaResumen circuito={circuitoSeleccionado} datos={datosCircuito} padronTotal={padronTotal} />}
+                      {solapaActiva === 'evolucion' && <SolapaEvolucion circuito={circuitoSeleccionado} datos={datosCircuito} />}
+                      {solapaActiva === 'partidos' && <SolapaPartidos circuito={circuitoSeleccionado} datos={datosCircuito} partidos={partidos} />}
+                      {solapaActiva === 'territorio' && <SolapaTerritorio circuito={circuitoSeleccionado} datos={datosCircuito} barrios={barrios} todosLosDatos={datos} onSelectCircuito={handleSelectCircuito} />}
+                      {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px' }}>
+                    <div style={{ marginBottom: '16px' }}>
+                      <button onClick={() => setVistaExpandida(false)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                    </div>
+                    <VistaCapital datos={datos} onSelectCircuito={handleSelectCircuito} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} />
                   </div>
-                  <Badge categoria={datosCircuito.Categoria_v4} tipo="v4" />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '14px' }}>
-                  {solapas.map(s => <button key={s.key} onClick={() => setSolapaActiva(s.key)} style={{ padding: '12px 22px', borderRadius: '10px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '15px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
-                </div>
-                <div style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '28px', minHeight: '450px' }}>
-                  {solapaActiva === 'resumen' && <SolapaResumen circuito={circuitoSeleccionado} datos={datosCircuito} padronTotal={padronTotal} />}
-                  {solapaActiva === 'evolucion' && <SolapaEvolucion circuito={circuitoSeleccionado} datos={datosCircuito} />}
-                  {solapaActiva === 'partidos' && <SolapaPartidos circuito={circuitoSeleccionado} datos={datosCircuito} partidos={partidos} />}
-                  {solapaActiva === 'territorio' && <SolapaTerritorio circuito={circuitoSeleccionado} datos={datosCircuito} barrios={barrios} todosLosDatos={datos} onSelectCircuito={(c) => { setCircuitoSeleccionado(c); setFiltroCategoria(null); }} />}
-                  {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
-                </div>
-              </>
-            ) : (
-              <div style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '28px' }}>
-                <VistaCapital datos={datos} onSelectCircuito={(c) => { setCircuitoSeleccionado(c); setFiltroCategoria(null); }} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} />
+                )}
               </div>
-            )}
-          </div>
-          
-          <div style={{ flex: '1', padding: '24px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
-            <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '14px', padding: '18px', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>Mapa de circuitos</div>
-              <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={(c) => { setCircuitoSeleccionado(c); setFiltroCategoria(null); }} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={setBarrioSeleccionado} filtroCategoria={filtroCategoria} />
-              <div style={{ marginTop: '14px' }}>
-                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Leyenda (click para filtrar)</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
-                  {Object.entries(COLORES_CATEGORIA).filter(([k]) => k !== 'B.2').map(([cat, config]) => (
-                    <div key={cat} onClick={() => setFiltroCategoria(filtroCategoria === cat ? null : cat)} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 6px', borderRadius: '4px', cursor: 'pointer', backgroundColor: filtroCategoria === cat ? `${config.bg}20` : 'transparent', border: filtroCategoria === cat ? `1px solid ${config.bg}` : '1px solid transparent' }}>
-                      <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: config.bg, flexShrink: 0 }} />
-                      <span style={{ fontSize: '10px', color: 'var(--text-secondary)', lineHeight: 1.2 }}>{config.label}</span>
-                    </div>
-                  ))}
+
+              <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
+                <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={handleSelectCircuito} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={handleSelectBarrio} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
                 </div>
-                {filtroCategoria && <button onClick={() => setFiltroCategoria(null)} style={{ marginTop: '8px', padding: '4px 8px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)', width: '100%' }}>✕ Limpiar filtro</button>}
               </div>
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              <div style={{ flex: '1', padding: '18px' }}>
+                <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={handleSelectCircuito} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={handleSelectBarrio} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
+                </div>
+              </div>
+
+              <div style={{ width: '300px', flexShrink: 0, padding: '18px', paddingLeft: '0' }}>
+                <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '16px', overflowY: 'auto' }}>
+                  <PanelLateral
+                    panelTab={panelTab}
+                    setPanelTab={setPanelTab}
+                    datosCircuito={datosCircuito}
+                    padronTotal={padronTotal}
+                    onVerFicha={() => setVistaExpandida(true)}
+                    barrioSeleccionado={barrioSeleccionado}
+                    barriosGeoLookup={barriosGeoLookup}
+                    todosLosDatos={datos}
+                    cruceData={cruceData}
+                    onSelectBarrio={handleSelectBarrio}
+                    onSelectCircuito={handleSelectCircuito}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
