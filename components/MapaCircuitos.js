@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import * as topojson from 'topojson-client';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import 'leaflet/dist/leaflet.css';
 
 // Colores por categoría v4 - INCLUYE "D" para EN DISPUTA
@@ -16,13 +17,14 @@ const COLORES_CATEGORIA = {
 
 const COLOR_OBRA = '#5C6BC0';
 
-// Normaliza nombres de barrio para cruzar obras_largo.json (barrio_normalizado)
-// con barrios_geo.json (nombre_barrio): mismo texto pero con diferencias de
-// espacios dobles y del carácter ordinal "º" vs "o" (ej. "1º DE MAYO" / "1o DE MAYO").
+// Normaliza nombres de barrio para cruzar obras_largo.json / recorridos_barrios.json
+// con barrios_geo.json (nombre_barrio): mismo texto pero con diferencias de espacios
+// dobles, tildes y el carácter ordinal "º" vs "o" (ej. "1º DE MAYO" / "1o DE MAYO").
 function normalizarNombreBarrio(s) {
   return (s || '')
     .toUpperCase()
     .replace(/[ºª]/g, 'O')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -40,7 +42,7 @@ function offsetCentroide(index, total, lat, lon) {
 
 function MapController({ mapkeySeleccionado, geoJsonData }) {
   const map = useMap();
-
+  
   useEffect(() => {
     if (mapkeySeleccionado && geoJsonData) {
       const feature = geoJsonData.features.find(f => f.properties.circuito === mapkeySeleccionado);
@@ -60,11 +62,40 @@ function MapController({ mapkeySeleccionado, geoJsonData }) {
       map.setView([-31.42, -64.18], 12);
     }
   }, [mapkeySeleccionado, geoJsonData, map]);
-
+  
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, circuitoSeleccionado, onSelectCircuito, barrioSeleccionado, onSelectBarrio, filtroCategoria, setFiltroCategoria, coloresCategoria }) {
+// Detecta con turf, en un único click de mapa, qué circuito y qué barrio contienen
+// el punto clickeado (booleanPointInPolygon), sin importar cuál capa esté arriba
+// visualmente ni cuál esté tildada en el panel de Capas.
+function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) {
+  useMapEvent('click', (e) => {
+    const punto = [e.latlng.lng, e.latlng.lat];
+
+    let circuitoKey = null;
+    const featureCircuito = (geoJsonData?.features || []).find(f => {
+      try { return booleanPointInPolygon(punto, f); } catch (err) { return false; }
+    });
+    if (featureCircuito) {
+      const mapkey = featureCircuito.properties.circuito;
+      circuitoKey = datosLookup[mapkey]?.CircuitoKey ?? null;
+    }
+
+    let nombreBarrio = null;
+    const featureBarrio = (barriosGeoData?.features || []).find(f => {
+      try { return booleanPointInPolygon(punto, f); } catch (err) { return false; }
+    });
+    if (featureBarrio) {
+      nombreBarrio = featureBarrio.properties?.nombre_barrio || null;
+    }
+
+    if (onMapClick) onMapClick(circuitoKey, nombreBarrio);
+  });
+  return null;
+}
+
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria }) {
   const geoJsonRef = useRef(null);
 
   const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true });
@@ -114,7 +145,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
 
   const getBarrioStyle = (feature) => {
     const nombre = feature.properties?.nombre_barrio;
-    const isSelected = barrioSeleccionado && nombre === barrioSeleccionado;
+    const isSelected = barrioSeleccionado && normalizarNombreBarrio(nombre) === normalizarNombreBarrio(barrioSeleccionado);
     return {
       fillOpacity: isSelected ? 0.2 : 0,
       fillColor: '#5C6BC0',
@@ -129,9 +160,6 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
     const nombre = feature.properties?.nombre_barrio;
     if (!nombre) return;
     layer.bindTooltip(nombre, { sticky: true, direction: 'top', className: 'custom-tooltip-barrio' });
-    layer.on('click', () => {
-      if (onSelectBarrio) onSelectBarrio(nombre);
-    });
   };
 
   const datosLookup = useMemo(() => {
@@ -141,23 +169,23 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
     });
     return lookup;
   }, [datos]);
-
+  
   const mapkeySeleccionado = useMemo(() => {
     if (!circuitoSeleccionado) return null;
     const circuito = datos.find(d => d.CircuitoKey === circuitoSeleccionado);
     return circuito?.Mapkey || null;
   }, [circuitoSeleccionado, datos]);
-
+  
   const getStyle = (feature) => {
     const mapkey = feature.properties.circuito;
     const datosCircuito = datosLookup[mapkey];
     const categoria = datosCircuito?.Categoria_v4 || 'B.2';
     const color = COLORES_CATEGORIA[categoria] || '#78909C';
     const isSelected = mapkey === mapkeySeleccionado;
-
+    
     // Si hay filtro y este circuito no coincide, hacerlo muy tenue
     const isFiltered = filtroCategoria && categoria !== filtroCategoria;
-
+    
     return {
       fillColor: color,
       fillOpacity: isFiltered ? 0.15 : (isSelected ? 0.9 : 0.7),
@@ -166,13 +194,13 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
       opacity: isFiltered ? 0.3 : 1,
     };
   };
-
+  
   const onEachFeature = (feature, layer) => {
     const mapkey = feature.properties.circuito;
     const datosCircuito = datosLookup[mapkey];
-
+    
     if (!datosCircuito) return;
-
+    
     const shareG23 = datosCircuito.Share_G23;
     const tooltipContent = `
       <div style="font-family: -apple-system, sans-serif; padding: 6px 8px;">
@@ -181,21 +209,15 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
         <div style="font-size: 13px; margin-top: 6px;">Gob. 2023: <strong>${shareG23 ? (shareG23 * 100).toFixed(1) + '%' : '—'}</strong></div>
       </div>
     `;
-
+    
     layer.bindTooltip(tooltipContent, { sticky: true, direction: 'top', offset: [0, -10], className: 'custom-tooltip' });
-
-    layer.on('click', () => {
-      if (onSelectCircuito && datosCircuito) {
-        onSelectCircuito(datosCircuito.CircuitoKey);
-      }
-    });
 
     layer.on('mouseover', (e) => {
       if (mapkey !== mapkeySeleccionado) {
         e.target.setStyle({ fillOpacity: 0.85, weight: 2 });
       }
     });
-
+    
     layer.on('mouseout', (e) => {
       if (mapkey !== mapkeySeleccionado) {
         const datosC = datosLookup[mapkey];
@@ -204,7 +226,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
       }
     });
   };
-
+  
   useEffect(() => {
     if (geoJsonRef.current) {
       geoJsonRef.current.eachLayer(layer => {
@@ -213,7 +235,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
       });
     }
   }, [mapkeySeleccionado, datosLookup, filtroCategoria]);
-
+  
   if (!geoJsonData) {
     return (
       <div style={{ flex: 1, backgroundColor: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '14px' }}>
@@ -221,7 +243,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
       </div>
     );
   }
-
+  
   return (
     <div style={{ flex: 1, borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
       <style>{`
@@ -292,6 +314,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
           </CircleMarker>
         ))}
         <MapController mapkeySeleccionado={mapkeySeleccionado} geoJsonData={geoJsonData} />
+        <ClickHandler geoJsonData={geoJsonData} barriosGeoData={barriosGeoData} datosLookup={datosLookup} onMapClick={onMapClick} />
       </MapContainer>
     </div>
   );

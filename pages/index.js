@@ -983,6 +983,14 @@ export default function Home() {
   // actual no se toca (seguimos en el mismo circuito, solo mostrando otro barrio suyo).
   const handleSelectBarrio = (nombre) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); };
 
+  // Click en el mapa: turf ya determinó geométricamente ambas selecciones de forma
+  // independiente (ver ClickHandler en MapaCircuitos.js) — se aplican tal cual, sin cruce.
+  const handleMapClick = (circuitoKey, nombreBarrio) => {
+    setCircuitoSeleccionado(circuitoKey);
+    setBarrioSeleccionado(nombreBarrio);
+    setFiltroCategoria(null);
+  };
+
   const solapas = [{ key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' }, { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' }];
 
   const exportarPDF = () => {
@@ -1077,7 +1085,7 @@ export default function Home() {
 
               <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={handleSelectCircuito} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={handleSelectBarrio} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
                 </div>
               </div>
             </>
@@ -1085,7 +1093,7 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onSelectCircuito={handleSelectCircuito} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={handleSelectBarrio} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
                 </div>
               </div>
 
