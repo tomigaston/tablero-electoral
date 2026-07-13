@@ -138,6 +138,43 @@ const normalizarNombreBarrio = (s) => (s || '')
   .replace(/\s+/g, ' ')
   .trim();
 
+// Radio por defecto para considerar dos barrios "cercanos" entre sí, en km.
+// Ajustable con uso real sin tocar la lógica de distanciaHaversineKm/barriosCercanos.
+const RADIO_BARRIOS_CERCANOS_KM = 1.5;
+
+// Distancia entre dos puntos lat/lon sobre la superficie terrestre (fórmula
+// haversine) — a diferencia de la distancia euclidiana simple, no acumula error
+// por la curvatura de la Tierra, relevante incluso a esta escala urbana.
+function distanciaHaversineKm(lat1, lon1, lat2, lon2) {
+  const R_TIERRA_KM = 6371;
+  const aRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = aRad(lat2 - lat1);
+  const dLon = aRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(aRad(lat1)) * Math.cos(aRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R_TIERRA_KM * c;
+}
+
+// Barrios cuyo centroide cae dentro de `radioKm` del centroide de `nombreBarrio`,
+// ordenados de más cercano a más lejano. Usa barrios_geo.json como fuente.
+function barriosCercanos(nombreBarrio, barriosGeoData, radioKm = RADIO_BARRIOS_CERCANOS_KM) {
+  const features = barriosGeoData?.features || [];
+  const origen = features.find(f => f.properties?.nombre_barrio === nombreBarrio);
+  if (!origen) return [];
+  const { centroid_lat: lat1, centroid_lon: lon1 } = origen.properties;
+  if (lat1 == null || lon1 == null) return [];
+
+  return features
+    .filter(f => f.properties?.nombre_barrio && f.properties.nombre_barrio !== nombreBarrio)
+    .map(f => {
+      const { centroid_lat: lat2, centroid_lon: lon2 } = f.properties;
+      if (lat2 == null || lon2 == null) return null;
+      return { nombre: f.properties.nombre_barrio, distanciaKm: distanciaHaversineKm(lat1, lon1, lat2, lon2) };
+    })
+    .filter((b) => b && b.distanciaKm <= radioKm)
+    .sort((a, b) => a.distanciaKm - b.distanciaKm);
+}
+
 // Compara IDs de circuito (Mapkey) en orden natural: primero el numero base,
 // despues la letra como desempate (evita que "0014" quede antes que "004A").
 const compararMapkey = (a, b) => {
@@ -1015,7 +1052,9 @@ const ListadoEncuestasCircuitos = ({ datos, encuestasData, onSelectCircuito }) =
   );
 };
 
-
+// ============================================
+// VISTA CAPITAL
+// ============================================
 const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCategoria }) => {
   const [ordenColumna, setOrdenColumna] = useState('Share_G23');
   const [ordenAsc, setOrdenAsc] = useState(false);
@@ -1728,11 +1767,19 @@ export default function Home() {
     if (solapaActiva === 'encuestas' && !encuestaCircuito) setSolapaActiva('resumen');
   }, [circuitoSeleccionado, encuestaCircuito, solapaActiva]);
 
-  const circuitosFiltrados = useMemo(() => {
+  const resultadosBusqueda = useMemo(() => {
     if (!busqueda) return [];
     const lower = busqueda.toLowerCase();
-    return datos.filter(d => d.CircuitoKey?.toString().toLowerCase().includes(lower) || d.cirn_nom?.toLowerCase().includes(lower)).slice(0, 10);
-  }, [datos, busqueda]);
+    const circuitos = datos
+      .filter(d => d.CircuitoKey?.toString().toLowerCase().includes(lower) || d.cirn_nom?.toLowerCase().includes(lower))
+      .slice(0, 8)
+      .map(d => ({ tipo: 'circuito', key: `c-${d.CircuitoKey}`, circuito: d }));
+    const barrios = (barriosGeoData?.features || [])
+      .filter(f => f.properties?.nombre_barrio?.toLowerCase().includes(lower))
+      .slice(0, 8)
+      .map(f => ({ tipo: 'barrio', key: `b-${f.properties.nombre_barrio}`, nombreBarrio: f.properties.nombre_barrio }));
+    return [...circuitos, ...barrios];
+  }, [datos, barriosGeoData, busqueda]);
   const padronTotal = useMemo(() => datos.reduce((sum, d) => sum + (d.Padron_G23 || 0), 0), [datos]);
 
   const barriosGeoLookup = useMemo(() => {
@@ -1877,14 +1924,33 @@ export default function Home() {
             </div>
             {circuitoSeleccionado && <button onClick={exportarPDF} style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>📄 Exportar ficha</button>}
             <div style={{ position: 'relative' }}>
-              <input type="text" placeholder="Buscar circuito..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ padding: '12px 18px', paddingLeft: '44px', width: '300px', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '15px', backgroundColor: 'var(--bg-secondary)' }} />
+              <input type="text" placeholder="Buscar circuito o barrio..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ padding: '12px 18px', paddingLeft: '44px', width: '300px', borderRadius: '10px', border: '1px solid var(--border)', fontSize: '15px', backgroundColor: 'var(--bg-secondary)' }} />
               <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '16px' }}>🔍</span>
-              {busqueda && circuitosFiltrados.length > 0 && (
+              {busqueda && resultadosBusqueda.length > 0 && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', marginTop: '6px', maxHeight: '350px', overflowY: 'auto', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 9999 }}>
-                  {circuitosFiltrados.map(d => (
-                    <div key={d.CircuitoKey} onClick={() => { handleSelectCircuito(d.CircuitoKey); setBusqueda(''); }} style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '15px' }}><strong>{d.CircuitoKey}</strong> - {d.cirn_nom}</span>
-                      <Badge categoria={d.Categoria_v4} tipo="v4" />
+                  {resultadosBusqueda.map(r => (
+                    <div
+                      key={r.key}
+                      onClick={() => {
+                        if (r.tipo === 'circuito') handleSelectCircuito(r.circuito.CircuitoKey);
+                        else handleSelectBarrio(r.nombreBarrio);
+                        setBusqueda('');
+                      }}
+                      style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}
+                    >
+                      <span style={{ fontSize: '15px' }}>
+                        {r.tipo === 'circuito' ? <><strong>{r.circuito.CircuitoKey}</strong> - {r.circuito.cirn_nom}</> : r.nombreBarrio}
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                        <span style={{
+                          fontSize: '10px', fontWeight: 600, padding: '3px 9px', borderRadius: '999px',
+                          backgroundColor: r.tipo === 'circuito' ? '#1976D218' : '#5C6BC018',
+                          color: r.tipo === 'circuito' ? '#1565C0' : '#3949AB',
+                        }}>
+                          {r.tipo === 'circuito' ? 'Circuito' : 'Barrio'}
+                        </span>
+                        {r.tipo === 'circuito' && <Badge categoria={r.circuito.Categoria_v4} tipo="v4" />}
+                      </div>
                     </div>
                   ))}
                 </div>
