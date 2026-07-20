@@ -1,0 +1,3765 @@
+{
+ "promedio_capital_pct": 45.8,
+ "circuitos": {
+  "011A": {
+   "nombre_circuito": "ALTO ALBERDI",
+   "escuelas": [
+    {
+     "cue": 140438500,
+     "nombre": "COLEGIO HAROLDO ANDENMATTEN",
+     "barrio": "VILLA  PAEZ",
+     "n_mesas": 8,
+     "votos_validos": 1653,
+     "votos_peronismo": 764,
+     "pct_peronismo": 46.22,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140342900,
+     "nombre": "ESCUELA GOB BRIGADIER JUAN IGNACIO SAN MARTIN",
+     "barrio": "VILLA PAEZ",
+     "n_mesas": 7,
+     "votos_validos": 1696,
+     "votos_peronismo": 776,
+     "pct_peronismo": 45.75,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140307800,
+     "nombre": "I.P.E.M. Nº 160 HIPOLITO VIEYTES",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1699,
+     "votos_peronismo": 764,
+     "pct_peronismo": 44.97,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140136800,
+     "nombre": "COLEGIO SAN LUIS GONZAGA",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1758,
+     "votos_peronismo": 780,
+     "pct_peronismo": 44.37,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140136700,
+     "nombre": "ESCUELA DALMACIO VELEZ SARSFIELD",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1727,
+     "votos_peronismo": 749,
+     "pct_peronismo": 43.37,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140344700,
+     "nombre": "COLEGIO PARROQUIAL SAN JOSE",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1726,
+     "votos_peronismo": 742,
+     "pct_peronismo": 42.99,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140342500,
+     "nombre": "ESCUELA BLAS PARERA",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 7,
+     "votos_validos": 1484,
+     "votos_peronismo": 637,
+     "pct_peronismo": 42.92,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140227500,
+     "nombre": "ESCUELA JOSE MARIA PAZ",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 9,
+     "votos_validos": 1942,
+     "votos_peronismo": 826,
+     "pct_peronismo": 42.53,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140457000,
+     "nombre": "COLEGIO SAN JOSE",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 17,
+     "votos_validos": 3748,
+     "votos_peronismo": 1579,
+     "pct_peronismo": 42.13,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140472800,
+     "nombre": "I.P.E.M. Nº 10 ROMA",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1882,
+     "votos_peronismo": 696,
+     "pct_peronismo": 36.98,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140095700,
+     "nombre": "ESCUELA GENERAL ENRIQUE MOSCONI",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 6,
+     "votos_validos": 1423,
+     "votos_peronismo": 526,
+     "pct_peronismo": 36.96,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140000100,
+     "nombre": "COLEGIO LUTERANO CONCORDIA",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 9,
+     "votos_validos": 2059,
+     "votos_peronismo": 737,
+     "pct_peronismo": 35.79,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140095600,
+     "nombre": "ESCUELA ROMA",
+     "barrio": "ALTO ALBERDI",
+     "n_mesas": 11,
+     "votos_validos": 2567,
+     "votos_peronismo": 888,
+     "pct_peronismo": 34.59,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 13
+  },
+  "011E": {
+   "nombre_circuito": "LOS PLATANOS",
+   "escuelas": [
+    {
+     "cue": 140343700,
+     "nombre": "ESCUELA ARTURO CAPDEVILA",
+     "barrio": "LOS PLATANOS",
+     "n_mesas": 7,
+     "votos_validos": 1586,
+     "votos_peronismo": 772,
+     "pct_peronismo": 48.68,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140440100,
+     "nombre": "INST. DE ED. ESP. CKARI CAY",
+     "barrio": "LOS PLATANOS",
+     "n_mesas": 7,
+     "votos_validos": 1571,
+     "votos_peronismo": 721,
+     "pct_peronismo": 45.89,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140000300,
+     "nombre": "ESCUELA JOSE MARMOL",
+     "barrio": "LOS PLATANOS",
+     "n_mesas": 8,
+     "votos_validos": 1744,
+     "votos_peronismo": 793,
+     "pct_peronismo": 45.47,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140343000,
+     "nombre": "ESCUELA PADRE TERCILIO GAMBINO",
+     "barrio": "LOS GRANADOS",
+     "n_mesas": 8,
+     "votos_validos": 1838,
+     "votos_peronismo": 834,
+     "pct_peronismo": 45.38,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140227700,
+     "nombre": "ESCUELA BERNARDO DE MONTEAGUDO",
+     "barrio": "LOS PLATANOS",
+     "n_mesas": 9,
+     "votos_validos": 2016,
+     "votos_peronismo": 905,
+     "pct_peronismo": 44.89,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140000600,
+     "nombre": "DR. CARLOS BECERRA",
+     "barrio": "LOS PLATANOS",
+     "n_mesas": 7,
+     "votos_validos": 1616,
+     "votos_peronismo": 688,
+     "pct_peronismo": 42.57,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 6
+  },
+  "006F": {
+   "nombre_circuito": "YAPEYU",
+   "escuelas": [
+    {
+     "cue": 140228100,
+     "nombre": "ESCUELA RICARDO GUIRALDES",
+     "barrio": "YAPEYU",
+     "n_mesas": 12,
+     "votos_validos": 2572,
+     "votos_peronismo": 1412,
+     "pct_peronismo": 54.9,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140001400,
+     "nombre": "ESCUELA GOBERNADOR AMADEO SABATTINI",
+     "barrio": "YAPEYU",
+     "n_mesas": 12,
+     "votos_validos": 2415,
+     "votos_peronismo": 1310,
+     "pct_peronismo": 54.24,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "008A": {
+   "nombre_circuito": "PALMAR",
+   "escuelas": [
+    {
+     "cue": 140001800,
+     "nombre": "ESCUELA DR. EMILIO ESTEBAN SANCHEZ",
+     "barrio": "AMPLIACION PALMAR",
+     "n_mesas": 8,
+     "votos_validos": 1601,
+     "votos_peronismo": 836,
+     "pct_peronismo": 52.22,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140229500,
+     "nombre": "ESCUELA RABINDRANATH TAGORE",
+     "barrio": "VILLA CLAUDINA",
+     "n_mesas": 5,
+     "votos_validos": 1045,
+     "votos_peronismo": 513,
+     "pct_peronismo": 49.09,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "0014": {
+   "nombre_circuito": "ARGUELLO",
+   "escuelas": [
+    {
+     "cue": 140430500,
+     "nombre": "COLEGIO DEL CARMEN",
+     "barrio": "ARGUELLO",
+     "n_mesas": 6,
+     "votos_validos": 1273,
+     "votos_peronismo": 737,
+     "pct_peronismo": 57.89,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140155200,
+     "nombre": "ESCUELA JAVIER LAZCANO COLODRERO",
+     "barrio": "ARGUELLO",
+     "n_mesas": 9,
+     "votos_validos": 2031,
+     "votos_peronismo": 936,
+     "pct_peronismo": 46.09,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140415300,
+     "nombre": "COLEGIO ALEMAN",
+     "barrio": "ARGUELLO",
+     "n_mesas": 7,
+     "votos_validos": 1702,
+     "votos_peronismo": 565,
+     "pct_peronismo": 33.2,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140003500,
+     "nombre": "COLEGIO LA SALLE",
+     "barrio": "ARGUELLO",
+     "n_mesas": 8,
+     "votos_validos": 1936,
+     "votos_peronismo": 607,
+     "pct_peronismo": 31.35,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "007E": {
+   "nombre_circuito": "MARQUES DE SOBREMONTE",
+   "escuelas": [
+    {
+     "cue": 140447100,
+     "nombre": "I.P.E.M. Nº 20 RODOLFO WALSH",
+     "barrio": "MARQUES DE SOBREMONTE",
+     "n_mesas": 8,
+     "votos_validos": 1825,
+     "votos_peronismo": 833,
+     "pct_peronismo": 45.64,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140005100,
+     "nombre": "COLEGIO PETER PAN",
+     "barrio": "MARQUES DE SOBREMONTE",
+     "n_mesas": 12,
+     "votos_validos": 2734,
+     "votos_peronismo": 1197,
+     "pct_peronismo": 43.78,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140231300,
+     "nombre": "ESCUELA HONORATO LACONI",
+     "barrio": "MARQUES DE SOBREMONTE",
+     "n_mesas": 12,
+     "votos_validos": 2717,
+     "votos_peronismo": 1153,
+     "pct_peronismo": 42.44,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "007G": {
+   "nombre_circuito": "PANAMERICANO",
+   "escuelas": [
+    {
+     "cue": 140503300,
+     "nombre": "I.P.E.M. Nº 336 ADOLFO CASTELO",
+     "barrio": "JUAN B. JUSTO",
+     "n_mesas": 8,
+     "votos_validos": 1533,
+     "votos_peronismo": 834,
+     "pct_peronismo": 54.4,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140005200,
+     "nombre": "I.P.E.M. Nº 199 DR. JUAN EMILIO REMONDA",
+     "barrio": "PANAMERICANO",
+     "n_mesas": 6,
+     "votos_validos": 1347,
+     "votos_peronismo": 708,
+     "pct_peronismo": 52.56,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140234700,
+     "nombre": "ESCUELA FRANCISCO VIDAL",
+     "barrio": "PANAMERICANO",
+     "n_mesas": 8,
+     "votos_validos": 1813,
+     "votos_peronismo": 884,
+     "pct_peronismo": 48.76,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140235000,
+     "nombre": "ESCUELA ARTURO CAPDEVILA",
+     "barrio": "MARIANO FRAGUEIRO",
+     "n_mesas": 8,
+     "votos_validos": 1783,
+     "votos_peronismo": 868,
+     "pct_peronismo": 48.68,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "014F": {
+   "nombre_circuito": "GRANJA DE FUNES",
+   "escuelas": [
+    {
+     "cue": 140005400,
+     "nombre": "ESCUELA DR. ALEJANDRO GALLARDO",
+     "barrio": "GRANJA DE FUNES",
+     "n_mesas": 11,
+     "votos_validos": 2470,
+     "votos_peronismo": 966,
+     "pct_peronismo": 39.11,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140276300,
+     "nombre": "COLEGIO PADRE CLARET",
+     "barrio": "PADRE CLARET",
+     "n_mesas": 6,
+     "votos_validos": 1453,
+     "votos_peronismo": 489,
+     "pct_peronismo": 33.65,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "013F": {
+   "nombre_circuito": "NUEVA ITALIA",
+   "escuelas": [
+    {
+     "cue": 140368000,
+     "nombre": "I.P.E.M. Nº 159 ARISTOBULO DEL VALLE",
+     "barrio": "VIVERO NORTE",
+     "n_mesas": 7,
+     "votos_validos": 1601,
+     "votos_peronismo": 841,
+     "pct_peronismo": 52.53,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140233100,
+     "nombre": "COLEGIO MODELO DE JUEGOS Y DEPORTES RACING",
+     "barrio": "NUEVA ITALIA",
+     "n_mesas": 8,
+     "votos_validos": 1853,
+     "votos_peronismo": 827,
+     "pct_peronismo": 44.63,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140431600,
+     "nombre": "COLEGIO DR. ANTONIO NORES",
+     "barrio": "SANTA CLARA DE ASIS",
+     "n_mesas": 8,
+     "votos_validos": 1854,
+     "votos_peronismo": 822,
+     "pct_peronismo": 44.34,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140007400,
+     "nombre": "ESCUELA SARGENTO CABRAL",
+     "barrio": "PARQUE MONTECRISTO",
+     "n_mesas": 8,
+     "votos_validos": 1875,
+     "votos_peronismo": 822,
+     "pct_peronismo": 43.84,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "013C": {
+   "nombre_circuito": "GENERAL BUSTOS",
+   "escuelas": [
+    {
+     "cue": 140127000,
+     "nombre": "INSTITUTO DR. DALMACIO VELEZ SARSFIELD",
+     "barrio": "GENERAL BUSTOS",
+     "n_mesas": 6,
+     "votos_validos": 1280,
+     "votos_peronismo": 718,
+     "pct_peronismo": 56.09,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140007800,
+     "nombre": "COLEGIO HORTUS CONCLUSUS",
+     "barrio": "GENERAL BUSTOS",
+     "n_mesas": 8,
+     "votos_validos": 1759,
+     "votos_peronismo": 792,
+     "pct_peronismo": 45.03,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140095300,
+     "nombre": "ESCUELA CAPITAL FEDERAL",
+     "barrio": "GENERAL BUSTOS",
+     "n_mesas": 8,
+     "votos_validos": 1728,
+     "votos_peronismo": 764,
+     "pct_peronismo": 44.21,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140012400,
+     "nombre": "ESCUELA ALEJO CARMEN GUZMAN",
+     "barrio": "GENERAL BUSTOS",
+     "n_mesas": 8,
+     "votos_validos": 1714,
+     "votos_peronismo": 756,
+     "pct_peronismo": 44.11,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140235800,
+     "nombre": "COLEGIO CRISTO REY",
+     "barrio": "GENERAL BUSTOS",
+     "n_mesas": 8,
+     "votos_validos": 1678,
+     "votos_peronismo": 735,
+     "pct_peronismo": 43.8,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "013N": {
+   "nombre_circuito": "YOFRE",
+   "escuelas": [
+    {
+     "cue": 140430800,
+     "nombre": "COLEGIO SOR MARIA ANTONIA DE PAZ Y FIGUEROA",
+     "barrio": "YOFRE NORTE",
+     "n_mesas": 5,
+     "votos_validos": 990,
+     "votos_peronismo": 725,
+     "pct_peronismo": 73.23,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140011200,
+     "nombre": "ESCUELA MATEO JOSE LUQUE",
+     "barrio": "YOFRE NORTE",
+     "n_mesas": 8,
+     "votos_validos": 1876,
+     "votos_peronismo": 803,
+     "pct_peronismo": 42.8,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "013I": {
+   "nombre_circuito": "SAN JORGE",
+   "escuelas": [
+    {
+     "cue": 140162400,
+     "nombre": "JORGE LUIS BORGES",
+     "barrio": "QUINTAS DE SAN JORGE",
+     "n_mesas": 7,
+     "votos_validos": 1555,
+     "votos_peronismo": 867,
+     "pct_peronismo": 55.76,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140306900,
+     "nombre": "I.P.E.M. Nº 192 DR. JOSE RAMON IBAÑEZ",
+     "barrio": "VILLA ESQUIU",
+     "n_mesas": 8,
+     "votos_validos": 1547,
+     "votos_peronismo": 714,
+     "pct_peronismo": 46.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140011600,
+     "nombre": "I.P.E.M. Nº 191 MONSEÑOR ENRIQUE ANGELELLI",
+     "barrio": "ARTURO CAPDEVILA",
+     "n_mesas": 3,
+     "votos_validos": 689,
+     "votos_peronismo": 296,
+     "pct_peronismo": 42.96,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "004A": {
+   "nombre_circuito": "PUEBLO LAS FLORES",
+   "escuelas": [
+    {
+     "cue": 140402000,
+     "nombre": "I.P.E.T. Nº 250 DR. JUAN BIALET MASSE",
+     "barrio": "LAS FLORES",
+     "n_mesas": 6,
+     "votos_validos": 1391,
+     "votos_peronismo": 640,
+     "pct_peronismo": 46.01,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140427100,
+     "nombre": "COLEGIO DANTE ALIGHIERI",
+     "barrio": "SAN FERNANDO",
+     "n_mesas": 8,
+     "votos_validos": 1864,
+     "votos_peronismo": 767,
+     "pct_peronismo": 41.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140027900,
+     "nombre": "ESCUELA ERNESTO BANCALARI",
+     "barrio": "GENERAL ARTIGAS",
+     "n_mesas": 7,
+     "votos_validos": 1656,
+     "votos_peronismo": 677,
+     "pct_peronismo": 40.88,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140331600,
+     "nombre": "ESCUELA PROVINCIA DE CATAMARCA",
+     "barrio": "LAS FLORES",
+     "n_mesas": 8,
+     "votos_validos": 1987,
+     "votos_peronismo": 790,
+     "pct_peronismo": 39.76,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140028000,
+     "nombre": "ESCUELA DE LAS AMERICAS",
+     "barrio": "KENNEDY",
+     "n_mesas": 7,
+     "votos_validos": 1656,
+     "votos_peronismo": 652,
+     "pct_peronismo": 39.37,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140068500,
+     "nombre": "ESCUELA CDRO ROBERTO M. ECHEGOYEN",
+     "barrio": "EJERCITO ARGENTINO",
+     "n_mesas": 8,
+     "votos_validos": 1911,
+     "votos_peronismo": 752,
+     "pct_peronismo": 39.35,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140266700,
+     "nombre": "ESCUELA ALMAFUERTE",
+     "barrio": "SAN FERNANDO",
+     "n_mesas": 7,
+     "votos_validos": 1703,
+     "votos_peronismo": 670,
+     "pct_peronismo": 39.34,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140169500,
+     "nombre": "COLEGIO SAN PATRICIO",
+     "barrio": "JARDIN HIPODROMO",
+     "n_mesas": 7,
+     "votos_validos": 1613,
+     "votos_peronismo": 632,
+     "pct_peronismo": 39.18,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140267600,
+     "nombre": "COLEGIO PQUIAL SAN FRANCISCO DE ASIS",
+     "barrio": "LAS FLORES",
+     "n_mesas": 8,
+     "votos_validos": 1853,
+     "votos_peronismo": 701,
+     "pct_peronismo": 37.83,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 9
+  },
+  "005C": {
+   "nombre_circuito": "EMPALME",
+   "escuelas": [
+    {
+     "cue": 140478100,
+     "nombre": "ESCUELA ELENA AMALIA LOPEZ LALLANA",
+     "barrio": "1º DE MAYO",
+     "n_mesas": 9,
+     "votos_validos": 1933,
+     "votos_peronismo": 1198,
+     "pct_peronismo": 61.98,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140407600,
+     "nombre": "ESCUELA FRAY JUSTO SANTA MARIA DE ORO",
+     "barrio": "1º DE MAYO",
+     "n_mesas": 8,
+     "votos_validos": 1797,
+     "votos_peronismo": 840,
+     "pct_peronismo": 46.74,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140243800,
+     "nombre": "J.DE INF. JUAN M. PUEYRREDON",
+     "barrio": "EMPALME",
+     "n_mesas": 8,
+     "votos_validos": 1884,
+     "votos_peronismo": 855,
+     "pct_peronismo": 45.38,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140559000,
+     "nombre": "I.P.E.M. N° 400",
+     "barrio": "1º DE MAYO",
+     "n_mesas": 5,
+     "votos_validos": 1130,
+     "votos_peronismo": 511,
+     "pct_peronismo": 45.22,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140015600,
+     "nombre": "ESCUELA VICTOR MERCANTE",
+     "barrio": "EMPALME",
+     "n_mesas": 8,
+     "votos_validos": 1842,
+     "votos_peronismo": 815,
+     "pct_peronismo": 44.25,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140407500,
+     "nombre": "INSTITUTO DEAN FUNES",
+     "barrio": "1º DE MAYO",
+     "n_mesas": 7,
+     "votos_validos": 1587,
+     "votos_peronismo": 700,
+     "pct_peronismo": 44.11,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 6
+  },
+  "012D": {
+   "nombre_circuito": "JOSE IGNACIO DIAZ",
+   "escuelas": [
+    {
+     "cue": 140416400,
+     "nombre": "ESCUELA ING. REGINO M. MADERS",
+     "barrio": "SAN FELIPE",
+     "n_mesas": 8,
+     "votos_validos": 1640,
+     "votos_peronismo": 926,
+     "pct_peronismo": 56.46,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140447000,
+     "nombre": "I.P.E.M. Nº 19 POETA OSCAR GUIÑAZU ALVAREZ",
+     "barrio": "FERROVIARIO MITRE",
+     "n_mesas": 8,
+     "votos_validos": 1685,
+     "votos_peronismo": 948,
+     "pct_peronismo": 56.26,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140239300,
+     "nombre": "ESCUELA MONSEÑOR M. DE ANDREA",
+     "barrio": "FERROVIARIO MITRE",
+     "n_mesas": 8,
+     "votos_validos": 1705,
+     "votos_peronismo": 902,
+     "pct_peronismo": 52.9,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140015800,
+     "nombre": "GOBERNADOR DR. AMADEO SABATTINI",
+     "barrio": "SAN FELIPE",
+     "n_mesas": 8,
+     "votos_validos": 1720,
+     "votos_peronismo": 883,
+     "pct_peronismo": 51.34,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "012G": {
+   "nombre_circuito": "ITUZAINGO",
+   "escuelas": [
+    {
+     "cue": 140238700,
+     "nombre": "INSTITUTO SECUNDARIO ORIENTADO Y TECNICO CARLOS MARIA DE ALVEAR",
+     "barrio": "LOS EUCALIPTUS",
+     "n_mesas": 6,
+     "votos_validos": 1413,
+     "votos_peronismo": 753,
+     "pct_peronismo": 53.29,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140239200,
+     "nombre": "J.DE INF. CARLOS MARIA DE ALVEAR",
+     "barrio": "ITUZAINGO",
+     "n_mesas": 7,
+     "votos_validos": 1616,
+     "votos_peronismo": 851,
+     "pct_peronismo": 52.66,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140446300,
+     "nombre": "COLEGIO DR.IGNACIO DUARTE QUIROS",
+     "barrio": "ITUZAINGO",
+     "n_mesas": 6,
+     "votos_validos": 1365,
+     "votos_peronismo": 701,
+     "pct_peronismo": 51.36,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140243900,
+     "nombre": "GOBERNADOR JOSE ANTONIO CEBALLOS",
+     "barrio": "ITUZAINGO ANEXO",
+     "n_mesas": 6,
+     "votos_validos": 1396,
+     "votos_peronismo": 647,
+     "pct_peronismo": 46.35,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140015900,
+     "nombre": "ESCUELA EJERCITO ARGENTINO",
+     "barrio": "ITUZAINGO",
+     "n_mesas": 8,
+     "votos_validos": 1895,
+     "votos_peronismo": 801,
+     "pct_peronismo": 42.27,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "010G": {
+   "nombre_circuito": "OBSERVATORIO",
+   "escuelas": [
+    {
+     "cue": 140265500,
+     "nombre": "ESCUELA PRESIDENTE ROQUE SAENZ PEÑA",
+     "barrio": "GUEMES",
+     "n_mesas": 8,
+     "votos_validos": 1690,
+     "votos_peronismo": 753,
+     "pct_peronismo": 44.56,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140331900,
+     "nombre": "I.P.E.T. y M. Nº 246 DR. AMADEO SABATTINI",
+     "barrio": "GUEMES",
+     "n_mesas": 8,
+     "votos_validos": 1671,
+     "votos_peronismo": 739,
+     "pct_peronismo": 44.23,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140021300,
+     "nombre": "ESCUELA ESPECIAL DRA. CAROLINA ANA MOSCA",
+     "barrio": "GUEMES",
+     "n_mesas": 8,
+     "votos_validos": 1841,
+     "votos_peronismo": 734,
+     "pct_peronismo": 39.87,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140436500,
+     "nombre": "INSTITUTO ESCUELA ADOLFO BIOY CASARES",
+     "barrio": "CUPANI",
+     "n_mesas": 8,
+     "votos_validos": 1637,
+     "votos_peronismo": 650,
+     "pct_peronismo": 39.71,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140046100,
+     "nombre": "ESCUELA ADOLFO SALDIAS",
+     "barrio": "GUEMES",
+     "n_mesas": 8,
+     "votos_validos": 1641,
+     "votos_peronismo": 651,
+     "pct_peronismo": 39.67,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140265400,
+     "nombre": "COLEGIO NUESTRA SEÑORA DE NIEVA",
+     "barrio": "GUEMES",
+     "n_mesas": 9,
+     "votos_validos": 1909,
+     "votos_peronismo": 755,
+     "pct_peronismo": 39.55,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140045500,
+     "nombre": "ESCUELA ESTADOS UNIDOS DE NORTEAMERICA",
+     "barrio": "PASO DE LOS ANDES",
+     "n_mesas": 8,
+     "votos_validos": 1680,
+     "votos_peronismo": 643,
+     "pct_peronismo": 38.27,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140331700,
+     "nombre": "I.P.E.T. Nº 249 NICOLAS COPERNICO",
+     "barrio": "OBSERVATORIO",
+     "n_mesas": 10,
+     "votos_validos": 2073,
+     "votos_peronismo": 779,
+     "pct_peronismo": 37.58,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140367100,
+     "nombre": "INSTITUTO PARROQUIAL SANTO CRISTO",
+     "barrio": "OBSERVATORIO",
+     "n_mesas": 9,
+     "votos_validos": 1853,
+     "votos_peronismo": 690,
+     "pct_peronismo": 37.24,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 9
+  },
+  "0001": {
+   "nombre_circuito": "SECCIONAL PRIMERA",
+   "escuelas": [
+    {
+     "cue": 140333000,
+     "nombre": "INSTITUTO DE LA SAGRADA FAMILIA",
+     "barrio": "CENTRO",
+     "n_mesas": 8,
+     "votos_validos": 1708,
+     "votos_peronismo": 761,
+     "pct_peronismo": 44.56,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 149000100,
+     "nombre": "COLEGIO NACIONAL DE MONSERRAT",
+     "barrio": "CENTRO",
+     "n_mesas": 12,
+     "votos_validos": 2258,
+     "votos_peronismo": 945,
+     "pct_peronismo": 41.85,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140332900,
+     "nombre": "COLEGIO DE LA SAGRADA FAMILIA",
+     "barrio": "CENTRO",
+     "n_mesas": 6,
+     "votos_validos": 1170,
+     "votos_peronismo": 484,
+     "pct_peronismo": 41.37,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140332700,
+     "nombre": "COLEGIO SANTA INFANCIA",
+     "barrio": "CENTRO",
+     "n_mesas": 6,
+     "votos_validos": 1203,
+     "votos_peronismo": 462,
+     "pct_peronismo": 38.4,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140277200,
+     "nombre": "INSTITUTO MONSEÑOR DE ANDREA",
+     "barrio": "CENTRO",
+     "n_mesas": 4,
+     "votos_validos": 837,
+     "votos_peronismo": 318,
+     "pct_peronismo": 37.99,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140290300,
+     "nombre": "INMACULADO CORAZON DE MARIA ADORATRICES",
+     "barrio": "CENTRO",
+     "n_mesas": 9,
+     "votos_validos": 1792,
+     "votos_peronismo": 672,
+     "pct_peronismo": 37.5,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140021400,
+     "nombre": "ESCUELA JUAN BAUTISTA ALBERDI",
+     "barrio": "CENTRO",
+     "n_mesas": 6,
+     "votos_validos": 1212,
+     "votos_peronismo": 450,
+     "pct_peronismo": 37.13,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140304600,
+     "nombre": "COLEGIO NUESTRA SEÑORA DEL HUERTO",
+     "barrio": "CENTRO",
+     "n_mesas": 8,
+     "votos_validos": 1621,
+     "votos_peronismo": 601,
+     "pct_peronismo": 37.08,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140310600,
+     "nombre": "COLEGIO SANTA TERESA DE JESUS",
+     "barrio": "CENTRO",
+     "n_mesas": 8,
+     "votos_validos": 1621,
+     "votos_peronismo": 598,
+     "pct_peronismo": 36.89,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140292600,
+     "nombre": "COLEGIO SAN JOSE",
+     "barrio": "CENTRO",
+     "n_mesas": 8,
+     "votos_validos": 1601,
+     "votos_peronismo": 588,
+     "pct_peronismo": 36.73,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 10
+  },
+  "006C": {
+   "nombre_circuito": "GRAL PAZ",
+   "escuelas": [
+    {
+     "cue": 140023300,
+     "nombre": "COLEGIO NUEVO SIGLO",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 5,
+     "votos_validos": 1146,
+     "votos_peronismo": 467,
+     "pct_peronismo": 40.75,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140127300,
+     "nombre": "COLEGIO ESCUELAS PIAS",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 7,
+     "votos_validos": 1573,
+     "votos_peronismo": 626,
+     "pct_peronismo": 39.8,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140331800,
+     "nombre": "ESC. NORMAL SUPERIOR DR. AGUSTIN GARZON AGULLA",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 8,
+     "votos_validos": 1844,
+     "votos_peronismo": 731,
+     "pct_peronismo": 39.64,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140411800,
+     "nombre": "I.P.E.T. Nº 57 COMODORO MARTIN RIVADAVIA",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 8,
+     "votos_validos": 1840,
+     "votos_peronismo": 696,
+     "pct_peronismo": 37.83,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140409300,
+     "nombre": "ESCUELA DOCTOR RAMON J. CARCANO",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 8,
+     "votos_validos": 1820,
+     "votos_peronismo": 640,
+     "pct_peronismo": 35.16,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140127200,
+     "nombre": "ESCUELA SANTIAGO DE LAS CARRERAS",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 5,
+     "votos_validos": 1157,
+     "votos_peronismo": 404,
+     "pct_peronismo": 34.92,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140462400,
+     "nombre": "INSTITUTO DE MARIA",
+     "barrio": "GENERAL PAZ",
+     "n_mesas": 9,
+     "votos_validos": 2371,
+     "votos_peronismo": 821,
+     "pct_peronismo": 34.63,
+     "confianza": "pendiente_revision"
+    }
+   ],
+   "n_escuelas": 7
+  },
+  "014P": {
+   "nombre_circuito": "VILLA RIVERA INDARTE",
+   "escuelas": [
+    {
+     "cue": 140027500,
+     "nombre": "ESCUELA MARIA SANCHEZ DE MENDEVILLE",
+     "barrio": "VILLA RIVERA INDARTE",
+     "n_mesas": 6,
+     "votos_validos": 1252,
+     "votos_peronismo": 649,
+     "pct_peronismo": 51.84,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140355800,
+     "nombre": "INSTITUTO LEON XIII",
+     "barrio": "VILLA RIVERA INDARTE",
+     "n_mesas": 6,
+     "votos_validos": 1322,
+     "votos_peronismo": 659,
+     "pct_peronismo": 49.85,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140027400,
+     "nombre": "DOCTOR JORGE ORGAZ",
+     "barrio": "VILLA RIVERA INDARTE",
+     "n_mesas": 7,
+     "votos_validos": 1567,
+     "votos_peronismo": 682,
+     "pct_peronismo": 43.52,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140131500,
+     "nombre": "INSTITUTO LA INMACULADA",
+     "barrio": "VILLA RIVERA INDARTE",
+     "n_mesas": 9,
+     "votos_validos": 2208,
+     "votos_peronismo": 825,
+     "pct_peronismo": 37.36,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140250500,
+     "nombre": "I.P.E.T. Nº 17 PAULO FREIRE",
+     "barrio": "VILLA RIVERA INDARTE",
+     "n_mesas": 4,
+     "votos_validos": 792,
+     "votos_peronismo": 278,
+     "pct_peronismo": 35.1,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "013H": {
+   "nombre_circuito": "PATRICIOS",
+   "escuelas": [
+    {
+     "cue": 140030300,
+     "nombre": "INSTITUTO PARROQUIAL SAN ROQUE",
+     "barrio": "VILLA CORINA",
+     "n_mesas": 8,
+     "votos_validos": 1799,
+     "votos_peronismo": 932,
+     "pct_peronismo": 51.81,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140367600,
+     "nombre": "ESCUELA UNION LATINOAMERICANA",
+     "barrio": "PATRICIOS OESTE",
+     "n_mesas": 11,
+     "votos_validos": 2413,
+     "votos_peronismo": 1221,
+     "pct_peronismo": 50.6,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140233400,
+     "nombre": "COLEGIO HIJAS DE MARIA INMACULADA",
+     "barrio": "VILLA CORINA",
+     "n_mesas": 9,
+     "votos_validos": 1953,
+     "votos_peronismo": 981,
+     "pct_peronismo": 50.23,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140163000,
+     "nombre": "DOCTOR DONATO LATELLA FRIAS",
+     "barrio": "PATRICIOS ESTE",
+     "n_mesas": 6,
+     "votos_validos": 1275,
+     "votos_peronismo": 608,
+     "pct_peronismo": 47.69,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140517000,
+     "nombre": "JOSE MARIA PAZ",
+     "barrio": "PATRICIOS",
+     "n_mesas": 8,
+     "votos_validos": 1715,
+     "votos_peronismo": 811,
+     "pct_peronismo": 47.29,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140120800,
+     "nombre": "ESCUELA MANUEL BELGRANO",
+     "barrio": "GENERAL BELGRANO",
+     "n_mesas": 8,
+     "votos_validos": 1697,
+     "votos_peronismo": 787,
+     "pct_peronismo": 46.38,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 6
+  },
+  "010H": {
+   "nombre_circuito": "PARQUE CAPITAL",
+   "escuelas": [
+    {
+     "cue": 140269000,
+     "nombre": "ESCUELA REMEDIOS ESCALADA DE SAN MARTIN",
+     "barrio": "ROSEDAL",
+     "n_mesas": 8,
+     "votos_validos": 1957,
+     "votos_peronismo": 727,
+     "pct_peronismo": 37.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140045400,
+     "nombre": "ESCUELA GOBERNADOR EMILIO F. OLMOS",
+     "barrio": "PARQUE CAPITAL",
+     "n_mesas": 8,
+     "votos_validos": 1999,
+     "votos_peronismo": 741,
+     "pct_peronismo": 37.07,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "010E": {
+   "nombre_circuito": "ESTACION FLORES",
+   "escuelas": [
+    {
+     "cue": 140511400,
+     "nombre": "C.E.N.M.A. BRIGADIER JUAN I. DE SAN MARTIN ",
+     "barrio": "VILLA ADELA",
+     "n_mesas": 9,
+     "votos_validos": 1853,
+     "votos_peronismo": 1186,
+     "pct_peronismo": 64.0,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140137200,
+     "nombre": "ESCUELA ALAS ARGENTINAS",
+     "barrio": "ESTACION FLORES",
+     "n_mesas": 10,
+     "votos_validos": 2159,
+     "votos_peronismo": 1130,
+     "pct_peronismo": 52.34,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140268700,
+     "nombre": "ESCUELA CADETES DE LA FUERZA AEREA ARGENTINA",
+     "barrio": "VILLA ADELA",
+     "n_mesas": 11,
+     "votos_validos": 2421,
+     "votos_peronismo": 1218,
+     "pct_peronismo": 50.31,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140048600,
+     "nombre": "COLEGIO PADRE JUAN BURON",
+     "barrio": "VILLA ADELA",
+     "n_mesas": 8,
+     "votos_validos": 1741,
+     "votos_peronismo": 823,
+     "pct_peronismo": 47.27,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140268600,
+     "nombre": "I.P.E.M. Nº 171 BRIGADIER JUAN I. SAN MARTIN",
+     "barrio": "VILLA ADELA",
+     "n_mesas": 8,
+     "votos_validos": 1808,
+     "votos_peronismo": 838,
+     "pct_peronismo": 46.35,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "011J": {
+   "nombre_circuito": "SANTA ANA",
+   "escuelas": [
+    {
+     "cue": 140095800,
+     "nombre": "ESCUELA REPUBLICA DE MEXICO",
+     "barrio": "CASEROS",
+     "n_mesas": 6,
+     "votos_validos": 1289,
+     "votos_peronismo": 657,
+     "pct_peronismo": 50.97,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "014B": {
+   "nombre_circuito": "ARGUELLO PRIMERO",
+   "escuelas": [
+    {
+     "cue": 140337600,
+     "nombre": "ESCUELA GENERAL MARTIN M. DE GUEMES",
+     "barrio": "QUINTAS DE ARGUELLO",
+     "n_mesas": 8,
+     "votos_validos": 1893,
+     "votos_peronismo": 752,
+     "pct_peronismo": 39.73,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140277600,
+     "nombre": "RAUL VICTORINO MARTINEZ",
+     "barrio": "QUINTAS DE ARGUELLO",
+     "n_mesas": 8,
+     "votos_validos": 1845,
+     "votos_peronismo": 725,
+     "pct_peronismo": 39.3,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140057800,
+     "nombre": "ESCUELA ELISA KOPSTEIN DE LITVACK",
+     "barrio": "LA SALLE",
+     "n_mesas": 5,
+     "votos_validos": 1189,
+     "votos_peronismo": 460,
+     "pct_peronismo": 38.69,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140057600,
+     "nombre": "COLEGIO ROSARITO VERA PEÑALOZA",
+     "barrio": "QUINTAS DE ARGUELLO",
+     "n_mesas": 6,
+     "votos_validos": 1411,
+     "votos_peronismo": 421,
+     "pct_peronismo": 29.84,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "0003": {
+   "nombre_circuito": "SECCIONAL TERCERA",
+   "escuelas": [
+    {
+     "cue": 140280300,
+     "nombre": "I.P.E.T. Nº 247 ING. CARLOS CASSAFFOUSTH",
+     "barrio": "ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1768,
+     "votos_peronismo": 672,
+     "pct_peronismo": 38.01,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140397300,
+     "nombre": "COLEGIO SANTO TOMAS",
+     "barrio": "ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1723,
+     "votos_peronismo": 653,
+     "pct_peronismo": 37.9,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140396900,
+     "nombre": "I.P.E.M. Nº 138 JERONIMO LUIS DE CABRERA",
+     "barrio": "ALBERDI",
+     "n_mesas": 9,
+     "votos_validos": 2023,
+     "votos_peronismo": 765,
+     "pct_peronismo": 37.82,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140058100,
+     "nombre": "COLEGIO PIO X",
+     "barrio": "ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1770,
+     "votos_peronismo": 669,
+     "pct_peronismo": 37.8,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140236000,
+     "nombre": "ESCUELA MARIANO MORENO",
+     "barrio": "ALBERDI",
+     "n_mesas": 9,
+     "votos_validos": 1935,
+     "votos_peronismo": 716,
+     "pct_peronismo": 37.0,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140333700,
+     "nombre": "I.P.E.M. Nº 270 GRAL. MANUEL BELGRANO",
+     "barrio": "ALBERDI",
+     "n_mesas": 8,
+     "votos_validos": 1746,
+     "votos_peronismo": 642,
+     "pct_peronismo": 36.77,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 6
+  },
+  "004B": {
+   "nombre_circuito": "VILLA REVOL",
+   "escuelas": [
+    {
+     "cue": 140252600,
+     "nombre": "I.P.E.M. Nº 167 JOSE MANUEL ESTRADA",
+     "barrio": "VILLA REVOL",
+     "n_mesas": 9,
+     "votos_validos": 2074,
+     "votos_peronismo": 889,
+     "pct_peronismo": 42.86,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140287600,
+     "nombre": "ESCUELA NICOLAS BERROTARAN",
+     "barrio": "JARDIN",
+     "n_mesas": 8,
+     "votos_validos": 1914,
+     "votos_peronismo": 751,
+     "pct_peronismo": 39.24,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140267500,
+     "nombre": "INSTITUTO JOVENES ARGENTINOS",
+     "barrio": "JARDIN ESPINOSA",
+     "n_mesas": 6,
+     "votos_validos": 1366,
+     "votos_peronismo": 512,
+     "pct_peronismo": 37.48,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140571200,
+     "nombre": "INSTITUTO JOCKEY CLUB CORDOBA",
+     "barrio": "JARDIN",
+     "n_mesas": 7,
+     "votos_validos": 1593,
+     "votos_peronismo": 595,
+     "pct_peronismo": 37.35,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140267800,
+     "nombre": "INSTITUTO NUESTRA SEÑORA",
+     "barrio": "JARDIN ESPINOSA",
+     "n_mesas": 8,
+     "votos_validos": 1856,
+     "votos_peronismo": 687,
+     "pct_peronismo": 37.02,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140066600,
+     "nombre": "COLEGIO PQUIAL. CRISTO REDENTOR",
+     "barrio": "JARDIN",
+     "n_mesas": 7,
+     "votos_validos": 1658,
+     "votos_peronismo": 577,
+     "pct_peronismo": 34.8,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140283900,
+     "nombre": "ESCUELA ING. JUAN MARIO MASJOAN",
+     "barrio": "JARDIN",
+     "n_mesas": 8,
+     "votos_validos": 1950,
+     "votos_peronismo": 678,
+     "pct_peronismo": 34.77,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 7
+  },
+  "0004": {
+   "nombre_circuito": "NUEVA CORDOBA",
+   "escuelas": [
+    {
+     "cue": 140066700,
+     "nombre": "ESCUELA GOBERNADOR JOSE MANUEL ALVAREZ",
+     "barrio": "PARQUE SARMIENTO",
+     "n_mesas": 8,
+     "votos_validos": 1622,
+     "votos_peronismo": 645,
+     "pct_peronismo": 39.77,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140155400,
+     "nombre": "I.P.E.M. Nº 38 FRANCISCO PABLO DE MAURO",
+     "barrio": "ROGELIO MARTINEZ",
+     "n_mesas": 7,
+     "votos_validos": 1446,
+     "votos_peronismo": 546,
+     "pct_peronismo": 37.76,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140289100,
+     "nombre": "INST. SUP. DE EDUCACION ARTISTICO MUSICAL DOMINGO ZIPOLI (EX IPEM 36)",
+     "barrio": "CIUDAD UNIVERSITARIA",
+     "n_mesas": 7,
+     "votos_validos": 1442,
+     "votos_peronismo": 534,
+     "pct_peronismo": 37.03,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140283800,
+     "nombre": "INSTITUTO SUPERIOR CARLOS LEGUIZAMON",
+     "barrio": "ROGELIO MARTINEZ",
+     "n_mesas": 8,
+     "votos_validos": 1674,
+     "votos_peronismo": 608,
+     "pct_peronismo": 36.32,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140094100,
+     "nombre": "I.P.E.T. Nº 66  DR.JOSE A.BALSEIRO",
+     "barrio": "NUEVA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1666,
+     "votos_peronismo": 584,
+     "pct_peronismo": 35.05,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "004C": {
+   "nombre_circuito": "INAUDI",
+   "escuelas": [
+    {
+     "cue": 140069000,
+     "nombre": "ESCUELA DR. ALBERT BRUCE SABIN",
+     "barrio": "POSTA DE VARGAS",
+     "n_mesas": 8,
+     "votos_validos": 1487,
+     "votos_peronismo": 922,
+     "pct_peronismo": 62.0,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140454400,
+     "nombre": "J.DE INF. ALBERT BRUCE SABIN",
+     "barrio": "POSTA DE VARGAS",
+     "n_mesas": 2,
+     "votos_validos": 398,
+     "votos_peronismo": 233,
+     "pct_peronismo": 58.54,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140475900,
+     "nombre": "I.P.E.M.y T. N° 310 PUERTO ARGENTINO",
+     "barrio": "INAUDI",
+     "n_mesas": 8,
+     "votos_validos": 1998,
+     "votos_peronismo": 908,
+     "pct_peronismo": 45.45,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140423900,
+     "nombre": "J.DE INF. SAN JOSE DE CALASANZ",
+     "barrio": "INAUDI",
+     "n_mesas": 7,
+     "votos_validos": 1702,
+     "votos_peronismo": 751,
+     "pct_peronismo": 44.12,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "014K": {
+   "nombre_circuito": "VILLA ALLENDE PARQUE",
+   "escuelas": [
+    {
+     "cue": 140074500,
+     "nombre": "DOCTOR RAUL FERNANDEZ",
+     "barrio": "VILLA ALLENDE PARQUE",
+     "n_mesas": 6,
+     "votos_validos": 1318,
+     "votos_peronismo": 656,
+     "pct_peronismo": 49.77,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "0005": {
+   "nombre_circuito": "ALTAMIRA",
+   "escuelas": [
+    {
+     "cue": 140129000,
+     "nombre": "I.P.E.M. Nº 114 ARTURO JAURETCHE",
+     "barrio": "ACOSTA",
+     "n_mesas": 7,
+     "votos_validos": 1454,
+     "votos_peronismo": 949,
+     "pct_peronismo": 65.27,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140291600,
+     "nombre": "ESCUELA ESPAÑA",
+     "barrio": "ACOSTA",
+     "n_mesas": 11,
+     "votos_validos": 2473,
+     "votos_peronismo": 1132,
+     "pct_peronismo": 45.77,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140566500,
+     "nombre": "INSTITUTO PRIVADO EMPALME",
+     "barrio": "ALTAMIRA",
+     "n_mesas": 8,
+     "votos_validos": 1833,
+     "votos_peronismo": 835,
+     "pct_peronismo": 45.55,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140075600,
+     "nombre": "ESCUELA ESTANISLAO DEL CAMPO",
+     "barrio": "ALTAMIRA",
+     "n_mesas": 7,
+     "votos_validos": 1649,
+     "votos_peronismo": 721,
+     "pct_peronismo": 43.72,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140374000,
+     "nombre": "ESCUELA PANAMERICANA",
+     "barrio": "ACOSTA",
+     "n_mesas": 10,
+     "votos_validos": 2296,
+     "votos_peronismo": 996,
+     "pct_peronismo": 43.38,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "005A": {
+   "nombre_circuito": "COLONIA LOLA",
+   "escuelas": [
+    {
+     "cue": 140075700,
+     "nombre": "ANGEL NICOLAS GASTALDI",
+     "barrio": "COLONIA LOLA",
+     "n_mesas": 7,
+     "votos_validos": 1530,
+     "votos_peronismo": 885,
+     "pct_peronismo": 57.84,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "014G": {
+   "nombre_circuito": "LOS BOULEVARES",
+   "escuelas": [
+    {
+     "cue": 140514100,
+     "nombre": "I.P.E.T. N° 430 INSTITUTO TECNICO INDUSTRIAL ZONA NORTE",
+     "barrio": "LOS BOULEVARES",
+     "n_mesas": 5,
+     "votos_validos": 1093,
+     "votos_peronismo": 601,
+     "pct_peronismo": 54.99,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140331000,
+     "nombre": "ESCUELA PEDRO GOYENA",
+     "barrio": "BRIGADIER SAN MARTIN",
+     "n_mesas": 10,
+     "votos_validos": 2167,
+     "votos_peronismo": 1182,
+     "pct_peronismo": 54.55,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140077200,
+     "nombre": "INGENIERO JUAN MARIO MASJOAN",
+     "barrio": "LOS BOULEVARES",
+     "n_mesas": 8,
+     "votos_validos": 1760,
+     "votos_peronismo": 903,
+     "pct_peronismo": 51.31,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140077500,
+     "nombre": "ESCUELA JUAN MARIA GUTIERREZ",
+     "barrio": "LOS BOULEVARES",
+     "n_mesas": 8,
+     "votos_validos": 1769,
+     "votos_peronismo": 882,
+     "pct_peronismo": 49.86,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140374200,
+     "nombre": "I.P.E.M. Nº 202 DR. LUIS FEDERICO LELOIR",
+     "barrio": "LOS BOULEVARES",
+     "n_mesas": 8,
+     "votos_validos": 1804,
+     "votos_peronismo": 895,
+     "pct_peronismo": 49.61,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "014I": {
+   "nombre_circuito": "SANTA CECILIA",
+   "escuelas": [
+    {
+     "cue": 140077400,
+     "nombre": "ARSENIO MURUGARREN",
+     "barrio": "SANTA CECILIA",
+     "n_mesas": 6,
+     "votos_validos": 1450,
+     "votos_peronismo": 525,
+     "pct_peronismo": 36.21,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "009G": {
+   "nombre_circuito": "VILLA CABRERA",
+   "escuelas": [
+    {
+     "cue": 140078700,
+     "nombre": "ESCUELA PRESIDENTE KENNEDY",
+     "barrio": "VILLA CABRERA",
+     "n_mesas": 7,
+     "votos_validos": 1569,
+     "votos_peronismo": 635,
+     "pct_peronismo": 40.47,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140225900,
+     "nombre": "INSTITUTO JOSE PEÑA",
+     "barrio": "VILLA CABRERA",
+     "n_mesas": 9,
+     "votos_validos": 2128,
+     "votos_peronismo": 736,
+     "pct_peronismo": 34.59,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "0009": {
+   "nombre_circuito": "ESCOBAR",
+   "escuelas": [
+    {
+     "cue": 140304900,
+     "nombre": "INSTITUCION ESCUTI",
+     "barrio": "LAS ROSAS",
+     "n_mesas": 9,
+     "votos_validos": 2018,
+     "votos_peronismo": 722,
+     "pct_peronismo": 35.78,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140082200,
+     "nombre": "ESCUELA PROVINCIA DE CORRIENTES",
+     "barrio": "ESCOBAR",
+     "n_mesas": 8,
+     "votos_validos": 1877,
+     "votos_peronismo": 632,
+     "pct_peronismo": 33.67,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "009D": {
+   "nombre_circuito": "POETA LUGONES",
+   "escuelas": [
+    {
+     "cue": 140417800,
+     "nombre": "J.DE INF. LEOPOLDO LUGONES",
+     "barrio": "POETA LUGONES",
+     "n_mesas": 2,
+     "votos_validos": 485,
+     "votos_peronismo": 178,
+     "pct_peronismo": 36.7,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140305300,
+     "nombre": "I.P.E.M. Nº 198 DR. MARTIN FERREYRA",
+     "barrio": "POETA LUGONES",
+     "n_mesas": 9,
+     "votos_validos": 2101,
+     "votos_peronismo": 748,
+     "pct_peronismo": 35.6,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140101200,
+     "nombre": "ESCUELA LEOPOLDO LUGONES",
+     "barrio": "POETA LUGONES",
+     "n_mesas": 8,
+     "votos_validos": 1969,
+     "votos_peronismo": 700,
+     "pct_peronismo": 35.55,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140169700,
+     "nombre": "INSTITUTO EL SALVADOR",
+     "barrio": "POETA LUGONES",
+     "n_mesas": 8,
+     "votos_validos": 1970,
+     "votos_peronismo": 695,
+     "pct_peronismo": 35.28,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "012F": {
+   "nombre_circuito": "JOSE HERNANDEZ",
+   "escuelas": [
+    {
+     "cue": 140125000,
+     "nombre": "ESCUELA EJERCITO ARGENTINO",
+     "barrio": "JARDIN DEL PILAR",
+     "n_mesas": 8,
+     "votos_validos": 1833,
+     "votos_peronismo": 991,
+     "pct_peronismo": 54.06,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140517700,
+     "nombre": "ESCUELA ADVENTISTA HECTOR RYHS",
+     "barrio": "OÑA",
+     "n_mesas": 7,
+     "votos_validos": 1602,
+     "votos_peronismo": 749,
+     "pct_peronismo": 46.75,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140332500,
+     "nombre": "ESCUELA GENERAL MANUEL BELGRANO",
+     "barrio": "OÑA",
+     "n_mesas": 18,
+     "votos_validos": 4091,
+     "votos_peronismo": 1719,
+     "pct_peronismo": 42.02,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140332600,
+     "nombre": "DOCTOR ERNESTO MOLINARI ROMERO",
+     "barrio": "PARQUE SAN CARLOS",
+     "n_mesas": 10,
+     "votos_validos": 2355,
+     "votos_peronismo": 978,
+     "pct_peronismo": 41.53,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140125100,
+     "nombre": "GOBERNADOR BRIGADIER JUAN IGNACIO DE SAN MARTIN",
+     "barrio": "JOSE HERNANDEZ",
+     "n_mesas": 3,
+     "votos_validos": 717,
+     "votos_peronismo": 291,
+     "pct_peronismo": 40.59,
+     "confianza": "pendiente_revision"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "012H": {
+   "nombre_circuito": "LOS CERVECEROS",
+   "escuelas": [
+    {
+     "cue": 140412500,
+     "nombre": "ESCUELA JOSE MANUEL ESTRADA",
+     "barrio": "VILLA SAN CARLOS",
+     "n_mesas": 5,
+     "votos_validos": 1026,
+     "votos_peronismo": 687,
+     "pct_peronismo": 66.96,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140126300,
+     "nombre": "J.DE INF. RAUL ANGEL FERREYRA",
+     "barrio": "S.E.P.",
+     "n_mesas": 2,
+     "votos_validos": 448,
+     "votos_peronismo": 228,
+     "pct_peronismo": 50.89,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140476200,
+     "nombre": "I.P.E.M. y T. Nº 319 - ROBERTO FONTANARROSA",
+     "barrio": "CERVECEROS",
+     "n_mesas": 9,
+     "votos_validos": 2126,
+     "votos_peronismo": 1038,
+     "pct_peronismo": 48.82,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140286200,
+     "nombre": "ESCUELA DOCTOR NICOLAS AVELLANEDA",
+     "barrio": "VILLA SAN CARLOS",
+     "n_mesas": 5,
+     "votos_validos": 1039,
+     "votos_peronismo": 501,
+     "pct_peronismo": 48.22,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140332000,
+     "nombre": "ESCUELA RAUL ANGEL FERREYRA",
+     "barrio": "S.E.P.",
+     "n_mesas": 8,
+     "votos_validos": 1746,
+     "votos_peronismo": 818,
+     "pct_peronismo": 46.85,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "011C": {
+   "nombre_circuito": "LAS PALMAS",
+   "escuelas": [
+    {
+     "cue": 140308000,
+     "nombre": "GOBERNADOR JUSTO PAEZ MOLINA",
+     "barrio": "LAS PALMAS",
+     "n_mesas": 16,
+     "votos_validos": 3513,
+     "votos_peronismo": 1699,
+     "pct_peronismo": 48.36,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140434500,
+     "nombre": "COLEGIO SAN BUENAVENTURA",
+     "barrio": "LAS PALMAS",
+     "n_mesas": 10,
+     "votos_validos": 2362,
+     "votos_peronismo": 1010,
+     "pct_peronismo": 42.76,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140343400,
+     "nombre": "ESCUELA MANUEL ESTEBAN PIZARRO",
+     "barrio": "LAS PALMAS",
+     "n_mesas": 8,
+     "votos_validos": 1917,
+     "votos_peronismo": 763,
+     "pct_peronismo": 39.8,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140344500,
+     "nombre": "I.P.E.M. Nº 42 PROF. MARCELA BEATRIZ MOYANO COUDERT",
+     "barrio": "LAS PALMAS",
+     "n_mesas": 7,
+     "votos_validos": 1638,
+     "votos_peronismo": 646,
+     "pct_peronismo": 39.44,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140126800,
+     "nombre": "ESC.ESP. BLANCA ESTELA FEIT",
+     "barrio": "LAS PALMAS",
+     "n_mesas": 5,
+     "votos_validos": 1206,
+     "votos_peronismo": 469,
+     "pct_peronismo": 38.89,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "014D": {
+   "nombre_circuito": "CERRO DE LAS ROSAS",
+   "escuelas": [
+    {
+     "cue": 140435600,
+     "nombre": "COLEGIO MADRES ESCOLAPIAS",
+     "barrio": "CERRO DE LAS ROSAS",
+     "n_mesas": 6,
+     "votos_validos": 1324,
+     "votos_peronismo": 557,
+     "pct_peronismo": 42.07,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140367200,
+     "nombre": "INSTITUTO SAUL A. TABORDA",
+     "barrio": "CERRO DE LAS ROSAS",
+     "n_mesas": 8,
+     "votos_validos": 1837,
+     "votos_peronismo": 598,
+     "pct_peronismo": 32.55,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140129200,
+     "nombre": "ESCUELA JUAN ZORRILLA DE SAN MARTIN",
+     "barrio": "CERRO DE LAS ROSAS",
+     "n_mesas": 6,
+     "votos_validos": 1340,
+     "votos_peronismo": 433,
+     "pct_peronismo": 32.31,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140340600,
+     "nombre": "I.P.E.M. Nº 162 ING. VICTOR REE",
+     "barrio": "CERRO DE LAS ROSAS",
+     "n_mesas": 6,
+     "votos_validos": 1348,
+     "votos_peronismo": 385,
+     "pct_peronismo": 28.56,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "014M": {
+   "nombre_circuito": "VILLA CENTENARIO",
+   "escuelas": [
+    {
+     "cue": 140276800,
+     "nombre": "I.P.E.M. Nº 206 FERNANDO FADER",
+     "barrio": "PARQUE COREMA",
+     "n_mesas": 6,
+     "votos_validos": 1353,
+     "votos_peronismo": 690,
+     "pct_peronismo": 51.0,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140129300,
+     "nombre": "ESCUELA PRIMERA JUNTA",
+     "barrio": "VILLA CENTENARIO",
+     "n_mesas": 8,
+     "votos_validos": 1857,
+     "votos_peronismo": 530,
+     "pct_peronismo": 28.54,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "014O": {
+   "nombre_circuito": "VILLA 9 DE JULIO",
+   "escuelas": [
+    {
+     "cue": 140131700,
+     "nombre": "SAUL TABORDA",
+     "barrio": "VILLA 9 DE JULIO",
+     "n_mesas": 6,
+     "votos_validos": 1230,
+     "votos_peronismo": 663,
+     "pct_peronismo": 53.9,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "011K": {
+   "nombre_circuito": "VILLA GRAL URQUIZA",
+   "escuelas": [
+    {
+     "cue": 140343500,
+     "nombre": "DOCTOR JUAN B. JUSTO",
+     "barrio": "VILLA SIBURU",
+     "n_mesas": 5,
+     "votos_validos": 1049,
+     "votos_peronismo": 582,
+     "pct_peronismo": 55.48,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140343200,
+     "nombre": "ESCUELA EJERCITO ARGENTINO",
+     "barrio": "VILLA SIBURU",
+     "n_mesas": 9,
+     "votos_validos": 1863,
+     "votos_peronismo": 984,
+     "pct_peronismo": 52.82,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140135500,
+     "nombre": "I.P.E.M. Nº 205 RICARDO HUGO PALLADINO",
+     "barrio": "SAN IGNACIO",
+     "n_mesas": 8,
+     "votos_validos": 1858,
+     "votos_peronismo": 779,
+     "pct_peronismo": 41.93,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "011I": {
+   "nombre_circuito": "RESIDENCIAL SAN ROQUE",
+   "escuelas": [
+    {
+     "cue": 140491700,
+     "nombre": "ESCUELA REPUBLICA DEL ECUADOR",
+     "barrio": "RESIDENCIAL SAN ROQUE",
+     "n_mesas": 8,
+     "votos_validos": 1665,
+     "votos_peronismo": 1055,
+     "pct_peronismo": 63.36,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140226700,
+     "nombre": "ESCUELA MAURO FERNANDEZ",
+     "barrio": "RESIDENCIAL SAN ROQUE",
+     "n_mesas": 8,
+     "votos_validos": 1599,
+     "votos_peronismo": 993,
+     "pct_peronismo": 62.1,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140136900,
+     "nombre": "I.P.E.T. Nº 129 HEROES DE MALVINAS",
+     "barrio": "VILLA MARTINEZ",
+     "n_mesas": 6,
+     "votos_validos": 1251,
+     "votos_peronismo": 765,
+     "pct_peronismo": 61.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140345400,
+     "nombre": "LUZ VIEIRA MENDEZ",
+     "barrio": "RESIDENCIAL SAN ROQUE",
+     "n_mesas": 13,
+     "votos_validos": 2759,
+     "votos_peronismo": 1459,
+     "pct_peronismo": 52.88,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140345300,
+     "nombre": "ESCUELA JOSE AGUIRRE CAMARA",
+     "barrio": "LOS FILTROS",
+     "n_mesas": 8,
+     "votos_validos": 1787,
+     "votos_peronismo": 799,
+     "pct_peronismo": 44.71,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "011G": {
+   "nombre_circuito": "PARQUE REPUBLICA",
+   "escuelas": [
+    {
+     "cue": 140345500,
+     "nombre": "I.P.E.M. Nº 41 JORGE LUIS BORGES",
+     "barrio": "PARQUE REPUBLICA",
+     "n_mesas": 8,
+     "votos_validos": 1772,
+     "votos_peronismo": 1035,
+     "pct_peronismo": 58.41,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140308500,
+     "nombre": "ESCUELA PROF. ATILIO ARGUELLO",
+     "barrio": "PARQUE REPUBLICA",
+     "n_mesas": 9,
+     "votos_validos": 1937,
+     "votos_peronismo": 1086,
+     "pct_peronismo": 56.07,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140137000,
+     "nombre": "ESCUELA PRIMER TENIENTE AVILA",
+     "barrio": "PARQUE REPUBLICA",
+     "n_mesas": 8,
+     "votos_validos": 1762,
+     "votos_peronismo": 946,
+     "pct_peronismo": 53.69,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140345200,
+     "nombre": "ESCUELA MANUEL EDUARDO PEREZ BULNES",
+     "barrio": "LAS VIOLETAS",
+     "n_mesas": 10,
+     "votos_validos": 2163,
+     "votos_peronismo": 1131,
+     "pct_peronismo": 52.29,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140137600,
+     "nombre": "J.DE INF. PRIMER TENIENTE AVILA",
+     "barrio": "PARQUE REPUBLICA",
+     "n_mesas": 1,
+     "votos_validos": 233,
+     "votos_peronismo": 104,
+     "pct_peronismo": 44.64,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140477900,
+     "nombre": "ESCUELA CURACA LINO ACEVEDO",
+     "barrio": "LOS ROBLES",
+     "n_mesas": 8,
+     "votos_validos": 1775,
+     "votos_peronismo": 763,
+     "pct_peronismo": 42.99,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 6
+  },
+  "009F": {
+   "nombre_circuito": "SAN MARTIN",
+   "escuelas": [
+    {
+     "cue": 140311500,
+     "nombre": "I.P.E.M. Nº 103 ESTEBAN ECHEVERRIA",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 7,
+     "votos_validos": 1543,
+     "votos_peronismo": 624,
+     "pct_peronismo": 40.44,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140138100,
+     "nombre": "ESCUELA NOCTURNA GENERAL SAN MARTIN",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 8,
+     "votos_validos": 1872,
+     "votos_peronismo": 756,
+     "pct_peronismo": 40.38,
+     "confianza": "pendiente_revision"
+    },
+    {
+     "cue": 140435100,
+     "nombre": "COLEGIO NUESTRA SEÑORA DE LA MERCED",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 8,
+     "votos_validos": 1770,
+     "votos_peronismo": 699,
+     "pct_peronismo": 39.49,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140294700,
+     "nombre": "INSTITUTO INMACULADA CONCEPCION",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 11,
+     "votos_validos": 2374,
+     "votos_peronismo": 923,
+     "pct_peronismo": 38.88,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140295100,
+     "nombre": "ESCUELA JOSE DE SAN MARTIN",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 7,
+     "votos_validos": 1515,
+     "votos_peronismo": 580,
+     "pct_peronismo": 38.28,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140411100,
+     "nombre": "I.P.E.M. Nº 43 PTE. HIPOLITO YRIGOYEN",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 8,
+     "votos_validos": 1713,
+     "votos_peronismo": 648,
+     "pct_peronismo": 37.83,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140295000,
+     "nombre": "ESCUELA ANTONIO DEL VISO",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 10,
+     "votos_validos": 2260,
+     "votos_peronismo": 851,
+     "pct_peronismo": 37.65,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140400600,
+     "nombre": "ESCUELA EJERCITO DE LOS ANDES",
+     "barrio": "SAN MARTIN",
+     "n_mesas": 7,
+     "votos_validos": 1576,
+     "votos_peronismo": 570,
+     "pct_peronismo": 36.17,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 8
+  },
+  "0010": {
+   "nombre_circuito": "BELLA VISTA",
+   "escuelas": [
+    {
+     "cue": 140155600,
+     "nombre": "ESCUELA ARZOBISPO CASTELLANO",
+     "barrio": "SUAREZ",
+     "n_mesas": 4,
+     "votos_validos": 939,
+     "votos_peronismo": 502,
+     "pct_peronismo": 53.46,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140399100,
+     "nombre": "COLEGIO DE EDUCACION CORDOBA",
+     "barrio": "COLINAS DE VELEZ SARSFIELD",
+     "n_mesas": 8,
+     "votos_validos": 1649,
+     "votos_peronismo": 772,
+     "pct_peronismo": 46.82,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140362400,
+     "nombre": "ESCUELA HUGO WAST",
+     "barrio": "CACERES",
+     "n_mesas": 8,
+     "votos_validos": 1625,
+     "votos_peronismo": 750,
+     "pct_peronismo": 46.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140226000,
+     "nombre": "ESCUELA MANUEL BELGRANO",
+     "barrio": "PARQUE VELEZ SARSFIELD",
+     "n_mesas": 8,
+     "votos_validos": 1658,
+     "votos_peronismo": 758,
+     "pct_peronismo": 45.72,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140265700,
+     "nombre": "ESCUELA DR. CARLOS VAZ FERREIRA",
+     "barrio": "BELLA VISTA",
+     "n_mesas": 8,
+     "votos_validos": 1697,
+     "votos_peronismo": 754,
+     "pct_peronismo": 44.43,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "010L": {
+   "nombre_circuito": "VILLA EL LIBERTADOR",
+   "escuelas": [
+    {
+     "cue": 140158800,
+     "nombre": "COLEGIO SAN JOSE OBRERO",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 6,
+     "votos_validos": 1165,
+     "votos_peronismo": 705,
+     "pct_peronismo": 60.52,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140538200,
+     "nombre": "I.P.E.M. Nº 360 PROFESOR EDGAR TOLEDO",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 6,
+     "votos_validos": 1297,
+     "votos_peronismo": 775,
+     "pct_peronismo": 59.75,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140326500,
+     "nombre": "I.P.E.M. Nº 123 BLANCA ETCHEMENDY",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 10,
+     "votos_validos": 2085,
+     "votos_peronismo": 1212,
+     "pct_peronismo": 58.13,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140158500,
+     "nombre": "ESCUELA PROVINCIA SANTIAGO DEL ESTERO",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 8,
+     "votos_validos": 1642,
+     "votos_peronismo": 948,
+     "pct_peronismo": 57.73,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140505400,
+     "nombre": "ESCUELA MARTA JUANA GONZALEZ",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 9,
+     "votos_validos": 1855,
+     "votos_peronismo": 1060,
+     "pct_peronismo": 57.14,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140225800,
+     "nombre": "ESCUELA PATRICIAS MENDOCINAS",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 7,
+     "votos_validos": 1459,
+     "votos_peronismo": 828,
+     "pct_peronismo": 56.75,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140474400,
+     "nombre": "ESCUELA VICENTE FORESTIERI",
+     "barrio": "VILLA EL LIBERTADOR",
+     "n_mesas": 9,
+     "votos_validos": 1829,
+     "votos_peronismo": 1016,
+     "pct_peronismo": 55.55,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 7
+  },
+  "005F": {
+   "nombre_circuito": "RENACIMIENTO",
+   "escuelas": [
+    {
+     "cue": 140174500,
+     "nombre": "COOPERATIVISMO ARGENTINO DOCTOR RAMON BAUTISTA MESTRE",
+     "barrio": "RENACIMIENTO",
+     "n_mesas": 8,
+     "votos_validos": 1662,
+     "votos_peronismo": 1081,
+     "pct_peronismo": 65.04,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "010B": {
+   "nombre_circuito": "CIUDADELA",
+   "escuelas": [
+    {
+     "cue": 140193100,
+     "nombre": "ESCUELA REPUBLICA DE SIRIA",
+     "barrio": "PARQUE ATLANTICA",
+     "n_mesas": 6,
+     "votos_validos": 1457,
+     "votos_peronismo": 583,
+     "pct_peronismo": 40.01,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140399200,
+     "nombre": "ESCUELA GOBERNADOR JUAN BAUTISTA BUSTOS",
+     "barrio": "ALTOS DE VELEZ SARSFIELD",
+     "n_mesas": 7,
+     "votos_validos": 1667,
+     "votos_peronismo": 653,
+     "pct_peronismo": 39.17,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140362900,
+     "nombre": "I.P.E.M. Nº 120 REPUBLICA DE FRANCIA",
+     "barrio": "RESIDENCIAL VELEZ SARSFIELD",
+     "n_mesas": 7,
+     "votos_validos": 1690,
+     "votos_peronismo": 656,
+     "pct_peronismo": 38.82,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "010I": {
+   "nombre_circuito": "PARQUE HORIZONTE",
+   "escuelas": [
+    {
+     "cue": 140437100,
+     "nombre": "COLEGIO JORGE VOCOS LESCANO",
+     "barrio": "PARQUE LATINO",
+     "n_mesas": 6,
+     "votos_validos": 1438,
+     "votos_peronismo": 673,
+     "pct_peronismo": 46.8,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140362700,
+     "nombre": "INSTITUTO SAN JOSE ARTESANO",
+     "barrio": "LOS OLMOS",
+     "n_mesas": 7,
+     "votos_validos": 1763,
+     "votos_peronismo": 769,
+     "pct_peronismo": 43.62,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140213000,
+     "nombre": "ESCUELA YAPEYU",
+     "barrio": "IRUPE",
+     "n_mesas": 5,
+     "votos_validos": 1246,
+     "votos_peronismo": 507,
+     "pct_peronismo": 40.69,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140535600,
+     "nombre": "I.P.E.M.y T. N° 357 JOSE CAMPELLONE",
+     "barrio": "SMATA",
+     "n_mesas": 8,
+     "votos_validos": 1917,
+     "votos_peronismo": 753,
+     "pct_peronismo": 39.28,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 4
+  },
+  "0012": {
+   "nombre_circuito": "AVELLANEDA",
+   "escuelas": [
+    {
+     "cue": 140479900,
+     "nombre": "ESCUELA HEROES DE MALVINAS",
+     "barrio": "ALMIRANTE BROWN",
+     "n_mesas": 7,
+     "votos_validos": 1468,
+     "votos_peronismo": 893,
+     "pct_peronismo": 60.83,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140222400,
+     "nombre": "ESCUELA JUAN XXIII",
+     "barrio": "NICOLAS AVELLANEDA",
+     "n_mesas": 8,
+     "votos_validos": 1797,
+     "votos_peronismo": 977,
+     "pct_peronismo": 54.37,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140222800,
+     "nombre": "ESCRIBANO OSCAR SOTO LOPEZ",
+     "barrio": "LOS SAUCES",
+     "n_mesas": 7,
+     "votos_validos": 1576,
+     "votos_peronismo": 822,
+     "pct_peronismo": 52.16,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "005E": {
+   "nombre_circuito": "VILLA BUSTOS",
+   "escuelas": [
+    {
+     "cue": 140223100,
+     "nombre": "I.P.E.M. Nº 136 DR. ALFREDO L. PALACIOS",
+     "barrio": "VILLA BUSTOS",
+     "n_mesas": 7,
+     "votos_validos": 1413,
+     "votos_peronismo": 826,
+     "pct_peronismo": 58.46,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140407700,
+     "nombre": "ESCUELA TENIENTE GENERAL PABLO RICCHIERI",
+     "barrio": "VILLA BUSTOS",
+     "n_mesas": 6,
+     "votos_validos": 1249,
+     "votos_peronismo": 709,
+     "pct_peronismo": 56.77,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "011D": {
+   "nombre_circuito": "LOS NARANJOS",
+   "escuelas": [
+    {
+     "cue": 140343900,
+     "nombre": "I.P.E.M. Nº 185 PERITO MORENO",
+     "barrio": "SAN RAFAEL",
+     "n_mesas": 5,
+     "votos_validos": 1119,
+     "votos_peronismo": 518,
+     "pct_peronismo": 46.29,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140343800,
+     "nombre": "ESCUELA REPUBLICA DEL PERU",
+     "barrio": "LOS NARANJOS",
+     "n_mesas": 8,
+     "votos_validos": 1890,
+     "votos_peronismo": 715,
+     "pct_peronismo": 37.83,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140434600,
+     "nombre": "COLEGIO NUESTRA SEÑORA DE LORETO",
+     "barrio": "LOS NARANJOS",
+     "n_mesas": 8,
+     "votos_validos": 1910,
+     "votos_peronismo": 721,
+     "pct_peronismo": 37.75,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140227400,
+     "nombre": "COLEGIO SANTISIMA TRINIDAD",
+     "barrio": "SAN RAFAEL",
+     "n_mesas": 7,
+     "votos_validos": 1691,
+     "votos_peronismo": 633,
+     "pct_peronismo": 37.43,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140438100,
+     "nombre": "COLEGIO JESUS MARIA",
+     "barrio": "AVENIDA",
+     "n_mesas": 8,
+     "votos_validos": 1900,
+     "votos_peronismo": 684,
+     "pct_peronismo": 36.0,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "013A": {
+   "nombre_circuito": "AYACUCHO",
+   "escuelas": [
+    {
+     "cue": 140446000,
+     "nombre": "COLEGIO LA ALDEA DE PIAGET",
+     "barrio": "AYACUCHO",
+     "n_mesas": 5,
+     "votos_validos": 912,
+     "votos_peronismo": 445,
+     "pct_peronismo": 48.79,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140307300,
+     "nombre": "ESCUELA FRANCISCO ANTONIO RIZZUTO",
+     "barrio": "CENTRO AMERICA",
+     "n_mesas": 8,
+     "votos_validos": 1854,
+     "votos_peronismo": 848,
+     "pct_peronismo": 45.74,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140259900,
+     "nombre": "DOCTOR PEDRO CARANDE CARRO",
+     "barrio": "CENTRO AMERICA",
+     "n_mesas": 7,
+     "votos_validos": 1651,
+     "votos_peronismo": 709,
+     "pct_peronismo": 42.94,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140228800,
+     "nombre": "ESCUELA DR. HENOCH DOMINGO AGUIAR",
+     "barrio": "LOS GIGANTES",
+     "n_mesas": 8,
+     "votos_validos": 1815,
+     "votos_peronismo": 771,
+     "pct_peronismo": 42.48,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140307000,
+     "nombre": "ESCUELA RAFAELA SANCHEZ DE CALDELARI",
+     "barrio": "AYACUCHO",
+     "n_mesas": 8,
+     "votos_validos": 1866,
+     "votos_peronismo": 754,
+     "pct_peronismo": 40.41,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "007A": {
+   "nombre_circuito": "GUIÑAZU",
+   "escuelas": [
+    {
+     "cue": 140455400,
+     "nombre": "I.P.E.T. Nº 22 JUAN FILLOY",
+     "barrio": "GUIÑAZU",
+     "n_mesas": 6,
+     "votos_validos": 1296,
+     "votos_peronismo": 779,
+     "pct_peronismo": 60.11,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140229200,
+     "nombre": "ESCUELA GREGORIA MATORRAS DE SAN MARTIN",
+     "barrio": "MARIA LASTENIA",
+     "n_mesas": 6,
+     "votos_validos": 1264,
+     "votos_peronismo": 755,
+     "pct_peronismo": 59.73,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140229300,
+     "nombre": "I.P.E.M. Nº 182 DR. JORGE W. ABALOS",
+     "barrio": "MARIA LASTENIA",
+     "n_mesas": 2,
+     "votos_validos": 473,
+     "votos_peronismo": 197,
+     "pct_peronismo": 41.65,
+     "confianza": "pendiente_revision"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "008C": {
+   "nombre_circuito": "VILLA LOS PINOS",
+   "escuelas": [
+    {
+     "cue": 140229900,
+     "nombre": "I.P.E.M. Nº 174 TRINIDAD MORENO",
+     "barrio": "YOFRE SUD",
+     "n_mesas": 8,
+     "votos_validos": 1819,
+     "votos_peronismo": 822,
+     "pct_peronismo": 45.19,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140230000,
+     "nombre": "ESCUELA ALMIRANTE GUILLERMO BROWN",
+     "barrio": "YOFRE SUD",
+     "n_mesas": 8,
+     "votos_validos": 1845,
+     "votos_peronismo": 800,
+     "pct_peronismo": 43.36,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140229800,
+     "nombre": "ESCUELA ANTARTIDA ARGENTINA",
+     "barrio": "LOS PINOS",
+     "n_mesas": 16,
+     "votos_validos": 3650,
+     "votos_peronismo": 1351,
+     "pct_peronismo": 37.01,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "007F": {
+   "nombre_circuito": "JORGE NEWBERY",
+   "escuelas": [
+    {
+     "cue": 140232700,
+     "nombre": "ESCUELA NACIONES UNIDAS",
+     "barrio": "REMEDIOS DE ESCALADA",
+     "n_mesas": 9,
+     "votos_validos": 2049,
+     "votos_peronismo": 1051,
+     "pct_peronismo": 51.29,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140234500,
+     "nombre": "I.P.E.M. Nº 121 GOB. JUSTO PASTOR PAEZ MOLINA",
+     "barrio": "JERONIMO LUIS DE CABRERA",
+     "n_mesas": 6,
+     "votos_validos": 1331,
+     "votos_peronismo": 657,
+     "pct_peronismo": 49.36,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "013G": {
+   "nombre_circuito": "PARQUE LICEO",
+   "escuelas": [
+    {
+     "cue": 140232900,
+     "nombre": "ESCUELA OLEGARIO VICTOR ANDRADE",
+     "barrio": "VILLA RETIRO",
+     "n_mesas": 2,
+     "votos_validos": 444,
+     "votos_peronismo": 186,
+     "pct_peronismo": 41.89,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "014H": {
+   "nombre_circuito": "MERCANTIL",
+   "escuelas": [
+    {
+     "cue": 140282800,
+     "nombre": "DOCTOR HORACIO GARCIA",
+     "barrio": "VILLA CORNU",
+     "n_mesas": 8,
+     "votos_validos": 1668,
+     "votos_peronismo": 937,
+     "pct_peronismo": 56.18,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140282900,
+     "nombre": "I.P.E.M. Nº 16 MARIA SALEME de BURNICHON",
+     "barrio": "VILLA CORNU",
+     "n_mesas": 5,
+     "votos_validos": 1040,
+     "votos_peronismo": 528,
+     "pct_peronismo": 50.77,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140241100,
+     "nombre": "MAESTRO MANUEL GREGORIO OLIVA",
+     "barrio": "MERCANTIL",
+     "n_mesas": 8,
+     "votos_validos": 1893,
+     "votos_peronismo": 862,
+     "pct_peronismo": 45.54,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "014J": {
+   "nombre_circuito": "URCA",
+   "escuelas": [
+    {
+     "cue": 140305000,
+     "nombre": "INSTITUTO SECUNDARIO REPUBLICA DE ITALIA",
+     "barrio": "URCA",
+     "n_mesas": 7,
+     "votos_validos": 1651,
+     "votos_peronismo": 762,
+     "pct_peronismo": 46.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140241500,
+     "nombre": "ESCUELA REPUBLICA DE PANAMA",
+     "barrio": "COLINAS DEL CERRO",
+     "n_mesas": 7,
+     "votos_validos": 1707,
+     "votos_peronismo": 622,
+     "pct_peronismo": 36.44,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140305100,
+     "nombre": "ESCUELA REPUBLICA DEL LIBANO",
+     "barrio": "URCA",
+     "n_mesas": 8,
+     "votos_validos": 1898,
+     "votos_peronismo": 636,
+     "pct_peronismo": 33.51,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "007B": {
+   "nombre_circuito": "ALTA CORDOBA",
+   "escuelas": [
+    {
+     "cue": 140271200,
+     "nombre": "ESCUELA MANUEL LUCERO",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1861,
+     "votos_peronismo": 766,
+     "pct_peronismo": 41.16,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140272100,
+     "nombre": "INSTITUTO NUESTRA SEÑORA DEL CARMEN",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1798,
+     "votos_peronismo": 740,
+     "pct_peronismo": 41.16,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140272000,
+     "nombre": "ESCUELA PROVINCIA DE ENTRE RIOS",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1774,
+     "votos_peronismo": 728,
+     "pct_peronismo": 41.04,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140271400,
+     "nombre": "I.P.E.M. Nº 122 DIEGO GOMEZ CASCO",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1648,
+     "votos_peronismo": 674,
+     "pct_peronismo": 40.9,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140270800,
+     "nombre": "INSTITUTO CORAZON DE MARIA",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1817,
+     "votos_peronismo": 743,
+     "pct_peronismo": 40.89,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140565900,
+     "nombre": "INSTITUTO EDUCATIVO ALTA CORDOBA",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1767,
+     "votos_peronismo": 698,
+     "pct_peronismo": 39.5,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140560900,
+     "nombre": "J.DE INF. NUESTRA MADRE DE LA MERCED",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1867,
+     "votos_peronismo": 735,
+     "pct_peronismo": 39.37,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140246000,
+     "nombre": "ESCUELA PROVINCIA DE FORMOSA",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1779,
+     "votos_peronismo": 695,
+     "pct_peronismo": 39.07,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140271100,
+     "nombre": "INSTITUTO DR. MANUEL LUCERO",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 8,
+     "votos_validos": 1860,
+     "votos_peronismo": 725,
+     "pct_peronismo": 38.98,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140420700,
+     "nombre": "COLEGIO GARCIA FAURE",
+     "barrio": "ALTA CORDOBA",
+     "n_mesas": 9,
+     "votos_validos": 2020,
+     "votos_peronismo": 781,
+     "pct_peronismo": 38.66,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 10
+  },
+  "013J": {
+   "nombre_circuito": "VILLA AZALAIS",
+   "escuelas": [
+    {
+     "cue": 140307400,
+     "nombre": "COLEGIO PARROQUIAL LETTY STUCCHI BAUDON",
+     "barrio": "RESIDENCIAL AMERICA",
+     "n_mesas": 8,
+     "votos_validos": 1771,
+     "votos_peronismo": 959,
+     "pct_peronismo": 54.15,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140260300,
+     "nombre": "ESCRIBANO JUAN ANTONIO PAREDES",
+     "barrio": "GENERAL MOSCONI",
+     "n_mesas": 8,
+     "votos_validos": 1672,
+     "votos_peronismo": 857,
+     "pct_peronismo": 51.26,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140372100,
+     "nombre": "ESCUELA CURA BROCHERO",
+     "barrio": "AMPLIACION RESIDENCIAL AMERICA",
+     "n_mesas": 8,
+     "votos_validos": 1708,
+     "votos_peronismo": 875,
+     "pct_peronismo": 51.23,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140472300,
+     "nombre": "I.P.E.M. Nº 301 MALVINA ROSA QUIROGA",
+     "barrio": "RESIDENCIAL AMERICA",
+     "n_mesas": 7,
+     "votos_validos": 1463,
+     "votos_peronismo": 684,
+     "pct_peronismo": 46.75,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140438300,
+     "nombre": "INSTITUTO BERNARDO HOUSSAY",
+     "barrio": "AMPLIACION RESIDENCIAL AMERICA",
+     "n_mesas": 8,
+     "votos_validos": 1708,
+     "votos_peronismo": 792,
+     "pct_peronismo": 46.37,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "006D": {
+   "nombre_circuito": "JUNIORS",
+   "escuelas": [
+    {
+     "cue": 140291000,
+     "nombre": "I.P.E.M. Nº 181 BRIG. GRAL. CORNELIO SAAVEDRA",
+     "barrio": "JUNIORS",
+     "n_mesas": 8,
+     "votos_validos": 1771,
+     "votos_peronismo": 724,
+     "pct_peronismo": 40.88,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140288500,
+     "nombre": "ESCUELA GABRIELA MISTRAL",
+     "barrio": "JUNIORS",
+     "n_mesas": 7,
+     "votos_validos": 1565,
+     "votos_peronismo": 563,
+     "pct_peronismo": 35.97,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "005G": {
+   "nombre_circuito": "SAN VICENTE",
+   "escuelas": [
+    {
+     "cue": 140292300,
+     "nombre": "I.P.E.M. Nº 184 MARIANO FRAGUEIRO",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 10,
+     "votos_validos": 2080,
+     "votos_peronismo": 1217,
+     "pct_peronismo": 58.51,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140549500,
+     "nombre": "SAN ANTONIO DE PADUA",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 6,
+     "votos_validos": 1324,
+     "votos_peronismo": 573,
+     "pct_peronismo": 43.28,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140291800,
+     "nombre": "J.DE INF. PROVINCIA LA RIOJA",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 8,
+     "votos_validos": 1787,
+     "votos_peronismo": 770,
+     "pct_peronismo": 43.09,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140365300,
+     "nombre": "COLEGIO MARIA I. NAVARRO DE LABAT",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 7,
+     "votos_validos": 1493,
+     "votos_peronismo": 634,
+     "pct_peronismo": 42.46,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140336200,
+     "nombre": "INSTITUTO SANTA MARGARITA DE CORTONA",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 8,
+     "votos_validos": 1736,
+     "votos_peronismo": 725,
+     "pct_peronismo": 41.76,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140292400,
+     "nombre": "INST. DE ENSEÑANZA DOMINGO FAUSTINO SARMIENTO ",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 8,
+     "votos_validos": 1806,
+     "votos_peronismo": 750,
+     "pct_peronismo": 41.53,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140292200,
+     "nombre": "CENTRO EDUCATIVO GRECIA",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 11,
+     "votos_validos": 2407,
+     "votos_peronismo": 999,
+     "pct_peronismo": 41.5,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140366300,
+     "nombre": "ESCUELA ANGEL FAUSTO AVALOS",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 6,
+     "votos_validos": 1360,
+     "votos_peronismo": 556,
+     "pct_peronismo": 40.88,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140335300,
+     "nombre": "ESCUELA PRESIDENTE RIVADAVIA",
+     "barrio": "SAN VICENTE",
+     "n_mesas": 8,
+     "votos_validos": 1742,
+     "votos_peronismo": 712,
+     "pct_peronismo": 40.87,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 9
+  },
+  "005D": {
+   "nombre_circuito": "MALDONADO",
+   "escuelas": [
+    {
+     "cue": 140292000,
+     "nombre": "ESCUELA GENERAL MARTIN GUEMES",
+     "barrio": "MULLER",
+     "n_mesas": 8,
+     "votos_validos": 1692,
+     "votos_peronismo": 970,
+     "pct_peronismo": 57.33,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "009A": {
+   "nombre_circuito": "LA FRANCE",
+   "escuelas": [
+    {
+     "cue": 140296900,
+     "nombre": "ESCUELA MAHATMA GANDHI",
+     "barrio": "LA FRANCE",
+     "n_mesas": 7,
+     "votos_validos": 1588,
+     "votos_peronismo": 656,
+     "pct_peronismo": 41.31,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140297000,
+     "nombre": "COLEGIO PARROQUIAL CEFERINO NAMUNCURA",
+     "barrio": "LA FRANCE",
+     "n_mesas": 7,
+     "votos_validos": 1595,
+     "votos_peronismo": 628,
+     "pct_peronismo": 39.37,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "0011": {
+   "nombre_circuito": "AERONAUTICO",
+   "escuelas": [
+    {
+     "cue": 140308100,
+     "nombre": "ESCUELA ISABEL LA CATOLICA",
+     "barrio": "AERONAUTICO",
+     "n_mesas": 8,
+     "votos_validos": 1647,
+     "votos_peronismo": 995,
+     "pct_peronismo": 60.41,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140471700,
+     "nombre": "I.P.E.M. Nº 296 AMANCIO WILLIAMS",
+     "barrio": "VILLA UNION",
+     "n_mesas": 7,
+     "votos_validos": 1456,
+     "votos_peronismo": 668,
+     "pct_peronismo": 45.88,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "011H": {
+   "nombre_circuito": "QUEBRADA LAS ROSAS",
+   "escuelas": [
+    {
+     "cue": 140434400,
+     "nombre": "COLEGIO SAN PEDRO APOSTOL",
+     "barrio": "CHATEAU CARRERAS",
+     "n_mesas": 4,
+     "votos_validos": 838,
+     "votos_peronismo": 501,
+     "pct_peronismo": 59.79,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140308300,
+     "nombre": "ESCUELA REPUBLICA DE VENEZUELA",
+     "barrio": "CHATEAU CARRERAS",
+     "n_mesas": 8,
+     "votos_validos": 1882,
+     "votos_peronismo": 748,
+     "pct_peronismo": 39.74,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "009C": {
+   "nombre_circuito": "LOS PARAISOS",
+   "escuelas": [
+    {
+     "cue": 140431200,
+     "nombre": "COLEGIO MONSEÑOR FERMIN LAFITTE",
+     "barrio": "LOS PARAISOS",
+     "n_mesas": 9,
+     "votos_validos": 1948,
+     "votos_peronismo": 879,
+     "pct_peronismo": 45.12,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140413600,
+     "nombre": "ESCUELA PROVINCIA DE MISIONES",
+     "barrio": "ANA MARIA ZUMARAN",
+     "n_mesas": 9,
+     "votos_validos": 2016,
+     "votos_peronismo": 894,
+     "pct_peronismo": 44.35,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140311600,
+     "nombre": "I.P.E.M. Nº 155 JUAN JOSE PASO",
+     "barrio": "ANA MARIA ZUMARAN",
+     "n_mesas": 8,
+     "votos_validos": 1842,
+     "votos_peronismo": 815,
+     "pct_peronismo": 44.25,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140313500,
+     "nombre": "COLEGIO JUVENILIA",
+     "barrio": "ANA MARIA ZUMARAN",
+     "n_mesas": 7,
+     "votos_validos": 1523,
+     "votos_peronismo": 636,
+     "pct_peronismo": 41.76,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140397500,
+     "nombre": "MUTUALISMO ARGENTINO",
+     "barrio": "SARGENTO CABRAL",
+     "n_mesas": 6,
+     "votos_validos": 1396,
+     "votos_peronismo": 566,
+     "pct_peronismo": 40.54,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 5
+  },
+  "009B": {
+   "nombre_circuito": "LAS MARGARITAS",
+   "escuelas": [
+    {
+     "cue": 140410700,
+     "nombre": "ESCUELA MIGUEL RODRIGUEZ DE LA TORRE",
+     "barrio": "ALTO VERDE",
+     "n_mesas": 9,
+     "votos_validos": 2034,
+     "votos_peronismo": 785,
+     "pct_peronismo": 38.59,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140311700,
+     "nombre": "ESCUELA CONGRESO DE TUCUMAN",
+     "barrio": "LAS MARGARITAS",
+     "n_mesas": 6,
+     "votos_validos": 1385,
+     "votos_peronismo": 492,
+     "pct_peronismo": 35.52,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140411200,
+     "nombre": "I.P.E.M. Nº 35 RICARDO ROJAS",
+     "barrio": "ALTOS DE VILLA CABRERA",
+     "n_mesas": 7,
+     "votos_validos": 1671,
+     "votos_peronismo": 590,
+     "pct_peronismo": 35.31,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 3
+  },
+  "010C": {
+   "nombre_circuito": "COMERCIAL",
+   "escuelas": [
+    {
+     "cue": 140326400,
+     "nombre": "AZOR GRIMAUT (ED. COMUN Y ADULTOS)",
+     "barrio": "COMERCIAL",
+     "n_mesas": 7,
+     "votos_validos": 1590,
+     "votos_peronismo": 890,
+     "pct_peronismo": 55.97,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "012B": {
+   "nombre_circuito": "COLON",
+   "escuelas": [
+    {
+     "cue": 140398500,
+     "nombre": "ESCUELA DR. LUIS AUGUSTO CAEIRO",
+     "barrio": "CRISOL NORTE",
+     "n_mesas": 5,
+     "votos_validos": 1090,
+     "votos_peronismo": 671,
+     "pct_peronismo": 61.56,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140332400,
+     "nombre": "ESCUELA HILARIO ASCASUBI",
+     "barrio": "COLON",
+     "n_mesas": 8,
+     "votos_validos": 1799,
+     "votos_peronismo": 747,
+     "pct_peronismo": 41.52,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140394900,
+     "nombre": "I.P.E.M. Nº 150 JUAN LARREA",
+     "barrio": "SARMIENTO",
+     "n_mesas": 8,
+     "votos_validos": 1807,
+     "votos_peronismo": 737,
+     "pct_peronismo": 40.79,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140416100,
+     "nombre": "COLEGIO SAN PABLO APOSTOL",
+     "barrio": "COLON",
+     "n_mesas": 10,
+     "votos_validos": 2191,
+     "votos_peronismo": 863,
+     "pct_peronismo": 39.39,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140398400,
+     "nombre": "ESCUELA BARTOLOME HIDALGO",
+     "barrio": "SARMIENTO",
+     "n_mesas": 7,
+     "votos_validos": 1540,
+     "votos_peronismo": 602,
+     "pct_peronismo": 39.09,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140415800,
+     "nombre": "COLEGIO GABRIEL TABORIN",
+     "barrio": "CRISOL NORTE",
+     "n_mesas": 8,
+     "votos_validos": 1645,
+     "votos_peronismo": 625,
+     "pct_peronismo": 37.99,
+     "confianza": "pendiente_revision"
+    }
+   ],
+   "n_escuelas": 6
+  },
+  "011M": {
+   "nombre_circuito": "VALLE ESCONDIDO",
+   "escuelas": [
+    {
+     "cue": 140342200,
+     "nombre": "INSTITUTO TECNICO SALESIANO VILLADA",
+     "barrio": "VALLE ESCONDIDO",
+     "n_mesas": 6,
+     "votos_validos": 1629,
+     "votos_peronismo": 630,
+     "pct_peronismo": 38.67,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "014A": {
+   "nombre_circuito": "ARGUELLO NORTE",
+   "escuelas": [
+    {
+     "cue": 140477400,
+     "nombre": "ESCUELA JAVIER VILLAFAÑE",
+     "barrio": "AUTODROMO",
+     "n_mesas": 8,
+     "votos_validos": 1561,
+     "votos_peronismo": 1039,
+     "pct_peronismo": 66.56,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140355700,
+     "nombre": "ESCUELA NIÑAS DE AYOHUMA",
+     "barrio": "ARGUELLO NORTE",
+     "n_mesas": 8,
+     "votos_validos": 1745,
+     "votos_peronismo": 788,
+     "pct_peronismo": 45.16,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "013D": {
+   "nombre_circuito": "JARDIN ARENALES",
+   "escuelas": [
+    {
+     "cue": 140361300,
+     "nombre": "JULIO GONZALEZ",
+     "barrio": "GENERAL ARENALES",
+     "n_mesas": 5,
+     "votos_validos": 1044,
+     "votos_peronismo": 566,
+     "pct_peronismo": 54.21,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140454700,
+     "nombre": "I.P.E.A. N° 14 DR. CESAR CUESTAS CARNERO",
+     "barrio": "GENERAL ARENALES",
+     "n_mesas": 4,
+     "votos_validos": 853,
+     "votos_peronismo": 425,
+     "pct_peronismo": 49.82,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "014E": {
+   "nombre_circuito": "CERRO NORTE",
+   "escuelas": [
+    {
+     "cue": 140361900,
+     "nombre": "ESCUELA MODESTA RODRIGUEZ",
+     "barrio": "U.O.C.R.A.",
+     "n_mesas": 6,
+     "votos_validos": 1332,
+     "votos_peronismo": 578,
+     "pct_peronismo": 43.39,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140480500,
+     "nombre": "ESCUELA GERONIMO GRAGERA",
+     "barrio": "CERRO NORTE",
+     "n_mesas": 6,
+     "votos_validos": 1376,
+     "votos_peronismo": 576,
+     "pct_peronismo": 41.86,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "010D": {
+   "nombre_circuito": "CONGRESO",
+   "escuelas": [
+    {
+     "cue": 140411300,
+     "nombre": "I.P.E.M. Nº 183 PEDRO B. PALACIOS",
+     "barrio": "CONGRESO",
+     "n_mesas": 5,
+     "votos_validos": 1145,
+     "votos_peronismo": 574,
+     "pct_peronismo": 50.13,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140363000,
+     "nombre": "REPUBLICA DE ITALIA",
+     "barrio": "CONGRESO",
+     "n_mesas": 8,
+     "votos_validos": 1754,
+     "votos_peronismo": 877,
+     "pct_peronismo": 50.0,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "014L": {
+   "nombre_circuito": "VILLA BELGRANO",
+   "escuelas": [
+    {
+     "cue": 140392900,
+     "nombre": "ESCUELA RICARDO PALMA",
+     "barrio": "VILLA BELGRANO",
+     "n_mesas": 7,
+     "votos_validos": 1618,
+     "votos_peronismo": 481,
+     "pct_peronismo": 29.73,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "012E": {
+   "nombre_circuito": "FERREYRA",
+   "escuelas": [
+    {
+     "cue": 140407000,
+     "nombre": "ESCUELA LIBERTADOR GENERAL SAN MARTIN",
+     "barrio": "FERREYRA",
+     "n_mesas": 8,
+     "votos_validos": 1645,
+     "votos_peronismo": 987,
+     "pct_peronismo": 60.0,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140540800,
+     "nombre": "I.P.E.T. Nº 312 DALMACIO VELEZ SARSFIELD",
+     "barrio": "FERREYRA",
+     "n_mesas": 8,
+     "votos_validos": 1812,
+     "votos_peronismo": 905,
+     "pct_peronismo": 49.94,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "012A": {
+   "nombre_circuito": "CARCANO",
+   "escuelas": [
+    {
+     "cue": 140407200,
+     "nombre": "ESCUELA PROFESOR MIGUEL LUCIANI",
+     "barrio": "RAMON J. CARCANO",
+     "n_mesas": 10,
+     "votos_validos": 2172,
+     "votos_peronismo": 1411,
+     "pct_peronismo": 64.96,
+     "confianza": "verificado"
+    },
+    {
+     "cue": 140488600,
+     "nombre": "ESCUELA MARIA DEL TRANSITO CABANILLAS (Bº EL QUEBRACHO)",
+     "barrio": "EL QUEBRACHO",
+     "n_mesas": 8,
+     "votos_validos": 1709,
+     "votos_peronismo": 825,
+     "pct_peronismo": 48.27,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 2
+  },
+  "004D": {
+   "nombre_circuito": "VILLA EUCARISTICA",
+   "escuelas": [
+    {
+     "cue": 140442800,
+     "nombre": "COLEGIO FASTA VILLA EUCARISTICA",
+     "barrio": "VILLA EUCARISTICA",
+     "n_mesas": 10,
+     "votos_validos": 2601,
+     "votos_peronismo": 960,
+     "pct_peronismo": 36.91,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "006E": {
+   "nombre_circuito": "LA FLORESTA SUD",
+   "escuelas": [
+    {
+     "cue": 140525000,
+     "nombre": "ESC. NORMA QUARTINO",
+     "barrio": "LA FLORESTA",
+     "n_mesas": 4,
+     "votos_validos": 846,
+     "votos_peronismo": 582,
+     "pct_peronismo": 68.79,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  },
+  "010K": {
+   "nombre_circuito": "VICOR",
+   "escuelas": [
+    {
+     "cue": 140545100,
+     "nombre": "COLEGIO PRIVADO SAN ISIDRO",
+     "barrio": "PARQUE FUTURA",
+     "n_mesas": 4,
+     "votos_validos": 937,
+     "votos_peronismo": 506,
+     "pct_peronismo": 54.0,
+     "confianza": "verificado"
+    }
+   ],
+   "n_escuelas": 1
+  }
+ }
+}

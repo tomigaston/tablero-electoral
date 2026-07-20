@@ -607,6 +607,22 @@ const SolapaComparativas = ({ circuito, datos }) => {
   );
 };
 
+const SolapaEscuelas = ({ datos, votosEscuelasCircuitoData }) => {
+  if (!datos) return null;
+  const entrada = votosEscuelasCircuitoData?.circuitos?.[datos.Mapkey];
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Votos por escuela</h4>
+      <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>% de votos a Peronismo sobre votos válidos, por escuela con centro de votación en este circuito.</p>
+      {entrada ? (
+        <ListaVotosEscuelas escuelas={entrada.escuelas} promedioCapitalPct={votosEscuelasCircuitoData?.promedio_capital_pct} />
+      ) : (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados en este circuito.</div>
+      )}
+    </div>
+  );
+};
+
 // ============================================
 // ENCUESTAS DE CIRCUITO
 // ============================================
@@ -1225,6 +1241,68 @@ const ListaCruceColapsable = ({ titulo, items }) => {
   );
 };
 
+// Gradiente secuencial de un solo tono (no diverging): a más % de peronismo, más intensidad
+// del mismo rojo que ya usa COLORES_CATEGORIA.C ("Territorio hostil"), para mantener un único
+// vocabulario de color en todo el tablero. El promedio de Capital se marca aparte (línea
+// vertical), así que este color codifica solo la magnitud, no la comparación contra el promedio.
+function colorPeronismo(pct) {
+  const t = Math.max(0, Math.min(100, pct ?? 0)) / 100;
+  const desde = { r: 255, g: 235, b: 238 }; // rojo muy pálido
+  const hasta = { r: 183, g: 28, b: 28 };   // mismo rojo "text" de Categoria_v4 'C'
+  const r = Math.round(desde.r + (hasta.r - desde.r) * t);
+  const g = Math.round(desde.g + (hasta.g - desde.g) * t);
+  const b = Math.round(desde.b + (hasta.b - desde.b) * t);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+// Layout apilado (nombre+pct arriba, barra, detalle abajo) en vez de columnas de ancho
+// fijo: este mismo componente se usa tanto en la solapa de ficha completa (ancha) como
+// en PanelMiniBarrio (sidebar angosto, ~260px), y columnas fijas desbordarían ahí.
+const FilaVotoEscuela = ({ escuela, promedioCapitalPct }) => {
+  const pct = escuela.pct_peronismo;
+  const anchoPct = Math.max(0, Math.min(100, pct ?? 0));
+  const pendienteRevision = escuela.confianza === 'pendiente_revision';
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
+        <div title={escuela.nombre} style={{ fontSize: '11px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {pendienteRevision && <span title="Match pendiente de revisión, dato aproximado" style={{ color: '#F57F17' }}>⚠ </span>}
+          {escuela.nombre}
+        </div>
+        <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)', flexShrink: 0 }}>{pct != null ? `${pct.toFixed(1)}%` : '—'}</div>
+      </div>
+      <div style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: '5px', height: '10px', position: 'relative', border: pendienteRevision ? '1px dashed #F57F17' : 'none' }}>
+        <div style={{ width: `${anchoPct}%`, backgroundColor: colorPeronismo(pct), height: '100%', borderRadius: '4px' }} />
+        {promedioCapitalPct != null && (
+          <div
+            title={`Promedio Capital: ${promedioCapitalPct}%`}
+            style={{ position: 'absolute', left: `${Math.max(0, Math.min(100, promedioCapitalPct))}%`, top: '-2px', bottom: '-2px', width: '2px', backgroundColor: '#37474F' }}
+          />
+        )}
+      </div>
+      <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '3px' }}>
+        {escuela.votos_validos?.toLocaleString() ?? '—'} votos · {escuela.n_mesas ?? '—'} mesas
+      </div>
+    </div>
+  );
+};
+
+const ListaVotosEscuelas = ({ escuelas, promedioCapitalPct }) => {
+  if (!escuelas || escuelas.length === 0) {
+    return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados.</div>;
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+      {promedioCapitalPct != null && (
+        <div style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ width: '2px', height: '11px', backgroundColor: '#37474F' }} /> Promedio Capital: {promedioCapitalPct}%
+        </div>
+      )}
+      {escuelas.map(e => <FilaVotoEscuela key={e.cue} escuela={e} promedioCapitalPct={promedioCapitalPct} />)}
+    </div>
+  );
+};
+
 const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, coberturaData }) => {
   if (!datos) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
@@ -1264,7 +1342,7 @@ const TIPO_VISITA_COLOR = {
   'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, coberturaData, recorridosLookup }) => {
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, coberturaData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas }) => {
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -1280,6 +1358,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
   const obras = props.obras || [];
   const recorridos = recorridosLookup?.[key];
+  const votosEscuelas = votosEscuelasBarrioLookup?.[key];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -1358,11 +1437,22 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
           )}
         </div>
       )}
+
+      {votosEscuelasBarrioLookup && (
+        <div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Votos por escuela</div>
+          {votosEscuelas ? (
+            <ListaVotosEscuelas escuelas={votosEscuelas.escuelas} promedioCapitalPct={promedioCapitalPctEscuelas} />
+          ) : (
+            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados para este barrio.</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, coberturaData, recorridosLookup }) => (
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, coberturaData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -1371,7 +1461,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
         ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} coberturaData={coberturaData} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} coberturaData={coberturaData} recorridosLookup={recorridosLookup} />}
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} coberturaData={coberturaData} recorridosLookup={recorridosLookup} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPctEscuelas={promedioCapitalPctEscuelas} />}
     </div>
   </div>
 );
@@ -1727,6 +1817,9 @@ export default function Home() {
   const [pautaData] = useState(null); // reservado: sin fuente de datos todavía
   const [encuestasData, setEncuestasData] = useState(null);
   const [encuestasMetadata, setEncuestasMetadata] = useState(null);
+  const [escuelasData, setEscuelasData] = useState(null);
+  const [votosEscuelasCircuitoData, setVotosEscuelasCircuitoData] = useState(null);
+  const [votosEscuelasBarrioData, setVotosEscuelasBarrioData] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [mostrarInfo, setMostrarInfo] = useState(false);
@@ -1734,18 +1827,21 @@ export default function Home() {
   const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
   const [vistaExpandida, setVistaExpandida] = useState(false);
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
+  const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [panelTab, setPanelTab] = useState('circuito');
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, coberturaRes, encuestasRes, encuestasMetaRes] = await Promise.all([
+        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, coberturaRes, encuestasRes, encuestasMetaRes, escuelasRes, votosEscuelasCircuitoRes, votosEscuelasBarrioRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
           fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
           fetch('/data/circuito_barrios_cruce.json'),
           fetch('/data/recorridos_barrios.json'), fetch('/data/cobertura_circuitos.json'),
           fetch('/data/encuestas_circuitos.json'), fetch('/data/encuestas_metadata.json'),
+          fetch('/data/escuelas_capital.json'), fetch('/data/votos_escuelas_por_circuito.json'),
+          fetch('/data/votos_escuelas_por_barrio.json'),
         ]);
         setDatos(await datosRes.json()); setPartidos(await partidosRes.json());
         setBarrios(await barriosRes.json()); setGeoData(await geoRes.json());
@@ -1753,6 +1849,9 @@ export default function Home() {
         setCruceData(await cruceRes.json());
         setRecorridosData(await recorridosRes.json()); setCoberturaData(await coberturaRes.json());
         setEncuestasData(await encuestasRes.json()); setEncuestasMetadata(await encuestasMetaRes.json());
+        setEscuelasData(await escuelasRes.json());
+        setVotosEscuelasCircuitoData(await votosEscuelasCircuitoRes.json());
+        setVotosEscuelasBarrioData(await votosEscuelasBarrioRes.json());
       } catch (e) { console.error('Error cargando datos:', e); }
       setCargando(false);
     };
@@ -1800,6 +1899,18 @@ export default function Home() {
     return lookup;
   }, [recorridosData]);
 
+  // Los nombres de barrio de votos_escuelas_por_barrio.json vienen del catastro IDECOR,
+  // sin pasar por normalizarNombreBarrio (mismo motivo que recorridosLookup) — se normalizan
+  // acá para cruzar contra barriosGeoLookup.
+  const votosEscuelasBarrioLookup = useMemo(() => {
+    const lookup = {};
+    Object.entries(votosEscuelasBarrioData?.barrios || {}).forEach(([nombre, info]) => {
+      const key = normalizarNombreBarrio(nombre);
+      if (key) lookup[key] = info;
+    });
+    return lookup;
+  }, [votosEscuelasBarrioData]);
+
   const eventosPorCircuito = useMemo(
     () => construirEventosPorCircuito(datos, coberturaData, recorridosLookup, cruceData, pautaData),
     [datos, coberturaData, recorridosLookup, cruceData, pautaData]
@@ -1843,6 +1954,31 @@ export default function Home() {
   // actual no se toca (seguimos en el mismo circuito, solo mostrando otro barrio suyo).
   const handleSelectBarrio = (nombre) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); };
 
+  // Selección de barrio desde el buscador: a diferencia de "Otros barrios en este circuito"
+  // (que mantiene el circuito activo sin tocarlo), acá no hay circuito activo relevante que
+  // preservar — se deriva el circuito correspondiente al barrio (circuito_principal, con
+  // circuito_barrios_cruce.json como respaldo si falta) y se pide zoom sobre el barrio en el
+  // mapa (MapaCircuitos decide si puede, según si la capa Barrios está visible).
+  const handleSelectBarrioDesdeBusqueda = (nombreBarrio) => {
+    setBarrioSeleccionado(nombreBarrio);
+    setPanelTab('barrio');
+    setFiltroCategoria(null);
+
+    const key = normalizarNombreBarrio(nombreBarrio);
+    const props = barriosGeoLookup[key];
+    let circuitoRecord = null;
+    const mapkeyPrincipal = props?.circuito_principal?.split(' - ')[0]?.trim();
+    if (mapkeyPrincipal) circuitoRecord = datos.find(d => d.Mapkey === mapkeyPrincipal);
+    if (!circuitoRecord) {
+      const lista = cruceData?.barrio_to_circuitos?.[nombreBarrio];
+      const principal = lista?.find(c => c.orden_importancia === 1);
+      const mapkeyCruce = principal?.circuito?.split(' - ')[0]?.trim();
+      if (mapkeyCruce) circuitoRecord = datos.find(d => d.Mapkey === mapkeyCruce);
+    }
+    setCircuitoSeleccionado(circuitoRecord ? circuitoRecord.CircuitoKey : null);
+    setZoomBarrioSolicitado({ nombre: nombreBarrio, ts: Date.now() });
+  };
+
   // Click en el mapa: turf ya determinó geométricamente ambas selecciones de forma
   // independiente (ver ClickHandler en MapaCircuitos.js) — se aplican tal cual, sin cruce.
   const handleMapClick = (circuitoKey, nombreBarrio) => {
@@ -1870,6 +2006,7 @@ export default function Home() {
     { key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' },
     { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' },
     ...(encuestaCircuito ? [{ key: 'encuestas', label: 'Encuestas' }] : []),
+    { key: 'escuelas', label: 'Escuelas' },
   ];
   
   const exportarPDF = () => {
@@ -1933,7 +2070,7 @@ export default function Home() {
                       key={r.key}
                       onClick={() => {
                         if (r.tipo === 'circuito') handleSelectCircuito(r.circuito.CircuitoKey);
-                        else handleSelectBarrio(r.nombreBarrio);
+                        else handleSelectBarrioDesdeBusqueda(r.nombreBarrio);
                         setBusqueda('');
                       }}
                       style={{ padding: '14px 18px', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}
@@ -2005,6 +2142,7 @@ export default function Home() {
                       {solapaActiva === 'territorio' && <SolapaTerritorio circuito={circuitoSeleccionado} datos={datosCircuito} barrios={barrios} todosLosDatos={datos} onSelectCircuito={handleSelectCircuito} />}
                       {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
                       {solapaActiva === 'encuestas' && encuestaCircuito && <SolapaEncuestas encuesta={encuestaCircuito} metadata={encuestasMetadata} />}
+                      {solapaActiva === 'escuelas' && <SolapaEscuelas datos={datosCircuito} votosEscuelasCircuitoData={votosEscuelasCircuitoData} />}
                     </div>
                   </>
                 ) : (
@@ -2019,7 +2157,7 @@ export default function Home() {
 
               <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} escuelasData={escuelasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} />
                 </div>
               </div>
             </>
@@ -2027,7 +2165,7 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} escuelasData={escuelasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} />
                 </div>
               </div>
 
@@ -2047,6 +2185,8 @@ export default function Home() {
                     onSelectCircuito={handleSelectCircuito}
                     coberturaData={coberturaData}
                     recorridosLookup={recorridosLookup}
+                    votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
+                    promedioCapitalPctEscuelas={votosEscuelasBarrioData?.promedio_capital_pct}
                   />
                 </div>
               </div>

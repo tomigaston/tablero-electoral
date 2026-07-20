@@ -16,6 +16,9 @@ const COLORES_CATEGORIA = {
 };
 
 const COLOR_OBRA = '#5C6BC0';
+const COLOR_ESCUELA_CENTRO_VOTACION = '#1976D2';
+const COLOR_ESCUELA_SIN_VOTACION = '#9E9E9E';
+const COLOR_BORDE_PENDIENTE_REVISION = '#F57F17';
 
 // Normaliza nombres de barrio para cruzar obras_largo.json / recorridos_barrios.json
 // con barrios_geo.json (nombre_barrio): mismo texto pero con diferencias de espacios
@@ -32,6 +35,18 @@ function normalizarNombreBarrio(s) {
 // Desplaza obras que comparten el centroide de un mismo barrio en un patrón
 // circular, para que cada una quede como marker individual y clickeable.
 // Cuando en el futuro cada obra tenga su propia lat/lon, este paso deja de usarse.
+// El campo "nivel" de escuelas_capital.json viene como string con forma de array
+// JSON (ej. '["1. Común - Primario"]') en vez de array real — se parsea acá para
+// mostrarlo legible en el popup, con fallback al texto crudo si no parsea.
+function formatNivelEscuela(nivelRaw) {
+  if (!nivelRaw) return '—';
+  try {
+    const arr = JSON.parse(nivelRaw);
+    if (Array.isArray(arr)) return arr.join(', ');
+  } catch (e) { /* no era JSON parseable, se muestra tal cual */ }
+  return nivelRaw;
+}
+
 function offsetCentroide(index, total, lat, lon) {
   if (total <= 1) return [lat, lon];
   const radioGrados = 0.0012;
@@ -40,10 +55,40 @@ function offsetCentroide(index, total, lat, lon) {
   return [lat + radioGrados * Math.sin(angulo), lon + (radioGrados * Math.cos(angulo)) / correccionLon];
 }
 
-function MapController({ mapkeySeleccionado, geoJsonData }) {
+function MapController({ mapkeySeleccionado, geoJsonData, zoomBarrioSolicitado, barriosGeoData, barriosVisible }) {
   const map = useMap();
-  
+  const ultimoZoomBarrioRef = useRef(null);
+
   useEffect(() => {
+    // Prioridad: si hay un pedido de zoom a barrio nuevo (no aplicado todavía) y la
+    // capa Barrios está visible, centrar en el barrio y no seguir con la lógica de
+    // circuito. Si la capa no está visible (o no se encuentra el polígono), el pedido
+    // se da por consumido igual y se cae al comportamiento de zoom sobre circuito de
+    // siempre (que ya apunta al circuito correspondiente, calculado en pages/index.js).
+    if (
+      zoomBarrioSolicitado?.ts &&
+      zoomBarrioSolicitado.ts !== ultimoZoomBarrioRef.current &&
+      barriosVisible &&
+      barriosGeoData
+    ) {
+      const feature = barriosGeoData.features.find(f => f.properties?.nombre_barrio === zoomBarrioSolicitado.nombre);
+      if (feature && feature.geometry) {
+        try {
+          const L = require('leaflet');
+          const layer = L.geoJSON(feature);
+          const bounds = layer.getBounds();
+          if (bounds.isValid()) {
+            ultimoZoomBarrioRef.current = zoomBarrioSolicitado.ts;
+            map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+            return;
+          }
+        } catch (e) {
+          console.log('Error ajustando bounds de barrio');
+        }
+      }
+    }
+    if (zoomBarrioSolicitado?.ts) ultimoZoomBarrioRef.current = zoomBarrioSolicitado.ts;
+
     if (mapkeySeleccionado && geoJsonData) {
       const feature = geoJsonData.features.find(f => f.properties.circuito === mapkeySeleccionado);
       if (feature && feature.geometry) {
@@ -61,8 +106,8 @@ function MapController({ mapkeySeleccionado, geoJsonData }) {
     } else {
       map.setView([-31.42, -64.18], 12);
     }
-  }, [mapkeySeleccionado, geoJsonData, map]);
-  
+  }, [mapkeySeleccionado, geoJsonData, zoomBarrioSolicitado, barriosVisible, barriosGeoData, map]);
+
   return null;
 }
 
@@ -95,10 +140,10 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, escuelasData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado }) {
   const geoJsonRef = useRef(null);
 
-  const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true });
+  const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, escuelas: false });
   const toggleCapa = (capa) => setCapasActivas(prev => ({ ...prev, [capa]: !prev[capa] }));
 
   const geoJsonData = useMemo(() => {
@@ -142,6 +187,8 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
     });
     return resultado;
   }, [obrasData, barriosLookup]);
+
+  const escuelasParaMostrar = useMemo(() => escuelasData?.escuelas || [], [escuelasData]);
 
   const getBarrioStyle = (feature) => {
     const nombre = feature.properties?.nombre_barrio;
@@ -267,11 +314,31 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
           <input type="checkbox" checked={capasActivas.obras} onChange={() => toggleCapa('obras')} />
           Obras
         </label>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.5, cursor: 'not-allowed' }} title="Todavía sin datos">
-          <input type="checkbox" disabled />
-          Escuelas <span style={{ fontSize: '11px' }}>(próximamente)</span>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+          <input type="checkbox" checked={capasActivas.escuelas} onChange={() => toggleCapa('escuelas')} />
+          Escuelas
         </label>
       </div>
+
+      {capasActivas.escuelas && (
+        <div style={{ position: 'absolute', bottom: '10px', left: '210px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '190px' }}>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Escuelas</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_ESCUELA_CENTRO_VOTACION, border: '1px solid #fff', boxShadow: '0 0 0 1px ' + COLOR_ESCUELA_CENTRO_VOTACION, flexShrink: 0 }} />
+              <span style={{ fontSize: '9px', color: '#546E7A' }}>Centro de votación</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_ESCUELA_CENTRO_VOTACION, border: `1.5px dashed ${COLOR_BORDE_PENDIENTE_REVISION}`, flexShrink: 0 }} />
+              <span style={{ fontSize: '9px', color: '#546E7A' }}>Match pendiente de revisión</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_ESCUELA_SIN_VOTACION, border: '1px solid #fff', boxShadow: '0 0 0 1px ' + COLOR_ESCUELA_SIN_VOTACION, flexShrink: 0 }} />
+              <span style={{ fontSize: '9px', color: '#546E7A' }}>Escuela sin centro de votación</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {coloresCategoria && (
         <div style={{ position: 'absolute', bottom: '10px', left: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '190px' }}>
@@ -313,7 +380,44 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
             </Popup>
           </CircleMarker>
         ))}
-        <MapController mapkeySeleccionado={mapkeySeleccionado} geoJsonData={geoJsonData} />
+        {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
+          const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
+          const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
+          return (
+            <CircleMarker
+              key={`escuela-${esc.cue}`}
+              center={[esc.lat, esc.lon]}
+              radius={5}
+              pathOptions={{
+                color: pendienteRevision ? COLOR_BORDE_PENDIENTE_REVISION : '#fff',
+                weight: pendienteRevision ? 1.5 : 1,
+                dashArray: pendienteRevision ? '2,2' : null,
+                fillColor: colorRelleno,
+                fillOpacity: 0.9,
+              }}
+            >
+              <Popup offset={[0, -6]}>
+                <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '230px' }}>
+                  <strong style={{ fontSize: '13px' }}>{esc.nombre}</strong>
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{esc.barrio}</div>
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>{esc.domicilio || '—'}</div>
+                  {esc.es_centro_votacion ? (
+                    <>
+                      <div style={{ fontSize: '12px', marginTop: '6px' }}>Mesas: <strong>{esc.n_mesas}</strong> · Votos válidos: <strong>{esc.votos_validos?.toLocaleString()}</strong></div>
+                      <div style={{ fontSize: '12px', marginTop: '2px' }}>% Peronismo: <strong style={{ color: COLOR_ESCUELA_CENTRO_VOTACION }}>{esc.pct_peronismo?.toFixed(1)}%</strong></div>
+                      {esc.confianza === 'pendiente_revision' && (
+                        <div style={{ fontSize: '11px', color: COLOR_BORDE_PENDIENTE_REVISION, marginTop: '5px' }}>⚠ Match de escuela pendiente de revisión, dato aproximado.</div>
+                      )}
+                    </>
+                  ) : (
+                    <div style={{ fontSize: '12px', marginTop: '6px' }}>Nivel: {formatNivelEscuela(esc.nivel)}</div>
+                  )}
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
+        <MapController mapkeySeleccionado={mapkeySeleccionado} geoJsonData={geoJsonData} zoomBarrioSolicitado={zoomBarrioSolicitado} barriosGeoData={barriosGeoData} barriosVisible={capasActivas.barrios} />
         <ClickHandler geoJsonData={geoJsonData} barriosGeoData={barriosGeoData} datosLookup={datosLookup} onMapClick={onMapClick} />
       </MapContainer>
     </div>

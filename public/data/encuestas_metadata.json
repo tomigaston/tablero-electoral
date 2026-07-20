@@ -123,6 +123,42 @@
         "Si": 1,
         "No": 2
       }
+    },
+    "Mejoras en bacheos": {
+      "tipo": "Mejoras",
+      "pregunta_original": "¿Advierte mejoras en bacheos en su barrio?",
+      "orden_categorias": {
+        "Si, mucho": 1,
+        "Si, algo": 2,
+        "No": 3
+      }
+    },
+    "Mejoras en alumbrado público": {
+      "tipo": "Mejoras",
+      "pregunta_original": "¿Advierte mejoras en alumbrado público en su barrio?",
+      "orden_categorias": {
+        "Si, mucho": 1,
+        "Si, algo": 2,
+        "No": 3
+      }
+    },
+    "Mejoras en espacios públicos": {
+      "tipo": "Mejoras",
+      "pregunta_original": "¿Advierte mejoras en el estado de los espacios públicos en su barrio?",
+      "orden_categorias": {
+        "Si, mucho": 1,
+        "Si, algo": 2,
+        "No": 3
+      }
+    },
+    "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+      "tipo": "Mejoras",
+      "pregunta_original": "¿Advierte mejoras en el ordenamiento de naranjitas y limpiavidrios?",
+      "orden_categorias": {
+        "Si, mucho": 1,
+        "Si, algo": 2,
+        "No": 3
+      }
     }
   },
   "umbral_variacion_pp": 2.5
