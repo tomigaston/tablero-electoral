@@ -650,9 +650,10 @@ function buscarEncuestaCircuito(encuestasData, circuitoKey) {
 // la misma forma "vacía" que antes daba el snapshot (encuestado: false, 0 rondas).
 function coberturaDesdeEncuesta(encuestasData, circuitoKey) {
   const e = buscarEncuestaCircuito(encuestasData, circuitoKey);
+  const cantidadRondas = e?.cantidad_rondas || 0;
   return {
-    encuestado: !!e,
-    cantidad_rondas: e?.cantidad_rondas || 0,
+    encuestado: cantidadRondas > 0,
+    cantidad_rondas: cantidadRondas,
     fechas_rondas: (e?.rondas || []).map(r => r.fecha),
   };
 }
