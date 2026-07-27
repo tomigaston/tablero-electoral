@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { useState } from 'react';
 import Head from 'next/head';
 import dataManifest from '../../lib/data-manifest';
 
@@ -45,6 +48,49 @@ async function obtenerUltimaActualizacion(archivo, token) {
   }
 }
 
+// Orden natural de código de circuito: separa la parte numérica de la parte de
+// letras (sin importar el orden en que aparezcan, ej. "13A" o "A14") para que
+// "4A, 4B... 5A... 14, 14A" quede en un orden legible, no alfabético plano.
+function compararCircuitoKey(a, b) {
+  const parse = (k) => ({
+    num: parseInt((k.match(/\d+/) || ['0'])[0], 10),
+    letras: k.replace(/\d+/g, ''),
+  });
+  const pa = parse(String(a));
+  const pb = parse(String(b));
+  if (pa.num !== pb.num) return pa.num - pb.num;
+  return pa.letras.localeCompare(pb.letras);
+}
+
+// Lee y aplana, en el servidor, los dos JSON de producción (los mismos que
+// consume el tablero en runtime — no un resumen aparte que se pueda
+// desincronizar). El filtro de texto se aplica después, en el cliente.
+function leerVisitasAplanadas() {
+  const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'data', 'recorridos_barrios.json'), 'utf8'));
+  return Object.entries(raw)
+    .flatMap(([barrio, info]) =>
+      (info.visitas || []).map((v) => ({
+        barrio,
+        fecha: v.fecha || '',
+        tipo_visita: v.tipo_visita || '',
+        contacto_vecinos: v.contacto_vecinos || '',
+        link: v.link || '',
+      }))
+    )
+    .sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+}
+
+function leerEncuestasAplanadas() {
+  const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'data', 'encuestas_circuitos.json'), 'utf8'));
+  return Object.entries(raw)
+    .map(([circuito, info]) => ({
+      circuito,
+      cantidad_rondas: info.cantidad_rondas || 0,
+      fechas: (info.rondas || []).map((r) => r.fecha),
+    }))
+    .sort((a, b) => compararCircuitoKey(a.circuito, b.circuito));
+}
+
 export async function getServerSideProps() {
   const token = process.env.GITHUB_TOKEN || '';
   const fechas = await Promise.all(
@@ -54,7 +100,9 @@ export async function getServerSideProps() {
     ...entry,
     ultimaActualizacion: fechas[i],
   }));
-  return { props: { manifest } };
+  const visitas = leerVisitasAplanadas();
+  const encuestas = leerEncuestasAplanadas();
+  return { props: { manifest, visitas, encuestas } };
 }
 
 function formatRelativo(iso) {
@@ -78,8 +126,19 @@ function formatFechaCompleta(iso) {
   return new Date(iso).toLocaleString('es-AR', { dateStyle: 'long', timeStyle: 'short' });
 }
 
+// Case-insensitive y sin tildes, para que "cordoba"/"Córdoba"/"CÓRDOBA" matcheen igual.
+function normalizarBusqueda(str) {
+  return (str || '')
+    .toString()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
 const thStyle = { padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', fontSize: '12px' };
 const tdStyle = { padding: '10px 14px', verticalAlign: 'top', color: 'var(--text-primary)' };
+const searchInputStyle = { padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '13px', width: '280px', maxWidth: '100%' };
 
 const BadgeEstado = ({ estado }) => {
   const c = ESTADO_COLOR[estado] || ESTADO_COLOR.activo;
@@ -91,7 +150,137 @@ const BadgeEstado = ({ estado }) => {
   );
 };
 
-export default function DataStatus({ manifest }) {
+const UltimaActualizacion = ({ entry }) => (
+  <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
+    Última actualización real:{' '}
+    {entry?.ultimaActualizacion ? (
+      <span title={formatFechaCompleta(entry.ultimaActualizacion)} style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+        {formatRelativo(entry.ultimaActualizacion)}
+      </span>
+    ) : (
+      <span style={{ fontWeight: 500 }}>sin verificar</span>
+    )}
+  </span>
+);
+
+const SeccionHeader = ({ titulo, archivo, entry, busqueda, setBusqueda, placeholder, total, mostrados }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
+    <div>
+      <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>{titulo}</h2>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <code style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>public/data/{archivo}</code>
+        <span style={{ color: 'var(--border)' }}>·</span>
+        <UltimaActualizacion entry={entry} />
+        <span style={{ color: 'var(--border)' }}>·</span>
+        <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{mostrados} de {total}</span>
+      </div>
+    </div>
+    <input
+      type="text"
+      value={busqueda}
+      onChange={(e) => setBusqueda(e.target.value)}
+      placeholder={placeholder}
+      style={searchInputStyle}
+    />
+  </div>
+);
+
+const TablaVisitas = ({ visitas, entry }) => {
+  const [busqueda, setBusqueda] = useState('');
+  const filtro = normalizarBusqueda(busqueda);
+  const filtradas = filtro ? visitas.filter((v) => normalizarBusqueda(v.barrio).includes(filtro)) : visitas;
+
+  return (
+    <div style={{ marginBottom: '32px' }}>
+      <SeccionHeader
+        titulo="Visitas del Gobernador"
+        archivo="recorridos_barrios.json"
+        entry={entry}
+        busqueda={busqueda}
+        setBusqueda={setBusqueda}
+        placeholder="Buscar por barrio…"
+        total={visitas.length}
+        mostrados={filtradas.length}
+      />
+      <div style={{ overflowX: 'auto', maxHeight: '480px', overflowY: 'auto', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <thead>
+            <tr style={{ backgroundColor: 'var(--bg-secondary)', position: 'sticky', top: 0 }}>
+              <th style={thStyle}>Barrio</th>
+              <th style={thStyle}>Fecha</th>
+              <th style={thStyle}>Tipo</th>
+              <th style={thStyle}>Contacto vecinos</th>
+              <th style={thStyle}>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtradas.length === 0 ? (
+              <tr><td style={{ ...tdStyle, color: 'var(--text-tertiary)' }} colSpan={5}>Sin resultados para "{busqueda}".</td></tr>
+            ) : filtradas.map((v, i) => (
+              <tr key={`${v.barrio}-${v.fecha}-${i}`} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ ...tdStyle, fontWeight: 500 }}>{v.barrio}</td>
+                <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>{v.fecha || '—'}</td>
+                <td style={tdStyle}>{v.tipo_visita || '—'}</td>
+                <td style={tdStyle}>{v.contacto_vecinos || '—'}</td>
+                <td style={tdStyle}>
+                  {v.link ? <a href={v.link} target="_blank" rel="noreferrer" style={{ color: '#1976D2' }}>Ver nota</a> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+const TablaEncuestas = ({ encuestas, entry }) => {
+  const [busqueda, setBusqueda] = useState('');
+  const filtro = normalizarBusqueda(busqueda);
+  const filtradas = filtro ? encuestas.filter((e) => normalizarBusqueda(e.circuito).includes(filtro)) : encuestas;
+
+  return (
+    <div style={{ marginBottom: '32px' }}>
+      <SeccionHeader
+        titulo="Encuestas por Circuito"
+        archivo="encuestas_circuitos.json"
+        entry={entry}
+        busqueda={busqueda}
+        setBusqueda={setBusqueda}
+        placeholder="Buscar por código de circuito…"
+        total={encuestas.length}
+        mostrados={filtradas.length}
+      />
+      <div style={{ overflowX: 'auto', maxHeight: '480px', overflowY: 'auto', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <thead>
+            <tr style={{ backgroundColor: 'var(--bg-secondary)', position: 'sticky', top: 0 }}>
+              <th style={thStyle}>Circuito</th>
+              <th style={thStyle}>Cantidad de rondas</th>
+              <th style={thStyle}>Fechas de cada ronda</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtradas.length === 0 ? (
+              <tr><td style={{ ...tdStyle, color: 'var(--text-tertiary)' }} colSpan={3}>Sin resultados para "{busqueda}".</td></tr>
+            ) : filtradas.map((e) => (
+              <tr key={e.circuito} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ ...tdStyle, fontFamily: 'monospace', fontWeight: 500 }}>{e.circuito}</td>
+                <td style={tdStyle}>{e.cantidad_rondas}</td>
+                <td style={tdStyle}>{e.fechas.length > 0 ? e.fechas.join(', ') : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default function DataStatus({ manifest, visitas, encuestas }) {
+  const entryVisitas = manifest.find((m) => m.archivo === 'recorridos_barrios.json');
+  const entryEncuestas = manifest.find((m) => m.archivo === 'encuestas_circuitos.json');
+
   return (
     <>
       <Head>
@@ -141,6 +330,11 @@ export default function DataStatus({ manifest }) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div style={{ marginTop: '40px' }}>
+          <TablaVisitas visitas={visitas} entry={entryVisitas} />
+          <TablaEncuestas encuestas={encuestas} entry={entryEncuestas} />
         </div>
       </div>
     </>
