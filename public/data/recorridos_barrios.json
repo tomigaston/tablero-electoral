@@ -1,477 +1,9 @@
 {
-  "VILLA EL LIBERTADOR": {
-    "total_visitas": 6,
-    "visitas": [
-      {
-        "fecha": "2024-02-09",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-de-los-festejos-por-los-40-anos-de-medea/",
-        "info": "El gobernador Martín Llaryora participó de los festejos por los 40 años de MEDEA (Ministerio Evangelístico Dios es Amor), ubicado en barrio Villa el Libertador de la capital provincial."
-      },
-      {
-        "fecha": "2024-04-26",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/villa-el-libertador-el-100-por-ciento-de-sus-vecinos-ya-pueden-acceder-al-servicio-de-cloacas/",
-        "info": "El gobernador Llaryora y el intendente Passerini inauguraron la segunda etapa de las obras que benefician a 30 mil habitantes de la zona sur de la ciudad de Córdoba."
-      },
-      {
-        "fecha": "2025-05-25",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/la-universidad-provincial-tendra-una-sede-en-villa-el-libertador/",
-        "info": "Encuentro con Instituciones y anuncio creación de la Sede Regional Zona Sur de la UPC"
-      },
-      {
-        "fecha": "2025-08-17",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobierno/llaryora-y-passerini-encabezaron-el-acto-por-el-75-aniversario-de-villa-el-libertador/",
-        "info": "Desfile 75° aniversario Villa Libertador"
-      },
-      {
-        "fecha": "2026-02-12",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/comenzo-la-construccion-de-la-sede-de-la-universidad-provincial-de-villa-libertador/",
-        "info": "UPC Villa libertador"
-      },
-      {
-        "fecha": "2026-06-16",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-la-construccion-de-la-nueva-sede-de-la-universidad-provincial-en-el-sur-de-la-ciudad-capital/",
-        "info": "Visita UPC sede Villa libertador"
-      }
-    ]
-  },
-  "AMPLIACION ROSEDAL": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2024-02-19",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": "https://www.facebook.com/pjcordobacapital/videos/llaryora-con-el-lagarto-defenderlaeducaci%C3%B3n/3583425268585311/",
-        "info": "Lo tengo en agenda como: Visita de obra de educación. No está en el portal de prensa pero hay una nota para el Lagarto"
-      }
-    ]
-  },
-  "POLICIAL": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2024-02-22",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "NO",
-        "link": null,
-        "info": "Visita Obra Hospital de Noroeste (No se encuentra en el portal de prensa)"
-      },
-      {
-        "fecha": "2026-01-27",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-visito-la-obra-del-nuevo-hospital-del-noroeste-acompanado-por-vecinos-del-sector/",
-        "info": "obra del nuevo Hospital del Noroeste"
-      }
-    ]
-  },
-  "PARQUE CHATEAU CARRERAS": {
-    "total_visitas": 3,
-    "visitas": [
-      {
-        "fecha": "2024-03-26",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/fuerte-apoyo-de-llaryora-a-la-policia-de-cordoba-en-la-lucha-contra-la-delincuencia/",
-        "info": "Entrega de certificados - Diplomatura en DD.HH"
-      },
-      {
-        "fecha": "2024-06-13",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-dieron-inicio-a-la-iv-cumbre-mundial-de-economia-circular/",
-        "info": "Llaryora y Passerini dieron inicio a la IV Cumbre Mundial de Economía Circular"
-      },
-      {
-        "fecha": "2026-05-29",
-        "tipo_visita": null,
-        "contacto_vecinos": null,
-        "link": "https://andigital.com.ar/nota/141202/pulso-tierra-federacion-agraria-puso-a-la-innovacion-en-el-centro-del-futuro-productivo/",
-        "info": "Federacion Agraria - Busso (Feriar)"
-      }
-    ]
-  },
-  "QUINTAS DE ARGUELLO": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2024-04-19",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-supervisaron-el-avance-de-obra-de-un-desague-que-beneficiara-a-190-mil-vecinos/",
-        "info": "Llaryora y Passerini supervisaron el avance de obra de un desagüe que beneficiará a 190 mil vecinos"
-      },
-      {
-        "fecha": "2025-02-04",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/capital-con-la-inauguracion-del-polideportivo-numero-61-la-provincia-consolida-la-integracion-social/",
-        "info": "Polideportivo provincial"
-      }
-    ]
-  },
-  "SMATA": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2024-05-10",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-puso-en-marcha-el-plan-integral-para-la-primera-infancia/",
-        "info": "Plan integral de la primera infancia"
-      },
-      {
-        "fecha": "2026-07-06",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/capital-los-barrios-smata-y-posta-de-vargas-ya-tienen-alumbrado-publico-inteligente/",
-        "info": "El gobernador Martín Llaryora y el intendente Daniel Passerini inauguraron el nuevo sistema de alumbrado público inteligente en los barrios Smata y Posta de Vargas"
-      }
-    ]
-  },
-  "GENERAL BUSTOS": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2024-05-10",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-y-passerini-recorrieron-el-nuevo-estadio-de-atenas/",
-        "info": "Encuentro en ATENAS"
-      }
-    ]
-  },
-  "CRISOL NORTE": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2024-05-11",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://www.instagram.com/reel/C7ASSF5RxpI/?utm_source=ig_web_copy_link",
-        "info": "Encuentro de Jóvenes Concejales PJ CBA"
-      }
-    ]
-  },
-  "CHATEAU CARRERAS": {
-    "total_visitas": 24,
-    "visitas": [
-      {
-        "fecha": "08/10/0205",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-hicimos-la-inversion-mas-grande-en-infraestructura-policial-desde-la-vuelta-de-la-democracia/",
-        "info": "Entrega de 400 nuevas camionetas- Kempes"
-      },
-      {
-        "fecha": "2024-06-02",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/el-desafio-ruta-40-puso-primera-en-cordoba/",
-        "info": "El Desafío Ruta 40 puso primera en Córdoba. La ceremonia de largada tuvo lugar en el Parque del Chateau y fue encabezada por el gobernador Martín Llaryora."
-      },
-      {
-        "fecha": "2024-11-28",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-destaco-el-rol-social-y-cultural-de-los-clubes-de-basquet-de-la-provincia/",
-        "info": "Anuncio de la construcción de 50 polideportivos en toda la Provincia"
-      },
-      {
-        "fecha": "2024-12-03",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/seguridad/la-policia-de-cordoba-suma-720-nuevos-efectivos/",
-        "info": "Egreso 720 policias"
-      },
-      {
-        "fecha": "2024-12-09",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/ante-la-daia-llaryora-ratifico-su-apoyo-a-ley-de-juicio-en-ausencia-contra-el-terrorismo/",
-        "info": "El gobernador Martin Llaryora participó del acto de asunción de las nuevas autoridades de la Delegación de Asociaciones Israelitas Argentinas (DAIA) Central y local."
-      },
-      {
-        "fecha": "2025-02-22",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Baile más grande del universo- La mona Jimenez en el Kempes"
-      },
-      {
-        "fecha": "2025-03-17",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/las-guardias-locales-ya-estan-presentes-en-100-municipios-y-comunas/",
-        "info": "Programa guardias locales"
-      },
-      {
-        "fecha": "2025-03-20",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/en-2025-la-provincia-destinara-3-000-millones-para-programas-de-discapacidad/",
-        "info": "Acto lanzamiento programa c/instituciones de discapacidad-la Provincia destinará $3.000 millones para programas de discapacidad"
-      },
-      {
-        "fecha": "2025-03-27",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/junto-a-fuerzas-provinciales-y-federales-llaryora-y-bullrich-cerraron-el-curso-avanzado-en-la-lucha-contra-el-narcotrafico/",
-        "info": "Cierre curso Narcotráfico + Nación Patricia Bulrich"
-      },
-      {
-        "fecha": "2025-04-29",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/acompanado-por-mas-de-400-intendentes-y-jefes-comunales-llaryora-firmo-el-fondo-federal-cordobes/",
-        "info": "Reunión Intendentes"
-      },
-      {
-        "fecha": "2025-05-01",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Festival Nacional del Cuarteto- Kempes"
-      },
-      {
-        "fecha": "2025-06-27",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/iglesias-evangelicas-de-la-provincia-podran-acceder-a-la-personeria-religiosa/",
-        "info": "Congreso del Concejo Pastoral Evangélicos (centro de convenciones)"
-      },
-      {
-        "fecha": "2025-07-01",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/ante-mas-de-5-500-asistentes-llaryora-inauguro-la-conferencia-climatica-internacional/ ; https://prensa.cba.gov.ar/gobernador/conferencia-climatica-internacional-llaryora-encabezo-la-mesa-federal-con-referentes-ambientales-de-todo-el-pais/ ; https://prensa.cba.gov.ar/gobernador/conferencia-climatica-internacional-provincias-suscribieron-el-compromiso-regional/",
-        "info": "Congreso internacional de cambio climático. (Feriar Bustos)"
-      },
-      {
-        "fecha": "2025-07-24",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-anuncio-creditos-por-3-400-millones-para-impulsar-a-emprendedores-locales/",
-        "info": "Apertura Emprende Day"
-      },
-      {
-        "fecha": "2025-08-07",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-destaco-el-potencial-de-la-industria-automotriz-cordobesa-en-la-apertura-del-fiac/",
-        "info": "FIAC - Apertura Foro Automotriz"
-      },
-      {
-        "fecha": "2025-08-11",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-la-economia-tiene-que-estar-al-servicio-del-hombre-y-no-el-hombre-al-servicio-de-la-economia/",
-        "info": "Apertura - Congreso Nacional de Cooperativas y Mutuales"
-      },
-      {
-        "fecha": "2025-08-16",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/con-los-pumas-all-blacks-cordoba-vivio-una-fiesta-historica/",
-        "info": "Partido All Blacks rugby"
-      },
-      {
-        "fecha": "2025-08-27",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/parques-industriales-llaryora-pondero-el-modelo-productivo-cordobes/",
-        "info": "Expo parques Industriales"
-      },
-      {
-        "fecha": "2025-09-02",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": null,
-        "info": "Coloquio UIC + UIA"
-      },
-      {
-        "fecha": "2025-09-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://deportes.cba.gov.ar/llaryora-reinauguro-la-cancha-de-hockey-soledad-garcia/",
-        "info": "Inauguración cancha de Hockey kempes con Las Leonas"
-      },
-      {
-        "fecha": "2025-10-08",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/anoche-llaryora-encabezo-el-lanzamiento-de-la-temporada-de-verano-2025-2026-de-la-provincia/",
-        "info": "Turismo - Lanzamiento temporada de verano"
-      },
-      {
-        "fecha": "2025-11-14",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-del-aniversario-de-canal-c-y-showsport/",
-        "info": "30° aniversario ShowSport + 20° canal C"
-      },
-      {
-        "fecha": "2026-06-19",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-tomo-juramento-de-fidelidad-a-la-bandera-nacional-a-cadetes-de-la-policia-el-servicio-penitenciario-y-la-fuerza-policial-antinarcotrafico/",
-        "info": "Jura de la Bandera - Policia de la Pcia + Penitenciarios + FPA"
-      },
-      {
-        "fecha": "2026-07-03",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-acompano-a-los-pumas-en-el-ultimo-entrenamiento-de-cara-al-partido-con-escocia/",
-        "info": "Llaryora acompañó a Los Pumas en el último entrenamiento de cara al partido con Escocia"
-      }
-    ]
-  },
-  "JARDIN": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2024-06-04",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://cordoba.gob.ar/llaryora-anuncio-acciones-para-reforzar-el-patrullaje-preventivo-150-nuevos-moviles-y-1000-cadetes-se-suman-a-las-fuerzas-de-la-policia-en-la-ciudad/",
-        "info": "Llaryora anunció acciones para reforzar el patrullaje preventivo: 150 nuevos móviles y 1000 cadetes se suman a las fuerzas de la policía en la ciudad"
-      },
-      {
-        "fecha": "2025-09-16",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Comedores - Laura Jure (quality)"
-      }
-    ]
-  },
-  "LAS PALMAS": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2024-06-18",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-tomo-juramento-a-la-bandera-a-cadetes-de-la-policia-y-el-servicio-penitenciario/",
-        "info": "Llaryora tomó juramento a la bandera a cadetes de la Policía y el Servicio Penitenciario"
-      }
-    ]
-  },
-  "FERREYRA": {
-    "total_visitas": 4,
-    "visitas": [
-      {
-        "fecha": "2024-11-14",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/con-creditos-bancor-la-municipalidad-de-cordoba-adquirio-20-colectivos-0km-a-gnc/",
-        "info": "Entrega de 6 mil millones al municipio de Córdoba Capital"
-      },
-      {
-        "fecha": "2025-05-13",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/stellantis-inicio-en-cordoba-la-produccion-de-su-pick-up-es-la-mejor-noticia-industrial-que-argentina-tiene-en-mucho-tiempo-sostuvo-llaryora/",
-        "info": "Fiat Argentina- Lanzamiento nueva camioneta"
-      },
-      {
-        "fecha": "2025-07-28",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-anuncio-la-rebaja-a-cero-de-ingresos-brutos-para-empresas-logisticas-que-den-a-cordoba-beneficios-al-transporte-aereo-o-maritimo/",
-        "info": "Lanzamiento Puerto Seco"
-      },
-      {
-        "fecha": "2025-10-13",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-las-exenciones-impositivas-que-cordoba-aplica-generan-trabajo-y-desarrollo/",
-        "info": "Stellantis - lanzamiento y Presentación nueva camioneta a fabricar en córdoba"
-      }
-    ]
-  },
-  "NUEVA CORDOBA": {
-    "total_visitas": 7,
-    "visitas": [
-      {
-        "fecha": "2024-12-07",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/una-multitud-acompano-el-encendido-del-arbol-de-navidad-mas-grande-de-argentina/",
-        "info": "Encendido árbol de navidad"
-      },
-      {
-        "fecha": "2024-12-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/la-provincia-destinara-5-mil-millones-para-impulsar-el-desarrollo-del-sector-audiovisual-cordobes/",
-        "info": "La Provincia destinará $ 5 mil millones para impulsar el desarrollo del sector audiovisual cordobés"
-      },
-      {
-        "fecha": "2025-03-28",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/egresaron-2-400-acompanantes-comunitarios-contra-la-violencia-de-genero/",
-        "info": "Entrega de Certif. Diplomatura en Acompañantes Comunitarias Contra la violencia de Género"
-      },
-      {
-        "fecha": "2025-05-12",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-sostenemos-un-estado-con-superavit-y-la-gente-adentro/",
-        "info": "Reunión Jubilados, Capital- Lili Montero: presentación de un programa de fortalecimiento a Centros de Jubilados"
-      },
-      {
-        "fecha": "2025-09-12",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://cordoba.gob.ar/passerini-y-llaryora-acompanaron-a-feriantes-en-un-multitudinario-encuentro-de-los-paseos-populares/",
-        "info": "Feriantes: evento con Psserini y Jure en Qality Arena"
-      },
-      {
-        "fecha": "2025-11-02",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/ante-mas-de-50-lideres-mundiales-llaryora-inauguro-el-intercambio-para-la-competitividad-de-las-americas-impulsado-por-oea/",
-        "info": "Apertura ACE- Palacio Ferreyra"
-      },
-      {
-        "fecha": "2026-07-03",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-el-avance-de-la-renovacion-integral-del-parque-de-las-tejas/",
-        "info": "Llaryora supervisó el avance de la renovación integral del Parque de las Tejas"
-      }
-    ]
-  },
-  "PARQUE REPUBLICA": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2024-12-10",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-inaugurara-un-polideportivo-social-cada-15-dias-en-la-ciudad-de-cordoba/",
-        "info": "El Gobernador puso en funcionamiento un nuevo polideportivo en barrio Parque República."
-      }
-    ]
-  },
   "AEROPUERTO": {
     "total_visitas": 6,
     "visitas": [
       {
+        "id": 226,
         "fecha": "2024-12-20",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
@@ -479,6 +11,7 @@
         "info": "Inauguracion Nuevo edificio Bolsa de Comercio"
       },
       {
+        "id": 349,
         "fecha": "2025-06-25",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
@@ -486,13 +19,15 @@
         "info": "CEO de Air Europa- Air Europa sumó una nueva frecuencia para su ruta Córdoba – Madrid"
       },
       {
+        "id": 403,
         "fecha": "2025-08-25",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
         "link": null,
-        "info": "Quorum con el Ministro Calvo"
+        "info": "Quorum con el Ministro Calvo "
       },
       {
+        "id": 405,
         "fecha": "2025-08-30",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
@@ -500,6 +35,7 @@
         "info": "Acto Militancia PJ Capital con Schiaretti"
       },
       {
+        "id": 455,
         "fecha": "2025-10-23",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
@@ -507,6 +43,7 @@
         "info": "La Voz - Streaming"
       },
       {
+        "id": 462,
         "fecha": "2025-11-03",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
@@ -515,10 +52,93 @@
       }
     ]
   },
+  "ALBERDI": {
+    "total_visitas": 7,
+    "visitas": [
+      {
+        "id": 166,
+        "fecha": "2024-09-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://www.perfil.com/noticias/cordoba/llaryora-en-camarco-en-esta-provincia-las-maquinas-no-paran.phtml",
+        "info": "Comarco Córdoba - \"Jornada de Infraestructura\""
+      },
+      {
+        "id": 170,
+        "fecha": "2024-09-23",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/la-provincia-lanzo-el-cluster-de-investigacion-en-salud-humana/",
+        "info": "La Provincia lanzó el clúster de investigación en salud humana"
+      },
+      {
+        "id": 366,
+        "fecha": "2025-07-03",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-anuncio-un-fondo-10-mil-millones-para-emprendimientos-innovadores/",
+        "info": "Zuchovicki, pte. de BYMA"
+      },
+      {
+        "id": 367,
+        "fecha": "2025-07-03",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-anuncio-un-fondo-10-mil-millones-para-emprendimientos-innovadores/",
+        "info": "Foro Capital Emprendendor - Acosta"
+      },
+      {
+        "id": 401,
+        "fecha": "2025-08-20",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-anuncio-la-creacion-del-instituto-argentino-del-mani-y-propuso-el-sello-mani-cordoba/",
+        "info": "50° aniversario Camara del Mani "
+      },
+      {
+        "id": 402,
+        "fecha": "2025-08-22",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-el-arzobispo-rossi-inauguraron-una-casa-para-personas-que-recuperaron-la-libertad/",
+        "info": "Inauguración La casa Libertad - Con Monseñor Rossi"
+      },
+      {
+        "id": 550,
+        "fecha": "2026-04-27",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/paicor-se-amplia-en-la-escuela-carbo-150-alumnos-de-primaria-comienzan-a-recibir-asistencia-alimentaria/",
+        "info": "Visita colegio Carbó "
+      }
+    ]
+  },
+  "ALTA CORDOBA": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 338,
+        "fecha": "2025-06-11",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-inauguracion-de-la-ciudad-deportiva-de-instituto/",
+        "info": "Inauguración Ciudad Deportiva IACC"
+      },
+      {
+        "id": 691,
+        "fecha": "2026-07-23",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Cordobeses en alerta"
+      }
+    ]
+  },
   "ALTAMIRA": {
     "total_visitas": 1,
     "visitas": [
       {
+        "id": 231,
         "fecha": "2024-12-27",
         "tipo_visita": "TERRITORIAL",
         "contacto_vecinos": "SI",
@@ -527,601 +147,11 @@
       }
     ]
   },
-  "CENTRO": {
-    "total_visitas": 25,
-    "visitas": [
-      {
-        "fecha": "2021-11-18",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/innovation-day-cordoba-mostro-su-ecosistema-de-transformacion-digital/",
-        "info": "Innovación Day - Perez Limpia / Cande Simon"
-      },
-      {
-        "fecha": "2024-12-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-firmaron-un-convenio-para-obras-de-pavimento-y-cordon-cuneta-por-casi-42-mil-millones/",
-        "info": "Firma de convenio con Passerini obras de cordon cuneta más pavimento, por casi 42 mil millones de pesos"
-      },
-      {
-        "fecha": "2025-02-23",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-celebracion-por-los-120-anos-del-rotary-club-internacional/",
-        "info": "120 años Rotary Club"
-      },
-      {
-        "fecha": "2025-02-27",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-entrego-el-credito-hipotecario-mil-de-bancor/",
-        "info": "Bancor crédito 1000"
-      },
-      {
-        "fecha": "2025-03-05",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/sabrina-y-ezequiel-el-sueno-de-la-casa-propia-en-primera-persona/",
-        "info": "Banco de la gente (teatro comedia)"
-      },
-      {
-        "fecha": "2025-03-13",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-en-la-conferencia-organizada-por-el-parlamento-y-fe-internacional/",
-        "info": "Parlamento y Fe Internacional, congreso evangélico"
-      },
-      {
-        "fecha": "2025-03-28",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-asistio-a-la-apertura-del-ano-judicial-2025/",
-        "info": "Apertura Año Judicial - Palacio de Tribunales."
-      },
-      {
-        "fecha": "2025-04-01",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-anunciaron-la-creacion-de-un-museo-de-malvinas-en-la-ciudad-de-cordoba/",
-        "info": "Acto Vigilia Malvinas , Plaza de la Intendencia- Anuncio de la creación de un Museo de Malvinas en la ciudad de Córdoba"
-      },
-      {
-        "fecha": "2025-04-21",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-asistio-a-la-misa-en-homenaje-al-papa-francisco/",
-        "info": "Catedral misa papa"
-      },
-      {
-        "fecha": "2025-04-26",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-lanzo-el-camino-del-folklore-del-norte-cordobes-para-fortalecer-la-identidad-cultural-del-norte-provincial/",
-        "info": "Postales del Norte Cordobés - Cultura"
-      },
-      {
-        "fecha": "2025-06-19",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/congresos-y-espectaculos-11-eventos-generaron-un-movimiento-economico-superior-a-los-170-mil-millones/",
-        "info": "Foro Cluster Congresos y espectáculos (Consejo Superior UNC - Centro (Palazzo)"
-      },
-      {
-        "fecha": "2025-06-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-el-modelo-de-cordoba-es-el-de-un-estado-inteligente-que-actua-donde-lo-privado-no-puede-llegar/",
-        "info": "Bolsa de comercio"
-      },
-      {
-        "fecha": "2025-07-04",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Banco de la Gente-700 (teatro comedia)"
-      },
-      {
-        "fecha": "2025-07-17",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Banco de la Gente- Teatro Comedia"
-      },
-      {
-        "fecha": "2025-07-23",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://www.cba.gov.ar/premios-sur-2025-cordoba-celebro-los-premios-del-cine-nacional/",
-        "info": "Entrega de Premios SUR"
-      },
-      {
-        "fecha": "2025-08-18",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://www.letrap.com.ar/politica/martin-llaryora-arranco-la-campana-una-cumbre-400-pastores-la-iglesia-evangelica-n5418135",
-        "info": "Pastores Evangelicos 400 (teatro comedia)"
-      },
-      {
-        "fecha": "2025-11-07",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-de-la-conmemoracion-de-los-100-anos-de-tribunal-superior-de-justicia-de-cordoba/",
-        "info": "100° aniversario del Superior Tribunal de Justicia"
-      },
-      {
-        "fecha": "2026-03-22",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-gala-centenario-de-la-colectividad-armenia-de-cordoba/",
-        "info": "Gala Colec. Armnenia"
-      },
-      {
-        "fecha": "2026-03-25",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/seguridad/el-servicio-penitenciario-de-cordoba-supero-por-primera-vez-los-5-000-agentes/",
-        "info": "Serv. penitenciario"
-      },
-      {
-        "fecha": "2026-03-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/luminaria-la-municipalidad-de-cordoba-invertira-37-500-millones-y-suma-a-epec-en-la-gestion-del-alumbrado-publico/",
-        "info": "Acto, Epec, Alumbrado Ciudad"
-      },
-      {
-        "fecha": "2026-04-13",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-del-acto-en-conmemoracion-del-dia-del-holocausto/",
-        "info": null
-      },
-      {
-        "fecha": "2026-04-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "este si!",
-        "info": "Acto discapacidad Lili Montero- teatro comedia"
-      },
-      {
-        "fecha": "2026-06-25",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-asistio-a-la-presentacion-de-la-pelicula-sobre-la-tarea-del-hogar-de-cristo-en-las-barriadas-populares/",
-        "info": "Teatro Real - Avant Premiere c/Padre Pepe"
-      },
-      {
-        "fecha": "2026-06-25",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-asistio-anoche-al-estreno-de-giselle-en-el-teatro-del-libertador/",
-        "info": "Giselle - Teatro San Martin"
-      },
-      {
-        "fecha": "2026-06-30",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-un-encuentro-con-la-camara-de-comercio-de-cordoba/",
-        "info": "Llaryora participó de un encuentro con la Cámara de Comercio de Córdoba"
-      }
-    ]
-  },
-  "LOS GIGANTES": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-01-06",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-vecinos-de-barrio-los-gigantes-ya-disfrutan-su-nuevo-polideportivo-social/",
-        "info": "Inauguración de Polideportivo Social"
-      }
-    ]
-  },
-  "SAN RAFAEL": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-01-16",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/la-provincia-destinara-500-millones-para-poner-en-valor-los-centros-integrales-para-personas-mayores/",
-        "info": "Inauguración Centro de personas mayores. El gobernador anunció que la Provincia destinará 500 millones de pesos para refaccionar estos espacios de la Capital, además de dotarlos de conectividad y notebooks."
-      }
-    ]
-  },
-  "BENJAMIN POLICARPIO CABRAL": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-01-20",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-ya-cuenta-con-60-polideportivos-sociales/",
-        "info": "Inauguración Polideportivo"
-      }
-    ]
-  },
-  "QUEBRADA DE LAS ROSAS": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-01-29",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-llaryora-inauguro-la-puesta-en-valor-de-una-residencia-de-la-senaf/",
-        "info": "Inauguraron este miércoles la puesta en valor de la residencia para niños y adolescentes varones de la Secretaría de Niñez, Adolescencia y Familia (SENAF). Los trabajos implicaron una inversión provincial de 71 millones de pesos."
-      }
-    ]
-  },
-  "LAS HUERTILLAS": {
-    "total_visitas": 3,
-    "visitas": [
-      {
-        "fecha": "2025-02-04",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-la-provincia-construira-un-altonivel-sobre-av-velez-sarsfield/",
-        "info": "Llamado a licitación ruta 36"
-      },
-      {
-        "fecha": "2026-01-19",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-la-obra-del-altonivel-de-ruta-36/",
-        "info": "Visita obra"
-      },
-      {
-        "fecha": "2026-03-30",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/no-home/altonivel-velez-sarsfield-llaryora-presencio-la-colocacion-de-la-primera-viga-del-viaducto-en-horario-nocturno/",
-        "info": "Altonivel Vélez Sarsfield: Llaryora presenció la colocación de la primera viga del viaducto en horario nocturno"
-      }
-    ]
-  },
-  "DEAN FUNES": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-03-20",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-vecinos-de-b-dean-funes-ya-cuentan-con-un-polideportivo/",
-        "info": "Inauguración de Polideportivo Social + 94 créditos del Banco de la Gente a vecinos del barrio"
-      }
-    ]
-  },
-  "CAMPO DE LA RIVERA": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-03-21",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/15-anos-del-espacio-de-la-memoria-campo-de-la-ribera-un-compromiso-con-la-historia-y-el-futuro/",
-        "info": "Inauguración plaza seca de la Memoria en campo de la Ribera"
-      }
-    ]
-  },
-  "EL SAUCE": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-04-03",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/con-el-polideportivo-de-barrio-el-sauce-cordoba-ya-suma-115-espacios-sociorecreativos/",
-        "info": "Inauguración Polideportivo"
-      }
-    ]
-  },
-  "MARIANO FRAGUEIRO": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-04-14",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-nuevo-polideportivo-en-barrio-mariano-fragueiro/",
-        "info": "Inauguración polideportivo B° Mariano Fragueiro"
-      }
-    ]
-  },
-  "COMERCIAL": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-04-17",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Misa - Ceremonia Lavado de Pies, Preside Mons. Ángel Rossi - Jueves Santo"
-      }
-    ]
-  },
-  "LOS BOULEVARES": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2025-04-24",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-del-30o-aniversario-de-la-universidad-empresarial-siglo-21/",
-        "info": "30° Aniversario Universidad Siglo 21"
-      },
-      {
-        "fecha": "2026-04-26",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/apoyo-a-los-clubes-la-provincia-cede-terrenos-al-club-palermo-bajo-para-potenciar-el-desarrollo-de-actividades-deportivas/",
-        "info": "visitó la institución ubicada en barrio Los Boulevares de la ciudad de Córdoba."
-      }
-    ]
-  },
-  "MÜLLER": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-04-29",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-vecinos-de-barrio-muller-ya-cuentan-con-un-polideportivo-social/",
-        "info": "Inauguración Polideportivo- Padre Oberlin"
-      }
-    ]
-  },
-  "PARQUE LICEO 2A SECCION": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-05-19",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://www.instagram.com/reel/DJ5J0SWNzT8/",
-        "info": "Polideportivo social"
-      }
-    ]
-  },
-  "ALTA CORDOBA": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-06-11",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-inauguracion-de-la-ciudad-deportiva-de-instituto/",
-        "info": "Inauguración Ciudad Deportiva IACC"
-      }
-    ]
-  },
-  "CACERES": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-06-12",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-encabezo-el-acto-por-el-dia-del-agente-penitenciario-de-la-provincia/",
-        "info": "Dia del Agente penitenciario- Escuela de cadetes"
-      }
-    ]
-  },
-  "GENERAL PUEYRREDON": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-06-19",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-provincia-y-municipio-construiran-un-desague-en-la-zona-sur/",
-        "info": "Desagüe calles madre sacramento- adoratrices"
-      }
-    ]
-  },
-  "LA FLORESTA": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-06-19",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-suma-otro-polideportivo-en-barrio-floresta-sur/",
-        "info": "Inauguración polideportivo, B° La Floresta sur"
-      }
-    ]
-  },
-  "JARDIN ESPINOSA": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-06-30",
-        "tipo_visita": "NO HAY DATOS certeros",
-        "contacto_vecinos": null,
-        "link": null,
-        "info": "Comedores Córdoba Capital- Laura jure (Quality)"
-      }
-    ]
-  },
-  "ALBERDI": {
-    "total_visitas": 5,
-    "visitas": [
-      {
-        "fecha": "2025-07-03",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-anuncio-un-fondo-10-mil-millones-para-emprendimientos-innovadores/",
-        "info": "Zuchovicki, pte. de BYMA"
-      },
-      {
-        "fecha": "2025-07-03",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-anuncio-un-fondo-10-mil-millones-para-emprendimientos-innovadores/",
-        "info": "Foro Capital Emprendendor - Acosta"
-      },
-      {
-        "fecha": "2025-08-20",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-anuncio-la-creacion-del-instituto-argentino-del-mani-y-propuso-el-sello-mani-cordoba/",
-        "info": "50° aniversario Camara del Mani"
-      },
-      {
-        "fecha": "2025-08-22",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-el-arzobispo-rossi-inauguraron-una-casa-para-personas-que-recuperaron-la-libertad/",
-        "info": "Inauguración La casa Libertad - Con Monseñor Rossi"
-      },
-      {
-        "fecha": "2026-04-27",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/paicor-se-amplia-en-la-escuela-carbo-150-alumnos-de-primaria-comienzan-a-recibir-asistencia-alimentaria/",
-        "info": "Visita colegio Carbó"
-      }
-    ]
-  },
-  "CRISOL SUD": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-07-07",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-amplia-la-terapia-intensiva-del-hospital-de-ninos-con-una-inversion-record-de-1-300-millones/",
-        "info": "Salida Lagarto - 23 camas de Terapia del Hospital de Niños"
-      }
-    ]
-  },
-  "VILLA RIVADAVIA ANEXO \"A\"": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-08-04",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-y-passerini-anunciaron-el-ensanche-e-iluminacion-del-camino-san-antonio/",
-        "info": "Anuncio Camino San Antonio"
-      }
-    ]
-  },
-  "SAN FERNANDO": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-08-19",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/discapacidad-llaryora-anuncio-un-fondo-para-garantizar-alimentos-en-instituciones-con-doble-jornada/",
-        "info": "Entrega de Fortalecimiento a 60 instituciones + 25 ONG ayuda para alimentación doble jornada (quality)"
-      }
-    ]
-  },
-  "JUNIORS": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-10-17",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://politicacordobaverdad.com.ar/fuerte-presencia-de-las-62-organizaciones-peronistas-en-el-acto-del-dia-de-la-lealtad/",
-        "info": "Acto gremios"
-      }
-    ]
-  },
-  "B° 16 DE NOVIEMBRE": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-10-29",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-vecinos-de-barrio-16-de-noviembre-cuentan-con-un-nuevo-polideportivo/",
-        "info": "Inauguración Polideportivo B° 16 de Noviembre"
-      }
-    ]
-  },
-  "LA DOROTEA": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-11-05",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-llaryora-inauguro-el-polideportivo-social-en-barrio-la-dorotea/",
-        "info": "Polideportivo social"
-      }
-    ]
-  },
-  "SAN VICENTE": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2025-12-16",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-encabezo-el-egreso-de-mas-de-500-nuevos-policias-y-anuncio-nuevas-inversiones/",
-        "info": "Egreso suboficiales - policia"
-      },
-      {
-        "fecha": "2026-06-29",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-superviso-la-etapa-final-de-obra-de-la-nueva-sede-de-la-escuela-de-suboficiales/",
-        "info": "Llaryora supervisó la etapa final de obra de la nueva sede de la Escuela de Suboficiales"
-      }
-    ]
-  },
-  "ROGELIO MARTINEZ": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-12-23",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/este-martes-244-ex-integrantes-de-las-fuerzas-armadas-se-sumaron-a-la-fuerza-policial-antinarcotrafico/",
-        "info": "FPA: 244 nuevos ingresantes + 20 camionetas nuevas"
-      }
-    ]
-  },
-  "VILLA MARTINEZ": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2025-12-29",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/informacion-general/con-pileta-y-nuevas-instalaciones-inauguraron-el-renovado-centro-deportivo-los-filtros-en-villa-martinez/",
-        "info": "Inauguración Centro deportivo de Villa Martínez"
-      }
-    ]
-  },
-  "VALLE ESCONDIDO": {
-    "total_visitas": 2,
-    "visitas": [
-      {
-        "fecha": "2026-03-18",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/comenzo-el-asfaltado-del-puente-del-altonivel-de-valle-escondido/",
-        "info": "Supervisión de obra"
-      },
-      {
-        "fecha": "2026-04-15",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/no-home/ciudad-de-cordoba-llaryora-inauguro-el-altonivel-de-valle-escondido/",
-        "info": "Inauguracion: Altonivel Valle Escondido"
-      }
-    ]
-  },
   "ALTOS DE SANTA ANA": {
     "total_visitas": 1,
     "visitas": [
       {
+        "id": 534,
         "fecha": "2026-03-19",
         "tipo_visita": "TERRITORIAL",
         "contacto_vecinos": "SI",
@@ -1130,10 +160,1430 @@
       }
     ]
   },
+  "AMPLIACION ROSEDAL": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 35,
+        "fecha": "2024-02-19",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://www.facebook.com/pjcordobacapital/videos/llaryora-con-el-lagarto-defenderlaeducaci%C3%B3n/3583425268585311/",
+        "info": "Lo tengo en agenda como: Visita de obra de educación. No está en el portal de prensa pero hay una nota para el Lagarto "
+      }
+    ]
+  },
+  "ARGUELLO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 690,
+        "fecha": "2026-07-23",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Cordobeses en alerta"
+      }
+    ]
+  },
+  "ARGUELLO NORTE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 121,
+        "fecha": "2024-06-02",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-asistio-al-cabalen-y-ratifico-su-decision-de-invertir-en-la-infraestructura-de-este-circuito/",
+        "info": "Llaryora asistió al Cabalén y ratificó su decisión de invertir en la infraestructura de este circuito"
+      }
+    ]
+  },
+  "BAJO PALERMO": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 146,
+        "fecha": "2024-07-11",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-llaryora-inauguro-la-puesta-en-valor-de-la-residencia-para-adolescentes-casa-suquia/",
+        "info": "Córdoba capital: Llaryora inauguró la puesta en valor de la residencia para adolescentes Casa Suquía"
+      },
+      {
+        "id": 547,
+        "fecha": "2026-04-18",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/apoyo-a-los-clubes-la-provincia-cede-terrenos-al-club-palermo-bajo-para-potenciar-el-desarrollo-de-actividades-deportivas/",
+        "info": "Almuerzo de camaraderia Club Palermo Bajo."
+      }
+    ]
+  },
+  "BENJAMIN POLICARPIO CABRAL": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 244,
+        "fecha": "2025-01-20",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-ya-cuenta-con-60-polideportivos-sociales/",
+        "info": "Inauguración Polideportivo"
+      }
+    ]
+  },
+  "CACERES": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 339,
+        "fecha": "2025-06-12",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-encabezo-el-acto-por-el-dia-del-agente-penitenciario-de-la-provincia/",
+        "info": "Dia del Agente penitenciario- Escuela de cadetes "
+      }
+    ]
+  },
+  "CAMPO DE LA RIVERA": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 279,
+        "fecha": "2025-03-21",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/15-anos-del-espacio-de-la-memoria-campo-de-la-ribera-un-compromiso-con-la-historia-y-el-futuro/",
+        "info": "Inauguración plaza seca de la Memoria en campo de la Ribera"
+      }
+    ]
+  },
+  "CENTRO": {
+    "total_visitas": 27,
+    "visitas": [
+      {
+        "id": 116,
+        "fecha": "2024-05-28",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/construiran-un-puente-para-salir-de-valle-escondido-hacia-ejercito-argentino/",
+        "info": "Firma de contrato del Puente de Valle Escondido "
+      },
+      {
+        "id": 167,
+        "fecha": "2024-09-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://canalc.com.ar/gonzalo-aziz-presento-su-libro-junto-a-martin-llaryora-y-rodrigo-de-loredo/",
+        "info": "Presetación de libro - Gonzalo Aziz (Teatro Comedia)"
+      },
+      {
+        "id": 233,
+        "fecha": "2024-12-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-firmaron-un-convenio-para-obras-de-pavimento-y-cordon-cuneta-por-casi-42-mil-millones/",
+        "info": "Firma de convenio con Passerini obras de cordon cuneta más pavimento, por casi 42 mil millones de pesos "
+      },
+      {
+        "id": 257,
+        "fecha": "2025-02-23",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-celebracion-por-los-120-anos-del-rotary-club-internacional/",
+        "info": "120 años Rotary Club "
+      },
+      {
+        "id": 264,
+        "fecha": "2025-02-27",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-entrego-el-credito-hipotecario-mil-de-bancor/",
+        "info": "Bancor crédito 1000"
+      },
+      {
+        "id": 267,
+        "fecha": "2025-03-05",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/sabrina-y-ezequiel-el-sueno-de-la-casa-propia-en-primera-persona/",
+        "info": "Banco de la gente (teatro comedia)"
+      },
+      {
+        "id": 268,
+        "fecha": "2025-03-13",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-en-la-conferencia-organizada-por-el-parlamento-y-fe-internacional/",
+        "info": "Parlamento y Fe Internacional, congreso evangélico"
+      },
+      {
+        "id": 282,
+        "fecha": "2025-03-28",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-asistio-a-la-apertura-del-ano-judicial-2025/",
+        "info": "Apertura Año Judicial - Palacio de Tribunales."
+      },
+      {
+        "id": 284,
+        "fecha": "2025-04-01",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-anunciaron-la-creacion-de-un-museo-de-malvinas-en-la-ciudad-de-cordoba/",
+        "info": "Acto Vigilia Malvinas , Plaza de la Intendencia- Anuncio de la creación de un Museo de Malvinas en la ciudad de Córdoba  "
+      },
+      {
+        "id": 305,
+        "fecha": "2025-04-21",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-asistio-a-la-misa-en-homenaje-al-papa-francisco/",
+        "info": "Catedral misa papa"
+      },
+      {
+        "id": 307,
+        "fecha": "2025-04-26",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-lanzo-el-camino-del-folklore-del-norte-cordobes-para-fortalecer-la-identidad-cultural-del-norte-provincial/",
+        "info": "Postales del Norte Cordobés - Cultura"
+      },
+      {
+        "id": 345,
+        "fecha": "2025-06-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/congresos-y-espectaculos-11-eventos-generaron-un-movimiento-economico-superior-a-los-170-mil-millones/",
+        "info": "Foro Cluster Congresos y espectáculos (Consejo Superior UNC - Centro (Palazzo)"
+      },
+      {
+        "id": 363,
+        "fecha": "2025-06-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-el-modelo-de-cordoba-es-el-de-un-estado-inteligente-que-actua-donde-lo-privado-no-puede-llegar/",
+        "info": "Bolsa de comercio "
+      },
+      {
+        "id": 369,
+        "fecha": "2025-07-04",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Banco de la Gente-700 (teatro comedia)"
+      },
+      {
+        "id": 374,
+        "fecha": "2025-07-17",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Banco de la Gente- Teatro Comedia "
+      },
+      {
+        "id": 376,
+        "fecha": "2025-07-23",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://www.cba.gov.ar/premios-sur-2025-cordoba-celebro-los-premios-del-cine-nacional/",
+        "info": "Entrega de Premios SUR"
+      },
+      {
+        "id": 390,
+        "fecha": "2025-08-18",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://www.letrap.com.ar/politica/martin-llaryora-arranco-la-campana-una-cumbre-400-pastores-la-iglesia-evangelica-n5418135",
+        "info": "Pastores Evangelicos 400 (teatro comedia)"
+      },
+      {
+        "id": 465,
+        "fecha": "2025-11-07",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-de-la-conmemoracion-de-los-100-anos-de-tribunal-superior-de-justicia-de-cordoba/",
+        "info": "100° aniversario del Superior Tribunal de Justicia"
+      },
+      {
+        "id": 471,
+        "fecha": "2025-11-18",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/innovation-day-cordoba-mostro-su-ecosistema-de-transformacion-digital/",
+        "info": "Innovación Day - Perez Limpia / Cande Simon"
+      },
+      {
+        "id": 535,
+        "fecha": "2026-03-22",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-gala-centenario-de-la-colectividad-armenia-de-cordoba/",
+        "info": "Gala Colec. Armnenia"
+      },
+      {
+        "id": 536,
+        "fecha": "2026-03-25",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/seguridad/el-servicio-penitenciario-de-cordoba-supero-por-primera-vez-los-5-000-agentes/",
+        "info": "Serv. penitenciario"
+      },
+      {
+        "id": 538,
+        "fecha": "2026-03-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/luminaria-la-municipalidad-de-cordoba-invertira-37-500-millones-y-suma-a-epec-en-la-gestion-del-alumbrado-publico/",
+        "info": "Acto, Epec, Alumbrado Ciudad"
+      },
+      {
+        "id": 544,
+        "fecha": "2026-04-13",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-del-acto-en-conmemoracion-del-dia-del-holocausto/",
+        "info": null
+      },
+      {
+        "id": 561,
+        "fecha": "2026-04-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "este si!",
+        "info": "Acto discapacidad Lili Montero- teatro comedia "
+      },
+      {
+        "id": 640,
+        "fecha": "2026-06-25",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-asistio-a-la-presentacion-de-la-pelicula-sobre-la-tarea-del-hogar-de-cristo-en-las-barriadas-populares/",
+        "info": "Teatro Real - Avant Premiere c/Padre Pepe"
+      },
+      {
+        "id": 641,
+        "fecha": "2026-06-25",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-asistio-anoche-al-estreno-de-giselle-en-el-teatro-del-libertador/",
+        "info": "Giselle - Teatro San Martin"
+      },
+      {
+        "id": 657,
+        "fecha": "2026-06-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-un-encuentro-con-la-camara-de-comercio-de-cordoba/",
+        "info": "Llaryora participó de un encuentro con la Cámara de Comercio de Córdoba"
+      }
+    ]
+  },
+  "CHATEAU CARRERAS": {
+    "total_visitas": 24,
+    "visitas": [
+      {
+        "id": 122,
+        "fecha": "2024-06-02",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/el-desafio-ruta-40-puso-primera-en-cordoba/",
+        "info": "El Desafío Ruta 40 puso primera en Córdoba. La ceremonia de largada tuvo lugar en el Parque del Chateau y fue encabezada por el gobernador Martín Llaryora."
+      },
+      {
+        "id": 205,
+        "fecha": "2024-11-28",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-destaco-el-rol-social-y-cultural-de-los-clubes-de-basquet-de-la-provincia/",
+        "info": "Anuncio de la construcción de 50 polideportivos en toda la Provincia "
+      },
+      {
+        "id": 206,
+        "fecha": "2024-12-03",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/seguridad/la-policia-de-cordoba-suma-720-nuevos-efectivos/",
+        "info": "Egreso 720 policias "
+      },
+      {
+        "id": 210,
+        "fecha": "2024-12-09",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/ante-la-daia-llaryora-ratifico-su-apoyo-a-ley-de-juicio-en-ausencia-contra-el-terrorismo/",
+        "info": "El gobernador Martin Llaryora participó del acto de asunción de las nuevas autoridades de la Delegación de Asociaciones Israelitas Argentinas (DAIA) Central y local."
+      },
+      {
+        "id": 256,
+        "fecha": "2025-02-22",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Baile más grande del universo- La mona Jimenez en el Kempes "
+      },
+      {
+        "id": 276,
+        "fecha": "2025-03-17",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/las-guardias-locales-ya-estan-presentes-en-100-municipios-y-comunas/",
+        "info": "Programa guardias locales"
+      },
+      {
+        "id": 277,
+        "fecha": "2025-03-20",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/en-2025-la-provincia-destinara-3-000-millones-para-programas-de-discapacidad/",
+        "info": "Acto lanzamiento programa c/instituciones de discapacidad-la Provincia destinará $3.000 millones para programas de discapacidad"
+      },
+      {
+        "id": 281,
+        "fecha": "2025-03-27",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/junto-a-fuerzas-provinciales-y-federales-llaryora-y-bullrich-cerraron-el-curso-avanzado-en-la-lucha-contra-el-narcotrafico/",
+        "info": "Cierre curso Narcotráfico + Nación Patricia Bulrich"
+      },
+      {
+        "id": 308,
+        "fecha": "2025-04-29",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/acompanado-por-mas-de-400-intendentes-y-jefes-comunales-llaryora-firmo-el-fondo-federal-cordobes/",
+        "info": "Reunión Intendentes "
+      },
+      {
+        "id": 316,
+        "fecha": "2025-05-01",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Festival Nacional del Cuarteto- Kempes "
+      },
+      {
+        "id": 362,
+        "fecha": "2025-06-27",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/iglesias-evangelicas-de-la-provincia-podran-acceder-a-la-personeria-religiosa/",
+        "info": "Congreso del Concejo Pastoral Evangélicos (centro de convenciones)"
+      },
+      {
+        "id": 365,
+        "fecha": "2025-07-01",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/ante-mas-de-5-500-asistentes-llaryora-inauguro-la-conferencia-climatica-internacional/ ; https://prensa.cba.gov.ar/gobernador/conferencia-climatica-internacional-llaryora-encabezo-la-mesa-federal-con-referentes-ambientales-de-todo-el-pais/ ; https://prensa.cba.gov.ar/gobernador/conferencia-climatica-internacional-provincias-suscribieron-el-compromiso-regional/",
+        "info": "Congreso internacional de cambio climático. (Feriar Bustos) "
+      },
+      {
+        "id": 377,
+        "fecha": "2025-07-24",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-anuncio-creditos-por-3-400-millones-para-impulsar-a-emprendedores-locales/",
+        "info": "Apertura Emprende Day"
+      },
+      {
+        "id": 384,
+        "fecha": "2025-08-07",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-destaco-el-potencial-de-la-industria-automotriz-cordobesa-en-la-apertura-del-fiac/",
+        "info": "FIAC - Apertura Foro Automotriz"
+      },
+      {
+        "id": 385,
+        "fecha": "2025-08-11",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-la-economia-tiene-que-estar-al-servicio-del-hombre-y-no-el-hombre-al-servicio-de-la-economia/",
+        "info": "Apertura - Congreso Nacional de Cooperativas y Mutuales"
+      },
+      {
+        "id": 387,
+        "fecha": "2025-08-16",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/con-los-pumas-all-blacks-cordoba-vivio-una-fiesta-historica/",
+        "info": "Partido All Blacks rugby"
+      },
+      {
+        "id": 404,
+        "fecha": "2025-08-27",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/parques-industriales-llaryora-pondero-el-modelo-productivo-cordobes/",
+        "info": "Expo parques Industriales"
+      },
+      {
+        "id": 406,
+        "fecha": "2025-09-02",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": null,
+        "info": "Coloquio UIC + UIA"
+      },
+      {
+        "id": 436,
+        "fecha": "2025-09-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://deportes.cba.gov.ar/llaryora-reinauguro-la-cancha-de-hockey-soledad-garcia/",
+        "info": "Inauguración cancha de Hockey kempes con Las Leonas"
+      },
+      {
+        "id": 441,
+        "fecha": "2025-10-08",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-hicimos-la-inversion-mas-grande-en-infraestructura-policial-desde-la-vuelta-de-la-democracia/",
+        "info": "Entrega de 400 nuevas camionetas- Kempes"
+      },
+      {
+        "id": 442,
+        "fecha": "2025-10-08",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/anoche-llaryora-encabezo-el-lanzamiento-de-la-temporada-de-verano-2025-2026-de-la-provincia/",
+        "info": "Turismo - Lanzamiento temporada de verano"
+      },
+      {
+        "id": 466,
+        "fecha": "2025-11-14",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-del-aniversario-de-canal-c-y-showsport/",
+        "info": "30° aniversario ShowSport + 20° canal C"
+      },
+      {
+        "id": 629,
+        "fecha": "2026-06-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-tomo-juramento-de-fidelidad-a-la-bandera-nacional-a-cadetes-de-la-policia-el-servicio-penitenciario-y-la-fuerza-policial-antinarcotrafico/",
+        "info": "Jura de la Bandera - Policia de la Pcia + Penitenciarios + FPA"
+      },
+      {
+        "id": 662,
+        "fecha": "2026-07-03",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-acompano-a-los-pumas-en-el-ultimo-entrenamiento-de-cara-al-partido-con-escocia/",
+        "info": "Llaryora acompañó a Los Pumas en el último entrenamiento de cara al partido con Escocia"
+      }
+    ]
+  },
+  "COMERCIAL": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 302,
+        "fecha": "2025-04-17",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Misa - Ceremonia Lavado de Pies, Preside Mons. Ángel Rossi - Jueves Santo"
+      }
+    ]
+  },
+  "CONSORCIO 16 DE NOVIEMBRE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 458,
+        "fecha": "2025-10-29",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-vecinos-de-barrio-16-de-noviembre-cuentan-con-un-nuevo-polideportivo/",
+        "info": "Inauguración Polideportivo B° 16 de Noviembre"
+      }
+    ]
+  },
+  "CRISOL NORTE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 102,
+        "fecha": "2024-05-11",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://www.instagram.com/reel/C7ASSF5RxpI/?utm_source=ig_web_copy_link",
+        "info": "Encuentro de Jóvenes Concejales PJ CBA"
+      }
+    ]
+  },
+  "CRISOL SUD": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 370,
+        "fecha": "2025-07-07",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-amplia-la-terapia-intensiva-del-hospital-de-ninos-con-una-inversion-record-de-1-300-millones/",
+        "info": "Salida Lagarto - 23 camas de Terapia del Hospital de Niños"
+      }
+    ]
+  },
+  "DEAN FUNES": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 278,
+        "fecha": "2025-03-20",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-vecinos-de-b-dean-funes-ya-cuentan-con-un-polideportivo/",
+        "info": "Inauguración de Polideportivo Social + 94 créditos del Banco de la Gente a vecinos del barrio"
+      }
+    ]
+  },
+  "DUCASSE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 637,
+        "fecha": "2026-06-16",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-recorrio-el-nuevo-centro-de-control-de-alumbrado-publico-inteligente-de-epec/",
+        "info": "Llaryora recorrió el nuevo Centro de Control de Alumbrado Público Inteligente de EPEC"
+      }
+    ]
+  },
+  "EL QUEBRACHO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 607,
+        "fecha": "2026-05-19",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-y-passerini-inauguraron-44-cuadras-de-pavimento-en-barrio-el-quebracho/",
+        "info": "Inauguracion Pavimento + cloacas"
+      }
+    ]
+  },
+  "EL SAUCE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 286,
+        "fecha": "2025-04-03",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/con-el-polideportivo-de-barrio-el-sauce-cordoba-ya-suma-115-espacios-sociorecreativos/",
+        "info": "Inauguración Polideportivo "
+      }
+    ]
+  },
+  "EMPALME": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 545,
+        "fecha": "2026-04-13",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://www.instagram.com/reel/DXHNK2HCC7t/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+        "info": null
+      }
+    ]
+  },
+  "FERREYRA": {
+    "total_visitas": 5,
+    "visitas": [
+      {
+        "id": 159,
+        "fecha": "2024-09-05",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://eleconomista.com.ar/autos/stellantis-invierte-us-385-millones-cordoba-fabricar-una-nueva-familia-vehiculos-n77271",
+        "info": "Anuncio de inversión en Planta Fiat "
+      },
+      {
+        "id": 198,
+        "fecha": "2024-11-14",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/con-creditos-bancor-la-municipalidad-de-cordoba-adquirio-20-colectivos-0km-a-gnc/",
+        "info": "Entrega de 6 mil millones al municipio de Córdoba Capital "
+      },
+      {
+        "id": 323,
+        "fecha": "2025-05-13",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/stellantis-inicio-en-cordoba-la-produccion-de-su-pick-up-es-la-mejor-noticia-industrial-que-argentina-tiene-en-mucho-tiempo-sostuvo-llaryora/",
+        "info": "Fiat Argentina- Lanzamiento nueva camioneta "
+      },
+      {
+        "id": 378,
+        "fecha": "2025-07-28",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-anuncio-la-rebaja-a-cero-de-ingresos-brutos-para-empresas-logisticas-que-den-a-cordoba-beneficios-al-transporte-aereo-o-maritimo/",
+        "info": "Lanzamiento Puerto Seco"
+      },
+      {
+        "id": 443,
+        "fecha": "2025-10-13",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-las-exenciones-impositivas-que-cordoba-aplica-generan-trabajo-y-desarrollo/",
+        "info": "Stellantis - lanzamiento y Presentación nueva camioneta a fabricar en córdoba "
+      }
+    ]
+  },
+  "FINCA LA DOROTEA": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 464,
+        "fecha": "2025-11-05",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-llaryora-inauguro-el-polideportivo-social-en-barrio-la-dorotea/",
+        "info": "Polideportivo social"
+      }
+    ]
+  },
+  "GENERAL BUSTOS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 101,
+        "fecha": "2024-05-10",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-y-passerini-recorrieron-el-nuevo-estadio-de-atenas/",
+        "info": "Encuentro en ATENAS "
+      }
+    ]
+  },
+  "GENERAL PAZ": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 543,
+        "fecha": "2026-04-10",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/no-home/comenzo-la-recuperacion-del-parque-jose-maria-paz-llaryora-y-passerini-recorrieron-la-obra/",
+        "info": "Visita Plaza Gral. Paz (Frente Reina Fabiola)"
+      }
+    ]
+  },
+  "GENERAL PUEYRREDON": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 346,
+        "fecha": "2025-06-19",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-provincia-y-municipio-construiran-un-desague-en-la-zona-sur/",
+        "info": "Desagüe calles madre sacramento- adoratrices "
+      }
+    ]
+  },
+  "HORIZONTE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 686,
+        "fecha": "2026-07-13",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-el-plan-de-bacheo-y-repavimentacion-avanza-con-multiples-frentes-de-obra/",
+        "info": "Visita de Obra: Plan de Reparación Vial Integral -Secc 10"
+      }
+    ]
+  },
+  "INAUDI": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 692,
+        "fecha": "2026-07-23",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Cordobeses en alerta"
+      }
+    ]
+  },
+  "INDUSTRIAL OESTE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 685,
+        "fecha": "2026-07-13",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/capital-la-plaza-de-barrio-industrial-oeste-ya-cuenta-con-nuevo-sistema-de-iluminacion-led-y-sera-puesta-en-valor/ ",
+        "info": "Iluminacion plaza Prussia y anuncio de puesta en valor / Epec y prone - Secc 11"
+      }
+    ]
+  },
+  "IRUPE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 681,
+        "fecha": "2026-07-13",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-el-plan-de-bacheo-y-repavimentacion-avanza-con-multiples-frentes-de-obra/",
+        "info": "Visita de Obra: Plan de Reparación Vial Integral -Secc 10"
+      }
+    ]
+  },
+  "JARDIN": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 124,
+        "fecha": "2024-06-04",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://cordoba.gob.ar/llaryora-anuncio-acciones-para-reforzar-el-patrullaje-preventivo-150-nuevos-moviles-y-1000-cadetes-se-suman-a-las-fuerzas-de-la-policia-en-la-ciudad/",
+        "info": "Llaryora anunció acciones para reforzar el patrullaje preventivo: 150 nuevos móviles y 1000 cadetes se suman a las fuerzas de la policía en la ciudad"
+      },
+      {
+        "id": 431,
+        "fecha": "2025-09-16",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Comedores - Laura Jure (quality)"
+      }
+    ]
+  },
+  "JARDIN ESPINOSA": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 364,
+        "fecha": "2025-06-30",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": null,
+        "info": "Comedores Córdoba Capital- Laura jure (Quality)"
+      }
+    ]
+  },
+  "JOSE IGNACIO DIAZ 2A SECCION": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 123,
+        "fecha": "2024-06-03",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://ministeriodesalud.cba.gov.ar/el-hospital-florencio-diaz-sumo-un-nuevo-tomografo-y-la-provincia-fortalece-la-atencion-pediatrica/",
+        "info": "El gobernador Martín Llaryora y el ministro de Salud, Ricardo Pieckenstainer, pusieron en marcha el nuevo tomógrafo del Hospital Florencio Díaz"
+      }
+    ]
+  },
+  "JUNIORS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 451,
+        "fecha": "2025-10-17",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://politicacordobaverdad.com.ar/fuerte-presencia-de-las-62-organizaciones-peronistas-en-el-acto-del-dia-de-la-lealtad/",
+        "info": "Acto gremios"
+      }
+    ]
+  },
+  "LA FLORESTA": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 347,
+        "fecha": "2025-06-19",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-suma-otro-polideportivo-en-barrio-floresta-sur/",
+        "info": "Inauguración polideportivo, B° La Floresta sur"
+      }
+    ]
+  },
+  "LA FRANCE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 622,
+        "fecha": "2026-06-05",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/salud-2/escudo-sanitario-para-bebes-la-provincia-incorpora-una-inmunizacion-inedita-contra-la-bronquiolitis/",
+        "info": "Llegada de dosis de Nirsevimab al centro de almacenamiento de vacunas para vacunar a bebés recién nacidos"
+      }
+    ]
+  },
+  "LAMADRID": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 684,
+        "fecha": "2026-07-13",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-llaryora-y-passerini-anunciaron-la-urbanizacion-de-barrio-ampliacion-lamadrid/",
+        "info": "Anuncio de urbanización B° LaMadrid - Secc 11"
+      }
+    ]
+  },
+  "LAS HUERTILLAS": {
+    "total_visitas": 3,
+    "visitas": [
+      {
+        "id": 248,
+        "fecha": "2025-02-04",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-la-provincia-construira-un-altonivel-sobre-av-velez-sarsfield/",
+        "info": "Llamado a licitación ruta 36"
+      },
+      {
+        "id": 480,
+        "fecha": "2026-01-19",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-la-obra-del-altonivel-de-ruta-36/",
+        "info": "Visita obra"
+      },
+      {
+        "id": 539,
+        "fecha": "2026-03-30",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/no-home/altonivel-velez-sarsfield-llaryora-presencio-la-colocacion-de-la-primera-viga-del-viaducto-en-horario-nocturno/",
+        "info": "Altonivel Vélez Sarsfield: Llaryora presenció la colocación de la primera viga del viaducto en horario nocturno"
+      }
+    ]
+  },
+  "LAS PALMAS": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 128,
+        "fecha": "2024-06-18",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-tomo-juramento-a-la-bandera-a-cadetes-de-la-policia-y-el-servicio-penitenciario/",
+        "info": "Llaryora tomó juramento a la bandera a cadetes de la Policía y el Servicio Penitenciario"
+      },
+      {
+        "id": 687,
+        "fecha": "2026-07-22",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-cada-barrio-que-se-suma-a-cordobeses-en-alerta-baja-la-tasa-de-delincuencia/",
+        "info": "El gobernador encabezó en barrio Las Palmas la incorporación de ocho nuevos sectores del oeste de la ciudad al programa Cordobeses en alerta"
+      }
+    ]
+  },
+  "LOS BOULEVARES": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 306,
+        "fecha": "2025-04-24",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-del-30o-aniversario-de-la-universidad-empresarial-siglo-21/",
+        "info": "30° Aniversario Universidad Siglo 21"
+      },
+      {
+        "id": 549,
+        "fecha": "2026-04-26",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/apoyo-a-los-clubes-la-provincia-cede-terrenos-al-club-palermo-bajo-para-potenciar-el-desarrollo-de-actividades-deportivas/",
+        "info": "visitó la institución ubicada en barrio Los Boulevares de la ciudad de Córdoba."
+      }
+    ]
+  },
+  "LOS GIGANTES": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 240,
+        "fecha": "2025-01-06",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-capital-vecinos-de-barrio-los-gigantes-ya-disfrutan-su-nuevo-polideportivo-social/",
+        "info": "Inauguración de Polideportivo Social "
+      }
+    ]
+  },
+  "LOS NARANJOS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 688,
+        "fecha": "2026-07-22",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-anuncio-la-incorporacion-de-90-barrios-al-programa-cordobeses-en-alerta/",
+        "info": "Llaryora anunció la incorporación de 90 barrios al programa Cordobeses en Alerta"
+      }
+    ]
+  },
+  "LOS PLATANOS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 639,
+        "fecha": "2026-06-24",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-inauguro-la-puesta-en-valor-de-la-plaza-jerusalen-de-barrio-los-platanos/",
+        "info": "Llaryora inauguró la puesta en valor de la plaza Jerusalén de barrio Los Plátanos"
+      }
+    ]
+  },
+  "MARIANO FRAGUEIRO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 296,
+        "fecha": "2025-04-14",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-nuevo-polideportivo-en-barrio-mariano-fragueiro/",
+        "info": "Inauguración polideportivo B° Mariano Fragueiro"
+      }
+    ]
+  },
+  "MARQUES DE SOBREMONTE": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 658,
+        "fecha": "2026-07-01",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-superviso-los-trabajos-de-bacheo-y-rehabilitacion-en-barrio-marques-de-sobremonte/",
+        "info": "Llaryora supervisó los trabajos de bacheo y rehabilitación en barrio Marqués de Sobremonte"
+      }
+    ]
+  },
+  "MULLER": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 311,
+        "fecha": "2025-04-29",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-vecinos-de-barrio-muller-ya-cuentan-con-un-polideportivo-social/",
+        "info": "Inauguración Polideportivo- Padre Oberlin"
+      }
+    ]
+  },
+  "NUEVA CORDOBA": {
+    "total_visitas": 8,
+    "visitas": [
+      {
+        "id": 175,
+        "fecha": "2024-10-10",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://cordobainteriorinforma.com/2024/10/11/provincia-premio-a-distintos-comercios-del-interior-cordobes/",
+        "info": "Provincia premió a distintos comercios del interior cordobés"
+      },
+      {
+        "id": 209,
+        "fecha": "2024-12-07",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/una-multitud-acompano-el-encendido-del-arbol-de-navidad-mas-grande-de-argentina/",
+        "info": "Encendido árbol de navidad "
+      },
+      {
+        "id": 232,
+        "fecha": "2024-12-30",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/la-provincia-destinara-5-mil-millones-para-impulsar-el-desarrollo-del-sector-audiovisual-cordobes/",
+        "info": "La Provincia destinará $ 5 mil millones para impulsar el desarrollo del sector audiovisual cordobés"
+      },
+      {
+        "id": 283,
+        "fecha": "2025-03-28",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/egresaron-2-400-acompanantes-comunitarios-contra-la-violencia-de-genero/",
+        "info": "Entrega de Certif. Diplomatura en Acompañantes Comunitarias Contra la violencia de Género"
+      },
+      {
+        "id": 322,
+        "fecha": "2025-05-12",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-sostenemos-un-estado-con-superavit-y-la-gente-adentro/",
+        "info": "Reunión Jubilados, Capital- Lili Montero: presentación de un programa de fortalecimiento a Centros de Jubilados"
+      },
+      {
+        "id": 424,
+        "fecha": "2025-09-12",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://cordoba.gob.ar/passerini-y-llaryora-acompanaron-a-feriantes-en-un-multitudinario-encuentro-de-los-paseos-populares/",
+        "info": "Feriantes: evento con Psserini y Jure en Qality Arena"
+      },
+      {
+        "id": 459,
+        "fecha": "2025-11-02",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/ante-mas-de-50-lideres-mundiales-llaryora-inauguro-el-intercambio-para-la-competitividad-de-las-americas-impulsado-por-oea/",
+        "info": "Apertura ACE- Palacio Ferreyra"
+      },
+      {
+        "id": 663,
+        "fecha": "2026-07-03",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-el-avance-de-la-renovacion-integral-del-parque-de-las-tejas/",
+        "info": "Llaryora supervisó el avance de la renovación integral del Parque de las Tejas"
+      }
+    ]
+  },
+  "PARQUE CHATEAU CARRERAS": {
+    "total_visitas": 4,
+    "visitas": [
+      {
+        "id": 67,
+        "fecha": "2024-03-26",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/fuerte-apoyo-de-llaryora-a-la-policia-de-cordoba-en-la-lucha-contra-la-delincuencia/",
+        "info": "Entrega de certificados - Diplomatura en DD.HH "
+      },
+      {
+        "id": 127,
+        "fecha": "2024-06-13",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-dieron-inicio-a-la-iv-cumbre-mundial-de-economia-circular/",
+        "info": "Llaryora y Passerini dieron inicio a la IV Cumbre Mundial de Economía Circular"
+      },
+      {
+        "id": 165,
+        "fecha": "2024-09-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-continuara-con-la-promocion-de-parques-industriales/",
+        "info": "Llaryora continuará con la promoción de parques industriales"
+      },
+      {
+        "id": 619,
+        "fecha": "2026-05-29",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://andigital.com.ar/nota/141202/pulso-tierra-federacion-agraria-puso-a-la-innovacion-en-el-centro-del-futuro-productivo/",
+        "info": "Federacion Agraria - Busso (Feriar)"
+      }
+    ]
+  },
+  "PARQUE JORGE NEWBERY": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 659,
+        "fecha": "2026-07-01",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/ciudad-de-cordoba-llaryora-inauguro-la-iluminacion-de-la-plaza-soldado-aeronautico-en-barrio-parque-jorge-newbery/",
+        "info": "Llaryora inauguró la iluminación de la plaza Soldado Aeronáutico en barrio Parque Jorge Newbery"
+      }
+    ]
+  },
+  "PARQUE LATINO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 656,
+        "fecha": "2026-06-29",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/no-home/ciudad-de-cordoba-llaryora-y-passerini-inauguraron-la-puesta-en-valor-de-la-plaza-de-barrio-parque-latino/",
+        "info": "Llaryora y Passerini inauguraron la puesta en valor de la plaza de barrio Parque Latino"
+      }
+    ]
+  },
+  "PARQUE LICEO 2A SECCION": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 324,
+        "fecha": "2025-05-19",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://www.instagram.com/reel/DJ5J0SWNzT8/",
+        "info": "Polideportivo social"
+      }
+    ]
+  },
+  "PARQUE LOS MOLINOS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 682,
+        "fecha": "2026-07-13",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-el-plan-de-bacheo-y-repavimentacion-avanza-con-multiples-frentes-de-obra/",
+        "info": "Visita de Obra: Plan de Reparación Vial Integral -Secc 10"
+      }
+    ]
+  },
+  "PARQUE REPUBLICA": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 211,
+        "fecha": "2024-12-10",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-inaugurara-un-polideportivo-social-cada-15-dias-en-la-ciudad-de-cordoba/",
+        "info": "El Gobernador puso en funcionamiento un nuevo polideportivo en barrio Parque República."
+      }
+    ]
+  },
+  "POETA LUGONES": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 180,
+        "fecha": "2024-10-15",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://hoydia.com.ar/economia/llaryora-volvio-a-pedir-por-la-ley-de-biocombustibles-habra-mas-rentabilidad/",
+        "info": "El gobernador Martín Llaryora disertó en la convención regional de la Asociación de Concesionarios de Automotores de la Argentina (A.C.A.R.A.) que se desarrolló el martes en el hotel Holiday Inn de la ciudad de Córdoba."
+      }
+    ]
+  },
+  "POLICIAL": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 39,
+        "fecha": "2024-02-22",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "NO",
+        "link": null,
+        "info": "Visita Obra Hospital de Noroeste (No se encuentra en el portal de prensa)"
+      },
+      {
+        "id": 484,
+        "fecha": "2026-01-27",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-visito-la-obra-del-nuevo-hospital-del-noroeste-acompanado-por-vecinos-del-sector/",
+        "info": "obra del nuevo Hospital del Noroeste"
+      }
+    ]
+  },
+  "POSTA DE VARGAS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 667,
+        "fecha": "2026-07-06",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/capital-los-barrios-smata-y-posta-de-vargas-ya-tienen-alumbrado-publico-inteligente/",
+        "info": "El gobernador Martín Llaryora y el intendente Daniel Passerini inauguraron el nuevo sistema de alumbrado público inteligente en los barrios Smata y Posta de Vargas "
+      }
+    ]
+  },
+  "QUEBRADA DE LAS ROSAS": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 245,
+        "fecha": "2025-01-29",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-llaryora-inauguro-la-puesta-en-valor-de-una-residencia-de-la-senaf/",
+        "info": "Inauguraron este miércoles la puesta en valor de la residencia para niños y adolescentes varones de la Secretaría de Niñez, Adolescencia y Familia (SENAF). Los trabajos implicaron una inversión provincial de 71 millones de pesos."
+      }
+    ]
+  },
+  "QUINTAS DE ARGUELLO": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 82,
+        "fecha": "2024-04-19",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-y-passerini-supervisaron-el-avance-de-obra-de-un-desague-que-beneficiara-a-190-mil-vecinos/",
+        "info": "Llaryora y Passerini supervisaron el avance de obra de un desagüe que beneficiará a 190 mil vecinos"
+      },
+      {
+        "id": 249,
+        "fecha": "2025-02-04",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/capital-con-la-inauguracion-del-polideportivo-numero-61-la-provincia-consolida-la-integracion-social/",
+        "info": "Polideportivo provincial "
+      }
+    ]
+  },
+  "ROGELIO MARTINEZ": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 476,
+        "fecha": "2025-12-23",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/este-martes-244-ex-integrantes-de-las-fuerzas-armadas-se-sumaron-a-la-fuerza-policial-antinarcotrafico/",
+        "info": "FPA: 244 nuevos ingresantes + 20 camionetas nuevas"
+      }
+    ]
+  },
+  "SAN FERNANDO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 400,
+        "fecha": "2025-08-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/discapacidad-llaryora-anuncio-un-fondo-para-garantizar-alimentos-en-instituciones-con-doble-jornada/",
+        "info": "Entrega de Fortalecimiento a 60 instituciones + 25 ONG ayuda para alimentación doble jornada (quality)"
+      }
+    ]
+  },
+  "SAN RAFAEL": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 243,
+        "fecha": "2025-01-16",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/la-provincia-destinara-500-millones-para-poner-en-valor-los-centros-integrales-para-personas-mayores/",
+        "info": "Inauguración Centro de personas mayores. El gobernador anunció que la Provincia destinará 500 millones de pesos para refaccionar estos espacios de la Capital, además de dotarlos de conectividad y notebooks."
+      }
+    ]
+  },
+  "SAN VICENTE": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 473,
+        "fecha": "2025-12-16",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-encabezo-el-egreso-de-mas-de-500-nuevos-policias-y-anuncio-nuevas-inversiones/",
+        "info": "Egreso suboficiales - policia"
+      },
+      {
+        "id": 655,
+        "fecha": "2026-06-29",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-superviso-la-etapa-final-de-obra-de-la-nueva-sede-de-la-escuela-de-suboficiales/",
+        "info": "Llaryora supervisó la etapa final de obra de la nueva sede de la Escuela de Suboficiales"
+      }
+    ]
+  },
+  "SANTA ISABEL 1A SECCION": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 164,
+        "fecha": "2024-09-19",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://www.letrap.com.ar/economia/martin-llaryora-muestra-juego-el-sector-privado-renault-anuncio-una-inversion-millonaria-cordoba-n5411293",
+        "info": "Martín Llaryora muestra juego con el sector privado: Renault anunció una inversión millonaria en Córdoba"
+      }
+    ]
+  },
+  "SMATA": {
+    "total_visitas": 2,
+    "visitas": [
+      {
+        "id": 100,
+        "fecha": "2024-05-10",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-puso-en-marcha-el-plan-integral-para-la-primera-infancia/",
+        "info": "Plan integral de la primera infancia "
+      },
+      {
+        "id": 666,
+        "fecha": "2026-07-06",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/capital-los-barrios-smata-y-posta-de-vargas-ya-tienen-alumbrado-publico-inteligente/",
+        "info": "El gobernador Martín Llaryora y el intendente Daniel Passerini inauguraron el nuevo sistema de alumbrado público inteligente en los barrios Smata y Posta de Vargas "
+      }
+    ]
+  },
+  "V.I.C.O.R.": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 683,
+        "fecha": "2026-07-13",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://cordoba.gob.ar/passerini-y-llaryora-entregaron-escrituras-a-familias-de-heroes-de-malvinas-ampliacion-cabildo-y-parque-futura/",
+        "info": "Entrega de Escrituras, Ampliación Cabildo - Héroes de Malvinas - Parque Futura "
+      }
+    ]
+  },
+  "VALLE ESCONDIDO": {
+    "total_visitas": 3,
+    "visitas": [
+      {
+        "id": 181,
+        "fecha": "2024-10-16",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-el-puente-que-permitira-la-salida-de-valle-escondido-avanza-a-buen-ritmo/",
+        "info": "Visita viaducto"
+      },
+      {
+        "id": 533,
+        "fecha": "2026-03-18",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/comenzo-el-asfaltado-del-puente-del-altonivel-de-valle-escondido/",
+        "info": "Supervisión de obra "
+      },
+      {
+        "id": 546,
+        "fecha": "2026-04-15",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/no-home/ciudad-de-cordoba-llaryora-inauguro-el-altonivel-de-valle-escondido/",
+        "info": "Inauguracion: Altonivel Valle Escondido"
+      }
+    ]
+  },
   "VILLA 9 DE JULIO": {
     "total_visitas": 1,
     "visitas": [
       {
+        "id": 540,
         "fecha": "2026-03-31",
         "tipo_visita": "TERRITORIAL",
         "contacto_vecinos": "SI",
@@ -1146,131 +1596,91 @@
     "total_visitas": 1,
     "visitas": [
       {
+        "id": 541,
         "fecha": "2026-04-01",
         "tipo_visita": "TERRITORIAL",
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/gobernador/ciudad-de-cordoba-llaryora-recorrio-obras-de-pavimentacion-en-villa-bustos/",
-        "info": "Visita de obra - Siciliano"
+        "info": "Visita de obra - Siciliano "
       }
     ]
   },
-  "GENERAL PAZ": {
-    "total_visitas": 1,
+  "VILLA EL LIBERTADOR": {
+    "total_visitas": 6,
     "visitas": [
       {
-        "fecha": "2026-04-10",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/no-home/comenzo-la-recuperacion-del-parque-jose-maria-paz-llaryora-y-passerini-recorrieron-la-obra/",
-        "info": "Visita Plaza Gral. Paz (Frente Reina Fabiola)"
-      }
-    ]
-  },
-  "EMPALME": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-04-13",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://www.instagram.com/reel/DXHNK2HCC7t/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-        "info": null
-      }
-    ]
-  },
-  "BAJO PALERMO": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-04-18",
-        "tipo_visita": "INSTITUCIONAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/apoyo-a-los-clubes-la-provincia-cede-terrenos-al-club-palermo-bajo-para-potenciar-el-desarrollo-de-actividades-deportivas/",
-        "info": "Almuerzo de camaraderia Club Palermo Bajo."
-      }
-    ]
-  },
-  "EL QUEBRACHO": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-05-19",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-y-passerini-inauguraron-44-cuadras-de-pavimento-en-barrio-el-quebracho/",
-        "info": "Inauguracion Pavimento + cloacas"
-      }
-    ]
-  },
-  "LA FRANCE": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-06-05",
+        "id": 26,
+        "fecha": "2024-02-09",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/salud-2/escudo-sanitario-para-bebes-la-provincia-incorpora-una-inmunizacion-inedita-contra-la-bronquiolitis/",
-        "info": "Llegada de dosis de Nirsevimab al centro de almacenamiento de vacunas para vacunar a bebés recién nacidos"
-      }
-    ]
-  },
-  "DUCASSE": {
-    "total_visitas": 1,
-    "visitas": [
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-de-los-festejos-por-los-40-anos-de-medea/",
+        "info": "El gobernador Martín Llaryora participó de los festejos por los 40 años de MEDEA (Ministerio Evangelístico Dios es Amor), ubicado en barrio Villa el Libertador de la capital provincial."
+      },
       {
+        "id": 89,
+        "fecha": "2024-04-26",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/villa-el-libertador-el-100-por-ciento-de-sus-vecinos-ya-pueden-acceder-al-servicio-de-cloacas/",
+        "info": "El gobernador Llaryora y el intendente Passerini inauguraron la segunda etapa de las obras que benefician a 30 mil habitantes de la zona sur de la ciudad de Córdoba."
+      },
+      {
+        "id": 334,
+        "fecha": "2025-05-25",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/la-universidad-provincial-tendra-una-sede-en-villa-el-libertador/",
+        "info": "Encuentro con Instituciones y anuncio creación de la Sede Regional Zona Sur de la UPC"
+      },
+      {
+        "id": 389,
+        "fecha": "2025-08-17",
+        "tipo_visita": "INSTITUCIONAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobierno/llaryora-y-passerini-encabezaron-el-acto-por-el-75-aniversario-de-villa-el-libertador/",
+        "info": "Desfile 75° aniversario Villa Libertador"
+      },
+      {
+        "id": 499,
+        "fecha": "2026-02-12",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/comenzo-la-construccion-de-la-sede-de-la-universidad-provincial-de-villa-libertador/",
+        "info": "UPC Villa libertador"
+      },
+      {
+        "id": 623,
         "fecha": "2026-06-16",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-la-construccion-de-la-nueva-sede-de-la-universidad-provincial-en-el-sur-de-la-ciudad-capital/",
+        "info": "Visita UPC sede Villa libertador"
+      }
+    ]
+  },
+  "VILLA MARTINEZ": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 478,
+        "fecha": "2025-12-29",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "NO",
+        "link": "https://prensa.cba.gov.ar/informacion-general/con-pileta-y-nuevas-instalaciones-inauguraron-el-renovado-centro-deportivo-los-filtros-en-villa-martinez/",
+        "info": "Inauguración Centro deportivo de Villa Martínez"
+      }
+    ]
+  },
+  "VILLA RIVADAVIA ANEXO \"A\"": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 383,
+        "fecha": "2025-08-04",
         "tipo_visita": "INSTITUCIONAL",
         "contacto_vecinos": "NO",
-        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-recorrio-el-nuevo-centro-de-control-de-alumbrado-publico-inteligente-de-epec/",
-        "info": "Llaryora recorrió el nuevo Centro de Control de Alumbrado Público Inteligente de EPEC"
-      }
-    ]
-  },
-  "LOS PLATANOS": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-06-24",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-inauguro-la-puesta-en-valor-de-la-plaza-jerusalen-de-barrio-los-platanos/",
-        "info": "Llaryora inauguró la puesta en valor de la plaza Jerusalén de barrio Los Plátanos"
-      }
-    ]
-  },
-  "PARQUE LATINO": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-06-29",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/no-home/ciudad-de-cordoba-llaryora-y-passerini-inauguraron-la-puesta-en-valor-de-la-plaza-de-barrio-parque-latino/",
-        "info": "Llaryora y Passerini inauguraron la puesta en valor de la plaza de barrio Parque Latino"
-      }
-    ]
-  },
-  "MARQUES DE SOBREMONTE": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-07-01",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-superviso-los-trabajos-de-bacheo-y-rehabilitacion-en-barrio-marques-de-sobremonte/",
-        "info": "Llaryora supervisó los trabajos de bacheo y rehabilitación en barrio Marqués de Sobremonte"
-      }
-    ]
-  },
-  "PARQUE JORGE NEWBERY": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-07-01",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/gobernador/ciudad-de-cordoba-llaryora-inauguro-la-iluminacion-de-la-plaza-soldado-aeronautico-en-barrio-parque-jorge-newbery/",
-        "info": "Llaryora inauguró la iluminación de la plaza Soldado Aeronáutico en barrio Parque Jorge Newbery"
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-y-passerini-anunciaron-el-ensanche-e-iluminacion-del-camino-san-antonio/",
+        "info": "Anuncio Camino San Antonio"
       }
     ]
   },
@@ -1278,23 +1688,12 @@
     "total_visitas": 1,
     "visitas": [
       {
+        "id": 660,
         "fecha": "2026-07-02",
         "tipo_visita": "TERRITORIAL",
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/gobernador/villa-union-llaryora-superviso-el-avance-de-obras-de-pavimentacion-y-red-cloacal/",
         "info": "Llaryora supervisó el avance de obras de pavimentación y red cloacal"
-      }
-    ]
-  },
-  "POSTA DE VARGAS": {
-    "total_visitas": 1,
-    "visitas": [
-      {
-        "fecha": "2026-07-06",
-        "tipo_visita": "TERRITORIAL",
-        "contacto_vecinos": "SI",
-        "link": "https://prensa.cba.gov.ar/informacion-general/capital-los-barrios-smata-y-posta-de-vargas-ya-tienen-alumbrado-publico-inteligente/",
-        "info": "El gobernador Martín Llaryora y el intendente Daniel Passerini inauguraron el nuevo sistema de alumbrado público inteligente en los barrios Smata y Posta de Vargas"
       }
     ]
   }
