@@ -198,9 +198,8 @@ const formatFechaCorta = (iso) => {
 };
 
 // Arma, para cada circuito (por Mapkey), la lista de eventos de cobertura ya
-// ordenada cronologicamente. Disenado para que sumar "pauta" el dia que haya
-// datos reales sea: 1 fetch + unas lineas aca, sin tocar el resto de la tabla.
-function construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cruceData, pautaData) {
+// ordenada cronologicamente.
+function construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cruceData, pautasBarriosData, barriosGeoData) {
   const eventosPorMapkey = {};
   datos.forEach(d => { eventosPorMapkey[d.Mapkey] = []; });
 
@@ -231,10 +230,12 @@ function construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cru
     });
   });
 
-  // Pauta: reservado, sin datos todavia.
+  // Pauta: derivada en runtime desde pautas_barrios.json (sin pautas_circuitos.json,
+  // mismo criterio que se usó para retirar cobertura_circuitos.json). fecha_salida
+  // es la fecha del evento (cuando empieza a correr la pauta).
   datos.forEach(d => {
-    (pautaData?.[d.Mapkey] || []).forEach(p => {
-      if (esFechaValida(p.fecha)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.fecha, detalle: p });
+    buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, d.CircuitoKey).forEach(p => {
+      if (esFechaValida(p.fecha_salida)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.fecha_salida, detalle: p });
     });
   });
 
@@ -656,6 +657,49 @@ function coberturaDesdeEncuesta(encuestasData, circuitoKey) {
     cantidad_rondas: cantidadRondas,
     fechas_rondas: (e?.rondas || []).map(r => r.fecha),
   };
+}
+
+// Deriva en runtime todas las pautas publicitarias de un circuito, sin pautas_circuitos.json
+// (mismo criterio ya aplicado para retirar cobertura_circuitos.json: nada de snapshots que
+// se desincronicen). pautas_barrios.json viene indexado por nombre de barrio, no por
+// circuito — así que se recorren los features de barrios_geo.json buscando cuáles tienen
+// circuito_principal apuntando al circuito pedido, y se suman sus pautas.
+//
+// circuito_principal viene como "Mapkey - nombre" (mismo patrón que ya usa
+// handleSelectBarrioDesdeBusqueda): se resuelve el Mapkey real del circuito buscado a
+// través de `datos` (no se asume que alcance con rellenar/sacar ceros del circuitoKey).
+//
+// barrios_geo.json tiene 16 nombres de barrio duplicados (fragmentos no contiguos, ver
+// sección 14 de CONTEXTO_PROYECTO.md) que pueden tener circuito_principal distinto entre
+// sí — por eso se itera .features (no el lookup ya colapsado por nombre) y se deduplica
+// por nombre normalizado SOLO dentro del resultado de este circuito, para no sumar dos
+// veces el mismo barrio si aparece en más de un fragmento con el mismo circuito_principal.
+function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoKey) {
+  if (!pautasBarriosData || !barriosGeoData || !datos || !circuitoKey) return [];
+  const circuitoRecord = datos.find(d => String(d.CircuitoKey) === String(circuitoKey));
+  if (!circuitoRecord) return [];
+  const mapkeyBuscado = circuitoRecord.Mapkey;
+
+  const barriosVistos = new Set();
+  const pautas = [];
+  (barriosGeoData.features || []).forEach(feature => {
+    const props = feature.properties || {};
+    const nombreBarrio = props.nombre_barrio;
+    if (!nombreBarrio) return;
+    const mapkeyPrincipal = props.circuito_principal?.split(' - ')[0]?.trim();
+    if (!mapkeyPrincipal || mapkeyPrincipal !== mapkeyBuscado) return;
+
+    const claveNormalizada = normalizarNombreBarrio(nombreBarrio);
+    if (barriosVistos.has(claveNormalizada)) return;
+    barriosVistos.add(claveNormalizada);
+
+    const claveOriginal = Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === claveNormalizada);
+    if (!claveOriginal) return;
+    (pautasBarriosData[claveOriginal].pautas || []).forEach(p => {
+      pautas.push({ ...p, barrio: nombreBarrio });
+    });
+  });
+  return pautas;
 }
 
 const COLOR_GESTION = { 'Positiva': '#22C55E', 'Regular': '#FBBF24', 'Negativa': '#EF4444', 'Ns/Nc': '#CBD5E1' };
@@ -1526,6 +1570,19 @@ const CeldaEvento = ({ evento }) => {
               {evento.detalle.link && <a href={evento.detalle.link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver nota →</a>}
             </>
           )}
+          {evento.tipo === 'pauta' && (
+            <>
+              <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>{evento.detalle.tema}</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>{evento.detalle.campania} · {evento.detalle.plataforma} ({evento.detalle.formato})</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>{evento.detalle.ministerio}</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {evento.detalle.fecha_salida} → {evento.detalle.fecha_cierre}</div>
+              <div style={{ color: 'var(--text-secondary)' }}>
+                Alcance real: {evento.detalle.alcance_real?.toLocaleString() ?? '—'} de {evento.detalle.alcance_planificado?.toLocaleString() ?? '—'} planificado
+                {typeof evento.detalle.cobertura_real === 'number' && ` (${(evento.detalle.cobertura_real * 100).toFixed(1)}% cobertura real)`}
+              </div>
+            </>
+          )}
         </div>
       )}
     </td>
@@ -1828,7 +1885,7 @@ export default function Home() {
   const [obrasData, setObrasData] = useState([]);
   const [cruceData, setCruceData] = useState(null);
   const [recorridosData, setRecorridosData] = useState(null);
-  const [pautaData] = useState(null); // reservado: sin fuente de datos todavía
+  const [pautasBarriosData, setPautasBarriosData] = useState(null);
   const [encuestasData, setEncuestasData] = useState(null);
   const [encuestasMetadata, setEncuestasMetadata] = useState(null);
   const [escuelasData, setEscuelasData] = useState(null);
@@ -1847,12 +1904,13 @@ export default function Home() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, encuestasRes, encuestasMetaRes, escuelasRes, votosEscuelasCircuitoRes, votosEscuelasBarrioRes] = await Promise.all([
+        const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, pautasBarriosRes, encuestasRes, encuestasMetaRes, escuelasRes, votosEscuelasCircuitoRes, votosEscuelasBarrioRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
           fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
           fetch('/data/circuito_barrios_cruce.json'),
           fetch('/data/recorridos_barrios.json'),
+          fetch('/data/pautas_barrios.json'),
           fetch('/data/encuestas_circuitos.json'), fetch('/data/encuestas_metadata.json'),
           fetch('/data/escuelas_capital.json'), fetch('/data/votos_escuelas_por_circuito.json'),
           fetch('/data/votos_escuelas_por_barrio.json'),
@@ -1862,6 +1920,7 @@ export default function Home() {
         setBarriosGeoData(await barriosGeoRes.json()); setObrasData(await obrasRes.json());
         setCruceData(await cruceRes.json());
         setRecorridosData(await recorridosRes.json());
+        setPautasBarriosData(await pautasBarriosRes.json());
         setEncuestasData(await encuestasRes.json()); setEncuestasMetadata(await encuestasMetaRes.json());
         setEscuelasData(await escuelasRes.json());
         setVotosEscuelasCircuitoData(await votosEscuelasCircuitoRes.json());
@@ -1926,8 +1985,8 @@ export default function Home() {
   }, [votosEscuelasBarrioData]);
 
   const eventosPorCircuito = useMemo(
-    () => construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cruceData, pautaData),
-    [datos, encuestasData, recorridosLookup, cruceData, pautaData]
+    () => construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cruceData, pautasBarriosData, barriosGeoData),
+    [datos, encuestasData, recorridosLookup, cruceData, pautasBarriosData, barriosGeoData]
   );
 
   const coberturaResumen = useMemo(() => {
