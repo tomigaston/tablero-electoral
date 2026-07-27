@@ -1,0 +1,683 @@
+{
+  "ALTOS DE SANTA ANA": {
+    "total_pautas": 2,
+    "pautas": [
+      {
+        "fila_origen": 81,
+        "campania": "Feed",
+        "tema": "Nos Vemos en la Plaza: Barrio Altos de Santa Ana",
+        "ministerio": "EPEC",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.7,
+        "cobertura_real": 0.3882183316168898,
+        "alcance_planificado": 611730,
+        "alcance_real": 339264
+      },
+      {
+        "fila_origen": 90,
+        "campania": "Ministerios",
+        "tema": "Plaza Altos de Santa Ana",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-03",
+        "fecha_cierre": "2026-04-10",
+        "universo": 873900,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": 0.37677423046115116,
+        "alcance_planificado": 568035,
+        "alcance_real": 329263
+      }
+    ]
+  },
+  "CARRARA": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 38,
+        "campania": "Ministerios",
+        "tema": "Plan 800 cuadras:  Barrio Carrara",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-06",
+        "fecha_cierre": "2026-03-13",
+        "universo": 1700000,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": 0.3308029411764706,
+        "alcance_planificado": 1105000,
+        "alcance_real": 562365
+      }
+    ]
+  },
+  "COLINAS DEL CERRO": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 98,
+        "campania": "Ministerios",
+        "tema": "Primer mojón Colinas del Cerro",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-10",
+        "fecha_cierre": "2026-04-17",
+        "universo": 873900,
+        "cobertura_planificada": 0.7,
+        "cobertura_real": 0.6610172788648587,
+        "alcance_planificado": 611730,
+        "alcance_real": 577663
+      }
+    ]
+  },
+  "GENERAL ARENALES": {
+    "total_pautas": 2,
+    "pautas": [
+      {
+        "fila_origen": 62,
+        "campania": "Ministerios",
+        "tema": "Polideportivo de Arenales",
+        "ministerio": "Sec. de Hábitat y Desarrollo Emprendedor",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-20",
+        "fecha_cierre": "2026-03-27",
+        "universo": 873900,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": 0.5917221650074379,
+        "alcance_planificado": 568035,
+        "alcance_real": 517106
+      },
+      {
+        "fila_origen": 71,
+        "campania": "Ministerios",
+        "tema": "Centro deportivo barrio general arenales",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.48761757638173703,
+        "alcance_planificado": 699120,
+        "alcance_real": 426129
+      }
+    ]
+  },
+  "JARDIN DEL SUD": {
+    "total_pautas": 2,
+    "pautas": [
+      {
+        "fila_origen": 294,
+        "campania": "Ministerios x Explanans",
+        "tema": "Frente de Obra: Barrio Jardines del Sud",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-06-26",
+        "fecha_cierre": "2026-07-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.5783556470992104,
+        "alcance_planificado": 699120,
+        "alcance_real": 505425
+      },
+      {
+        "fila_origen": 295,
+        "campania": "Ministerios x Explanans",
+        "tema": "Frente de Obra: Barrio Jardines del Sud",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Tráfico",
+        "formato": "Reel",
+        "fecha_salida": "2026-06-26",
+        "fecha_cierre": "2026-07-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.4,
+        "cobertura_real": 0.0772182171873212,
+        "alcance_planificado": 349560,
+        "alcance_real": 67481
+      }
+    ]
+  },
+  "LA ESPERANZA": {
+    "total_pautas": 2,
+    "pautas": [
+      {
+        "fila_origen": 126,
+        "campania": "Ministerios x Explanans",
+        "tema": "Inicio de Obra Centro Deportivo en Barrio La Esperanza",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-30",
+        "fecha_cierre": "2026-05-08",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6320528664606935,
+        "alcance_planificado": 699120,
+        "alcance_real": 552351
+      },
+      {
+        "fila_origen": 150,
+        "campania": "Ministerios",
+        "tema": "Nuevo mojón en Barrio La Esperanza",
+        "ministerio": "Sec. de Hábitat y Desarrollo Emprendedor",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-05-08",
+        "fecha_cierre": "2026-05-15",
+        "universo": 873900,
+        "cobertura_planificada": 0.6,
+        "cobertura_real": 0.8487538619979402,
+        "alcance_planificado": 524340,
+        "alcance_real": 741726
+      }
+    ]
+  },
+  "LOS CHINGOLOS": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 228,
+        "campania": "Ministerios x Explanans",
+        "tema": "Visita a Centro Socieducativo en Barrio Chingolo: Casa Macuca",
+        "ministerio": "Secretaría Gral. Desarrollo Humano",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-05-29",
+        "fecha_cierre": "2026-06-05",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.8707849868405996,
+        "alcance_planificado": 699120,
+        "alcance_real": 760979
+      }
+    ]
+  },
+  "LOS PLATANOS": {
+    "total_pautas": 3,
+    "pautas": [
+      {
+        "fila_origen": 199,
+        "campania": "Ministerios x Explanans",
+        "tema": "Avanza la puesta en valor de la Plaza Jerusalén en Barrio Los Plátanos",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-05-22",
+        "fecha_cierre": "2026-05-29",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.5592230232292025,
+        "alcance_planificado": 699120,
+        "alcance_real": 488705
+      },
+      {
+        "fila_origen": 287,
+        "campania": "Feed",
+        "tema": "Plaza Jerusalén Los Platanos",
+        "ministerio": "Comunicación Institucional",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-06-26",
+        "fecha_cierre": "2026-07-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.233472937407026,
+        "alcance_planificado": 699120,
+        "alcance_real": 204032
+      },
+      {
+        "fila_origen": 288,
+        "campania": "Feed",
+        "tema": "Plaza Jerusalén Los Platanos",
+        "ministerio": "Comunicación Institucional",
+        "plataforma": "Meta",
+        "objetivo": "Tráfico",
+        "formato": "Reel",
+        "fecha_salida": "2026-06-26",
+        "fecha_cierre": "2026-07-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.4,
+        "cobertura_real": 0.043939810046916127,
+        "alcance_planificado": 349560,
+        "alcance_real": 38399
+      }
+    ]
+  },
+  "MULLER": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 243,
+        "campania": "Ministerios x Explanans",
+        "tema": "ESPF Muller",
+        "ministerio": "Secretaría Gral. Ambiente",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-06-05",
+        "fecha_cierre": "2026-06-12",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6270328412861883,
+        "alcance_planificado": 699120,
+        "alcance_real": 547964
+      }
+    ]
+  },
+  "OBISPO ANGELELLI": {
+    "total_pautas": 2,
+    "pautas": [
+      {
+        "fila_origen": 154,
+        "campania": "Ministerios x Explanans",
+        "tema": "Nos Vemos en la Plaza en Barrio Villa Angelelli",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-05-08",
+        "fecha_cierre": "2026-05-15",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6110676278750429,
+        "alcance_planificado": 699120,
+        "alcance_real": 534012
+      },
+      {
+        "fila_origen": 206,
+        "campania": "Ministerios x Explanans",
+        "tema": "Plaza en Villa Angellelli",
+        "ministerio": "Secretaría Gral. Desarrollo Humano",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-05-22",
+        "fecha_cierre": "2026-05-29",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.5380741503604531,
+        "alcance_planificado": 699120,
+        "alcance_real": 470223
+      }
+    ]
+  },
+  "PARQUE LICEO 1A SECCION": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 155,
+        "campania": "Ministerios x Explanans",
+        "tema": "Plan de Reparación Vial Integral: Parque Liceo II",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-05-08",
+        "fecha_cierre": "2026-05-15",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6190410802151276,
+        "alcance_planificado": 699120,
+        "alcance_real": 540980
+      }
+    ]
+  },
+  "SAN RAFAEL": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 127,
+        "campania": "Ministerios x Explanans",
+        "tema": "Visita al Centro Integral de Personas Mayores de barrio San Rafael",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-30",
+        "fecha_cierre": "2026-05-08",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.5900091543654881,
+        "alcance_planificado": 699120,
+        "alcance_real": 515609
+      }
+    ]
+  },
+  "SAN VICENTE": {
+    "total_pautas": 2,
+    "pautas": [
+      {
+        "fila_origen": 85,
+        "campania": "Hacer para Crecer",
+        "tema": "Barrio San Vicente tendrá un nuevo espacio deportivo",
+        "ministerio": "Vinculación",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Feed/Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-10",
+        "universo": 1700000,
+        "cobertura_planificada": 0.6,
+        "cobertura_real": 0.6405,
+        "alcance_planificado": 1020000,
+        "alcance_real": 1088855
+      },
+      {
+        "fila_origen": 312,
+        "campania": "Feed",
+        "tema": "Nueva Escuela de Suboficiales en Barrio San Vicente",
+        "ministerio": "Min. Seguridad",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-07-03",
+        "fecha_cierre": "2026-07-10",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.42499141778235494,
+        "alcance_planificado": 699120,
+        "alcance_real": 371400
+      }
+    ]
+  },
+  "SANTA ISABEL 2A SECCION": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 303,
+        "campania": "Ministerios x Explanans",
+        "tema": "Apross en Barrio Santa Isabel",
+        "ministerio": "Secretaría Gral. Desarrollo Humano",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-06-26",
+        "fecha_cierre": "2026-07-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6107861311362857,
+        "alcance_planificado": 699120,
+        "alcance_real": 533766
+      }
+    ]
+  },
+  "VALLE ESCONDIDO": {
+    "total_pautas": 3,
+    "pautas": [
+      {
+        "fila_origen": 49,
+        "campania": "Feed",
+        "tema": "Altonivel Valle Escondido",
+        "ministerio": "Min. Infraestructura y SS.PPO",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-13",
+        "fecha_cierre": "2026-03-20",
+        "universo": 1700000,
+        "cobertura_planificada": 0.7,
+        "cobertura_real": 0.7485735294117647,
+        "alcance_planificado": 1190000,
+        "alcance_real": 1272575
+      },
+      {
+        "fila_origen": 66,
+        "campania": "Feed",
+        "tema": "Altonivel Valle Escondido",
+        "ministerio": "Caminos de las Sierras",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-20",
+        "fecha_cierre": "2026-03-27",
+        "universo": 1700000,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.4812517647058824,
+        "alcance_planificado": 1360000,
+        "alcance_real": 818128
+      },
+      {
+        "fila_origen": 82,
+        "campania": "Hacer para Crecer",
+        "tema": "Etapa final para la obra del altonivel de Valle Escondido",
+        "ministerio": "Obras",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Feed/Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-10",
+        "universo": 1700000,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.7851,
+        "alcance_planificado": 1360000,
+        "alcance_real": 1334595
+      }
+    ]
+  },
+  "VILLA 9 DE JULIO": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 88,
+        "campania": "Ministerios",
+        "tema": "Frente de obra en Villa 9 de Julio y Villa Serrana",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-03",
+        "fecha_cierre": "2026-04-10",
+        "universo": 873900,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": 0.38283556470992103,
+        "alcance_planificado": 568035,
+        "alcance_real": 334560
+      }
+    ]
+  },
+  "VILLA ASPASIA": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 74,
+        "campania": "Ministerios",
+        "tema": "Plan Reparación Integral Vial: Villa Aspacia",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Carrusel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.5489998855704314,
+        "alcance_planificado": 699120,
+        "alcance_real": 479771
+      }
+    ]
+  },
+  "VILLA EL LIBERTADOR": {
+    "total_pautas": 6,
+    "pautas": [
+      {
+        "fila_origen": 32,
+        "campania": "Feed",
+        "tema": "Upc Villa Libertador",
+        "ministerio": "UPC",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-02-13",
+        "fecha_cierre": "2026-02-19",
+        "universo": 1700000,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 1.8765,
+        "alcance_planificado": 1360000,
+        "alcance_real": 3190167
+      },
+      {
+        "fila_origen": 50,
+        "campania": "Hacer para Crecer",
+        "tema": "Comenzó la construcción de la UPC de Villa El Libertador",
+        "ministerio": "Educación",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Feed/Reel",
+        "fecha_salida": "2026-03-13",
+        "fecha_cierre": "2026-03-20",
+        "universo": 873900,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": 0.6936,
+        "alcance_planificado": 568035,
+        "alcance_real": 606211
+      },
+      {
+        "fila_origen": 51,
+        "campania": "Hacer para Crecer",
+        "tema": "Comenzó la construcción de la UPC de Villa El Libertador",
+        "ministerio": "Educación",
+        "plataforma": "Youtube",
+        "objetivo": "Visualizaciones ",
+        "formato": "Short",
+        "fecha_salida": "2026-03-13",
+        "fecha_cierre": "2026-03-20",
+        "universo": 873900,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": null,
+        "alcance_planificado": 568035,
+        "alcance_real": null
+      },
+      {
+        "fila_origen": 79,
+        "campania": "Feed",
+        "tema": "UPC Villa Libertador",
+        "ministerio": "Min. Infraestructura y SS.PPO",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.7,
+        "cobertura_real": 0.5199656711294198,
+        "alcance_planificado": 611730,
+        "alcance_real": 454398
+      },
+      {
+        "fila_origen": 95,
+        "campania": "Feed",
+        "tema": "UPC Villa Libertador",
+        "ministerio": "UPC",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-10",
+        "fecha_cierre": "2026-04-17",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6512724568028379,
+        "alcance_planificado": 699120,
+        "alcance_real": 569147
+      },
+      {
+        "fila_origen": 124,
+        "campania": "Ministerios x Explanans",
+        "tema": "Plan de Reparación Vial Integral: Villa Libertador",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-04-30",
+        "fecha_cierre": "2026-05-08",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.563257809818057,
+        "alcance_planificado": 699120,
+        "alcance_real": 492231
+      }
+    ]
+  },
+  "VILLA UNION": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 75,
+        "campania": "Ministerios",
+        "tema": "Plan de Pavimentación 800 cuadras: Villa Unión",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.49004691612312623,
+        "alcance_planificado": 699120,
+        "alcance_real": 428252
+      }
+    ]
+  },
+  "YAPEYU": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 57,
+        "campania": "Ministerios",
+        "tema": "Pavimento Barrio Yapeyú",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-20",
+        "fecha_cierre": "2026-03-27",
+        "universo": 873900,
+        "cobertura_planificada": 0.65,
+        "cobertura_real": 0.5910001144295686,
+        "alcance_planificado": 568035,
+        "alcance_real": 516475
+      }
+    ]
+  },
+  "YOFRE SUD": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 73,
+        "campania": "Ministerios",
+        "tema": "Polideportivo Yofre Sur",
+        "ministerio": "Min. Vinculación Comunitaria",
+        "plataforma": "Meta",
+        "objetivo": "Alcance",
+        "formato": "Reel",
+        "fecha_salida": "2026-03-27",
+        "fecha_cierre": "2026-04-03",
+        "universo": 873900,
+        "cobertura_planificada": 0.8,
+        "cobertura_real": 0.6016981347980318,
+        "alcance_planificado": 699120,
+        "alcance_real": 525824
+      }
+    ]
+  }
+}
