@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
-import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, circuitoMapkeyDeObra } from '../lib/obrasCercanas';
+import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, circuitoMapkeyDeObra, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -704,6 +704,29 @@ function coberturaDesdeEncuesta(encuestasData, circuitoKey) {
 // sí — por eso se itera .features (no el lookup ya colapsado por nombre) y se deduplica
 // por nombre normalizado SOLO dentro del resultado de este circuito, para no sumar dos
 // veces el mismo barrio si aparece en más de un fragmento con el mismo circuito_principal.
+// Resuelve el circuito "principal" de un barrio, de forma independiente de cuál sea
+// el circuito actualmente seleccionado (no asume que circuitoSeleccionado ya es el
+// principal de este barrio — puede no serlo, ej. si se llegó acá vía "Otros barrios en
+// este circuito", que a propósito no re-deriva circuito). Dos pasos, en este orden:
+// 1) circuito_principal de barrios_geo.json (vía barriosGeoLookup); 2) si falta, cae a
+// circuito_barrios_cruce.json → barrio_to_circuitos, orden_importancia: 1. Mismo criterio
+// que ya usaba handleSelectBarrioDesdeBusqueda, extraído acá para reusarlo también desde
+// la ficha de barrio.
+function resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, todosLosDatos) {
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const props = barriosGeoLookup[key];
+  let circuitoRecord = null;
+  const mapkeyPrincipal = props?.circuito_principal?.split(' - ')[0]?.trim();
+  if (mapkeyPrincipal) circuitoRecord = todosLosDatos.find(d => d.Mapkey === mapkeyPrincipal);
+  if (!circuitoRecord) {
+    const lista = cruceData?.barrio_to_circuitos?.[nombreBarrio];
+    const principal = lista?.find(c => c.orden_importancia === 1);
+    const mapkeyCruce = principal?.circuito?.split(' - ')[0]?.trim();
+    if (mapkeyCruce) circuitoRecord = todosLosDatos.find(d => d.Mapkey === mapkeyCruce);
+  }
+  return circuitoRecord || null;
+}
+
 function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoKey) {
   if (!pautasBarriosData || !barriosGeoData || !datos || !circuitoKey) return [];
   const circuitoRecord = datos.find(d => String(d.CircuitoKey) === String(circuitoKey));
@@ -1539,9 +1562,7 @@ const TIPO_VISITA_COLOR = {
   'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, encuestasData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas, obrasData, barriosGeoData }) => {
-  const [mostrarObras, setMostrarObras] = useState(false);
-
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, encuestasData, onVerFichaBarrio }) => {
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -1556,9 +1577,6 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
     .filter(c => c.circuito !== claveSel)
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
   const obras = props.obras || [];
-  const recorridos = recorridosLookup?.[key];
-  const votosEscuelas = votosEscuelasBarrioLookup?.[key];
-  const obrasCercanasCount = obrasData ? obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasData).length : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -1578,6 +1596,10 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
           <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin circuito asociado.</div>
         )}
       </div>
+
+      {/* Deshabilitado hasta la Etapa 2 (todavía no hay contenido para vistaFicha === 'barrio').
+          onClick ya apunta a onVerFichaBarrio para que alcance con sacar el disabled más adelante. */}
+      <button disabled onClick={onVerFichaBarrio} title="Próximamente" style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 500, cursor: 'not-allowed' }}>Ver ficha completa →</button>
 
       <ListaCruceColapsable
         titulo="Otros circuitos en este barrio"
@@ -1609,67 +1631,11 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
           </div>
         </div>
       )}
-
-      {recorridosLookup && (
-        <div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Recorridos del Gobernador</div>
-          {recorridos && recorridos.total_visitas > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-primary)', fontWeight: 600 }}>{recorridos.total_visitas} visita{recorridos.total_visitas !== 1 ? 's' : ''}</div>
-              {(recorridos.visitas || []).map((v, i) => {
-                const colorTipo = TIPO_VISITA_COLOR[v.tipo_visita] || TIPO_VISITA_COLOR['NO HAY DATOS certeros'];
-                return (
-                  <div key={i} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{v.fecha}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: colorTipo.bg, color: colorTipo.text }}>{v.tipo_visita}</span>
-                    </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>Contacto con vecinos: <strong>{v.contacto_vecinos || 'NO'}</strong></div>
-                    {v.link && (
-                      <a href={v.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#1976D2', marginTop: '4px', display: 'inline-block' }}>Ver nota →</a>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin visitas registradas.</div>
-          )}
-        </div>
-      )}
-
-      {votosEscuelasBarrioLookup && (
-        <div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Votos por escuela</div>
-          {votosEscuelas ? (
-            <ListaVotosEscuelas escuelas={votosEscuelas.escuelas} promedioCapitalPct={promedioCapitalPctEscuelas} />
-          ) : (
-            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados para este barrio.</div>
-          )}
-        </div>
-      )}
-
-      {obrasData && (
-        <div>
-          <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => setMostrarObras(true)} />
-          {mostrarObras && (
-            <div style={{ marginTop: '10px' }}>
-              <ObrasPanel
-                tipo="barrio"
-                nombreBarrio={nombreBarrio}
-                obrasData={obrasData}
-                barriosGeoData={barriosGeoData}
-                focoInicial="cercanas"
-              />
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas, obrasData, indiceBarrioCircuito, circuitosGeoJsonData, barriosGeoData }) => (
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasData, indiceBarrioCircuito, circuitosGeoJsonData }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -1678,7 +1644,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
         ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasData={obrasData} indiceBarrioCircuito={indiceBarrioCircuito} circuitosGeoJsonData={circuitosGeoJsonData} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} recorridosLookup={recorridosLookup} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPctEscuelas={promedioCapitalPctEscuelas} obrasData={obrasData} barriosGeoData={barriosGeoData} />}
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} onVerFichaBarrio={onVerFichaBarrio} />}
     </div>
   </div>
 );
@@ -2054,7 +2020,7 @@ export default function Home() {
   const [mostrarInfo, setMostrarInfo] = useState(false);
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
-  const [vistaExpandida, setVistaExpandida] = useState(false);
+  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital'
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [panelTab, setPanelTab] = useState('circuito');
@@ -2113,6 +2079,12 @@ export default function Home() {
   // Índice barrio -> circuitos (circuito_barrios_cruce.json), precalculado una sola
   // vez para derivar el circuito de cada obra sin lat/lon propia (ver lib/obrasCercanas.js).
   const indiceBarrioCircuito = useMemo(() => construirIndiceBarrioCircuito(cruceData), [cruceData]);
+
+  // Única fuente de obras que debería circular de acá en más (mapa, paneles, modal):
+  // cada obra ya trae _circuitoMapkey/_circuitoNombre resuelto, para que "toda obra en
+  // cualquier lista muestra su circuito" quede garantizado acá, no repetido en cada
+  // componente. Todavía no conectada a ningún componente (eso es la próxima etapa).
+  const obrasEnriquecidas = useMemo(() => enriquecerObrasConCircuito(obrasData, indiceBarrioCircuito), [obrasData, indiceBarrioCircuito]);
 
   // Si cambiamos de circuito estando en la solapa Encuestas y el nuevo no tiene datos, volvemos a Resumen.
   useEffect(() => {
@@ -2217,17 +2189,7 @@ export default function Home() {
     setPanelTab('barrio');
     setFiltroCategoria(null);
 
-    const key = normalizarNombreBarrio(nombreBarrio);
-    const props = barriosGeoLookup[key];
-    let circuitoRecord = null;
-    const mapkeyPrincipal = props?.circuito_principal?.split(' - ')[0]?.trim();
-    if (mapkeyPrincipal) circuitoRecord = datos.find(d => d.Mapkey === mapkeyPrincipal);
-    if (!circuitoRecord) {
-      const lista = cruceData?.barrio_to_circuitos?.[nombreBarrio];
-      const principal = lista?.find(c => c.orden_importancia === 1);
-      const mapkeyCruce = principal?.circuito?.split(' - ')[0]?.trim();
-      if (mapkeyCruce) circuitoRecord = datos.find(d => d.Mapkey === mapkeyCruce);
-    }
+    const circuitoRecord = resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, datos);
     setCircuitoSeleccionado(circuitoRecord ? circuitoRecord.CircuitoKey : null);
     setZoomBarrioSolicitado({ nombre: nombreBarrio, ts: Date.now() });
   };
@@ -2244,14 +2206,14 @@ export default function Home() {
   // a la vista de mapa (Estado 1) para verlo resaltado ahí.
   const irACircuitoDesdeGrilla = (circuitoKey) => {
     handleSelectCircuito(circuitoKey);
-    setVistaExpandida(false);
+    setVistaFicha(null);
   };
 
   // Click en una fila del listado de "Circuitos con encuesta": va directo a la
   // ficha del circuito, solapa Encuestas.
   const irACircuitoDesdeListadoEncuestas = (circuitoKey) => {
     handleSelectCircuito(circuitoKey);
-    setVistaExpandida(true);
+    setVistaFicha('circuito');
     setSolapaActiva('encuestas');
   };
 
@@ -2302,7 +2264,7 @@ export default function Home() {
                   <div style={{ position: 'fixed', inset: 0, zIndex: 1998 }} onClick={() => setMostrarMenu(false)} />
                   <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '6px', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 1999, minWidth: '210px', overflow: 'hidden' }}>
                     <button onClick={() => { setMostrarInfo(true); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>ℹ️ Info</button>
-                    <button onClick={() => { setVistaExpandida(true); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📊 Estadísticas de Capital</button>
+                    <button onClick={() => { setVistaFicha('capital'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📊 Estadísticas de Capital</button>
                     <button
                       onClick={() => { setMostrarListadoEncuestas(true); setMostrarMenu(false); }}
                       style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}
@@ -2363,7 +2325,7 @@ export default function Home() {
         <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={irACircuitoDesdeGrilla} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
-          {vistaExpandida ? (
+          {(vistaFicha === 'circuito' || vistaFicha === 'capital') ? (
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
                 {circuitoSeleccionado && datosCircuito ? (
@@ -2372,8 +2334,8 @@ export default function Home() {
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>CIRCUITO {circuitoSeleccionado}</h2>
-                          <button onClick={() => { setCircuitoSeleccionado(null); setFiltroCategoria(null); setVistaExpandida(false); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
-                          <button onClick={() => setVistaExpandida(false)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                          <button onClick={() => { setCircuitoSeleccionado(null); setFiltroCategoria(null); setVistaFicha(null); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
+                          <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
                         </div>
                         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>{datosCircuito.cirn_nom}</p>
                       </div>
@@ -2403,7 +2365,7 @@ export default function Home() {
                 ) : (
                   <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ marginBottom: '16px' }}>
-                      <button onClick={() => setVistaExpandida(false)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                      <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
                     </div>
                     <VistaCapital datos={datos} onSelectCircuito={handleSelectCircuito} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} />
                   </div>
@@ -2431,7 +2393,8 @@ export default function Home() {
                     setPanelTab={setPanelTab}
                     datosCircuito={datosCircuito}
                     padronTotal={padronTotal}
-                    onVerFicha={(solapa, foco) => { setVistaExpandida(true); if (solapa) setSolapaActiva(solapa); setObrasFoco(foco || 'propio'); }}
+                    onVerFicha={(solapa, foco) => { setVistaFicha('circuito'); if (solapa) setSolapaActiva(solapa); setObrasFoco(foco || 'propio'); }}
+                    onVerFichaBarrio={() => setVistaFicha('barrio')}
                     barrioSeleccionado={barrioSeleccionado}
                     barriosGeoLookup={barriosGeoLookup}
                     todosLosDatos={datos}
@@ -2439,13 +2402,9 @@ export default function Home() {
                     onSelectBarrio={handleSelectBarrio}
                     onSelectCircuito={handleSelectCircuito}
                     encuestasData={encuestasData}
-                    recorridosLookup={recorridosLookup}
-                    votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
-                    promedioCapitalPctEscuelas={votosEscuelasBarrioData?.promedio_capital_pct}
                     obrasData={obrasData}
                     indiceBarrioCircuito={indiceBarrioCircuito}
                     circuitosGeoJsonData={circuitosGeoJsonData}
-                    barriosGeoData={barriosGeoData}
                   />
                 </div>
               </div>
