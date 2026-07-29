@@ -130,7 +130,7 @@ const getNumeroBase = (circuitoKey) => {
   return String(circuitoKey).replace(/[A-Za-z]/g, '');
 };
 // Mismo criterio de normalización usado en components/MapaCircuitos.js para cruzar
-// barrios_por_circuito.json / obras_largo.json con barrios_geo.json
+// barrios_por_circuito.json / recorridos_barrios.json con barrios_geo.json
 const normalizarNombreBarrio = (s) => (s || '')
   .toUpperCase()
   .replace(/[ºª]/g, 'O')
@@ -1907,7 +1907,7 @@ export default function Home() {
         const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, pautasBarriosRes, encuestasRes, encuestasMetaRes, escuelasRes, votosEscuelasCircuitoRes, votosEscuelasBarrioRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
           fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
-          fetch('/data/barrios_geo.json'), fetch('/data/obras_largo.json'),
+          fetch('/data/barrios_geo.json'), fetch('/data/obras_capital.json'),
           fetch('/data/circuito_barrios_cruce.json'),
           fetch('/data/recorridos_barrios.json'),
           fetch('/data/pautas_barrios.json'),

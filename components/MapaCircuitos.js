@@ -15,14 +15,25 @@ const COLORES_CATEGORIA = {
   'C': '#EF5350',    // Territorio hostil
 };
 
-const COLOR_OBRA = '#5C6BC0';
+// Color por estado de obra (obras_capital.json) — "Finalizado — Inaugurable" se
+// destaca en verde porque es el estado más accionable para el tablero (obra lista
+// para un acto de inauguración), en línea con el resto del proyecto (cobertura,
+// recorridos, pauta), que ya prioriza actividad de campaña real.
+const COLOR_OBRA_ESTADO = {
+  'Por relevar': '#9E9E9E',
+  'Relevado': '#26A69A',
+  'En ejecución': '#FFA726',
+  'Finalizado': '#5C6BC0',
+  'Finalizado — Inaugurable': '#2E7D32',
+};
+const COLOR_OBRA_DEFAULT = '#9E9E9E'; // estado no reconocido / ausente
 const COLOR_ESCUELA_CENTRO_VOTACION = '#1976D2';
 const COLOR_ESCUELA_SIN_VOTACION = '#9E9E9E';
 const COLOR_BORDE_PENDIENTE_REVISION = '#F57F17';
 
-// Normaliza nombres de barrio para cruzar obras_largo.json / recorridos_barrios.json
-// con barrios_geo.json (nombre_barrio): mismo texto pero con diferencias de espacios
-// dobles, tildes y el carácter ordinal "º" vs "o" (ej. "1º DE MAYO" / "1o DE MAYO").
+// Normaliza nombres de barrio para cruzar recorridos_barrios.json con barrios_geo.json
+// (nombre_barrio): mismo texto pero con diferencias de espacios dobles, tildes y el
+// carácter ordinal "º" vs "o" (ej. "1º DE MAYO" / "1o DE MAYO").
 function normalizarNombreBarrio(s) {
   return (s || '')
     .toUpperCase()
@@ -32,9 +43,6 @@ function normalizarNombreBarrio(s) {
     .trim();
 }
 
-// Desplaza obras que comparten el centroide de un mismo barrio en un patrón
-// circular, para que cada una quede como marker individual y clickeable.
-// Cuando en el futuro cada obra tenga su propia lat/lon, este paso deja de usarse.
 // El campo "nivel" de escuelas_capital.json viene como string con forma de array
 // JSON (ej. '["1. Común - Primario"]') en vez de array real — se parsea acá para
 // mostrarlo legible en el popup, con fallback al texto crudo si no parsea.
@@ -45,14 +53,6 @@ function formatNivelEscuela(nivelRaw) {
     if (Array.isArray(arr)) return arr.join(', ');
   } catch (e) { /* no era JSON parseable, se muestra tal cual */ }
   return nivelRaw;
-}
-
-function offsetCentroide(index, total, lat, lon) {
-  if (total <= 1) return [lat, lon];
-  const radioGrados = 0.0012;
-  const angulo = (2 * Math.PI * index) / total;
-  const correccionLon = Math.cos((lat * Math.PI) / 180) || 1;
-  return [lat + radioGrados * Math.sin(angulo), lon + (radioGrados * Math.cos(angulo)) / correccionLon];
 }
 
 function MapController({ mapkeySeleccionado, geoJsonData, zoomBarrioSolicitado, barriosGeoData, barriosVisible }) {
@@ -158,35 +158,12 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
     }
   }, [geoData]);
 
-  // Lookup de barrios por nombre normalizado, para estilar la capa y geocodificar obras
-  const barriosLookup = useMemo(() => {
-    const lookup = {};
-    (barriosGeoData?.features || []).forEach(f => {
-      const key = normalizarNombreBarrio(f.properties?.nombre_barrio);
-      if (key) lookup[key] = f.properties;
-    });
-    return lookup;
-  }, [barriosGeoData]);
-
-  // Obras con match_poligono:true, geocodificadas en el centroide del barrio correspondiente
+  // obras_capital.json: cada obra ya trae su propia lat/lon (a diferencia del viejo
+  // obras_largo.json, que se geocodificaba por centroide de barrio) — las 38 sin
+  // lat/lon (17 "manual" + 21 "descartado") no se grafican, tal como se espera.
   const obrasParaMostrar = useMemo(() => {
-    const grupos = {};
-    (obrasData || []).filter(o => o.match_poligono === true).forEach(o => {
-      const key = normalizarNombreBarrio(o.barrio_normalizado);
-      if (!grupos[key]) grupos[key] = [];
-      grupos[key].push(o);
-    });
-    const resultado = [];
-    Object.entries(grupos).forEach(([key, obras]) => {
-      const barrio = barriosLookup[key];
-      if (!barrio) return;
-      obras.forEach((o, i) => {
-        const [lat, lon] = offsetCentroide(i, obras.length, barrio.centroid_lat, barrio.centroid_lon);
-        resultado.push({ ...o, lat, lon });
-      });
-    });
-    return resultado;
-  }, [obrasData, barriosLookup]);
+    return (obrasData || []).filter(o => o.lat != null && o.lon != null);
+  }, [obrasData]);
 
   const escuelasParaMostrar = useMemo(() => escuelasData?.escuelas || [], [escuelasData]);
 
@@ -340,6 +317,20 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
         </div>
       )}
 
+      {capasActivas.obras && (
+        <div style={{ position: 'absolute', bottom: '10px', left: '410px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Obras</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {Object.entries(COLOR_OBRA_ESTADO).map(([estado, color]) => (
+              <div key={estado} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: color, border: '1px solid #fff', boxShadow: `0 0 0 1px ${color}`, flexShrink: 0 }} />
+                <span style={{ fontSize: '9px', color: '#546E7A' }}>{estado}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {coloresCategoria && (
         <div style={{ position: 'absolute', bottom: '10px', left: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '190px' }}>
           <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Leyenda (click para filtrar)</div>
@@ -363,23 +354,41 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
         {capasActivas.barrios && barriosGeoData && (
           <GeoJSON key={`barrios-${barrioSeleccionado}`} data={barriosGeoData} style={getBarrioStyle} onEachFeature={onEachBarrio} />
         )}
-        {capasActivas.obras && obrasParaMostrar.map((obra, i) => (
-          <CircleMarker
-            key={`obra-${i}`}
-            center={[obra.lat, obra.lon]}
-            radius={6}
-            pathOptions={{ color: '#fff', weight: 1, fillColor: COLOR_OBRA, fillOpacity: 0.9 }}
-          >
-            <Popup offset={[0, -6]}>
-              <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '220px' }}>
-                <strong style={{ fontSize: '13px' }}>{obra.barrio}</strong>
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{obra.programa || '—'}</div>
-                <div style={{ fontSize: '12px', marginTop: '4px' }}>{obra.descripcion || '—'}</div>
-                <div style={{ fontSize: '12px', marginTop: '4px', fontWeight: 600, color: COLOR_OBRA }}>{obra.estado || 'Sin dato'}</div>
-              </div>
-            </Popup>
-          </CircleMarker>
-        ))}
+        {capasActivas.obras && obrasParaMostrar.map((obra, i) => {
+          const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
+          const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+          return (
+            <CircleMarker
+              key={`obra-${obra.id}-${i}`}
+              center={[obra.lat, obra.lon]}
+              radius={6}
+              pathOptions={{ color: '#fff', weight: 1, fillColor: colorEstado, fillOpacity: 0.9 }}
+            >
+              <Popup offset={[0, -6]}>
+                <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '240px' }}>
+                  <strong style={{ fontSize: '13px' }}>{obra.nombre}</strong>
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{obra.reparticion || '—'} · {obra.tipo_obra || '—'}</div>
+                  <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                    {obra.barrio || 'Sin barrio asignado'}
+                    {aproximado && (
+                      <span style={{ color: COLOR_BORDE_PENDIENTE_REVISION, fontWeight: 600 }}>
+                        {' '}(barrio aproximado, a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '12px', marginTop: '6px', fontWeight: 600, color: colorEstado }}>{obra.estado || 'Sin dato'}</div>
+                  {obra.prioridad && <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>Prioridad: {obra.prioridad}</div>}
+                  <div style={{ fontSize: '11px', color: '#666', marginTop: '6px' }}>
+                    {obra.fecha_inicio && <div>Inicio: {obra.fecha_inicio}</div>}
+                    {obra.fecha_finalizacion && <div>Finalización: {obra.fecha_finalizacion}</div>}
+                    {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {obra.fecha_disponibilidad_inaugurar}</div>}
+                  </div>
+                  {obra.observaciones && <div style={{ fontSize: '11px', color: '#666', marginTop: '6px', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
         {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
           const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
           const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
