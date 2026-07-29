@@ -655,6 +655,129 @@ const SolapaObras = ({ datos, obrasEnriquecidas, circuitosGeoJsonData, focoInici
 };
 
 // ============================================
+// FICHA DE BARRIO
+// ============================================
+
+// Placeholder para las solapas de la ficha de barrio que todavía no tienen contenido
+// propio (Visitas/Pauta/Escuelas/Obras quedan para la próxima etapa).
+const SolapaEnConstruccion = ({ nombre }) => (
+  <div style={{ padding: '40px 16px', textAlign: 'center' }}>
+    <div style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>
+      {nombre ? `"${nombre}" está en construcción.` : 'Esta sección está en construcción.'}
+    </div>
+  </div>
+);
+
+const SolapaResumenBarrio = ({
+  nombreBarrio, props, cruceData, barriosGeoLookup, todosLosDatos, encuestasData,
+  recorridosLookup, pautasBarriosData, votosEscuelasBarrioLookup, obrasEnriquecidas,
+  onIrACircuito, onCambiarSolapa,
+}) => {
+  // Circuito principal resuelto de forma independiente de circuitoSeleccionado (Etapa 1).
+  const circuito = resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, todosLosDatos);
+  const encuesta = circuito ? buscarEncuestaCircuito(encuestasData, circuito.CircuitoKey) : null;
+
+  // "Clima de opinión": categoría con mayor % en Problemas principales de la ÚLTIMA
+  // ronda (valor absoluto, no la variación entre rondas que calcula ResumenAutomaticoProblemas).
+  let climaTexto = null;
+  if (encuesta?.rondas?.length > 0) {
+    const ultima = encuesta.rondas[encuesta.rondas.length - 1];
+    const problemas = ultima.preguntas?.['Problemas principales'];
+    if (problemas) {
+      const top = Object.entries(problemas).sort((a, b) => b[1] - a[1])[0];
+      if (top) climaTexto = `${top[0]} (${top[1].toFixed(1)}%)`;
+    }
+  }
+
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const totalVisitas = recorridosLookup?.[key]?.total_visitas || 0;
+  // pautas_barrios.json no viene normalizado (mismo cruce que ya usa buscarPautaCircuito).
+  const claveOriginalPauta = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
+  const totalPautas = claveOriginalPauta ? (pautasBarriosData[claveOriginalPauta].pautas || []).length : 0;
+  const totalObras = (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key).length;
+  const escuelasBarrio = votosEscuelasBarrioLookup?.[key];
+  const totalEscuelas = escuelasBarrio?.escuelas?.length ?? escuelasBarrio?.n_escuelas ?? 0;
+
+  const contadores = [
+    { key: 'visitas', label: 'Visitas', cantidad: totalVisitas },
+    { key: 'pauta', label: 'Pauta', cantidad: totalPautas },
+    { key: 'obras', label: 'Obras', cantidad: totalObras },
+    { key: 'escuelas', label: 'Escuelas', cantidad: totalEscuelas },
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+        <MetricCard label="Población" value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% del circuito` : undefined} />
+        <MetricCard label="Tipo" value={props.tipo_barrio === 'BarrioOficial' ? 'Oficial' : 'No oficial'} />
+      </div>
+
+      <div style={{ padding: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px' }}>
+        <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '8px' }}>Circuito principal</div>
+        {circuito ? (
+          <>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>{circuito.CircuitoKey} - {circuito.cirn_nom}</div>
+            {encuesta && encuesta.cantidad_rondas > 0 ? (
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                Este barrio pertenece al circuito {circuito.CircuitoKey}, que tiene {encuesta.cantidad_rondas} ronda{encuesta.cantidad_rondas !== 1 ? 's' : ''} de encuesta registrada{encuesta.cantidad_rondas !== 1 ? 's' : ''}.
+                {climaTexto && <> Último clima de opinión: {climaTexto}.</>}
+              </div>
+            ) : (
+              <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin encuestas registradas para este circuito.</div>
+            )}
+            <button onClick={() => onIrACircuito(circuito)} style={{ marginTop: '10px', padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: '#1976D2', cursor: 'pointer', fontWeight: 500 }}>Ver ficha completa del circuito →</button>
+          </>
+        ) : (
+          <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin circuito asociado.</div>
+        )}
+      </div>
+
+      <div>
+        <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '10px' }}>En este barrio</div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {contadores.map(c => (
+            <div
+              key={c.key}
+              onClick={() => onCambiarSolapa(c.key)}
+              style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', cursor: 'pointer', minWidth: '90px', textAlign: 'center' }}
+            >
+              <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)' }}>{c.cantidad}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{c.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SolapaTerritorioBarrio = ({ nombreBarrio, barriosGeoData }) => {
+  const cercanos = barriosCercanos(nombreBarrio, barriosGeoData);
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Barrios cercanos (≤1,5 km)</h4>
+      {cercanos.length === 0 ? (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin barrios cercanos dentro de 1,5 km.</div>
+      ) : (
+        <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Distancia</th></tr></thead>
+            <tbody>
+              {cercanos.map((b, i) => (
+                <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                  <td style={{ padding: '8px 14px' }}>{b.nombre}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right' }}>{b.distanciaKm.toFixed(2)} km</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
 // ENCUESTAS DE CIRCUITO
 // ============================================
 
@@ -1679,9 +1802,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
         )}
       </div>
 
-      {/* Deshabilitado hasta la Etapa 2 (todavía no hay contenido para vistaFicha === 'barrio').
-          onClick ya apunta a onVerFichaBarrio para que alcance con sacar el disabled más adelante. */}
-      <button disabled onClick={onVerFichaBarrio} title="Próximamente" style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 500, cursor: 'not-allowed' }}>Ver ficha completa →</button>
+      <button onClick={onVerFichaBarrio} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
 
       <ListaCruceColapsable
         titulo="Otros circuitos en este barrio"
@@ -2108,6 +2229,7 @@ export default function Home() {
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
   const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
+  const [solapaActivaBarrio, setSolapaActivaBarrio] = useState('resumen'); // estado de tabs separado del de circuito (evita choques de clave, ej. 'resumen'/'escuelas'/'obras' existen en los dos)
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -2300,12 +2422,25 @@ export default function Home() {
     setSolapaActiva('encuestas');
   };
 
+  // Click en "Ver ficha completa del circuito" desde el Resumen de la ficha de barrio:
+  // va directo a la ficha de ese circuito, solapa Encuestas (mismo patrón que arriba).
+  const irACircuitoDesdeResumenBarrio = (circuito) => {
+    handleSelectCircuito(circuito.CircuitoKey);
+    setVistaFicha('circuito');
+    setSolapaActiva('encuestas');
+  };
+
   const solapas = [
     { key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' },
     { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' },
     ...(encuestaCircuito ? [{ key: 'encuestas', label: 'Encuestas' }] : []),
     { key: 'escuelas', label: 'Escuelas' },
     { key: 'obras', label: 'Obras' },
+  ];
+
+  const solapasBarrio = [
+    { key: 'resumen', label: 'Resumen' }, { key: 'territorio', label: 'Territorio' }, { key: 'visitas', label: 'Visitas' },
+    { key: 'pauta', label: 'Pauta' }, { key: 'escuelas', label: 'Escuelas' }, { key: 'obras', label: 'Obras' },
   ];
   
   const exportarPDF = () => {
@@ -2409,10 +2544,60 @@ export default function Home() {
         <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={irACircuitoDesdeGrilla} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
-          {(vistaFicha === 'circuito' || vistaFicha === 'capital') ? (
+          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio') ? (
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
-                {circuitoSeleccionado && datosCircuito ? (
+                {vistaFicha === 'barrio' ? (
+                  barrioSeleccionado && barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)] ? (
+                    <>
+                      <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>{barrioSeleccionado}</h2>
+                            <button onClick={() => { setBarrioSeleccionado(null); setVistaFicha(null); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
+                            <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                          </div>
+                          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>
+                            {barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)].tipo_barrio === 'BarrioOficial' ? 'Barrio oficial' : 'Barrio no oficial'}
+                          </p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+                        {solapasBarrio.map(s => <button key={s.key} onClick={() => setSolapaActivaBarrio(s.key)} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActivaBarrio === s.key ? '#1976D2' : 'transparent', color: solapaActivaBarrio === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
+                      </div>
+                      <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', minHeight: '400px' }}>
+                        {solapaActivaBarrio === 'resumen' && (
+                          <SolapaResumenBarrio
+                            nombreBarrio={barrioSeleccionado}
+                            props={barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)]}
+                            cruceData={cruceData}
+                            barriosGeoLookup={barriosGeoLookup}
+                            todosLosDatos={datos}
+                            encuestasData={encuestasData}
+                            recorridosLookup={recorridosLookup}
+                            pautasBarriosData={pautasBarriosData}
+                            votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
+                            obrasEnriquecidas={obrasEnriquecidas}
+                            onIrACircuito={irACircuitoDesdeResumenBarrio}
+                            onCambiarSolapa={setSolapaActivaBarrio}
+                          />
+                        )}
+                        {solapaActivaBarrio === 'territorio' && <SolapaTerritorioBarrio nombreBarrio={barrioSeleccionado} barriosGeoData={barriosGeoData} />}
+                        {solapaActivaBarrio === 'visitas' && <SolapaEnConstruccion nombre="Visitas" />}
+                        {solapaActivaBarrio === 'pauta' && <SolapaEnConstruccion nombre="Pauta" />}
+                        {solapaActivaBarrio === 'escuelas' && <SolapaEnConstruccion nombre="Escuelas" />}
+                        {solapaActivaBarrio === 'obras' && <SolapaEnConstruccion nombre="Obras" />}
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px' }}>
+                      <div style={{ marginBottom: '16px' }}>
+                        <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                      </div>
+                      <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Seleccioná un barrio para ver su ficha.</div>
+                    </div>
+                  )
+                ) : circuitoSeleccionado && datosCircuito ? (
                   <>
                     <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
@@ -2478,7 +2663,7 @@ export default function Home() {
                     datosCircuito={datosCircuito}
                     padronTotal={padronTotal}
                     onVerFicha={(solapa, foco) => { setVistaFicha('circuito'); if (solapa) setSolapaActiva(solapa); setObrasFoco(foco || 'propio'); }}
-                    onVerFichaBarrio={() => setVistaFicha('barrio')}
+                    onVerFichaBarrio={() => { setVistaFicha('barrio'); if (barrioSeleccionado) setZoomBarrioSolicitado({ nombre: barrioSeleccionado, ts: Date.now() }); }}
                     barrioSeleccionado={barrioSeleccionado}
                     barriosGeoLookup={barriosGeoLookup}
                     todosLosDatos={datos}
