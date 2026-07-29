@@ -658,16 +658,6 @@ const SolapaObras = ({ datos, obrasEnriquecidas, circuitosGeoJsonData, focoInici
 // FICHA DE BARRIO
 // ============================================
 
-// Placeholder para las solapas de la ficha de barrio que todavía no tienen contenido
-// propio (Visitas/Pauta/Escuelas/Obras quedan para la próxima etapa).
-const SolapaEnConstruccion = ({ nombre }) => (
-  <div style={{ padding: '40px 16px', textAlign: 'center' }}>
-    <div style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>
-      {nombre ? `"${nombre}" está en construcción.` : 'Esta sección está en construcción.'}
-    </div>
-  </div>
-);
-
 const SolapaResumenBarrio = ({
   nombreBarrio, props, cruceData, barriosGeoLookup, todosLosDatos, encuestasData,
   recorridosLookup, pautasBarriosData, votosEscuelasBarrioLookup, obrasEnriquecidas,
@@ -776,6 +766,106 @@ const SolapaTerritorioBarrio = ({ nombreBarrio, barriosGeoData }) => {
     </div>
   );
 };
+
+// Reconstruye el bloque que antes vivía inline en PanelMiniBarrio (retirado en la Etapa 1),
+// mismos campos: fecha, tipo de visita coloreado, contacto con vecinos, link a la nota.
+const SolapaVisitasBarrio = ({ nombreBarrio, recorridosLookup }) => {
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const recorridos = recorridosLookup?.[key];
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Recorridos del Gobernador</h4>
+      {recorridos && recorridos.total_visitas > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 600 }}>{recorridos.total_visitas} visita{recorridos.total_visitas !== 1 ? 's' : ''}</div>
+          {(recorridos.visitas || []).map((v, i) => {
+            const colorTipo = TIPO_VISITA_COLOR[v.tipo_visita] || TIPO_VISITA_COLOR['NO HAY DATOS certeros'];
+            return (
+              <div key={i} style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{v.fecha}</span>
+                  <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: colorTipo.bg, color: colorTipo.text }}>{v.tipo_visita}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>Contacto con vecinos: <strong>{v.contacto_vecinos || 'NO'}</strong></div>
+                {v.link && (
+                  <a href={v.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#1976D2', marginTop: '4px', display: 'inline-block' }}>Ver nota →</a>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin visitas registradas.</div>
+      )}
+    </div>
+  );
+};
+
+// Mismos campos que ya muestra CeldaEvento para el tipo "pauta", salvo la línea de
+// barrio (redundante acá — ya estamos parados en la ficha de ese barrio).
+const FilaPauta = ({ pauta }) => (
+  <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{pauta.tema || '—'}</div>
+    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{pauta.campania || '—'} · {pauta.plataforma || '—'} ({pauta.formato || '—'})</div>
+    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{pauta.ministerio || '—'}</div>
+    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {pauta.fecha_salida || '—'} → {pauta.fecha_cierre || '—'}</div>
+    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
+      Alcance real: {pauta.alcance_real?.toLocaleString() ?? '—'} de {pauta.alcance_planificado?.toLocaleString() ?? '—'} planificado
+      {typeof pauta.cobertura_real === 'number' && ` (${(pauta.cobertura_real * 100).toFixed(1)}% cobertura real)`}
+    </div>
+  </div>
+);
+
+// Nueva (no existía ni siquiera inline en el panel mini): mismo cruce normalizado que ya
+// usa buscarPautaCircuito, pero directo por barrio (sin pasar por circuito_principal).
+const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData }) => {
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const claveOriginal = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
+  const pautas = claveOriginal ? (pautasBarriosData[claveOriginal].pautas || []) : [];
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Pauta publicitaria</h4>
+      {pautas.length === 0 ? (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin pauta registrada para este barrio.</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {pautas.map((p, i) => <FilaPauta key={i} pauta={p} />)}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Reconstruye el bloque que antes vivía inline en PanelMiniBarrio (retirado en la Etapa 1).
+const SolapaEscuelasBarrio = ({ nombreBarrio, votosEscuelasBarrioLookup, promedioCapitalPct }) => {
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const votosEscuelas = votosEscuelasBarrioLookup?.[key];
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Votos por escuela</h4>
+      <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>% de votos a Peronismo sobre votos válidos, por escuela con centro de votación en este barrio.</p>
+      {votosEscuelas ? (
+        <ListaVotosEscuelas escuelas={votosEscuelas.escuelas} promedioCapitalPct={promedioCapitalPct} />
+      ) : (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados para este barrio.</div>
+      )}
+    </div>
+  );
+};
+
+// Wrapper fino, mismo patrón que SolapaObras (circuito) — ObrasPanel ya soporta tipo="barrio".
+const SolapaObrasBarrio = ({ nombreBarrio, obrasEnriquecidas, barriosGeoData, onSelectObra }) => (
+  <div>
+    <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Obras</h4>
+    <ObrasPanel
+      tipo="barrio"
+      nombreBarrio={nombreBarrio}
+      obrasEnriquecidas={obrasEnriquecidas}
+      barriosGeoData={barriosGeoData}
+      onSelectObra={onSelectObra}
+    />
+  </div>
+);
 
 // ============================================
 // ENCUESTAS DE CIRCUITO
@@ -2583,10 +2673,10 @@ export default function Home() {
                           />
                         )}
                         {solapaActivaBarrio === 'territorio' && <SolapaTerritorioBarrio nombreBarrio={barrioSeleccionado} barriosGeoData={barriosGeoData} />}
-                        {solapaActivaBarrio === 'visitas' && <SolapaEnConstruccion nombre="Visitas" />}
-                        {solapaActivaBarrio === 'pauta' && <SolapaEnConstruccion nombre="Pauta" />}
-                        {solapaActivaBarrio === 'escuelas' && <SolapaEnConstruccion nombre="Escuelas" />}
-                        {solapaActivaBarrio === 'obras' && <SolapaEnConstruccion nombre="Obras" />}
+                        {solapaActivaBarrio === 'visitas' && <SolapaVisitasBarrio nombreBarrio={barrioSeleccionado} recorridosLookup={recorridosLookup} />}
+                        {solapaActivaBarrio === 'pauta' && <SolapaPautaBarrio nombreBarrio={barrioSeleccionado} pautasBarriosData={pautasBarriosData} />}
+                        {solapaActivaBarrio === 'escuelas' && <SolapaEscuelasBarrio nombreBarrio={barrioSeleccionado} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPct={votosEscuelasBarrioData?.promedio_capital_pct} />}
+                        {solapaActivaBarrio === 'obras' && <SolapaObrasBarrio nombreBarrio={barrioSeleccionado} obrasEnriquecidas={obrasEnriquecidas} barriosGeoData={barriosGeoData} onSelectObra={setObraSeleccionada} />}
                       </div>
                     </>
                   ) : (
