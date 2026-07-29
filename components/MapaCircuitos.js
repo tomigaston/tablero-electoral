@@ -140,7 +140,7 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasData, escuelasData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra }) {
   const geoJsonRef = useRef(null);
 
   const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, escuelas: false });
@@ -162,8 +162,8 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
   // obras_largo.json, que se geocodificaba por centroide de barrio) — las 38 sin
   // lat/lon (17 "manual" + 21 "descartado") no se grafican, tal como se espera.
   const obrasParaMostrar = useMemo(() => {
-    return (obrasData || []).filter(o => o.lat != null && o.lon != null);
-  }, [obrasData]);
+    return (obrasEnriquecidas || []).filter(o => o.lat != null && o.lon != null);
+  }, [obrasEnriquecidas]);
 
   const escuelasParaMostrar = useMemo(() => escuelasData?.escuelas || [], [escuelasData]);
 
@@ -356,37 +356,14 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasDat
         )}
         {capasActivas.obras && obrasParaMostrar.map((obra, i) => {
           const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
-          const aproximado = obra.fuente_barrio === 'cercano_aproximado';
           return (
             <CircleMarker
               key={`obra-${obra.id}-${i}`}
               center={[obra.lat, obra.lon]}
               radius={6}
               pathOptions={{ color: '#fff', weight: 1, fillColor: colorEstado, fillOpacity: 0.9 }}
-            >
-              <Popup offset={[0, -6]}>
-                <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '240px' }}>
-                  <strong style={{ fontSize: '13px' }}>{obra.nombre}</strong>
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{obra.reparticion || '—'} · {obra.tipo_obra || '—'}</div>
-                  <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                    {obra.barrio || 'Sin barrio asignado'}
-                    {aproximado && (
-                      <span style={{ color: COLOR_BORDE_PENDIENTE_REVISION, fontWeight: 600 }}>
-                        {' '}(barrio aproximado, a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: '12px', marginTop: '6px', fontWeight: 600, color: colorEstado }}>{obra.estado || 'Sin dato'}</div>
-                  {obra.prioridad && <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>Prioridad: {obra.prioridad}</div>}
-                  <div style={{ fontSize: '11px', color: '#666', marginTop: '6px' }}>
-                    {obra.fecha_inicio && <div>Inicio: {obra.fecha_inicio}</div>}
-                    {obra.fecha_finalizacion && <div>Finalización: {obra.fecha_finalizacion}</div>}
-                    {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {obra.fecha_disponibilidad_inaugurar}</div>}
-                  </div>
-                  {obra.observaciones && <div style={{ fontSize: '11px', color: '#666', marginTop: '6px', fontStyle: 'italic' }}>{obra.observaciones}</div>}
-                </div>
-              </Popup>
-            </CircleMarker>
+              eventHandlers={{ click: () => onSelectObra && onSelectObra(obra) }}
+            />
           );
         })}
         {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {

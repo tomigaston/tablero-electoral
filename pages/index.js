@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
-import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, circuitoMapkeyDeObra, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
+import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -637,7 +637,7 @@ const SolapaEscuelas = ({ datos, votosEscuelasCircuitoData }) => {
   );
 };
 
-const SolapaObras = ({ datos, obrasData, indiceBarrioCircuito, circuitosGeoJsonData, focoInicial }) => {
+const SolapaObras = ({ datos, obrasEnriquecidas, circuitosGeoJsonData, focoInicial, onSelectObra }) => {
   if (!datos) return null;
   return (
     <div>
@@ -645,10 +645,10 @@ const SolapaObras = ({ datos, obrasData, indiceBarrioCircuito, circuitosGeoJsonD
       <ObrasPanel
         tipo="circuito"
         datosCircuito={datos}
-        obrasData={obrasData}
-        indiceBarrioCircuito={indiceBarrioCircuito}
+        obrasEnriquecidas={obrasEnriquecidas}
         circuitosGeoJsonData={circuitosGeoJsonData}
         focoInicial={focoInicial}
+        onSelectObra={onSelectObra}
       />
     </div>
   );
@@ -1421,16 +1421,22 @@ const ListaVotosEscuelas = ({ escuelas, promedioCapitalPct }) => {
 
 const ESTADOS_OBRA_ORDEN = ['Finalizado — Inaugurable', 'En ejecución', 'Relevado', 'Finalizado', 'Por relevar'];
 
-const FilaObra = ({ obra }) => {
+const FilaObra = ({ obra, onSelectObra }) => {
   const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
   const aproximado = obra.fuente_barrio === 'cercano_aproximado';
   return (
-    <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+    <div
+      onClick={onSelectObra ? () => onSelectObra(obra) : undefined}
+      style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px', cursor: onSelectObra ? 'pointer' : 'default' }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
         <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre}</div>
         <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorEstado}22`, color: colorEstado, whiteSpace: 'nowrap', flexShrink: 0 }}>{obra.estado || 'Sin dato'}</span>
       </div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{obra.tipo_obra || '—'}</div>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+        {obra.barrio || 'Sin barrio asignado'}{obra._circuitoNombre ? ` · ${obra._circuitoNombre}` : ' · Sin circuito derivado'}
+      </div>
       {aproximado && (
         <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>
           barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
@@ -1449,7 +1455,7 @@ const FilaObra = ({ obra }) => {
   );
 };
 
-const ListaObras = ({ obras, vacio }) => {
+const ListaObras = ({ obras, vacio, onSelectObra }) => {
   const [filtroEstado, setFiltroEstado] = useState('');
   const estadosPresentes = ESTADOS_OBRA_ORDEN.filter(e => obras.some(o => o.estado === e));
   const filtradas = filtroEstado ? obras.filter(o => o.estado === filtroEstado) : obras;
@@ -1468,7 +1474,7 @@ const ListaObras = ({ obras, vacio }) => {
       )}
       {filtradas.length === 0 ? (
         <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Ninguna obra con ese estado.</div>
-      ) : filtradas.map((o, i) => <FilaObra key={`${o.id}-${i}`} obra={o} />)}
+      ) : filtradas.map((o, i) => <FilaObra key={`${o.id}-${i}`} obra={o} onSelectObra={onSelectObra} />)}
     </div>
   );
 };
@@ -1477,29 +1483,32 @@ const ListaObras = ({ obras, vacio }) => {
 // circuito y muestra dos secciones — obras propias (match directo por barrio/circuito
 // derivado) y obras cercanas (radio 1.5km, lib/obrasCercanas.js). Pensado para
 // reusarse tal cual dentro de la futura solapa unificada de barrio.
-const ObrasPanel = ({ tipo, datosCircuito, nombreBarrio, obrasData, indiceBarrioCircuito, barriosGeoData, circuitosGeoJsonData, focoInicial = 'propio' }) => {
+const ObrasPanel = ({ tipo, datosCircuito, nombreBarrio, obrasEnriquecidas, barriosGeoData, circuitosGeoJsonData, focoInicial = 'propio', onSelectObra }) => {
   const obrasPropias = useMemo(() => {
     if (tipo === 'circuito') {
       if (!datosCircuito) return [];
-      return (obrasData || []).filter(o => circuitoMapkeyDeObra(o, indiceBarrioCircuito) === datosCircuito.Mapkey);
+      return (obrasEnriquecidas || []).filter(o => o._circuitoMapkey === datosCircuito.Mapkey);
     }
     if (!nombreBarrio) return [];
     const key = normalizarNombreBarrio(nombreBarrio);
-    return (obrasData || []).filter(o => normalizarNombreBarrio(o.barrio) === key);
-  }, [tipo, datosCircuito, nombreBarrio, obrasData, indiceBarrioCircuito]);
+    return (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key);
+  }, [tipo, datosCircuito, nombreBarrio, obrasEnriquecidas]);
 
   const obrasCercanas = useMemo(() => {
-    if (tipo === 'circuito' && datosCircuito) return obrasCercanasACircuito(datosCircuito.Mapkey, circuitosGeoJsonData, obrasData);
-    if (tipo === 'barrio' && nombreBarrio) return obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasData);
-    return [];
-  }, [tipo, datosCircuito, nombreBarrio, obrasData, circuitosGeoJsonData, barriosGeoData]);
+    const idsPropias = new Set(obrasPropias.map(o => o.id));
+    let resultado = [];
+    if (tipo === 'circuito' && datosCircuito) resultado = obrasCercanasACircuito(datosCircuito.Mapkey, circuitosGeoJsonData, obrasEnriquecidas);
+    else if (tipo === 'barrio' && nombreBarrio) resultado = obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasEnriquecidas);
+    return resultado.filter(o => !idsPropias.has(o.id));
+  }, [tipo, datosCircuito, nombreBarrio, obrasEnriquecidas, circuitosGeoJsonData, barriosGeoData, obrasPropias]);
 
   const tituloPropio = tipo === 'circuito' ? 'Obras en este circuito' : 'Obras en este barrio';
   const vacioPropio = tipo === 'circuito' ? 'Sin obras identificadas en este circuito.' : 'Sin obras identificadas en este barrio.';
+  const tituloCercanas = `Obras cercanas, de otro ${tipo === 'circuito' ? 'circuito' : 'barrio'}`;
 
   const secciones = [
     { key: 'propio', titulo: tituloPropio, obras: obrasPropias, vacio: vacioPropio },
-    { key: 'cercanas', titulo: 'Obras cercanas (≤1,5 km)', obras: obrasCercanas, vacio: 'Sin obras cercanas dentro de 1,5 km.' },
+    { key: 'cercanas', titulo: tituloCercanas, obras: obrasCercanas, vacio: 'Sin obras cercanas dentro de 1,5 km.' },
   ];
   if (focoInicial === 'cercanas') secciones.reverse();
 
@@ -1508,7 +1517,7 @@ const ObrasPanel = ({ tipo, datosCircuito, nombreBarrio, obrasData, indiceBarrio
       {secciones.map(s => (
         <div key={s.key}>
           <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>{s.titulo} ({s.obras.length})</div>
-          <ListaObras obras={s.obras} vacio={s.vacio} />
+          <ListaObras obras={s.obras} vacio={s.vacio} onSelectObra={onSelectObra} />
         </div>
       ))}
     </div>
@@ -1521,7 +1530,80 @@ const BadgeObrasCercanas = ({ cantidad, onClick }) => (
   </span>
 );
 
-const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasData, indiceBarrioCircuito, circuitosGeoJsonData }) => {
+// Vista de obra individual, disparada desde cualquier FilaObra o desde el marker del
+// mapa (ver onSelectObra en MapaCircuitos.js) — mismo patrón visual que InfoModal
+// (overlay + card flotante). Las filas de "Obras cercanas a esta obra" son clickeables
+// y vuelven a llamar a onSelectObra, para poder navegar de obra en obra sin cerrar.
+const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
+  if (!obra) return null;
+  const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
+  const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+  const tieneCoordenadas = obra.lat != null && obra.lon != null;
+  const cercanas = tieneCoordenadas ? obrasCercanasAObra(obra, obrasEnriquecidas, 1.5) : [];
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
+      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{obra.nombre}</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666', flexShrink: 0 }}>×</button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+          <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{obra.reparticion || '—'} · {obra.tipo_obra || '—'}</div>
+          <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorEstado}22`, color: colorEstado }}>{obra.estado || 'Sin dato'}</span>
+          <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
+            {obra.barrio || 'Sin barrio asignado'}{obra._circuitoNombre ? ` · ${obra._circuitoNombre}` : ' · Sin circuito derivado'}
+          </div>
+          {aproximado && (
+            <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600 }}>
+              barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
+            </div>
+          )}
+          {obra.prioridad && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Prioridad: {obra.prioridad}</div>}
+          {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+              {obra.fecha_inicio && <div>Inicio: {obra.fecha_inicio}</div>}
+              {obra.fecha_finalizacion && <div>Finalización: {obra.fecha_finalizacion}</div>}
+              {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {obra.fecha_disponibilidad_inaugurar}</div>}
+            </div>
+          )}
+          {obra.observaciones && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+        </div>
+
+        <div>
+          <h4 style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Obras cercanas a esta obra</h4>
+          {!tieneCoordenadas ? (
+            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin coordenada propia — no se puede calcular cercanía.</div>
+          ) : cercanas.length === 0 ? (
+            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin obras cercanas dentro de 1,5 km.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {cercanas.map((o, i) => {
+                const colorOtra = COLOR_OBRA_ESTADO[o.estado] || COLOR_OBRA_DEFAULT;
+                return (
+                  <div
+                    key={`${o.id}-${i}`}
+                    onClick={() => onSelectObra(o)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <div style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{o.nombre}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: `${colorOtra}22`, color: colorOtra }}>{o.estado || 'Sin dato'}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{o.distanciaKm.toFixed(2)} km</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => {
   if (!datos) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
   }
@@ -1530,13 +1612,13 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
   const otrosBarrios = (cruceData?.circuito_to_barrios?.[clave] || [])
     .filter(b => normalizarNombreBarrio(b.barrio_normalizado) !== claveSel)
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
-  const obrasCercanasCount = obrasData ? obrasCercanasACircuito(datos.Mapkey, circuitosGeoJsonData, obrasData).length : 0;
+  const obrasCercanasCount = obrasEnriquecidas ? obrasCercanasACircuito(datos.Mapkey, circuitosGeoJsonData, obrasEnriquecidas).length : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} encuestasData={encuestasData} />
       <button onClick={() => onVerFicha()} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
-      {obrasData && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('obras', 'cercanas')} />}
+      {obrasEnriquecidas && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('obras', 'cercanas')} />}
       <ListaCruceColapsable
         titulo="Otros barrios en este circuito"
         items={otrosBarrios.map((b, i) => (
@@ -1635,7 +1717,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasData, indiceBarrioCircuito, circuitosGeoJsonData }) => (
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -1643,7 +1725,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     </div>
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
-        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasData={obrasData} indiceBarrioCircuito={indiceBarrioCircuito} circuitosGeoJsonData={circuitosGeoJsonData} />
+        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} />
         : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} onVerFichaBarrio={onVerFichaBarrio} />}
     </div>
   </div>
@@ -2025,6 +2107,7 @@ export default function Home() {
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
+  const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -2249,6 +2332,7 @@ export default function Home() {
       `}</style>
       
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
+      <ModalObra obra={obraSeleccionada} onClose={() => setObraSeleccionada(null)} onSelectObra={setObraSeleccionada} obrasEnriquecidas={obrasEnriquecidas} />
       
       <div style={{ minHeight: '100vh' }}>
         <header style={{ padding: '14px 24px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
@@ -2359,7 +2443,7 @@ export default function Home() {
                       {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
                       {solapaActiva === 'encuestas' && encuestaCircuito && <SolapaEncuestas encuesta={encuestaCircuito} metadata={encuestasMetadata} />}
                       {solapaActiva === 'escuelas' && <SolapaEscuelas datos={datosCircuito} votosEscuelasCircuitoData={votosEscuelasCircuitoData} />}
-                      {solapaActiva === 'obras' && <SolapaObras datos={datosCircuito} obrasData={obrasData} indiceBarrioCircuito={indiceBarrioCircuito} circuitosGeoJsonData={circuitosGeoJsonData} focoInicial={obrasFoco} />}
+                      {solapaActiva === 'obras' && <SolapaObras datos={datosCircuito} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} focoInicial={obrasFoco} onSelectObra={setObraSeleccionada} />}
                     </div>
                   </>
                 ) : (
@@ -2374,7 +2458,7 @@ export default function Home() {
 
               <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} escuelasData={escuelasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} />
                 </div>
               </div>
             </>
@@ -2382,7 +2466,7 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasData={obrasData} escuelasData={escuelasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} />
                 </div>
               </div>
 
@@ -2402,8 +2486,7 @@ export default function Home() {
                     onSelectBarrio={handleSelectBarrio}
                     onSelectCircuito={handleSelectCircuito}
                     encuestasData={encuestasData}
-                    obrasData={obrasData}
-                    indiceBarrioCircuito={indiceBarrioCircuito}
+                    obrasEnriquecidas={obrasEnriquecidas}
                     circuitosGeoJsonData={circuitosGeoJsonData}
                   />
                 </div>
