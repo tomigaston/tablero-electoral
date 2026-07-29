@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
+import * as topojson from 'topojson-client';
+import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, circuitoMapkeyDeObra } from '../lib/obrasCercanas';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -28,6 +30,17 @@ const COLORES_ML = {
   'ML.5': { bg: '#EF5350', text: '#B71C1C', label: 'RETROCESO' },
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
 };
+
+// Mismos colores por estado de obra que ya usa la capa Obras en components/MapaCircuitos.js
+// (duplicado a propósito, mismo criterio que normalizarNombreBarrio entre archivos).
+const COLOR_OBRA_ESTADO = {
+  'Por relevar': '#9E9E9E',
+  'Relevado': '#26A69A',
+  'En ejecución': '#FFA726',
+  'Finalizado': '#5C6BC0',
+  'Finalizado — Inaugurable': '#2E7D32',
+};
+const COLOR_OBRA_DEFAULT = '#9E9E9E';
 
 // Descripciones CLARAS para el popup de info
 const DESCRIPCIONES_CATEGORIA = {
@@ -620,6 +633,23 @@ const SolapaEscuelas = ({ datos, votosEscuelasCircuitoData }) => {
       ) : (
         <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados en este circuito.</div>
       )}
+    </div>
+  );
+};
+
+const SolapaObras = ({ datos, obrasData, indiceBarrioCircuito, circuitosGeoJsonData, focoInicial }) => {
+  if (!datos) return null;
+  return (
+    <div>
+      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Obras</h4>
+      <ObrasPanel
+        tipo="circuito"
+        datosCircuito={datos}
+        obrasData={obrasData}
+        indiceBarrioCircuito={indiceBarrioCircuito}
+        circuitosGeoJsonData={circuitosGeoJsonData}
+        focoInicial={focoInicial}
+      />
     </div>
   );
 };
@@ -1362,7 +1392,113 @@ const ListaVotosEscuelas = ({ escuelas, promedioCapitalPct }) => {
   );
 };
 
-const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData }) => {
+// ============================================
+// OBRAS (obras_capital.json) — panel reusable, ver lib/obrasCercanas.js
+// ============================================
+
+const ESTADOS_OBRA_ORDEN = ['Finalizado — Inaugurable', 'En ejecución', 'Relevado', 'Finalizado', 'Por relevar'];
+
+const FilaObra = ({ obra }) => {
+  const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
+  const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+  return (
+    <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre}</div>
+        <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorEstado}22`, color: colorEstado, whiteSpace: 'nowrap', flexShrink: 0 }}>{obra.estado || 'Sin dato'}</span>
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{obra.tipo_obra || '—'}</div>
+      {aproximado && (
+        <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>
+          barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
+        </div>
+      )}
+      {obra.prioridad && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Prioridad: {obra.prioridad}</div>}
+      {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
+        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
+          {obra.fecha_inicio && <div>Inicio: {obra.fecha_inicio}</div>}
+          {obra.fecha_finalizacion && <div>Finalización: {obra.fecha_finalizacion}</div>}
+          {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {obra.fecha_disponibilidad_inaugurar}</div>}
+        </div>
+      )}
+      {obra.observaciones && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+    </div>
+  );
+};
+
+const ListaObras = ({ obras, vacio }) => {
+  const [filtroEstado, setFiltroEstado] = useState('');
+  const estadosPresentes = ESTADOS_OBRA_ORDEN.filter(e => obras.some(o => o.estado === e));
+  const filtradas = filtroEstado ? obras.filter(o => o.estado === filtroEstado) : obras;
+
+  if (!obras || obras.length === 0) {
+    return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{vacio}</div>;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {estadosPresentes.length > 1 && (
+        <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+          <option value="">Todos los estados ({obras.length})</option>
+          {estadosPresentes.map(e => <option key={e} value={e}>{e} ({obras.filter(o => o.estado === e).length})</option>)}
+        </select>
+      )}
+      {filtradas.length === 0 ? (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Ninguna obra con ese estado.</div>
+      ) : filtradas.map((o, i) => <FilaObra key={`${o.id}-${i}`} obra={o} />)}
+    </div>
+  );
+};
+
+// Componente reusable (no atado a la solapa de circuito): recibe un barrio o un
+// circuito y muestra dos secciones — obras propias (match directo por barrio/circuito
+// derivado) y obras cercanas (radio 1.5km, lib/obrasCercanas.js). Pensado para
+// reusarse tal cual dentro de la futura solapa unificada de barrio.
+const ObrasPanel = ({ tipo, datosCircuito, nombreBarrio, obrasData, indiceBarrioCircuito, barriosGeoData, circuitosGeoJsonData, focoInicial = 'propio' }) => {
+  const obrasPropias = useMemo(() => {
+    if (tipo === 'circuito') {
+      if (!datosCircuito) return [];
+      return (obrasData || []).filter(o => circuitoMapkeyDeObra(o, indiceBarrioCircuito) === datosCircuito.Mapkey);
+    }
+    if (!nombreBarrio) return [];
+    const key = normalizarNombreBarrio(nombreBarrio);
+    return (obrasData || []).filter(o => normalizarNombreBarrio(o.barrio) === key);
+  }, [tipo, datosCircuito, nombreBarrio, obrasData, indiceBarrioCircuito]);
+
+  const obrasCercanas = useMemo(() => {
+    if (tipo === 'circuito' && datosCircuito) return obrasCercanasACircuito(datosCircuito.Mapkey, circuitosGeoJsonData, obrasData);
+    if (tipo === 'barrio' && nombreBarrio) return obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasData);
+    return [];
+  }, [tipo, datosCircuito, nombreBarrio, obrasData, circuitosGeoJsonData, barriosGeoData]);
+
+  const tituloPropio = tipo === 'circuito' ? 'Obras en este circuito' : 'Obras en este barrio';
+  const vacioPropio = tipo === 'circuito' ? 'Sin obras identificadas en este circuito.' : 'Sin obras identificadas en este barrio.';
+
+  const secciones = [
+    { key: 'propio', titulo: tituloPropio, obras: obrasPropias, vacio: vacioPropio },
+    { key: 'cercanas', titulo: 'Obras cercanas (≤1,5 km)', obras: obrasCercanas, vacio: 'Sin obras cercanas dentro de 1,5 km.' },
+  ];
+  if (focoInicial === 'cercanas') secciones.reverse();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      {secciones.map(s => (
+        <div key={s.key}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>{s.titulo} ({s.obras.length})</div>
+          <ListaObras obras={s.obras} vacio={s.vacio} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const BadgeObrasCercanas = ({ cantidad, onClick }) => (
+  <span onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', backgroundColor: '#5C6BC018', color: '#3949AB', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+    🏗️ Obras cercanas ({cantidad})
+  </span>
+);
+
+const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasData, indiceBarrioCircuito, circuitosGeoJsonData }) => {
   if (!datos) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
   }
@@ -1371,11 +1507,13 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
   const otrosBarrios = (cruceData?.circuito_to_barrios?.[clave] || [])
     .filter(b => normalizarNombreBarrio(b.barrio_normalizado) !== claveSel)
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
+  const obrasCercanasCount = obrasData ? obrasCercanasACircuito(datos.Mapkey, circuitosGeoJsonData, obrasData).length : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} encuestasData={encuestasData} />
-      <button onClick={onVerFicha} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
+      <button onClick={() => onVerFicha()} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
+      {obrasData && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('obras', 'cercanas')} />}
       <ListaCruceColapsable
         titulo="Otros barrios en este circuito"
         items={otrosBarrios.map((b, i) => (
@@ -1401,7 +1539,9 @@ const TIPO_VISITA_COLOR = {
   'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, encuestasData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas }) => {
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, encuestasData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas, obrasData, barriosGeoData }) => {
+  const [mostrarObras, setMostrarObras] = useState(false);
+
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -1418,6 +1558,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
   const obras = props.obras || [];
   const recorridos = recorridosLookup?.[key];
   const votosEscuelas = votosEscuelasBarrioLookup?.[key];
+  const obrasCercanasCount = obrasData ? obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasData).length : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -1507,11 +1648,28 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
           )}
         </div>
       )}
+
+      {obrasData && (
+        <div>
+          <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => setMostrarObras(true)} />
+          {mostrarObras && (
+            <div style={{ marginTop: '10px' }}>
+              <ObrasPanel
+                tipo="barrio"
+                nombreBarrio={nombreBarrio}
+                obrasData={obrasData}
+                barriosGeoData={barriosGeoData}
+                focoInicial="cercanas"
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas }) => (
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, recorridosLookup, votosEscuelasBarrioLookup, promedioCapitalPctEscuelas, obrasData, indiceBarrioCircuito, circuitosGeoJsonData, barriosGeoData }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -1519,8 +1677,8 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     </div>
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
-        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} recorridosLookup={recorridosLookup} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPctEscuelas={promedioCapitalPctEscuelas} />}
+        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasData={obrasData} indiceBarrioCircuito={indiceBarrioCircuito} circuitosGeoJsonData={circuitosGeoJsonData} />
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} recorridosLookup={recorridosLookup} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPctEscuelas={promedioCapitalPctEscuelas} obrasData={obrasData} barriosGeoData={barriosGeoData} />}
     </div>
   </div>
 );
@@ -1900,6 +2058,7 @@ export default function Home() {
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [panelTab, setPanelTab] = useState('circuito');
+  const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -1933,6 +2092,27 @@ export default function Home() {
   
   const datosCircuito = useMemo(() => datos.find(d => d.CircuitoKey === circuitoSeleccionado), [datos, circuitoSeleccionado]);
   const encuestaCircuito = useMemo(() => buscarEncuestaCircuito(encuestasData, circuitoSeleccionado), [encuestasData, circuitoSeleccionado]);
+
+  // GeoJSON de circuitos (mismo topojson.feature() que ya hace MapaCircuitos.js
+  // internamente) — se recalcula acá aparte porque ObrasPanel/badge de obras cercanas
+  // necesitan el centroide del polígono del circuito, algo que el mapa no expone hacia
+  // afuera. Duplicar este parseo es aceptable (no vale la pena refactorizar cómo
+  // MapaCircuitos expone su geoJsonData por esta única llamada extra).
+  const circuitosGeoJsonData = useMemo(() => {
+    if (!geoData) return null;
+    try {
+      const objectKey = Object.keys(geoData.objects)[0];
+      if (!objectKey) return null;
+      return topojson.feature(geoData, geoData.objects[objectKey]);
+    } catch (e) {
+      console.error('Error convirtiendo TopoJSON de circuitos:', e);
+      return null;
+    }
+  }, [geoData]);
+
+  // Índice barrio -> circuitos (circuito_barrios_cruce.json), precalculado una sola
+  // vez para derivar el circuito de cada obra sin lat/lon propia (ver lib/obrasCercanas.js).
+  const indiceBarrioCircuito = useMemo(() => construirIndiceBarrioCircuito(cruceData), [cruceData]);
 
   // Si cambiamos de circuito estando en la solapa Encuestas y el nuevo no tiene datos, volvemos a Resumen.
   useEffect(() => {
@@ -2080,6 +2260,7 @@ export default function Home() {
     { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' },
     ...(encuestaCircuito ? [{ key: 'encuestas', label: 'Encuestas' }] : []),
     { key: 'escuelas', label: 'Escuelas' },
+    { key: 'obras', label: 'Obras' },
   ];
   
   const exportarPDF = () => {
@@ -2206,7 +2387,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
-                      {solapas.map(s => <button key={s.key} onClick={() => setSolapaActiva(s.key)} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
+                      {solapas.map(s => <button key={s.key} onClick={() => { setSolapaActiva(s.key); if (s.key === 'obras') setObrasFoco('propio'); }} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
                     </div>
                     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', minHeight: '400px' }}>
                       {solapaActiva === 'resumen' && <SolapaResumen circuito={circuitoSeleccionado} datos={datosCircuito} padronTotal={padronTotal} encuestasData={encuestasData} />}
@@ -2216,6 +2397,7 @@ export default function Home() {
                       {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
                       {solapaActiva === 'encuestas' && encuestaCircuito && <SolapaEncuestas encuesta={encuestaCircuito} metadata={encuestasMetadata} />}
                       {solapaActiva === 'escuelas' && <SolapaEscuelas datos={datosCircuito} votosEscuelasCircuitoData={votosEscuelasCircuitoData} />}
+                      {solapaActiva === 'obras' && <SolapaObras datos={datosCircuito} obrasData={obrasData} indiceBarrioCircuito={indiceBarrioCircuito} circuitosGeoJsonData={circuitosGeoJsonData} focoInicial={obrasFoco} />}
                     </div>
                   </>
                 ) : (
@@ -2249,7 +2431,7 @@ export default function Home() {
                     setPanelTab={setPanelTab}
                     datosCircuito={datosCircuito}
                     padronTotal={padronTotal}
-                    onVerFicha={() => setVistaExpandida(true)}
+                    onVerFicha={(solapa, foco) => { setVistaExpandida(true); if (solapa) setSolapaActiva(solapa); setObrasFoco(foco || 'propio'); }}
                     barrioSeleccionado={barrioSeleccionado}
                     barriosGeoLookup={barriosGeoLookup}
                     todosLosDatos={datos}
@@ -2260,6 +2442,10 @@ export default function Home() {
                     recorridosLookup={recorridosLookup}
                     votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
                     promedioCapitalPctEscuelas={votosEscuelasBarrioData?.promedio_capital_pct}
+                    obrasData={obrasData}
+                    indiceBarrioCircuito={indiceBarrioCircuito}
+                    circuitosGeoJsonData={circuitosGeoJsonData}
+                    barriosGeoData={barriosGeoData}
                   />
                 </div>
               </div>

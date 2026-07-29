@@ -91,6 +91,24 @@ function leerEncuestasAplanadas() {
     .sort((a, b) => compararCircuitoKey(a.circuito, b.circuito));
 }
 
+// Obras sin lat/lon ni barrio (fuente_barrio: "descartado" o null) — no se pueden
+// graficar en el mapa ni ubicar en ningún listado por barrio/circuito, quedan
+// pendientes de geolocalizar/asignar a mano.
+function leerObrasSinGeolocalizar() {
+  const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'data', 'obras_capital.json'), 'utf8'));
+  return raw
+    .filter((o) => (o.lat == null || o.lon == null) && !o.barrio)
+    .map((o) => ({
+      id: o.id,
+      nombre: o.nombre,
+      reparticion: o.reparticion || '',
+      tipo_obra: o.tipo_obra || '',
+      estado: o.estado || '',
+      fuente_barrio: o.fuente_barrio,
+    }))
+    .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+}
+
 export async function getServerSideProps() {
   const token = process.env.GITHUB_TOKEN || '';
   const fechas = await Promise.all(
@@ -102,7 +120,8 @@ export async function getServerSideProps() {
   }));
   const visitas = leerVisitasAplanadas();
   const encuestas = leerEncuestasAplanadas();
-  return { props: { manifest, visitas, encuestas } };
+  const obrasSinGeolocalizar = leerObrasSinGeolocalizar();
+  return { props: { manifest, visitas, encuestas, obrasSinGeolocalizar } };
 }
 
 function formatRelativo(iso) {
@@ -277,9 +296,57 @@ const TablaEncuestas = ({ encuestas, entry }) => {
   );
 };
 
-export default function DataStatus({ manifest, visitas, encuestas }) {
+const TablaObrasSinGeolocalizar = ({ obras, entry }) => {
+  const [busqueda, setBusqueda] = useState('');
+  const filtro = normalizarBusqueda(busqueda);
+  const filtradas = filtro ? obras.filter((o) => normalizarBusqueda(o.nombre).includes(filtro)) : obras;
+
+  return (
+    <div style={{ marginBottom: '32px' }}>
+      <SeccionHeader
+        titulo="Obras pendientes de geolocalizar"
+        archivo="obras_capital.json"
+        entry={entry}
+        busqueda={busqueda}
+        setBusqueda={setBusqueda}
+        placeholder="Buscar por nombre de obra…"
+        total={obras.length}
+        mostrados={filtradas.length}
+      />
+      <div style={{ overflowX: 'auto', maxHeight: '480px', overflowY: 'auto', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <thead>
+            <tr style={{ backgroundColor: 'var(--bg-secondary)', position: 'sticky', top: 0 }}>
+              <th style={thStyle}>Nombre</th>
+              <th style={thStyle}>Repartición</th>
+              <th style={thStyle}>Tipo de obra</th>
+              <th style={thStyle}>Estado</th>
+              <th style={thStyle}>fuente_barrio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtradas.length === 0 ? (
+              <tr><td style={{ ...tdStyle, color: 'var(--text-tertiary)' }} colSpan={5}>Sin resultados para "{busqueda}".</td></tr>
+            ) : filtradas.map((o) => (
+              <tr key={o.id} style={{ borderTop: '1px solid var(--border)' }}>
+                <td style={{ ...tdStyle, fontWeight: 500 }}>{o.nombre}</td>
+                <td style={tdStyle}>{o.reparticion || '—'}</td>
+                <td style={tdStyle}>{o.tipo_obra || '—'}</td>
+                <td style={tdStyle}>{o.estado || '—'}</td>
+                <td style={{ ...tdStyle, color: 'var(--text-tertiary)' }}>{o.fuente_barrio ?? 'null'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default function DataStatus({ manifest, visitas, encuestas, obrasSinGeolocalizar }) {
   const entryVisitas = manifest.find((m) => m.archivo === 'recorridos_barrios.json');
   const entryEncuestas = manifest.find((m) => m.archivo === 'encuestas_circuitos.json');
+  const entryObras = manifest.find((m) => m.archivo === 'obras_capital.json');
 
   return (
     <>
@@ -335,6 +402,7 @@ export default function DataStatus({ manifest, visitas, encuestas }) {
         <div style={{ marginTop: '40px' }}>
           <TablaVisitas visitas={visitas} entry={entryVisitas} />
           <TablaEncuestas encuestas={encuestas} entry={entryEncuestas} />
+          <TablaObrasSinGeolocalizar obras={obrasSinGeolocalizar} entry={entryObras} />
         </div>
       </div>
     </>
