@@ -74,6 +74,18 @@ const Badge = ({ categoria, tipo = 'v4' }) => {
   );
 };
 
+// Ícono de ayuda con tooltip nativo del navegador (sin estado propio: funciona igual
+// en la app como en la ficha exportada, que se abre en una pestaña aparte para
+// imprimir). Se usa junto al label de Padrón/Población solo en su primera aparición
+// dentro de cada ficha — Padrón (circuito) y Población (barrio) son de fuentes y
+// unidades distintas (padrón electoral vs. censo/IDECOR) y se prestan a confundirse
+// porque aparecen en pantallas parecidas de la misma ficha.
+const InfoTip = ({ texto }) => (
+  <span title={texto} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '13px', height: '13px', borderRadius: '50%', border: '1px solid var(--text-tertiary)', color: 'var(--text-tertiary)', fontSize: '9px', lineHeight: 1, cursor: 'help', marginLeft: '5px', flexShrink: 0 }}>
+    i
+  </span>
+);
+
 const MetricCard = ({ label, value, subtitle, trend, trendPositive }) => (
   <div style={{ flex: 1, minWidth: '160px', padding: '14px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
     <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{label}</div>
@@ -244,11 +256,11 @@ function construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cru
   });
 
   // Pauta: derivada en runtime desde pautas_barrios.json (sin pautas_circuitos.json,
-  // mismo criterio que se usó para retirar cobertura_circuitos.json). fecha_salida
-  // es la fecha del evento (cuando empieza a correr la pauta).
+  // mismo criterio que se usó para retirar cobertura_circuitos.json). fecha_creacion
+  // es la fecha del evento (cuando arranca el anuncio en Meta Ads).
   datos.forEach(d => {
     buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, d.CircuitoKey).forEach(p => {
-      if (esFechaValida(p.fecha_salida)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.fecha_salida, detalle: p });
+      if (esFechaValida(p.fecha_creacion)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.fecha_creacion, detalle: p });
     });
   });
 
@@ -267,7 +279,7 @@ const SolapaResumen = ({ circuito, datos, padronTotal, encuestasData }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-        <MetricCard label="Padrón 2023" value={datos.Padron_G23?.toLocaleString() || '—'} subtitle={`(${pctPadron}% de Capital)`} />
+        <MetricCard label={<>Padrón electoral (circuito) <InfoTip texto="Personas habilitadas para votar en este circuito según el padrón electoral 2023." /></>} value={datos.Padron_G23?.toLocaleString() || '—'} subtitle={`(${pctPadron}% de Capital)`} />
         <MetricCard label="Participación Gob. 2023" value={formatPct(datos.Turnout_G23)} trend={`${formatPP(datos.Turnout_G23 - 0.67)} vs Capital`} trendPositive={(datos.Turnout_G23 - 0.67) > 0} />
         <MetricCard label="Δ Gob. 2023 vs Int. 2019" value={formatPP(datos.Efecto_ML / 100)} trend={datos.Crecio_vs_Capital ? 'mejor que Capital' : 'peor que Capital'} trendPositive={datos.Crecio_vs_Capital === 1} />
       </div>
@@ -519,7 +531,7 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
               <div style={{ maxHeight: '250px', overflowY: 'auto', marginBottom: '16px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
-                    <tr><th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% en circuito</th></tr>
+                    <tr><th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población (barrio)</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% del barrio en el circuito <InfoTip texto="Qué porcentaje de la población de ese barrio cae dentro de este circuito (un barrio puede estar dividido entre varios circuitos)." /></th></tr>
                   </thead>
                   <tbody>
                     {barriosCircuito.map((barrio, i) => (
@@ -535,7 +547,7 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
               <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                 Total barrios: <strong style={{ color: 'var(--text-primary)' }}>{barriosCircuito.length}</strong>
                 <span style={{ margin: '0 14px' }}>│</span>
-                Padrón: <strong style={{ color: 'var(--text-primary)' }}>{datos?.Padron_G23?.toLocaleString() || '—'}</strong>
+                Padrón electoral (circuito): <strong style={{ color: 'var(--text-primary)' }}>{datos?.Padron_G23?.toLocaleString() || '—'}</strong>
               </div>
             </>
           ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>No hay información de barrios disponible</div>}
@@ -698,7 +710,7 @@ const SolapaResumenBarrio = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-        <MetricCard label="Población" value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% del circuito` : undefined} />
+        <MetricCard label={<>Población total (barrio) <InfoTip texto="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." /></>} value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% de este barrio está en este circuito` : undefined} />
         <MetricCard label="Tipo" value={props.tipo_barrio === 'BarrioOficial' ? 'Oficial' : 'No oficial'} />
       </div>
 
@@ -803,16 +815,31 @@ const SolapaVisitasBarrio = ({ nombreBarrio, recorridosLookup }) => {
 
 // Mismos campos que ya muestra CeldaEvento para el tipo "pauta", salvo la línea de
 // barrio (redundante acá — ya estamos parados en la ficha de ese barrio).
+// Esquema Meta Ads (fila_origen/codigo_anuncio pueden repetirse entre registros —
+// son ad-sets o snapshots distintos del mismo anuncio, no duplicados a filtrar).
+// Card compacta: alcance/impresiones/gasto/CTR. Frecuencia, visualizaciones, CPM,
+// presupuesto y tipo_presupuesto quedan solo para el detalle del PDF (htmlPautaPDF).
 const FilaPauta = ({ pauta }) => (
   <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{pauta.tema || '—'}</div>
-    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{pauta.campania || '—'} · {pauta.plataforma || '—'} ({pauta.formato || '—'})</div>
-    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{pauta.ministerio || '—'}</div>
-    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {pauta.fecha_salida || '—'} → {pauta.fecha_cierre || '—'}</div>
-    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
-      Alcance real: {pauta.alcance_real?.toLocaleString() ?? '—'} de {pauta.alcance_planificado?.toLocaleString() ?? '—'} planificado
-      {typeof pauta.cobertura_real === 'number' && ` (${(pauta.cobertura_real * 100).toFixed(1)}% cobertura real)`}
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{pauta.nombre_anuncio || '—'}</div>
+      {pauta.requiere_auditoria && (
+        <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309', whiteSpace: 'nowrap' }}>
+          ⚠ Pendiente de revisión
+        </span>
+      )}
     </div>
+    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {pauta.fecha_creacion || '—'} → {pauta.fecha_finalizacion || '—'}</div>
+    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+      Alcance: {pauta.alcance?.toLocaleString() ?? '—'} · Impresiones: {pauta.impresiones?.toLocaleString() ?? '—'}
+    </div>
+    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+      Gasto: {pauta.importe_gastado != null ? `$${pauta.importe_gastado.toLocaleString()}` : '—'}
+      {typeof pauta.ctr === 'number' && ` · CTR: ${pauta.ctr.toFixed(2)}%`}
+    </div>
+    {pauta.observaciones && (
+      <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{pauta.observaciones}</div>
+    )}
   </div>
 );
 
@@ -829,7 +856,7 @@ const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData }) => {
         <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin pauta registrada para este barrio.</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {pautas.map((p, i) => <FilaPauta key={i} pauta={p} />)}
+          {pautas.map((p, i) => <FilaPauta key={p.fila_origen ?? i} pauta={p} />)}
         </div>
       )}
     </div>
@@ -1543,7 +1570,7 @@ const ResumenCircuitoMini = ({ datos, padronTotal, encuestasData }) => {
         <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{datos.cirn_nom}</div>
       </div>
       <Badge categoria={datos.Categoria_v4} tipo="v4" />
-      <MetricCardMini label="Padrón 2023" value={datos.Padron_G23?.toLocaleString() || '—'} subtitle={`${pctPadron}% Capital`} />
+      <MetricCardMini label={<>Padrón electoral (circuito) <InfoTip texto="Personas habilitadas para votar en este circuito según el padrón electoral 2023." /></>} value={datos.Padron_G23?.toLocaleString() || '—'} subtitle={`${pctPadron}% Capital`} />
       <MetricCardMini label="Participación G23" value={formatPct(datos.Turnout_G23)} trend={`${formatPP(datos.Turnout_G23 - 0.67)} vs Capital`} trendPositive={(datos.Turnout_G23 - 0.67) > 0} />
       <MetricCardMini label="Tendencia Gob. 19→23" value={formatPP(datos.Residual_Gov)} trendPositive={datos.Residual_Gov >= 0} />
       {encuestasData && (
@@ -1852,7 +1879,7 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
           <FilaCruce
             key={i}
             label={b.barrio}
-            sublabel={`${b.pct_poblacion_en_circuito?.toFixed(1)}% del circuito`}
+            sublabel={`${b.pct_poblacion_en_circuito?.toFixed(1)}% de ese barrio, en este circuito`}
             onClick={() => {
               const key = normalizarNombreBarrio(b.barrio_normalizado);
               const feature = barriosGeoLookup[key];
@@ -1893,9 +1920,13 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
         <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>{nombreBarrio}</div>
         <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{props.tipo_barrio === 'BarrioOficial' ? 'Barrio oficial' : 'Barrio no oficial'}</div>
       </div>
-      <MetricCardMini label="Población" value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% del circuito` : undefined} />
+      <MetricCardMini label={<>Población total (barrio) <InfoTip texto="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." /></>} value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% de este barrio está en este circuito` : undefined} />
 
-      <div>
+      {/* Caja con borde propio (no solo el header "Circuito") para separar visualmente
+          la Población del barrio (arriba) del Padrón del circuito (adentro de
+          ResumenCircuitoMini) — son datos de fuente y unidad distintas y quedaban
+          demasiado pegados en este panel. */}
+      <div style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '10px' }}>
         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Circuito</div>
         {datosCircuito ? (
           <ResumenCircuitoMini datos={datosCircuito} padronTotal={padronTotal} encuestasData={encuestasData} />
@@ -1914,7 +1945,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
           <FilaCruce
             key={i}
             label={c.circuito.split(' - ').slice(1).join(' - ')}
-            sublabel={`≈${c.pct_poblacion_en_circuito?.toFixed(1)}% de la población del barrio`}
+            sublabel={`≈${c.pct_poblacion_en_circuito?.toFixed(1)}% de este barrio, en este circuito`}
             onClick={() => {
               const mapkeyClicked = c.circuito.split(' - ')[0].trim();
               const circuitoRecord = todosLosDatos.find(d => d.Mapkey === mapkeyClicked);
@@ -2003,15 +2034,22 @@ const CeldaEvento = ({ evento }) => {
           )}
           {evento.tipo === 'pauta' && (
             <>
-              <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>{evento.detalle.tema}</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>{evento.detalle.campania} · {evento.detalle.plataforma} ({evento.detalle.formato})</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>{evento.detalle.ministerio}</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {evento.detalle.fecha_salida} → {evento.detalle.fecha_cierre}</div>
-              <div style={{ color: 'var(--text-secondary)' }}>
-                Alcance real: {evento.detalle.alcance_real?.toLocaleString() ?? '—'} de {evento.detalle.alcance_planificado?.toLocaleString() ?? '—'} planificado
-                {typeof evento.detalle.cobertura_real === 'number' && ` (${(evento.detalle.cobertura_real * 100).toFixed(1)}% cobertura real)`}
+              <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>
+                {evento.detalle.nombre_anuncio}
+                {evento.detalle.requiere_auditoria && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309' }}>⚠ Pendiente de revisión</span>}
               </div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {evento.detalle.fecha_creacion} → {evento.detalle.fecha_finalizacion}</div>
+              <div style={{ color: 'var(--text-secondary)' }}>
+                Alcance: {evento.detalle.alcance?.toLocaleString() ?? '—'} · Impresiones: {evento.detalle.impresiones?.toLocaleString() ?? '—'}
+              </div>
+              <div style={{ color: 'var(--text-secondary)' }}>
+                Gasto: {evento.detalle.importe_gastado != null ? `$${evento.detalle.importe_gastado.toLocaleString()}` : '—'}
+                {typeof evento.detalle.ctr === 'number' && ` · CTR: ${evento.detalle.ctr.toFixed(2)}%`}
+              </div>
+              {evento.detalle.observaciones && (
+                <div style={{ color: 'var(--text-tertiary)', fontStyle: 'italic', marginTop: '2px' }}>{evento.detalle.observaciones}</div>
+              )}
             </>
           )}
         </div>
@@ -2173,7 +2211,7 @@ function htmlVisitasPDF(visitas) {
 }
 function htmlPautaPDF(pautas) {
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada.</p>`;
-  return `<table><thead><tr><th>Tema</th><th>Campaña / Plataforma</th><th>Ministerio</th><th>Vigencia</th><th class="text-right">Alcance real</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.tema || '—'}</td><td>${p.campania || '—'} / ${p.plataforma || '—'} (${p.formato || '—'})</td><td>${p.ministerio || '—'}</td><td>${p.fecha_salida || '—'} → ${p.fecha_cierre || '—'}</td><td class="text-right">${p.alcance_real != null ? p.alcance_real.toLocaleString() : '—'}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th><th>Auditoría</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td>${p.fecha_creacion || '—'} → ${p.fecha_finalizacion || '—'}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td><td>${p.requiere_auditoria ? '⚠ Pendiente' : '—'}</td></tr>`).join('')}</tbody></table>`;
 }
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
@@ -2253,7 +2291,7 @@ const generarFichaPDF = ({
   <h2>${barrioPrincipal.nombreBarrio}</h2>
 </div>
 <div class="metrics">
-  <div class="metric"><div class="metric-label">Población</div><div class="metric-value">${barrioPrincipal.props?.poblacion != null ? barrioPrincipal.props.poblacion.toLocaleString() : '—'}</div></div>
+  <div class="metric"><div class="metric-label">Población total (barrio) <span title="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${barrioPrincipal.props?.poblacion != null ? barrioPrincipal.props.poblacion.toLocaleString() : '—'}</div></div>
   <div class="metric"><div class="metric-label">Tipo</div><div class="metric-value" style="font-size:16px">${barrioPrincipal.props?.tipo_barrio === 'BarrioOficial' ? 'Oficial' : 'No oficial'}</div></div>
 </div>
 <div class="section">
@@ -2340,7 +2378,7 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 </div>
 
 <div class="metrics">
-  <div class="metric"><div class="metric-label">Padrón 2023</div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div></div>
+  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div></div>
   <div class="metric"><div class="metric-label">Victorias</div><div class="metric-value">${datos.Victorias_Total}/4</div></div>
   <div class="metric"><div class="metric-label">Gob. 2023</div><div class="metric-value ${datos.Share_G23 >= 0.5 ? 'green' : 'red'}">${(datos.Share_G23 * 100).toFixed(1)}%</div></div>
   <div class="metric"><div class="metric-label">Dip. 2025</div><div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div></div>
