@@ -2209,9 +2209,26 @@ function htmlVisitasPDF(visitas) {
   if (!visitas || visitas.length === 0) return `<p style="color:#999;font-size:12px">Sin visitas registradas.</p>`;
   return `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Contacto vecinos</th><th>Detalle</th></tr></thead><tbody>${visitas.map(v => `<tr><td>${v.fecha}</td><td>${v.tipo_visita || '—'}</td><td>${v.contacto_vecinos || 'NO'}</td><td>${v.info || '—'}</td></tr>`).join('')}</tbody></table>`;
 }
+// Barrio principal hereda del circuito solo los eventos que le faltan (el circuito
+// suma TODOS los barrios con orden_importancia:1, no solo este). Dedup por fecha+info.
+function unificarVisitasPDF(visitasBarrio, visitasCircuito) {
+  // Dedup sobre el conjunto combinado (no solo barrio-vs-extra): el circuito puede
+  // traer el mismo evento repetido si dos barrios con orden_importancia:1 lo cargaron
+  // cada uno por su cuenta (pasa con visitas que abarcan varios barrios a la vez).
+  const claves = new Set();
+  const resultado = [];
+  [...(visitasBarrio || []), ...(visitasCircuito || [])].forEach(v => {
+    const clave = `${v.fecha}|${v.info || ''}`;
+    if (!claves.has(clave)) {
+      claves.add(clave);
+      resultado.push(v);
+    }
+  });
+  return resultado.sort((a, b) => a.fecha.localeCompare(b.fecha));
+}
 function htmlPautaPDF(pautas) {
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada.</p>`;
-  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th><th>Auditoría</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td>${p.fecha_creacion || '—'} → ${p.fecha_finalizacion || '—'}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td><td>${p.requiere_auditoria ? '⚠ Pendiente' : '—'}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${p.fecha_creacion || '—'} → ${p.fecha_finalizacion || '—'}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td></tr>`).join('')}</tbody></table>`;
 }
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
@@ -2219,6 +2236,140 @@ function htmlObrasPDF(obras) {
     const color = COLOR_OBRA_ESTADO[o.estado] || COLOR_OBRA_DEFAULT;
     return `<tr><td>${o.nombre}</td><td>${o.tipo_obra || '—'}</td><td><span class="badge" style="background:${color}22;color:${color}">${o.estado || 'Sin dato'}</span></td><td>${o.barrio || 'Sin barrio asignado'}${o._circuitoNombre ? ' · ' + o._circuitoNombre : ''}</td></tr>`;
   }).join('')}</tbody></table>`;
+}
+
+// --- Encuestas en el PDF: mismo criterio de agrupación que ResumenEncuesta en pantalla
+// (Aprobación / Calificación de gestión / Reelección), extendido con las preguntas de
+// ronda que la ficha todavía no mostraba. Sin librerías de charts: barras y donuts son
+// divs/SVG propios, igual que el resto de la ficha. ---
+function deltaEncuestaPDF(rondas, pregunta, categoria) {
+  const serie = rondas.map(r => r.preguntas?.[pregunta]?.[categoria]).filter(v => v != null);
+  if (serie.length < 2) return null;
+  return serie[serie.length - 1] - serie[0];
+}
+// "Mejoras en X" no tiene Positiva/Negativa sino Si,mucho/Si,algo/No — el delta se toma
+// sobre el total que percibe mejora (mucho + algo).
+function deltaMejoraPDF(rondas, pregunta) {
+  const serie = rondas
+    .map(r => r.preguntas?.[pregunta])
+    .filter(d => d != null)
+    .map(d => (d['Si, mucho'] || 0) + (d['Si, algo'] || 0));
+  if (serie.length < 2) return null;
+  return serie[serie.length - 1] - serie[0];
+}
+function badgeDeltaPDF(delta) {
+  if (delta == null) return '';
+  const cls = delta > 0 ? 'green' : delta < 0 ? 'red' : '';
+  const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '—';
+  const signo = delta > 0 ? '+' : '';
+  return `<div class="metric-sub ${cls}" style="font-weight:600">${arrow} ${signo}${delta.toFixed(1)} pp vs. 1ª ronda</div>`;
+}
+function htmlMetricPDF(label, valor, delta) {
+  return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value" style="font-size:18px">${valor}</div>${badgeDeltaPDF(delta)}</div>`;
+}
+function htmlBarraCategoriasPDF(label, data, delta) {
+  if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
+  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  const segmentos = categorias.map(cat => {
+    const v = data[cat];
+    if (!v || v <= 0) return '';
+    const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
+    return `<div style="width:${v}%;background:${COLOR_GESTION[cat]};display:flex;align-items:center;justify-content:center">${texto}</div>`;
+  }).join('');
+  const deltaHtml = delta != null ? `<span class="${delta > 0 ? 'green' : delta < 0 ? 'red' : ''}" style="font-weight:600">${delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} ${delta > 0 ? '+' : ''}${delta.toFixed(1)} pp</span>` : '';
+  return `<div style="margin-bottom:10px">
+    <div style="font-size:11px;color:#1a1a1a;margin-bottom:4px;display:flex;justify-content:space-between"><span>${label}</span>${deltaHtml}</div>
+    <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
+  </div>`;
+}
+function htmlMejoraPDF(label, data, delta) {
+  if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
+  const segmentos = [
+    ['Si, mucho', '#22C55E'], ['Si, algo', '#86EFAC'], ['No', '#EF4444'],
+  ].map(([cat, color]) => {
+    const v = data[cat];
+    if (!v || v <= 0) return '';
+    const texto = v > 10 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
+    return `<div style="width:${v}%;background:${color};display:flex;align-items:center;justify-content:center">${texto}</div>`;
+  }).join('');
+  const deltaHtml = delta != null ? `<span class="${delta > 0 ? 'green' : delta < 0 ? 'red' : ''}" style="font-weight:600">${delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} ${delta > 0 ? '+' : ''}${delta.toFixed(1)} pp</span>` : '';
+  return `<div style="margin-bottom:10px">
+    <div style="font-size:11px;color:#1a1a1a;margin-bottom:4px;display:flex;justify-content:space-between"><span>${label}</span>${deltaHtml}</div>
+    <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
+  </div>`;
+}
+function htmlEncuestasPDF(encuestaCircuito) {
+  if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
+    return `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
+  }
+  const rondas = encuestaCircuito.rondas;
+  const ultima = rondas[rondas.length - 1];
+  const preguntas = ultima.preguntas || {};
+  const comparativo = !!encuestaCircuito.tiene_comparativo && rondas.length >= 2;
+  const delta = (pregunta, categoria) => comparativo ? deltaEncuestaPDF(rondas, pregunta, categoria) : null;
+  const deltaMejora = (pregunta) => comparativo ? deltaMejoraPDF(rondas, pregunta) : null;
+
+  const problemas = preguntas['Problemas principales'] || {};
+  const topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+  const aprobacion = ['Intendente', 'Gobernador', 'Presidente'].map(f => {
+    const d = preguntas[`Aprobación ${f}`];
+    return htmlMetricPDF(`Aprobación ${f}`, d?.Apruebo != null ? d.Apruebo.toFixed(1) + '%' : '—', delta(`Aprobación ${f}`, 'Apruebo'));
+  }).join('');
+
+  const gestion = ['Intendente', 'Gobernador', 'Presidente'].map(f =>
+    htmlBarraCategoriasPDF(`Calificación de gestión: ${f}`, preguntas[`Gestión del ${f}`], delta(`Gestión del ${f}`, 'Positiva'))
+  ).join('');
+
+  const reeleccion = [['Llaryora (Gobernador)', 'Reelección Llaryora'], ['Milei (Presidente)', 'Reelección Milei']].map(([nom, key]) => {
+    const d = preguntas[key];
+    return htmlMetricPDF(`Reelección ${nom}`, d?.Si != null ? d.Si.toFixed(1) + '%' : '—', delta(key, 'Si'));
+  }).join('');
+
+  const funcionamiento = [['Centro Vecinal', 'Funcionamiento Centro Vecinal'], ['CPC', 'Funcionamiento CPC']].map(([nom, key]) =>
+    htmlBarraCategoriasPDF(`Funcionamiento ${nom}`, preguntas[key], delta(key, 'Positiva'))
+  ).join('');
+
+  const alertaExistencia = preguntas['Cordobeses en Alerta (existencia)'];
+  const alertaCalif = preguntas['Calificación Cordobeses en Alerta'];
+  const cordobesesAlerta = `
+    <div class="metrics" style="grid-template-columns:1fr;margin-bottom:10px">${htmlMetricPDF('Cordobeses en Alerta (conoce el programa)', alertaExistencia?.Si != null ? alertaExistencia.Si.toFixed(1) + '%' : '—', delta('Cordobeses en Alerta (existencia)', 'Si'))}</div>
+    ${htmlBarraCategoriasPDF('Calificación Cordobeses en Alerta', alertaCalif, delta('Calificación Cordobeses en Alerta', 'Positiva'))}`;
+
+  const mejoras = [
+    ['Bacheos', 'Mejoras en bacheos'],
+    ['Alumbrado público', 'Mejoras en alumbrado público'],
+    ['Espacios públicos', 'Mejoras en espacios públicos'],
+    ['Ordenamiento naranjitas y limpiavidrios', 'Mejoras en ordenamiento naranjitas y limpiavidrios'],
+  ].map(([nom, key]) => htmlMejoraPDF(nom, preguntas[key], deltaMejora(key))).join('');
+
+  return `
+<div class="section">
+  <h3>Encuestas</h3>
+  <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
+    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${ultima.fecha}</div></div>
+    <div class="metric"><div class="metric-label">Cobertura</div><div class="metric-value" style="font-size:14px">${comparativo ? 'Con comparativo' : 'Ronda única'}</div></div>
+  </div>
+  ${topProblemas.length > 0 ? `<div style="margin-bottom:16px"><table><thead><tr><th>Principales problemas</th><th class="text-right">%</th></tr></thead><tbody>${topProblemas.map(([nombre, pct]) => `<tr><td>${nombre}</td><td class="text-right"><strong>${pct.toFixed(1)}%</strong></td></tr>`).join('')}</tbody></table></div>` : ''}
+
+  <div class="mini-title">Aprobación de gestión</div>
+  <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px">${aprobacion}</div>
+
+  <div class="mini-title">Calificación de gestión</div>
+  ${gestion}
+
+  <div class="mini-title">Reelección</div>
+  <div class="metrics" style="grid-template-columns:repeat(2,1fr);margin-bottom:10px">${reeleccion}</div>
+
+  <div class="mini-title">Funcionamiento de instituciones locales</div>
+  ${funcionamiento}
+
+  <div class="mini-title">Cordobeses en Alerta</div>
+  ${cordobesesAlerta}
+
+  <div class="mini-title">Mejoras percibidas (ronda actual)</div>
+  ${mejoras}
+</div>`;
 }
 
 const generarFichaPDF = ({
@@ -2238,7 +2389,6 @@ const generarFichaPDF = ({
   // Home, misma atribución por barrio principal que usa el resto del tablero) ---
   const eventosCircuito = eventosPorCircuito?.[mapkey] || [];
   const visitasCircuito = eventosCircuito.filter(e => e.tipo === 'visita').map(e => e.detalle);
-  const pautaCircuito = eventosCircuito.filter(e => e.tipo === 'pauta').map(e => e.detalle);
   const obrasCircuito = (obrasEnriquecidas || []).filter(o => o._circuitoMapkey === mapkey);
 
   // --- Barrio principal del circuito (dirección inversa de resolverCircuitoPrincipalDeBarrio) ---
@@ -2246,7 +2396,10 @@ const generarFichaPDF = ({
   let visitasBarrio = [], pautaBarrio = [], obrasBarrio = [], cercanosBarrio = [], votosEscuelasBarrio = null;
   if (barrioPrincipal) {
     const keyBarrio = normalizarNombreBarrio(barrioPrincipal.nombreBarrio);
-    visitasBarrio = recorridosLookup?.[keyBarrio]?.visitas || [];
+    // Visitas: partimos de las del barrio principal (fuente más precisa) y sumamos las
+    // del circuito (que incluye TODOS los barrios con orden_importancia:1, no solo este)
+    // que no estén ya cubiertas, dedupeando por fecha+detalle.
+    visitasBarrio = unificarVisitasPDF(recorridosLookup?.[keyBarrio]?.visitas || [], visitasCircuito);
     const claveOriginalPauta = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === keyBarrio) : null;
     pautaBarrio = claveOriginalPauta ? (pautasBarriosData[claveOriginalPauta].pautas || []) : [];
     obrasBarrio = (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === keyBarrio);
@@ -2254,30 +2407,8 @@ const generarFichaPDF = ({
     votosEscuelasBarrio = votosEscuelasBarrioLookup?.[keyBarrio] || null;
   }
 
-  // --- Encuestas del circuito: resumen conciso de la última ronda (no el Comparativo completo) ---
-  let encuestaHtml;
-  if (encuestaCircuito && encuestaCircuito.cantidad_rondas > 0) {
-    const ultima = encuestaCircuito.rondas[encuestaCircuito.rondas.length - 1];
-    const preguntas = ultima.preguntas || {};
-    const aprobGob = preguntas['Aprobación Gobernador'];
-    const aprobInt = preguntas['Aprobación Intendente'];
-    const reeleccion = preguntas['Reelección Llaryora'];
-    const problemas = preguntas['Problemas principales'] || {};
-    const topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
-    encuestaHtml = `
-<div class="section">
-  <h3>Encuestas</h3>
-  <div class="metrics">
-    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${ultima.fecha}</div></div>
-    <div class="metric"><div class="metric-label">Aprobación Gob.</div><div class="metric-value">${aprobGob?.Apruebo != null ? aprobGob.Apruebo.toFixed(1) + '%' : '—'}</div></div>
-    <div class="metric"><div class="metric-label">Aprobación Int.</div><div class="metric-value">${aprobInt?.Apruebo != null ? aprobInt.Apruebo.toFixed(1) + '%' : '—'}</div></div>
-    <div class="metric"><div class="metric-label">Reelección Llaryora</div><div class="metric-value">${reeleccion?.Si != null ? reeleccion.Si.toFixed(1) + '%' : '—'}</div></div>
-  </div>
-  ${topProblemas.length > 0 ? `<table><thead><tr><th>Principales problemas</th><th class="text-right">%</th></tr></thead><tbody>${topProblemas.map(([nombre, pct]) => `<tr><td>${nombre}</td><td class="text-right"><strong>${pct.toFixed(1)}%</strong></td></tr>`).join('')}</tbody></table>` : ''}
-</div>`;
-  } else {
-    encuestaHtml = `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
-  }
+  // --- Encuestas del circuito: mismo criterio de agrupación que ResumenEncuesta en pantalla ---
+  const encuestaHtml = htmlEncuestasPDF(encuestaCircuito);
 
   const escuelasCircuitoHtml = INCLUIR_ESCUELAS_PDF ? `
 <div class="section">
@@ -2301,7 +2432,7 @@ const generarFichaPDF = ({
 <div class="subheader">Cobertura territorial del barrio</div>
 <div class="section"><h3>Visitas del Gobernador</h3>${htmlVisitasPDF(visitasBarrio)}</div>
 <div class="section"><h3>Pauta publicitaria</h3>${htmlPautaPDF(pautaBarrio)}</div>
-<div class="section"><h3>Obras</h3>${htmlObrasPDF(obrasBarrio)}</div>
+<div class="section"><h3>Obras (en el barrio)</h3>${htmlObrasPDF(obrasBarrio)}</div>
 ${INCLUIR_ESCUELAS_PDF ? `<div class="section"><h3>Votos por escuela</h3>${htmlEscuelasPDF(votosEscuelasBarrio?.escuelas, votosEscuelasBarrioData?.promedio_capital_pct)}</div>` : ''}
 ` : `
 <div class="part-header page-break">
@@ -2363,6 +2494,7 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 .part-header h1{font-size:20px;font-weight:700;letter-spacing:0.5px}
 .part-header h2{font-size:15px;font-weight:400;color:#ccc;margin-top:4px}
 .subheader{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin:28px 0 12px;border-bottom:1px solid #e0e0e0;padding-bottom:6px}
+.mini-title{font-size:12px;font-weight:600;color:#444;margin:14px 0 8px}
 .page-break{page-break-before:always}
 .footer{margin-top:30px;padding-top:16px;border-top:1px solid #e0e0e0;font-size:10px;color:#999;text-align:center}
 @media print{body{padding:15px} .page-break{page-break-before:always}}
@@ -2453,9 +2585,7 @@ ${barriosCircuito.length > 0 ? `
 ${encuestaHtml}
 
 <div class="subheader">Cobertura territorial del circuito</div>
-<div class="section"><h3>Visitas del Gobernador</h3>${htmlVisitasPDF(visitasCircuito)}</div>
-<div class="section"><h3>Pauta publicitaria</h3>${htmlPautaPDF(pautaCircuito)}</div>
-<div class="section"><h3>Obras</h3>${htmlObrasPDF(obrasCircuito)}</div>
+<div class="section"><h3>Obras (en el circuito)</h3>${htmlObrasPDF(obrasCircuito)}</div>
 ${escuelasCircuitoHtml}
 
 ${barrioPartHtml}
