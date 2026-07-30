@@ -146,6 +146,14 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
   const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, escuelas: false });
   const toggleCapa = (capa) => setCapasActivas(prev => ({ ...prev, [capa]: !prev[capa] }));
 
+  // A diferencia de filtroCategoria (lifted a pages/index.js porque VistaCapital también
+  // lo consume, y se limpia al navegar a un circuito/barrio puntual porque es un filtro
+  // de panorama de Capital), este filtro no tiene una segunda vista que sincronizar y
+  // sigue teniendo sentido con un circuito/barrio enfocado (ej. ver solo obras
+  // "Finalizado — Inaugurable" mientras se está parado en una ficha) — por eso vive local
+  // y no se resetea en navegación.
+  const [filtroEstadoObra, setFiltroEstadoObra] = useState(null);
+
   const geoJsonData = useMemo(() => {
     if (!geoData) return null;
     try {
@@ -319,15 +327,20 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
       {capasActivas.obras && (
         <div style={{ position: 'absolute', bottom: '10px', left: '410px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
-          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Obras</div>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Obras (click para filtrar)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {Object.entries(COLOR_OBRA_ESTADO).map(([estado, color]) => (
-              <div key={estado} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div
+                key={estado}
+                onClick={() => setFiltroEstadoObra(filtroEstadoObra === estado ? null : estado)}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: filtroEstadoObra === estado ? `${color}20` : 'transparent', border: filtroEstadoObra === estado ? `1px solid ${color}` : '1px solid transparent' }}
+              >
                 <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: color, border: '1px solid #fff', boxShadow: `0 0 0 1px ${color}`, flexShrink: 0 }} />
                 <span style={{ fontSize: '9px', color: '#546E7A' }}>{estado}</span>
               </div>
             ))}
           </div>
+          {filtroEstadoObra && <button onClick={() => setFiltroEstadoObra(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
         </div>
       )}
 
@@ -356,12 +369,16 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
         )}
         {capasActivas.obras && obrasParaMostrar.map((obra, i) => {
           const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
+          // Mismo criterio de aislar/restaurar que getStyle() usa para los polígonos de
+          // circuito con filtroCategoria (fillOpacity 0.15 / opacity 0.3 para lo que no
+          // matchea el filtro activo).
+          const isFiltered = filtroEstadoObra && obra.estado !== filtroEstadoObra;
           return (
             <CircleMarker
               key={`obra-${obra.id}-${i}`}
               center={[obra.lat, obra.lon]}
               radius={6}
-              pathOptions={{ color: '#fff', weight: 1, fillColor: colorEstado, fillOpacity: 0.9 }}
+              pathOptions={{ color: '#fff', weight: 1, fillColor: colorEstado, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
               eventHandlers={{ click: () => onSelectObra && onSelectObra(obra) }}
             />
           );
