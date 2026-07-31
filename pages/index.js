@@ -2597,11 +2597,12 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 </div>
 
 <div class="metrics">
-  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div>${poblacionCircuitoTotal > 0 ? `<div class="metric-sub">En los barrios de este circuito viven ${Math.round(poblacionCircuitoTotal).toLocaleString()} personas; el padrón habilitado es ${datos.Padron_G23?.toLocaleString() || '—'}${pctPadronDePoblacion != null ? ` (${pctPadronDePoblacion.toFixed(0)}%)` : ''}.</div>` : ''}</div>
+  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div></div>
   <div class="metric"><div class="metric-label">Victorias</div><div class="metric-value">${datos.Victorias_Total}/4</div></div>
   <div class="metric"><div class="metric-label">Gob. 2023</div><div class="metric-value ${datos.Share_G23 >= 0.5 ? 'green' : 'red'}">${(datos.Share_G23 * 100).toFixed(1)}%</div></div>
   <div class="metric"><div class="metric-label">Dip. 2025</div><div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div></div>
 </div>
+${poblacionCircuitoTotal > 0 ? `<p style="font-size:11px;color:#666;margin:-10px 0 20px">En los barrios de este circuito viven ${Math.round(poblacionCircuitoTotal).toLocaleString()} personas; el padrón habilitado es ${datos.Padron_G23?.toLocaleString() || '—'}${pctPadronDePoblacion != null ? ` (${pctPadronDePoblacion.toFixed(0)}%)` : ''}.</p>` : ''}
 
 <div class="section">
   <h3>Evolución histórica - Gobernador</h3>
