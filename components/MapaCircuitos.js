@@ -418,7 +418,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
       )}
 
       {capasActivas.obras && (
-        <div style={{ position: 'absolute', bottom: '10px', left: '410px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
+        <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
           <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Obras (click para filtrar)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {Object.entries(COLOR_OBRA_ESTADO).map(([estado, color]) => (
