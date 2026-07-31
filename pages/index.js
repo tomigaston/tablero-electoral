@@ -2324,6 +2324,29 @@ function badgeDeltaPDF(delta) {
 function htmlMetricPDF(label, valor, delta) {
   return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value" style="font-size:18px">${valor}</div>${badgeDeltaPDF(delta)}</div>`;
 }
+// Mismo gauge semáforo (SVG a mano) y mismo criterio de color por valor que
+// GaugeAprobacion en pantalla (solapa Encuestas) — no es una versión distinta, es el
+// mismo dibujo, solo con colores fijos en vez de variables CSS (el HTML del PDF no
+// hereda las custom properties del tablero).
+function htmlGaugeAprobacionPDF(label, data, delta) {
+  if (!data || data.Apruebo == null) {
+    return `<div class="metric"><div class="metric-label">Aprobación ${label}</div><div class="metric-value" style="font-size:12px;color:#999">Sin dato</div></div>`;
+  }
+  const pct = data.Apruebo;
+  const color = pct >= 40 ? '#0DCE1D' : pct >= 25 ? '#D9B300' : '#D64550';
+  const r = 40, mediaCircunferencia = Math.PI * r;
+  const progreso = (Math.min(pct, 100) / 100) * mediaCircunferencia;
+  return `<div class="metric">
+    <svg viewBox="0 0 100 60" style="width:100%;max-width:140px">
+      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e0e0e0" stroke-width="10" stroke-linecap="round" />
+      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="${color}" stroke-width="10" stroke-linecap="round"
+        stroke-dasharray="${mediaCircunferencia} ${mediaCircunferencia}" stroke-dashoffset="${mediaCircunferencia - progreso}" />
+      <text x="50" y="45" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">${pct}%</text>
+    </svg>
+    <div style="font-size:11px;color:#666;margin-top:2px">Aprobación ${label}</div>
+    ${badgeDeltaPDF(delta)}
+  </div>`;
+}
 function htmlBarraCategoriasPDF(label, data, delta) {
   if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
   const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
@@ -2371,7 +2394,7 @@ function htmlEncuestasPDF(encuestaCircuito) {
 
   const aprobacion = ['Intendente', 'Gobernador', 'Presidente'].map(f => {
     const d = preguntas[`Aprobación ${f}`];
-    return htmlMetricPDF(`Aprobación ${f}`, d?.Apruebo != null ? d.Apruebo.toFixed(1) + '%' : '—', delta(`Aprobación ${f}`, 'Apruebo'));
+    return htmlGaugeAprobacionPDF(f, d, delta(`Aprobación ${f}`, 'Apruebo'));
   }).join('');
 
   const gestion = ['Intendente', 'Gobernador', 'Presidente'].map(f =>
