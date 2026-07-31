@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, CircleMarker, Marker, Popup, Pane, us
 import * as topojson from 'topojson-client';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import 'leaflet/dist/leaflet.css';
+import { formatearFecha } from '../lib/formatearFecha';
 
 // Colores por categoría v4 - INCLUYE "D" para EN DISPUTA
 const COLORES_CATEGORIA = {
@@ -551,7 +552,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                             {p._activa ? 'Activa' : 'Finalizada'}
                           </span>
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>Vigencia: {p.fecha_creacion || '—'} → {p.fecha_finalizacion || '—'}</div>
+                        <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>Vigencia: {formatearFecha(p.fecha_creacion)} → {formatearFecha(p.fecha_finalizacion)}</div>
                         <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
                           Alcance: {p.alcance?.toLocaleString() ?? '—'} · Gasto: {p.importe_gastado != null ? `$${p.importe_gastado.toLocaleString()}` : '—'}
                         </div>

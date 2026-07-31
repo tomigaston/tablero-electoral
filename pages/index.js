@@ -3,6 +3,7 @@ import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
 import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
+import { formatearFecha } from '../lib/formatearFecha';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -304,11 +305,6 @@ const TIPOS_EVENTO_COBERTURA = {
   pauta: { label: 'Pauta', color: '#E65100', bg: '#FF980022' },
 };
 
-const formatFechaCorta = (iso) => {
-  const [y, m, d] = iso.split('-');
-  return `${d}/${m}/${y.slice(2)}`;
-};
-
 // Arma, para cada circuito (por Mapkey), la lista de eventos de cobertura ya
 // ordenada cronologicamente.
 function construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cruceData, pautasBarriosData, barriosGeoData) {
@@ -602,6 +598,7 @@ const SolapaTerritorio = ({
   circuito, datos, barrios, todosLosDatos, onSelectCircuito,
   barriosGeoLookup, recorridosLookup, pautasBarriosData, obrasEnriquecidas, votosEscuelasBarrioLookup,
   onSelectBarrioFicha,
+  circuitosGeoJsonData, obrasFoco, onSelectObra, votosEscuelasCircuitoData,
 }) => {
   const mapkey = datos?.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
@@ -695,6 +692,30 @@ const SolapaTerritorio = ({
           ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>No hay información de barrios disponible</div>}
         </div>
       </div>
+
+      <div>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Obras</h4>
+        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>Obras públicas en este circuito y en circuitos cercanos.</p>
+        <ObrasPanel
+          tipo="circuito"
+          datosCircuito={datos}
+          obrasEnriquecidas={obrasEnriquecidas}
+          circuitosGeoJsonData={circuitosGeoJsonData}
+          focoInicial={obrasFoco}
+          onSelectObra={onSelectObra}
+        />
+      </div>
+
+      <div>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Escuelas</h4>
+        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>% de votos a Peronismo sobre votos válidos, por escuela con centro de votación en este circuito.</p>
+        {votosEscuelasCircuitoData?.circuitos?.[mapkey] ? (
+          <ListaVotosEscuelas escuelas={votosEscuelasCircuitoData.circuitos[mapkey].escuelas} promedioCapitalPct={votosEscuelasCircuitoData?.promedio_capital_pct} />
+        ) : (
+          <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados en este circuito.</div>
+        )}
+      </div>
+
       <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Circuitos de la zona ({vecinos.length} relacionados)</h4>
         <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
@@ -775,38 +796,8 @@ const SolapaComparativas = ({ circuito, datos }) => {
   );
 };
 
-const SolapaEscuelas = ({ datos, votosEscuelasCircuitoData }) => {
-  if (!datos) return null;
-  const entrada = votosEscuelasCircuitoData?.circuitos?.[datos.Mapkey];
-  return (
-    <div>
-      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Votos por escuela</h4>
-      <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>% de votos a Peronismo sobre votos válidos, por escuela con centro de votación en este circuito.</p>
-      {entrada ? (
-        <ListaVotosEscuelas escuelas={entrada.escuelas} promedioCapitalPct={votosEscuelasCircuitoData?.promedio_capital_pct} />
-      ) : (
-        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados en este circuito.</div>
-      )}
-    </div>
-  );
-};
-
-const SolapaObras = ({ datos, obrasEnriquecidas, circuitosGeoJsonData, focoInicial, onSelectObra }) => {
-  if (!datos) return null;
-  return (
-    <div>
-      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Obras</h4>
-      <ObrasPanel
-        tipo="circuito"
-        datosCircuito={datos}
-        obrasEnriquecidas={obrasEnriquecidas}
-        circuitosGeoJsonData={circuitosGeoJsonData}
-        focoInicial={focoInicial}
-        onSelectObra={onSelectObra}
-      />
-    </div>
-  );
-};
+// SolapaEscuelas y SolapaObras (circuito) se retiraron: su contenido ahora vive
+// dentro de SolapaTerritorio (fusión de solapas, ver comentario en el array `solapas`).
 
 // ============================================
 // FICHA DE BARRIO
@@ -907,7 +898,7 @@ const SolapaResumenBarrio = ({
   );
 };
 
-const SolapaTerritorioBarrio = ({ nombreBarrio, barriosGeoData }) => {
+const SolapaTerritorioBarrio = ({ nombreBarrio, barriosGeoData, onSelectBarrioFicha }) => {
   const cercanos = barriosCercanos(nombreBarrio, barriosGeoData);
   return (
     <div>
@@ -920,7 +911,13 @@ const SolapaTerritorioBarrio = ({ nombreBarrio, barriosGeoData }) => {
             <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Distancia</th></tr></thead>
             <tbody>
               {cercanos.map((b, i) => (
-                <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                <tr
+                  key={i}
+                  style={{ borderTop: '1px solid var(--border)', cursor: 'pointer' }}
+                  onClick={() => onSelectBarrioFicha(b.nombre)}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
                   <td style={{ padding: '8px 14px' }}>{b.nombre}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'right' }}>{b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'right' }}>{b.distanciaKm.toFixed(2)} km</td>
@@ -950,7 +947,7 @@ const SolapaVisitasBarrio = ({ nombreBarrio, recorridosLookup }) => {
             return (
               <div key={i} style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{v.fecha}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{formatearFecha(v.fecha)}</span>
                   <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: colorTipo.bg, color: colorTipo.text }}>{v.tipo_visita}</span>
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>Contacto con vecinos: <strong>{v.contacto_vecinos || 'NO'}</strong></div>
@@ -984,7 +981,7 @@ const FilaPauta = ({ pauta }) => (
         </span>
       )}
     </div>
-    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {pauta.fecha_creacion || '—'} → {pauta.fecha_finalizacion || '—'}</div>
+    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {formatearFecha(pauta.fecha_creacion)} → {formatearFecha(pauta.fecha_finalizacion)}</div>
     <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
       Alcance: {pauta.alcance?.toLocaleString() ?? '—'} · Impresiones: {pauta.impresiones?.toLocaleString() ?? '—'}
     </div>
@@ -1165,12 +1162,6 @@ function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoK
 }
 
 const COLOR_GESTION = { 'Positiva': '#22C55E', 'Regular': '#FBBF24', 'Negativa': '#EF4444', 'Ns/Nc': '#CBD5E1' };
-
-const formatFechaLarga = (iso) => {
-  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-  const [y, m, d] = iso.split('-').map(Number);
-  return `${d} de ${meses[m - 1]} de ${y}`;
-};
 
 const BarraProblemas = ({ problemas }) => {
   if (!problemas) return null;
@@ -1372,7 +1363,7 @@ const Sparkline = ({ datos, width = 100, height = 28, color = '#1976D2' }) => {
           backgroundColor: '#1a1a1a', color: '#fff', padding: '3px 7px', borderRadius: '5px',
           fontSize: '10px', whiteSpace: 'nowrap', zIndex: 50, pointerEvents: 'none',
         }}>
-          {datos[hoverIdx].fecha} · {datos[hoverIdx].valor}%
+          {formatearFecha(datos[hoverIdx].fecha)} · {datos[hoverIdx].valor}%
         </div>
       )}
     </div>
@@ -1508,7 +1499,7 @@ const ComparativoEncuesta = ({ encuesta, umbral }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Comparativo · {anterior.fecha} → {actual.fecha}</h4>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Comparativo · {formatearFecha(anterior.fecha)} → {formatearFecha(actual.fecha)}</h4>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {kpis.map(k => <KPIComparativo key={k.label} {...k} rondas={rondas} />)}
           {['Intendente', 'Gobernador', 'Presidente'].map(func => (
@@ -1535,12 +1526,12 @@ const SolapaEncuestas = ({ encuesta, metadata }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
-          {vista === 'resumen' ? `Encuesta · ${formatFechaLarga(ronda.fecha)}` : 'Comparativo entre rondas'}
+          {vista === 'resumen' ? `Encuesta · ${formatearFecha(ronda.fecha)}` : 'Comparativo entre rondas'}
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {vista === 'resumen' && encuesta.rondas.length > 1 && (
             <select value={rondaIdx} onChange={(e) => setRondaIdx(Number(e.target.value))} style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '12px', backgroundColor: '#fff' }}>
-              {encuesta.rondas.map((r, i) => <option key={i} value={i}>{r.fecha}</option>)}
+              {encuesta.rondas.map((r, i) => <option key={i} value={i}>{formatearFecha(r.fecha)}</option>)}
             </select>
           )}
           {encuesta.tiene_comparativo && (
@@ -1581,7 +1572,7 @@ const ListadoEncuestasCircuitos = ({ datos, encuestasData, onSelectCircuito }) =
           <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>{circuito.CircuitoKey} · {circuito.cirn_nom}</span>
           <span style={{ display: 'flex', gap: '18px', fontSize: '12px', color: 'var(--text-secondary)' }}>
             <span>{encuesta.cantidad_rondas} ronda{encuesta.cantidad_rondas !== 1 ? 's' : ''}</span>
-            <span>{fechaReciente}</span>
+            <span>{formatearFecha(fechaReciente)}</span>
           </span>
         </div>
       ))}
@@ -1854,9 +1845,9 @@ const FilaObra = ({ obra, onSelectObra }) => {
       {obra.prioridad && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Prioridad: {obra.prioridad}</div>}
       {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
-          {obra.fecha_inicio && <div>Inicio: {obra.fecha_inicio}</div>}
-          {obra.fecha_finalizacion && <div>Finalización: {obra.fecha_finalizacion}</div>}
-          {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {obra.fecha_disponibilidad_inaugurar}</div>}
+          {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
+          {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
+          {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponibilidad_inaugurar)}</div>}
         </div>
       )}
       {obra.observaciones && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
@@ -1972,9 +1963,9 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
           {obra.prioridad && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Prioridad: {obra.prioridad}</div>}
           {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-              {obra.fecha_inicio && <div>Inicio: {obra.fecha_inicio}</div>}
-              {obra.fecha_finalizacion && <div>Finalización: {obra.fecha_finalizacion}</div>}
-              {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {obra.fecha_disponibilidad_inaugurar}</div>}
+              {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
+              {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
+              {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponibilidad_inaugurar)}</div>}
             </div>
           )}
           {obra.observaciones && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
@@ -2012,6 +2003,39 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
   );
 };
 
+// Selector previo a exportar la ficha de un circuito: qué barrios llevan su propia
+// sección en el PDF (además del circuito, que siempre se incluye). Mismos datos que la
+// tabla "Barrios del circuito" de la solapa Territorio, pero ordenados por población
+// (no por orden_importancia) y con el principal premarcado.
+const DialogExportBarrios = ({ datosCircuito, dialog, onToggle, onExportar, onCancelar }) => {
+  if (!dialog) return null;
+  const { barrios, seleccionados } = dialog;
+  const totalSecciones = seleccionados.size + 1;
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
+      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Exportar ficha — Circuito {datosCircuito.CircuitoKey}</h2>
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '16px' }}>El circuito siempre se incluye. Elegí qué barrios llevan además su propia sección completa.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px' }}>
+          {barrios.length === 0 ? (
+            <div style={{ padding: '14px', fontSize: '13px', color: 'var(--text-tertiary)' }}>Sin barrios registrados para este circuito.</div>
+          ) : barrios.map((b, i) => (
+            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', fontSize: '13px', cursor: 'pointer', backgroundColor: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)' }}>
+              <input type="checkbox" checked={seleccionados.has(b.nombre)} onChange={() => onToggle(b.nombre)} />
+              <span style={{ flex: 1, color: 'var(--text-primary)' }}>{b.nombre}</span>
+              <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>{b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</span>
+            </label>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button onClick={onCancelar} style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-secondary)' }}>Cancelar</button>
+          <button onClick={onExportar} style={{ padding: '9px 16px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>📄 Exportar ({totalSecciones} secci{totalSecciones !== 1 ? 'ones' : 'ón'})</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => {
   if (!datos) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
@@ -2027,7 +2051,7 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} encuestasData={encuestasData} />
       <button onClick={() => onVerFicha()} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
-      {obrasEnriquecidas && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('obras', 'cercanas')} />}
+      {obrasEnriquecidas && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('territorio', 'cercanas')} />}
       <ListaCruceColapsable
         titulo="Otros barrios en este circuito"
         items={otrosBarrios.map((b, i) => (
@@ -2176,11 +2200,11 @@ const CeldaEvento = ({ evento }) => {
       onMouseLeave={() => setHover(false)}
     >
       <div style={{ backgroundColor: tipo.bg, color: tipo.color, borderRadius: '6px', padding: '5px 8px', fontSize: '11px', fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
-        {tipo.label} · {formatFechaCorta(evento.fecha)}
+        {tipo.label} · {formatearFecha(evento.fecha)}
       </div>
       {hover && (
         <div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 30, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 12px', boxShadow: '0 4px 12px rgba(0,0,0,0.18)', minWidth: '220px', maxWidth: '280px', fontSize: '12px', marginTop: '4px' }}>
-          <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>{tipo.label} · {evento.fecha}</div>
+          <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>{tipo.label} · {formatearFecha(evento.fecha)}</div>
           {evento.tipo === 'medicion' && (
             <div style={{ color: 'var(--text-secondary)' }}>Ronda {evento.detalle.ronda} de {evento.detalle.totalRondas}</div>
           )}
@@ -2199,7 +2223,7 @@ const CeldaEvento = ({ evento }) => {
                 {evento.detalle.requiere_auditoria && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309' }}>⚠ Pendiente de revisión</span>}
               </div>
               <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {evento.detalle.fecha_creacion} → {evento.detalle.fecha_finalizacion}</div>
+              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.fecha_creacion)} → {formatearFecha(evento.detalle.fecha_finalizacion)}</div>
               <div style={{ color: 'var(--text-secondary)' }}>
                 Alcance: {evento.detalle.alcance?.toLocaleString() ?? '—'} · Impresiones: {evento.detalle.impresiones?.toLocaleString() ?? '—'}
               </div>
@@ -2333,7 +2357,7 @@ const BarraCobertura = ({ resumen, datos, eventosPorCircuito, onSelectCircuito }
         </div>
         <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 600 }}>{resumen.encuestados} / {resumen.total} circuitos encuestados ({pct}%)</span>
         {resumen.fechaMasReciente && (
-          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Última ronda: {resumen.fechaMasReciente}</span>
+          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Última ronda: {formatearFecha(resumen.fechaMasReciente)}</span>
         )}
         <button onClick={() => setExpandida(!expandida)} style={{ marginLeft: 'auto', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>
           Ver detalle {expandida ? '▲' : '▼'}
@@ -2367,7 +2391,7 @@ function htmlEscuelasPDF(escuelas, promedioCapitalPct) {
 }
 function htmlVisitasPDF(visitas) {
   if (!visitas || visitas.length === 0) return `<p style="color:#999;font-size:12px">Sin visitas registradas.</p>`;
-  return `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Contacto vecinos</th><th>Detalle</th></tr></thead><tbody>${visitas.map(v => `<tr><td>${v.fecha}</td><td>${v.tipo_visita || '—'}</td><td>${v.contacto_vecinos || 'NO'}</td><td>${v.info || '—'}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Contacto vecinos</th><th>Detalle</th></tr></thead><tbody>${visitas.map(v => `<tr><td>${formatearFecha(v.fecha)}</td><td>${v.tipo_visita || '—'}</td><td>${v.contacto_vecinos || 'NO'}</td><td>${v.info || '—'}</td></tr>`).join('')}</tbody></table>`;
 }
 // Barrio principal hereda del circuito solo los eventos que le faltan (el circuito
 // suma TODOS los barrios con orden_importancia:1, no solo este). Dedup por fecha+info.
@@ -2388,7 +2412,7 @@ function unificarVisitasPDF(visitasBarrio, visitasCircuito) {
 }
 function htmlPautaPDF(pautas) {
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada.</p>`;
-  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${p.fecha_creacion || '—'} → ${p.fecha_finalizacion || '—'}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${formatearFecha(p.fecha_creacion)} → ${formatearFecha(p.fecha_finalizacion)}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td></tr>`).join('')}</tbody></table>`;
 }
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
@@ -2570,7 +2594,7 @@ function htmlEncuestasPDF(encuestaCircuito) {
 <div class="section">
   <h3>Encuestas</h3>
   <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
-    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${ultima.fecha}</div></div>
+    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${formatearFecha(ultima.fecha)}</div></div>
     <div class="metric"><div class="metric-label">Cobertura</div><div class="metric-value" style="font-size:14px">${comparativo ? 'Con comparativo' : 'Ronda única'}</div></div>
   </div>
   ${topProblemas.length > 0 ? `<div style="margin-bottom:16px"><table><thead><tr><th>Principales problemas</th><th class="text-right">%</th></tr></thead><tbody>${topProblemas.map(([nombre, pct]) => `<tr><td>${nombre}</td><td class="text-right"><strong>${pct.toFixed(1)}%</strong></td></tr>`).join('')}</tbody></table></div>` : ''}
@@ -2704,6 +2728,15 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 `;
 }
 
+// Abre la ventana de impresión con el HTML de la ficha ya armado — mismo mecanismo
+// (window.open + print) para el export de circuito y el de barrio individual.
+function abrirVentanaImpresion(html) {
+  const ventana = window.open('', '_blank');
+  ventana.document.write(html);
+  ventana.document.close();
+  setTimeout(() => ventana.print(), 500);
+}
+
 // Ficha standalone de UN barrio (cualquiera, no solo el principal de un circuito) —
 // mismas secciones de barrio que ya usa generarFichaPDF embebidas, reutilizadas vía
 // generarSeccionBarrioPDF, sin la parte de circuito completa.
@@ -2729,7 +2762,7 @@ const generarFichaBarrioPDF = ({
 
 ${seccionBarrio}
 
-<div class="footer">Diagnóstico Territorial - Córdoba Capital │ Generado el ${new Date().toLocaleDateString('es-AR')}</div>
+<div class="footer">Diagnóstico Territorial - Córdoba Capital │ Generado el ${formatearFecha(new Date())}</div>
 </body></html>`;
 };
 
@@ -2739,6 +2772,11 @@ const generarFichaPDF = ({
   cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
   recorridosLookup, pautasBarriosData, obrasEnriquecidas,
   votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
+  // Nombres de barrio (tal como vienen en barrios_por_circuito_completo.json) a incluir
+  // como sección propia — selección explícita del usuario en el diálogo de export
+  // (puede ser [], uno, o varios). Sin este parámetro (llamador legado), se cae al
+  // comportamiento de siempre: solo el barrio principal.
+  nombresBarriosParaExportar,
 }) => {
   const mapkey = datos.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
@@ -2766,17 +2804,28 @@ const generarFichaPDF = ({
   ${htmlEscuelasPDF(votosEscuelasCircuitoData?.circuitos?.[mapkey]?.escuelas, votosEscuelasCircuitoData?.promedio_capital_pct)}
 </div>` : '';
 
-  // barrioPrincipal pertenece por definición a ESTE circuito (datos) — se pasa como
-  // circuitoContexto para que el bloque de Contexto político no tenga que re-derivarlo.
-  const barrioPartHtml = generarSeccionBarrioPDF({
-    nombreBarrio: barrioPrincipal?.nombreBarrio,
-    props: barrioPrincipal?.props,
-    tituloParte: 'BARRIO PRINCIPAL',
-    circuitoContexto: datos,
-    cruceData, barriosGeoLookup, encuestasData,
-    recorridosLookup, pautasBarriosData, obrasEnriquecidas, barriosGeoData,
-    votosEscuelasBarrioLookup, votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito,
-  });
+  // Selección de barrios a exportar como sección propia: por defecto (sin diálogo, ej.
+  // llamadas legadas) solo el barrio principal; con el diálogo de export, la selección
+  // explícita del usuario — puede ser ninguno, uno o varios. Cada uno pertenece por
+  // definición a ESTE circuito (datos), así que se pasa como circuitoContexto para que
+  // el bloque de Contexto político no tenga que re-derivarlo.
+  const nombrePrincipalNorm = barrioPrincipal ? normalizarNombreBarrio(barrioPrincipal.nombreBarrio) : null;
+  const nombresBarrios = nombresBarriosParaExportar ?? (barrioPrincipal ? [barrioPrincipal.nombreBarrio] : []);
+  const barrioPartHtml = nombresBarrios.map(nombreBarrioRaw => {
+    const key = normalizarNombreBarrio(nombreBarrioRaw);
+    const feature = barriosGeoLookup[key];
+    const nombreBarrio = feature ? feature.nombre_barrio : nombreBarrioRaw;
+    const esPrincipal = nombrePrincipalNorm != null && key === nombrePrincipalNorm;
+    return generarSeccionBarrioPDF({
+      nombreBarrio,
+      props: feature,
+      tituloParte: esPrincipal ? 'BARRIO PRINCIPAL' : 'BARRIO',
+      circuitoContexto: datos,
+      cruceData, barriosGeoLookup, encuestasData,
+      recorridosLookup, pautasBarriosData, obrasEnriquecidas, barriosGeoData,
+      votosEscuelasBarrioLookup, votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito,
+    });
+  }).join('');
 
   const elecciones = [
     { key: 'G07', label: '2007', share: datos.Share_G07, shareCap: datos.ShareCap_G07 },
@@ -2889,7 +2938,7 @@ ${escuelasCircuitoHtml}
 
 ${barrioPartHtml}
 
-<div class="footer">Diagnóstico Territorial - Córdoba Capital │ Generado el ${new Date().toLocaleDateString('es-AR')}</div>
+<div class="footer">Diagnóstico Territorial - Córdoba Capital │ Generado el ${formatearFecha(new Date())}</div>
 </body></html>`;
   
   return html;
@@ -2927,6 +2976,7 @@ export default function Home() {
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
   const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
+  const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre> } | null — selector de barrios antes de exportar la ficha de un circuito
   const [solapaActivaBarrio, setSolapaActivaBarrio] = useState('resumen'); // estado de tabs separado del de circuito (evita choques de clave, ej. 'resumen'/'escuelas'/'obras' existen en los dos)
 
   useEffect(() => {
@@ -3072,6 +3122,15 @@ export default function Home() {
     setCircuitoSeleccionado(c);
     setFiltroCategoria(null);
     setPanelTab('circuito');
+    // Cambiar de circuito resetea siempre la solapa activa a Resumen — evita aterrizar
+    // en una solapa que quedó activa desde el circuito/barrio anterior (ver también
+    // handleSelectBarrio/handleSelectBarrioDesdeBusqueda/handleMapClick, mismos motivos).
+    // Los dos flujos que deliberadamente saltan a "encuestas" (irACircuitoDesdeListadoEncuestas,
+    // irACircuitoDesdeResumenBarrio) llaman a este handler y LUEGO pisan solapaActiva con su
+    // propio setSolapaActiva('encuestas') — el orden dentro del mismo handler hace que ese
+    // valor explícito gane.
+    setSolapaActiva('resumen');
+    setSolapaActivaBarrio('resumen');
     const d = datos.find(x => x.CircuitoKey === c);
     const clave = d ? `${d.Mapkey} - ${d.cirn_nom}` : null;
     const lista = clave ? cruceData?.circuito_to_barrios?.[clave] : null;
@@ -3086,7 +3145,7 @@ export default function Home() {
   };
   // Usado por los links "Otros barrios en este circuito": solo cambia el barrio, el circuito
   // actual no se toca (seguimos en el mismo circuito, solo mostrando otro barrio suyo).
-  const handleSelectBarrio = (nombre) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); };
+  const handleSelectBarrio = (nombre) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio('resumen'); };
 
   // Selección de barrio desde el buscador: a diferencia de "Otros barrios en este circuito"
   // (que mantiene el circuito activo sin tocarlo), acá no hay circuito activo relevante que
@@ -3097,6 +3156,7 @@ export default function Home() {
     setBarrioSeleccionado(nombreBarrio);
     setPanelTab('barrio');
     setFiltroCategoria(null);
+    setSolapaActivaBarrio('resumen');
 
     const circuitoRecord = resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, datos);
     setCircuitoSeleccionado(circuitoRecord ? circuitoRecord.CircuitoKey : null);
@@ -3109,6 +3169,8 @@ export default function Home() {
     setCircuitoSeleccionado(circuitoKey);
     setBarrioSeleccionado(nombreBarrio);
     setFiltroCategoria(null);
+    setSolapaActiva('resumen');
+    setSolapaActivaBarrio('resumen');
   };
 
   // Click en una celda de la grilla de cobertura: selecciona el circuito y vuelve
@@ -3134,22 +3196,23 @@ export default function Home() {
     setSolapaActiva('encuestas');
   };
 
-  // Click en una fila de "Barrios del circuito" (solapa Territorio): misma selección de
-  // barrio que ya usan los links "Otros barrios en este circuito" (handleSelectBarrio,
-  // no un camino nuevo), sumando el cambio de vistaFicha para abrir directamente la
-  // ficha completa de ese barrio (acá sí, a diferencia del panel mini, ya estamos
-  // parados en una ficha completa y el click debe llevar a otra).
-  const irABarrioDesdeTerritorioCircuito = (nombreBarrio) => {
+  // Click en una fila de "Barrios del circuito" o "Barrios cercanos" (solapa Territorio,
+  // de la ficha de circuito o de la de barrio): misma selección de barrio que ya usan
+  // los links "Otros barrios en este circuito" (handleSelectBarrio, no un camino nuevo),
+  // sumando el cambio de vistaFicha para abrir directamente la ficha completa de ese
+  // barrio (acá sí, a diferencia del panel mini, ya estamos parados en una ficha
+  // completa y el click debe llevar a otra).
+  const irABarrioDesdeTerritorio = (nombreBarrio) => {
     handleSelectBarrio(nombreBarrio);
     setVistaFicha('barrio');
   };
 
+  // Escuelas y Obras se fusionaron dentro de Territorio (población/padrón, Obras,
+  // Escuelas y Circuitos de la zona, en ese orden) — ya no son solapas propias.
   const solapas = [
     { key: 'resumen', label: 'Resumen' }, { key: 'evolucion', label: 'Evolución' }, { key: 'partidos', label: 'Partidos' },
     { key: 'territorio', label: 'Territorio' }, { key: 'comparativas', label: 'Comparativas' },
     ...(encuestaCircuito ? [{ key: 'encuestas', label: 'Encuestas' }] : []),
-    { key: 'escuelas', label: 'Escuelas' },
-    { key: 'obras', label: 'Obras' },
   ];
 
   const solapasBarrio = [
@@ -3158,34 +3221,63 @@ export default function Home() {
   ];
   
   // En la ficha de un barrio (vistaFicha === 'barrio') exporta SOLO ese barrio —
-  // cualquiera, no solo el principal de algún circuito — reutilizando generarFichaBarrioPDF.
-  // En cualquier otro caso (ficha de circuito) se mantiene el comportamiento de siempre:
-  // circuito completo + su barrio principal embebido.
+  // cualquiera, no solo el principal de algún circuito — reutilizando generarFichaBarrioPDF,
+  // sin diálogo (comportamiento sin cambios). En la ficha de circuito, en cambio, abre el
+  // selector de barrios antes de generar el PDF (ver abrirSelectorExportCircuito).
   const exportarPDF = () => {
-    let html;
     if (vistaFicha === 'barrio' && barrioSeleccionado) {
       const props = barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)];
       if (!props) return;
-      html = generarFichaBarrioPDF({
+      const html = generarFichaBarrioPDF({
         nombreBarrio: barrioSeleccionado, props,
         cruceData, barriosGeoLookup, todosLosDatos: datos, encuestasData,
         recorridosLookup, pautasBarriosData, obrasEnriquecidas, barriosGeoData,
         votosEscuelasBarrioLookup, votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito,
       });
-    } else {
-      if (!datosCircuito) return;
-      html = generarFichaPDF({
-        datos: datosCircuito, barrios, partidos, padronTotal,
-        eventosPorCircuito, encuestaCircuito, encuestasData,
-        cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
-        recorridosLookup, pautasBarriosData, obrasEnriquecidas,
-        votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
-      });
+      abrirVentanaImpresion(html);
+      return;
     }
-    const ventana = window.open('', '_blank');
-    ventana.document.write(html);
-    ventana.document.close();
-    setTimeout(() => ventana.print(), 500);
+    abrirSelectorExportCircuito();
+  };
+
+  // Arma la lista del diálogo con los mismos datos que la tabla "Barrios del circuito"
+  // de Territorio, pero ordenados por población (no por orden_importancia) — el
+  // barrio principal viene premarcado.
+  const abrirSelectorExportCircuito = () => {
+    if (!datosCircuito) return;
+    const mapkey = datosCircuito.Mapkey;
+    const barriosCircuitoOrdenados = [...(barrios?.[mapkey]?.barrios || [])].sort((a, b) => (b.poblacion || 0) - (a.poblacion || 0));
+    const principal = resolverBarrioPrincipalDeCircuito(datosCircuito, cruceData, barriosGeoLookup);
+    const principalNorm = principal ? normalizarNombreBarrio(principal.nombreBarrio) : null;
+    const seleccionados = new Set(
+      barriosCircuitoOrdenados.filter(b => principalNorm && normalizarNombreBarrio(b.nombre) === principalNorm).map(b => b.nombre)
+    );
+    setDialogExportCircuito({ barrios: barriosCircuitoOrdenados, seleccionados });
+  };
+
+  const toggleBarrioExportCircuito = (nombre) => {
+    setDialogExportCircuito(prev => {
+      if (!prev) return prev;
+      const seleccionados = new Set(prev.seleccionados);
+      if (seleccionados.has(nombre)) seleccionados.delete(nombre); else seleccionados.add(nombre);
+      return { ...prev, seleccionados };
+    });
+  };
+
+  // Cero barrios marcados = solo la parte de circuito (generarFichaPDF no agrega
+  // ninguna sección de barrio); varios marcados = una sección por cada uno, en orden.
+  const confirmarExportCircuito = () => {
+    if (!datosCircuito || !dialogExportCircuito) return;
+    const html = generarFichaPDF({
+      datos: datosCircuito, barrios, partidos, padronTotal,
+      eventosPorCircuito, encuestaCircuito, encuestasData,
+      cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
+      recorridosLookup, pautasBarriosData, obrasEnriquecidas,
+      votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
+      nombresBarriosParaExportar: Array.from(dialogExportCircuito.seleccionados),
+    });
+    abrirVentanaImpresion(html);
+    setDialogExportCircuito(null);
   };
   
   if (cargando) {
@@ -3204,6 +3296,15 @@ export default function Home() {
       
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
       <ModalObra obra={obraSeleccionada} onClose={() => setObraSeleccionada(null)} onSelectObra={setObraSeleccionada} obrasEnriquecidas={obrasEnriquecidas} />
+      {datosCircuito && (
+        <DialogExportBarrios
+          datosCircuito={datosCircuito}
+          dialog={dialogExportCircuito}
+          onToggle={toggleBarrioExportCircuito}
+          onExportar={confirmarExportCircuito}
+          onCancelar={() => setDialogExportCircuito(null)}
+        />
+      )}
       
       <div style={{ minHeight: '100vh' }}>
         <header style={{ padding: '14px 24px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
@@ -3319,7 +3420,7 @@ export default function Home() {
                             onCambiarSolapa={setSolapaActivaBarrio}
                           />
                         )}
-                        {solapaActivaBarrio === 'territorio' && <SolapaTerritorioBarrio nombreBarrio={barrioSeleccionado} barriosGeoData={barriosGeoData} />}
+                        {solapaActivaBarrio === 'territorio' && <SolapaTerritorioBarrio nombreBarrio={barrioSeleccionado} barriosGeoData={barriosGeoData} onSelectBarrioFicha={irABarrioDesdeTerritorio} />}
                         {solapaActivaBarrio === 'visitas' && <SolapaVisitasBarrio nombreBarrio={barrioSeleccionado} recorridosLookup={recorridosLookup} />}
                         {solapaActivaBarrio === 'pauta' && <SolapaPautaBarrio nombreBarrio={barrioSeleccionado} pautasBarriosData={pautasBarriosData} />}
                         {solapaActivaBarrio === 'escuelas' && <SolapaEscuelasBarrio nombreBarrio={barrioSeleccionado} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPct={votosEscuelasBarrioData?.promedio_capital_pct} />}
@@ -3355,7 +3456,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
-                      {solapas.map(s => <button key={s.key} onClick={() => { setSolapaActiva(s.key); if (s.key === 'obras') setObrasFoco('propio'); }} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
+                      {solapas.map(s => <button key={s.key} onClick={() => { setSolapaActiva(s.key); if (s.key === 'territorio') setObrasFoco('propio'); }} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActiva === s.key ? '#1976D2' : 'transparent', color: solapaActiva === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
                     </div>
                     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', minHeight: '400px' }}>
                       {solapaActiva === 'resumen' && <SolapaResumen circuito={circuitoSeleccionado} datos={datosCircuito} padronTotal={padronTotal} encuestasData={encuestasData} />}
@@ -3373,13 +3474,15 @@ export default function Home() {
                           pautasBarriosData={pautasBarriosData}
                           obrasEnriquecidas={obrasEnriquecidas}
                           votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
-                          onSelectBarrioFicha={irABarrioDesdeTerritorioCircuito}
+                          onSelectBarrioFicha={irABarrioDesdeTerritorio}
+                          circuitosGeoJsonData={circuitosGeoJsonData}
+                          obrasFoco={obrasFoco}
+                          onSelectObra={setObraSeleccionada}
+                          votosEscuelasCircuitoData={votosEscuelasCircuitoData}
                         />
                       )}
                       {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
                       {solapaActiva === 'encuestas' && encuestaCircuito && <SolapaEncuestas encuesta={encuestaCircuito} metadata={encuestasMetadata} />}
-                      {solapaActiva === 'escuelas' && <SolapaEscuelas datos={datosCircuito} votosEscuelasCircuitoData={votosEscuelasCircuitoData} />}
-                      {solapaActiva === 'obras' && <SolapaObras datos={datosCircuito} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} focoInicial={obrasFoco} onSelectObra={setObraSeleccionada} />}
                     </div>
                   </>
                 ) : (
@@ -3413,8 +3516,8 @@ export default function Home() {
                     setPanelTab={setPanelTab}
                     datosCircuito={datosCircuito}
                     padronTotal={padronTotal}
-                    onVerFicha={(solapa, foco) => { setVistaFicha('circuito'); if (solapa) setSolapaActiva(solapa); setObrasFoco(foco || 'propio'); }}
-                    onVerFichaBarrio={() => { setVistaFicha('barrio'); if (barrioSeleccionado) setZoomBarrioSolicitado({ nombre: barrioSeleccionado, ts: Date.now() }); }}
+                    onVerFicha={(solapa, foco) => { setVistaFicha('circuito'); setSolapaActiva(solapa || 'resumen'); setObrasFoco(foco || 'propio'); }}
+                    onVerFichaBarrio={() => { setVistaFicha('barrio'); setSolapaActivaBarrio('resumen'); if (barrioSeleccionado) setZoomBarrioSolicitado({ nombre: barrioSeleccionado, ts: Date.now() }); }}
                     onVerFichaCircuito={irACircuitoDesdeResumenBarrio}
                     barrioSeleccionado={barrioSeleccionado}
                     barriosGeoLookup={barriosGeoLookup}
