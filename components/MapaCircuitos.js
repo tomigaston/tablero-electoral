@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Marker, Popup, Pane, useMap, useMapEvent } from 'react-leaflet';
 import * as topojson from 'topojson-client';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import 'leaflet/dist/leaflet.css';
@@ -31,6 +31,7 @@ const COLOR_ESCUELA_CENTRO_VOTACION = '#1976D2';
 const COLOR_ESCUELA_SIN_VOTACION = '#9E9E9E';
 const COLOR_BORDE_PENDIENTE_REVISION = '#F57F17';
 const COLOR_PAUTA = '#D500F9'; // violeta/fucsia, no choca con la paleta de estados de Obras ni Circuitos
+const COLOR_PAUTA_FINALIZADA = '#9E9E9E'; // apagado — mismo gris que "sin dato" en Obras/Escuelas
 
 // Opacidad de relleno de Circuitos cuando hay alguna capa de puntos activa (Obras,
 // Pauta o Escuelas): los rellenos categóricos fuertes (0.7/0.9) matan el contraste de
@@ -38,15 +39,29 @@ const COLOR_PAUTA = '#D500F9'; // violeta/fucsia, no choca con la paleta de esta
 // visualmente y el color de categoría se siga percibiendo de fondo.
 const FILL_OPACITY_CIRCUITO_ATENUADO = 0.25;
 
+// Panes propios con z-index fijo (en vez de dejar que Circuitos/Barrios/Obras/Pauta/
+// Escuelas caigan todos en el mismo overlayPane por defecto): así el z-order queda
+// determinado por el pane, no por el orden de montaje/activación de cada capa —
+// Circuitos y Barrios comparten "panePoligonos" (mismo comportamiento entre sí que
+// antes, dentro del mismo pane) y Obras/Pauta/Escuelas comparten "panePuntos", por
+// encima. tooltipPane (650) y popupPane (700) de Leaflet, sin tocar, ya quedan por
+// encima de ambos.
+const PANE_POLIGONOS = 'panePoligonos';
+const PANE_PUNTOS = 'panePuntos';
+
 // Star de 24x24 (path estándar de 5 puntas), con halo blanco (stroke) — mismo criterio
 // de "halo blanco" que los CircleMarker de Obras, pero como DivIcon a mano (SVG inline,
 // sin librerías de íconos) porque CircleMarker no puede dibujar una forma de estrella.
-function crearIconoPautaEstrella() {
+// activa=true: relleno pleno del color de Pauta; activa=false (solo pautas finalizadas
+// en ese barrio): mismo dibujo pero apagado en gris, para que se lea a simple vista sin
+// abrir el popup.
+function crearIconoPautaEstrella(activa) {
   const L = require('leaflet');
+  const color = activa ? COLOR_PAUTA : COLOR_PAUTA_FINALIZADA;
   const svg = `
     <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-        fill="${COLOR_PAUTA}" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" />
+        fill="${color}" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" />
     </svg>
   `;
   return L.divIcon({
@@ -56,6 +71,19 @@ function crearIconoPautaEstrella() {
     iconAnchor: [11, 11],
     popupAnchor: [0, -10],
   });
+}
+
+// pautas_barrios.json (esquema Meta Ads actual) trae la vigencia como fecha_creacion /
+// fecha_finalizacion en formato "YYYY-MM-DD" — NO fecha_salida/fecha_cierre (esquema
+// viejo, ya no existe). Se compara a nivel de día contra "hoy" del cliente. Fecha
+// ausente o no parseable -> null, tratado por el llamador como finalizada (no activa).
+function parsearFechaISO(fechaStr) {
+  if (!fechaStr || typeof fechaStr !== 'string') return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
+  if (!match) return null;
+  const [, y, m, d] = match;
+  const fecha = new Date(Number(y), Number(m) - 1, Number(d));
+  return Number.isNaN(fecha.getTime()) ? null : fecha;
 }
 
 // Normaliza nombres de barrio para cruzar recorridos_barrios.json con barrios_geo.json
@@ -222,27 +250,47 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
   // intentar elegir "el principal" (no hay campo que lo indique). Los barrios de pauta
   // sin ningún fragmento que matchee ni con normalización quedan afuera del mapa (no se
   // inventa ubicación) y se listan en consola para poder avisarlos.
+  // Cada pauta se anota con _activa (fecha_finalizacion >= hoy) al vuelo acá — una sola
+  // vez por render de esta capa, no en el render de cada marker — y un barrio "tiene
+  // pauta activa" si alguna de sus pautas lo está. Fechas ausentes/no parseables se
+  // tratan como finalizadas (no rompen el cálculo) y se cuentan para avisar en consola.
   const pautaBarrioMarkers = useMemo(() => {
     if (!pautasBarriosData || !barriosGeoData) return [];
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
     const sinMatch = [];
+    let sinFechaValidaCount = 0;
+
+    const anotarPautas = (pautasRaw) => (pautasRaw || []).map(p => {
+      const fechaFin = parsearFechaISO(p.fecha_finalizacion);
+      if (!fechaFin) sinFechaValidaCount += 1;
+      return { ...p, _activa: fechaFin ? fechaFin >= hoy : false };
+    });
+
     const markers = Object.keys(pautasBarriosData).map(nombreBarrio => {
       const normalizado = normalizarNombreBarrio(nombreBarrio);
       const feature = barriosGeoData.features.find(f => normalizarNombreBarrio(f.properties?.nombre_barrio) === normalizado);
       const lat = feature?.properties?.centroid_lat;
       const lon = feature?.properties?.centroid_lon;
+      const pautas = anotarPautas(pautasBarriosData[nombreBarrio].pautas);
       if (lat == null || lon == null) {
         sinMatch.push(nombreBarrio);
         return null;
       }
-      return { nombreBarrio, lat, lon, pautas: pautasBarriosData[nombreBarrio].pautas || [] };
+      return { nombreBarrio, lat, lon, pautas, tieneActiva: pautas.some(p => p._activa) };
     }).filter(Boolean);
+
     if (sinMatch.length > 0) {
       console.warn('Pauta: barrios sin match geográfico en barrios_geo.json (excluidos del mapa):', sinMatch);
+    }
+    if (sinFechaValidaCount > 0) {
+      console.warn(`Pauta: ${sinFechaValidaCount} registro(s) sin fecha_finalizacion parseable, tratados como finalizados.`);
     }
     return markers;
   }, [pautasBarriosData, barriosGeoData]);
 
-  const iconoPautaEstrella = useMemo(() => crearIconoPautaEstrella(), []);
+  const iconoPautaActiva = useMemo(() => crearIconoPautaEstrella(true), []);
+  const iconoPautaFinalizada = useMemo(() => crearIconoPautaEstrella(false), []);
 
   const getBarrioStyle = (feature) => {
     const nombre = feature.properties?.nombre_barrio;
@@ -453,85 +501,106 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
       <MapContainer center={[-31.42, -64.18]} zoom={12} style={{ height: '100%', width: '100%' }} zoomControl={true} scrollWheelZoom={true}>
         <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {capasActivas.circuitos && (
-          <GeoJSON ref={geoJsonRef} key={`${mapkeySeleccionado}-${filtroCategoria}`} data={geoJsonData} style={getStyle} onEachFeature={onEachFeature} />
-        )}
-        {capasActivas.barrios && barriosGeoData && (
-          <GeoJSON key={`barrios-${barrioSeleccionado}`} data={barriosGeoData} style={getBarrioStyle} onEachFeature={onEachBarrio} />
-        )}
-        {capasActivas.obras && obrasParaMostrar.map((obra, i) => {
-          const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
-          // Mismo criterio de aislar/restaurar que getStyle() usa para los polígonos de
-          // circuito con filtroCategoria (fillOpacity 0.15 / opacity 0.3 para lo que no
-          // matchea el filtro activo).
-          const isFiltered = filtroEstadoObra && obra.estado !== filtroEstadoObra;
-          return (
-            <CircleMarker
-              key={`obra-${obra.id}-${i}`}
-              center={[obra.lat, obra.lon]}
-              radius={6}
-              pathOptions={{ color: '#fff', weight: 2, fillColor: colorEstado, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
-              eventHandlers={{ click: () => onSelectObra && onSelectObra(obra) }}
-            />
-          );
-        })}
-        {capasActivas.pauta && pautaBarrioMarkers.map((m) => (
-          <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={iconoPautaEstrella}>
-            <Popup offset={[0, -8]}>
-              <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
-                <strong style={{ fontSize: '13px' }}>{m.nombreBarrio}</strong>
-                <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
-                  {m.pautas.map((p, i) => (
-                    <div key={p.fila_origen ?? i} style={{ borderTop: i > 0 ? '1px solid #eee' : 'none', paddingTop: i > 0 ? '6px' : 0 }}>
-                      <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.codigo_anuncio || '—'}</div>
-                      <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
-                        Alcance: {p.alcance?.toLocaleString() ?? '—'} · Gasto: {p.importe_gastado != null ? `$${p.importe_gastado.toLocaleString()}` : '—'}
+
+        <Pane name={PANE_POLIGONOS} style={{ zIndex: 400 }}>
+          {capasActivas.circuitos && (
+            <GeoJSON ref={geoJsonRef} key={`${mapkeySeleccionado}-${filtroCategoria}`} data={geoJsonData} style={getStyle} onEachFeature={onEachFeature} />
+          )}
+          {capasActivas.barrios && barriosGeoData && (
+            <GeoJSON key={`barrios-${barrioSeleccionado}`} data={barriosGeoData} style={getBarrioStyle} onEachFeature={onEachBarrio} />
+          )}
+        </Pane>
+
+        <Pane name={PANE_PUNTOS} style={{ zIndex: 450 }}>
+          {capasActivas.obras && obrasParaMostrar.map((obra, i) => {
+            const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
+            // Mismo criterio de aislar/restaurar que getStyle() usa para los polígonos de
+            // circuito con filtroCategoria (fillOpacity 0.15 / opacity 0.3 para lo que no
+            // matchea el filtro activo).
+            const isFiltered = filtroEstadoObra && obra.estado !== filtroEstadoObra;
+            return (
+              <CircleMarker
+                key={`obra-${obra.id}-${i}`}
+                center={[obra.lat, obra.lon]}
+                radius={6}
+                pathOptions={{ color: '#fff', weight: 2, fillColor: colorEstado, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
+                eventHandlers={{ click: () => onSelectObra && onSelectObra(obra) }}
+              />
+            );
+          })}
+          {capasActivas.pauta && pautaBarrioMarkers.map((m) => (
+            <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={m.tieneActiva ? iconoPautaActiva : iconoPautaFinalizada}>
+              <Popup offset={[0, -8]}>
+                <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600,
+                    padding: '2px 8px', borderRadius: '10px', marginBottom: '6px',
+                    backgroundColor: m.tieneActiva ? '#2E7D3222' : '#9E9E9E22',
+                    color: m.tieneActiva ? '#2E7D32' : '#616161',
+                  }}>
+                    {m.tieneActiva ? '● Pauta activa' : '○ Sin pauta activa'}
+                  </div>
+                  <div><strong style={{ fontSize: '13px' }}>{m.nombreBarrio}</strong></div>
+                  <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                    {m.pautas.map((p, i) => (
+                      <div key={p.fila_origen ?? i} style={{ borderTop: i > 0 ? '1px solid #eee' : 'none', paddingTop: i > 0 ? '6px' : 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.codigo_anuncio || '—'}</div>
+                          <span style={{ flexShrink: 0, fontSize: '9px', fontWeight: 600, padding: '1px 6px', borderRadius: '8px', whiteSpace: 'nowrap', backgroundColor: p._activa ? '#2E7D3222' : '#9E9E9E22', color: p._activa ? '#2E7D32' : '#757575' }}>
+                            {p._activa ? 'Activa' : 'Finalizada'}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>Vigencia: {p.fecha_creacion || '—'} → {p.fecha_finalizacion || '—'}</div>
+                        <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+                          Alcance: {p.alcance?.toLocaleString() ?? '—'} · Gasto: {p.importe_gastado != null ? `$${p.importe_gastado.toLocaleString()}` : '—'}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-        {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
-          const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
-          const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
-          return (
-            <CircleMarker
-              key={`escuela-${esc.cue}`}
-              center={[esc.lat, esc.lon]}
-              radius={5}
-              pathOptions={{
-                color: pendienteRevision ? COLOR_BORDE_PENDIENTE_REVISION : '#fff',
-                weight: pendienteRevision ? 1.5 : 1,
-                dashArray: pendienteRevision ? '2,2' : null,
-                fillColor: colorRelleno,
-                fillOpacity: 0.9,
-              }}
-            >
-              <Popup offset={[0, -6]}>
-                <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '230px' }}>
-                  <strong style={{ fontSize: '13px' }}>{esc.nombre}</strong>
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{esc.barrio}</div>
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>{esc.domicilio || '—'}</div>
-                  {esc.es_centro_votacion ? (
-                    <>
-                      <div style={{ fontSize: '12px', marginTop: '6px' }}>Mesas: <strong>{esc.n_mesas}</strong> · Votos válidos: <strong>{esc.votos_validos?.toLocaleString()}</strong></div>
-                      <div style={{ fontSize: '12px', marginTop: '2px' }}>% Peronismo: <strong style={{ color: COLOR_ESCUELA_CENTRO_VOTACION }}>{esc.pct_peronismo?.toFixed(1)}%</strong></div>
-                      {esc.confianza === 'pendiente_revision' && (
-                        <div style={{ fontSize: '11px', color: COLOR_BORDE_PENDIENTE_REVISION, marginTop: '5px' }}>⚠ Match de escuela pendiente de revisión, dato aproximado.</div>
-                      )}
-                    </>
-                  ) : (
-                    <div style={{ fontSize: '12px', marginTop: '6px' }}>Nivel: {formatNivelEscuela(esc.nivel)}</div>
-                  )}
+                    ))}
+                  </div>
                 </div>
               </Popup>
-            </CircleMarker>
-          );
-        })}
+            </Marker>
+          ))}
+          {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
+            const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
+            const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
+            return (
+              <CircleMarker
+                key={`escuela-${esc.cue}`}
+                center={[esc.lat, esc.lon]}
+                radius={5}
+                pathOptions={{
+                  color: pendienteRevision ? COLOR_BORDE_PENDIENTE_REVISION : '#fff',
+                  weight: pendienteRevision ? 1.5 : 1,
+                  dashArray: pendienteRevision ? '2,2' : null,
+                  fillColor: colorRelleno,
+                  fillOpacity: 0.9,
+                }}
+              >
+                <Popup offset={[0, -6]}>
+                  <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '230px' }}>
+                    <strong style={{ fontSize: '13px' }}>{esc.nombre}</strong>
+                    <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{esc.barrio}</div>
+                    <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>{esc.domicilio || '—'}</div>
+                    {esc.es_centro_votacion ? (
+                      <>
+                        <div style={{ fontSize: '12px', marginTop: '6px' }}>Mesas: <strong>{esc.n_mesas}</strong> · Votos válidos: <strong>{esc.votos_validos?.toLocaleString()}</strong></div>
+                        <div style={{ fontSize: '12px', marginTop: '2px' }}>% Peronismo: <strong style={{ color: COLOR_ESCUELA_CENTRO_VOTACION }}>{esc.pct_peronismo?.toFixed(1)}%</strong></div>
+                        {esc.confianza === 'pendiente_revision' && (
+                          <div style={{ fontSize: '11px', color: COLOR_BORDE_PENDIENTE_REVISION, marginTop: '5px' }}>⚠ Match de escuela pendiente de revisión, dato aproximado.</div>
+                        )}
+                      </>
+                    ) : (
+                      <div style={{ fontSize: '12px', marginTop: '6px' }}>Nivel: {formatNivelEscuela(esc.nivel)}</div>
+                    )}
+                  </div>
+                </Popup>
+              </CircleMarker>
+            );
+          })}
+        </Pane>
+
         <MapController mapkeySeleccionado={mapkeySeleccionado} geoJsonData={geoJsonData} zoomBarrioSolicitado={zoomBarrioSolicitado} barriosGeoData={barriosGeoData} barriosVisible={capasActivas.barrios} />
         <ClickHandler geoJsonData={geoJsonData} barriosGeoData={barriosGeoData} datosLookup={datosLookup} onMapClick={onMapClick} />
       </MapContainer>
