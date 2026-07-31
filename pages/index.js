@@ -167,6 +167,11 @@ const normalizarNombreBarrio = (s) => (s || '')
 // Ajustable con uso real sin tocar la lógica de distanciaHaversineKm/barriosCercanos.
 const RADIO_BARRIOS_CERCANOS_KM = 1.5;
 
+// Barrios con menos de esta cantidad de habitantes DENTRO de un circuito dado se ocultan
+// de la tabla "Barrios del circuito" (fragmentos catastrales ínfimos, sin valor de
+// lectura) — el título y la fila Total siguen contando el conjunto completo.
+const UMBRAL_POBLACION_BARRIO = 50;
+
 // Distancia entre dos puntos lat/lon sobre la superficie terrestre (fórmula
 // haversine) — a diferencia de la distancia euclidiana simple, no acumula error
 // por la curvatura de la Tierra, relevante incluso a esta escala urbana.
@@ -200,11 +205,32 @@ function barriosCercanos(nombreBarrio, barriosGeoData, radioKm = RADIO_BARRIOS_C
     .sort((a, b) => a.distanciaKm - b.distanciaKm);
 }
 
-// Suma ponderada de población por barrio dentro del circuito (poblacion del barrio ×
-// % de ese barrio que cae en este circuito). Es una estimación vía barrios_por_circuito_completo.json,
-// distinta y no necesariamente igual al padrón electoral (personas habilitadas a votar).
-function poblacionEstimadaCircuito(barriosCircuito) {
-  return (barriosCircuito || []).reduce((sum, b) => sum + (b.poblacion || 0) * (b.pct_en_circuito || 0) / 100, 0);
+// Población de un circuito = suma directa de "poblacion" de sus barrios en
+// barrios_por_circuito_completo.json. Ese campo YA es la porción de cada barrio que cae
+// dentro de ESTE circuito (no el total del barrio) — pct_en_circuito es simplemente esa
+// porción sobre el total del barrio, así que sumar poblacion×pct_en_circuito (como se
+// hacía antes) descontaba dos veces. Nada de "estimado": es la suma tal cual viene.
+// No necesariamente igual al padrón electoral (personas habilitadas a votar).
+function poblacionCircuito(barriosCircuito) {
+  return (barriosCircuito || []).reduce((sum, b) => sum + (b.poblacion || 0), 0);
+}
+
+// Población total real de un barrio = suma de "poblacion" a través de TODOS los
+// circuitos donde aparece en barrios_por_circuito_completo.json (un barrio puede estar
+// repartido en varios circuitos, cada fila trae solo la porción de ese circuito).
+// Verificado con LICEO GENERAL PAZ: 20 (007A) + 38 (007F) + 782 (013G) + 78 (013L) = 918
+// habitantes totales, de los cuales 782 (85.2%) caen en el circuito 013G — eso es
+// pct_en_circuito, no una fracción a aplicar de nuevo sobre 918.
+function construirPoblacionTotalPorBarrio(barriosPorCircuito) {
+  const totales = {};
+  Object.values(barriosPorCircuito || {}).forEach(info => {
+    (info.barrios || []).forEach(b => {
+      const key = normalizarNombreBarrio(b.nombre);
+      if (!key) return;
+      totales[key] = (totales[key] || 0) + (b.poblacion || 0);
+    });
+  });
+  return totales;
 }
 
 // Compara IDs de circuito (Mapkey) en orden natural: primero el numero base,
@@ -521,29 +547,31 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
 const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCircuito }) => {
   const mapkey = datos?.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
-  const poblacionEstimada = poblacionEstimadaCircuito(barriosCircuito);
-  const pctPadronDePoblacion = poblacionEstimada > 0 && datos?.Padron_G23 != null ? (datos.Padron_G23 / poblacionEstimada) * 100 : null;
+  const barriosVisibles = barriosCircuito.filter(b => (b.poblacion || 0) >= UMBRAL_POBLACION_BARRIO);
+  const barriosOcultos = barriosCircuito.length - barriosVisibles.length;
+  const poblacionCircuitoTotal = poblacionCircuito(barriosCircuito);
+  const pctPadronDePoblacion = poblacionCircuitoTotal > 0 && datos?.Padron_G23 != null ? (datos.Padron_G23 / poblacionCircuitoTotal) * 100 : null;
   const numeroBase = getNumeroBase(circuito);
   const vecinos = todosLosDatos?.filter(d => {
     if (d.CircuitoKey === circuito) return false;
     const numOtro = getNumeroBase(d.CircuitoKey);
     return numeroBase && numOtro && numeroBase === numOtro;
   }) || [];
-  
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Barrios del circuito</h4>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Barrios del circuito ({barriosCircuito.length})</h4>
         <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           {barriosCircuito.length > 0 ? (
             <>
-              <div style={{ maxHeight: '250px', overflowY: 'auto', marginBottom: '16px' }}>
+              <div style={{ maxHeight: '250px', overflowY: 'auto', marginBottom: '10px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
-                    <tr><th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población (barrio)</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% del barrio en el circuito <InfoTip texto="Qué porcentaje de la población de ese barrio cae dentro de este circuito (un barrio puede estar dividido entre varios circuitos)." /></th></tr>
+                    <tr><th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población en el circuito</th><th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>% del total del barrio <InfoTip texto="Qué porcentaje de la población total de ese barrio cae dentro de este circuito (un barrio puede estar dividido entre varios circuitos)." /></th></tr>
                   </thead>
                   <tbody>
-                    {barriosCircuito.map((barrio, i) => (
+                    {barriosVisibles.map((barrio, i) => (
                       <tr key={i} style={{ borderTop: '1px solid var(--border)', backgroundColor: i === 0 ? '#1976D208' : 'transparent' }}>
                         <td style={{ padding: '10px 14px', fontWeight: i === 0 ? 600 : 400 }}>{barrio.nombre || barrio}</td>
                         <td style={{ padding: '10px 14px', textAlign: 'right' }}>{barrio.poblacion != null ? barrio.poblacion.toLocaleString() : '—'}</td>
@@ -551,18 +579,28 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
                       </tr>
                     ))}
                   </tbody>
+                  <tfoot>
+                    <tr style={{ borderTop: '2px solid var(--border)' }}>
+                      <td style={{ padding: '10px 14px', fontWeight: 600 }}>Total</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 600 }}>{Math.round(poblacionCircuitoTotal).toLocaleString()}</td>
+                      <td style={{ padding: '10px 14px' }}></td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
+              {barriosOcultos > 0 && (
+                <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '10px' }}>
+                  Se omiten {barriosOcultos} barrio{barriosOcultos !== 1 ? 's' : ''} con menos de {UMBRAL_POBLACION_BARRIO} habitantes en este circuito.
+                </div>
+              )}
               <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                Total barrios: <strong style={{ color: 'var(--text-primary)' }}>{barriosCircuito.length}</strong>
-                <span style={{ margin: '0 14px' }}>│</span>
-                Padrón electoral (circuito): <strong style={{ color: 'var(--text-primary)' }}>{datos?.Padron_G23?.toLocaleString() || '—'}</strong>
-                {poblacionEstimada > 0 && (
-                  <>
-                    <span style={{ margin: '0 14px' }}>│</span>
-                    Población estimada (barrios): <strong style={{ color: 'var(--text-primary)' }}>{Math.round(poblacionEstimada).toLocaleString()}</strong>
-                    {pctPadronDePoblacion != null && <span> — el padrón representa ~{pctPadronDePoblacion.toFixed(0)}% de esa población</span>}
-                  </>
+                {poblacionCircuitoTotal > 0 && (
+                  <div>
+                    En los barrios de este circuito viven <strong style={{ color: 'var(--text-primary)' }}>{Math.round(poblacionCircuitoTotal).toLocaleString()}</strong> personas
+                    {datos?.Padron_G23 != null && (
+                      <>; el padrón habilitado es <strong style={{ color: 'var(--text-primary)' }}>{datos.Padron_G23.toLocaleString()}</strong>{pctPadronDePoblacion != null && ` (${pctPadronDePoblacion.toFixed(0)}%)`}</>
+                    )}.
+                  </div>
                 )}
               </div>
             </>
@@ -689,8 +727,9 @@ const SolapaObras = ({ datos, obrasEnriquecidas, circuitosGeoJsonData, focoInici
 const SolapaResumenBarrio = ({
   nombreBarrio, props, cruceData, barriosGeoLookup, todosLosDatos, encuestasData,
   recorridosLookup, pautasBarriosData, votosEscuelasBarrioLookup, obrasEnriquecidas,
-  onIrACircuito, onCambiarSolapa,
+  poblacionTotalPorBarrio, onIrACircuito, onCambiarSolapa,
 }) => {
+  const poblacionTotalBarrio = poblacionTotalPorBarrio?.[normalizarNombreBarrio(nombreBarrio)];
   // Circuito principal resuelto de forma independiente de circuitoSeleccionado (Etapa 1).
   const circuito = resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, todosLosDatos);
   const encuesta = circuito ? buscarEncuestaCircuito(encuestasData, circuito.CircuitoKey) : null;
@@ -726,7 +765,7 @@ const SolapaResumenBarrio = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-        <MetricCard label={<>Población total (barrio) <InfoTip texto="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." /></>} value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% de este barrio está en este circuito` : undefined} />
+        <MetricCard label={<>Población total (barrio) <InfoTip texto="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." /></>} value={poblacionTotalBarrio != null ? poblacionTotalBarrio.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% de este barrio está en este circuito` : undefined} />
         <MetricCard label="Tipo" value={props.tipo_barrio === 'BarrioOficial' ? 'Oficial' : 'No oficial'} />
       </div>
 
@@ -1915,7 +1954,7 @@ const TIPO_VISITA_COLOR = {
   'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, encuestasData, onVerFichaBarrio }) => {
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padronTotal, datosCircuito, cruceData, onSelectCircuito, encuestasData, onVerFichaBarrio, poblacionTotalPorBarrio }) => {
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -1924,6 +1963,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
   if (!props) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Sin datos para "{nombreBarrio}".</div>;
   }
+  const poblacionTotalBarrio = poblacionTotalPorBarrio?.[key];
   const listaCircuitos = cruceData?.barrio_to_circuitos?.[nombreBarrio];
   const claveSel = datosCircuito ? `${datosCircuito.Mapkey} - ${datosCircuito.cirn_nom}` : null;
   const otrosCircuitos = (listaCircuitos || [])
@@ -1937,7 +1977,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
         <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>{nombreBarrio}</div>
         <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{props.tipo_barrio === 'BarrioOficial' ? 'Barrio oficial' : 'Barrio no oficial'}</div>
       </div>
-      <MetricCardMini label={<>Población total (barrio) <InfoTip texto="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." /></>} value={props.poblacion != null ? props.poblacion.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% de este barrio está en este circuito` : undefined} />
+      <MetricCardMini label={<>Población total (barrio) <InfoTip texto="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." /></>} value={poblacionTotalBarrio != null ? poblacionTotalBarrio.toLocaleString() : '—'} subtitle={props.pct_poblacion_en_circuito != null ? `${props.pct_poblacion_en_circuito.toFixed(1)}% de este barrio está en este circuito` : undefined} />
 
       {/* Caja con borde propio (no solo el header "Circuito") para separar visualmente
           la Población del barrio (arriba) del Padrón del circuito (adentro de
@@ -1990,7 +2030,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, padron
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => (
+const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasEnriquecidas, circuitosGeoJsonData, poblacionTotalPorBarrio }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -1999,7 +2039,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
         ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} onVerFichaBarrio={onVerFichaBarrio} />}
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} padronTotal={padronTotal} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} encuestasData={encuestasData} onVerFichaBarrio={onVerFichaBarrio} poblacionTotalPorBarrio={poblacionTotalPorBarrio} />}
     </div>
   </div>
 );
@@ -2392,14 +2432,16 @@ function htmlEncuestasPDF(encuestaCircuito) {
 const generarFichaPDF = ({
   datos, barrios, partidos, padronTotal,
   eventosPorCircuito, encuestaCircuito,
-  cruceData, barriosGeoLookup, barriosGeoData,
+  cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
   recorridosLookup, pautasBarriosData, obrasEnriquecidas,
   votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
 }) => {
   const mapkey = datos.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
-  const poblacionEstimada = poblacionEstimadaCircuito(barriosCircuito);
-  const pctPadronDePoblacion = poblacionEstimada > 0 && datos.Padron_G23 != null ? (datos.Padron_G23 / poblacionEstimada) * 100 : null;
+  const barriosVisibles = barriosCircuito.filter(b => (b.poblacion || 0) >= UMBRAL_POBLACION_BARRIO);
+  const barriosOcultos = barriosCircuito.length - barriosVisibles.length;
+  const poblacionCircuitoTotal = poblacionCircuito(barriosCircuito);
+  const pctPadronDePoblacion = poblacionCircuitoTotal > 0 && datos.Padron_G23 != null ? (datos.Padron_G23 / poblacionCircuitoTotal) * 100 : null;
   const pctPadron = padronTotal > 0 ? ((datos.Padron_G23 / padronTotal) * 100).toFixed(2) : 0;
   const partidosG23 = partidos?.[datos.CircuitoKey]?.['G23'] || [];
   const partidosL25 = partidos?.[datos.CircuitoKey]?.['L25'] || [];
@@ -2412,6 +2454,9 @@ const generarFichaPDF = ({
 
   // --- Barrio principal del circuito (dirección inversa de resolverCircuitoPrincipalDeBarrio) ---
   const barrioPrincipal = resolverBarrioPrincipalDeCircuito(datos, cruceData, barriosGeoLookup);
+  const poblacionTotalBarrioPrincipal = barrioPrincipal
+    ? poblacionTotalPorBarrio?.[normalizarNombreBarrio(barrioPrincipal.nombreBarrio)]
+    : null;
   let visitasBarrio = [], pautaBarrio = [], obrasBarrio = [], cercanosBarrio = [], votosEscuelasBarrio = null;
   if (barrioPrincipal) {
     const keyBarrio = normalizarNombreBarrio(barrioPrincipal.nombreBarrio);
@@ -2441,7 +2486,7 @@ const generarFichaPDF = ({
   <h2>${barrioPrincipal.nombreBarrio}</h2>
 </div>
 <div class="metrics">
-  <div class="metric"><div class="metric-label">Población total (barrio) <span title="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${barrioPrincipal.props?.poblacion != null ? barrioPrincipal.props.poblacion.toLocaleString() : '—'}</div></div>
+  <div class="metric"><div class="metric-label">Población total (barrio) <span title="Población total censada de este barrio (fuente: IDECOR/censo), no vinculada al padrón electoral." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${poblacionTotalBarrioPrincipal != null ? poblacionTotalBarrioPrincipal.toLocaleString() : '—'}</div></div>
   <div class="metric"><div class="metric-label">Tipo</div><div class="metric-value" style="font-size:16px">${barrioPrincipal.props?.tipo_barrio === 'BarrioOficial' ? 'Oficial' : 'No oficial'}</div></div>
 </div>
 <div class="section">
@@ -2529,7 +2574,7 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 </div>
 
 <div class="metrics">
-  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div>${poblacionEstimada > 0 ? `<div class="metric-sub">Pob. estimada (barrios): ${Math.round(poblacionEstimada).toLocaleString()}${pctPadronDePoblacion != null ? ` · padrón ~${pctPadronDePoblacion.toFixed(0)}%` : ''}</div>` : ''}</div>
+  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div>${poblacionCircuitoTotal > 0 ? `<div class="metric-sub">En los barrios de este circuito viven ${Math.round(poblacionCircuitoTotal).toLocaleString()} personas; el padrón habilitado es ${datos.Padron_G23?.toLocaleString() || '—'}${pctPadronDePoblacion != null ? ` (${pctPadronDePoblacion.toFixed(0)}%)` : ''}.</div>` : ''}</div>
   <div class="metric"><div class="metric-label">Victorias</div><div class="metric-value">${datos.Victorias_Total}/4</div></div>
   <div class="metric"><div class="metric-label">Gob. 2023</div><div class="metric-value ${datos.Share_G23 >= 0.5 ? 'green' : 'red'}">${(datos.Share_G23 * 100).toFixed(1)}%</div></div>
   <div class="metric"><div class="metric-label">Dip. 2025</div><div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div></div>
@@ -2594,7 +2639,8 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 ${barriosCircuito.length > 0 ? `
 <div class="section">
   <h3>Barrios del circuito (${barriosCircuito.length})</h3>
-  <table><thead><tr><th>Barrio</th><th class="text-right">Población</th><th class="text-right">% del barrio en el circuito</th></tr></thead><tbody>${barriosCircuito.map(b => `<tr><td>${b.nombre}</td><td class="text-right">${b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td><td class="text-right">${b.pct_en_circuito != null ? b.pct_en_circuito.toFixed(1) + '%' : '—'}</td></tr>`).join('')}</tbody></table>
+  <table><thead><tr><th>Barrio</th><th class="text-right">Población en el circuito</th><th class="text-right">% del total del barrio</th></tr></thead><tbody>${barriosVisibles.map(b => `<tr><td>${b.nombre}</td><td class="text-right">${b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td><td class="text-right">${b.pct_en_circuito != null ? b.pct_en_circuito.toFixed(1) + '%' : '—'}</td></tr>`).join('')}</tbody><tfoot><tr style="font-weight:600;border-top:2px solid #ccc"><td>Total</td><td class="text-right">${Math.round(poblacionCircuitoTotal).toLocaleString()}</td><td></td></tr></tfoot></table>
+  ${barriosOcultos > 0 ? `<p style="font-size:10px;color:#999;margin-top:6px">Se omiten ${barriosOcultos} barrio${barriosOcultos !== 1 ? 's' : ''} con menos de ${UMBRAL_POBLACION_BARRIO} habitantes en este circuito.</p>` : ''}
 </div>
 ` : ''}
 
@@ -2735,6 +2781,12 @@ export default function Home() {
     return lookup;
   }, [barriosGeoData]);
 
+  // Población total real de cada barrio = suma de "poblacion" a través de TODOS los
+  // circuitos donde aparece en barrios_por_circuito_completo.json — no la fila del
+  // circuito_principal (eso es solo la porción de ese barrio que cae en ese circuito).
+  // Ver poblacionCircuito/construirPoblacionTotalPorBarrio para el detalle de por qué.
+  const poblacionTotalPorBarrio = useMemo(() => construirPoblacionTotalPorBarrio(barrios), [barrios]);
+
   const recorridosLookup = useMemo(() => {
     const lookup = {};
     Object.entries(recorridosData || {}).forEach(([nombre, info]) => {
@@ -2863,7 +2915,7 @@ export default function Home() {
     const html = generarFichaPDF({
       datos: datosCircuito, barrios, partidos, padronTotal,
       eventosPorCircuito, encuestaCircuito,
-      cruceData, barriosGeoLookup, barriosGeoData,
+      cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
       recorridosLookup, pautasBarriosData, obrasEnriquecidas,
       votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
     });
@@ -2999,6 +3051,7 @@ export default function Home() {
                             pautasBarriosData={pautasBarriosData}
                             votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
                             obrasEnriquecidas={obrasEnriquecidas}
+                            poblacionTotalPorBarrio={poblacionTotalPorBarrio}
                             onIrACircuito={irACircuitoDesdeResumenBarrio}
                             onCambiarSolapa={setSolapaActivaBarrio}
                           />
@@ -3094,6 +3147,7 @@ export default function Home() {
                     encuestasData={encuestasData}
                     obrasEnriquecidas={obrasEnriquecidas}
                     circuitosGeoJsonData={circuitosGeoJsonData}
+                    poblacionTotalPorBarrio={poblacionTotalPorBarrio}
                   />
                 </div>
               </div>
