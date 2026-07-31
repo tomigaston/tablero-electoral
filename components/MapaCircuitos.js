@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, useMap, useMapEvent } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
 import * as topojson from 'topojson-client';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import 'leaflet/dist/leaflet.css';
@@ -30,6 +30,33 @@ const COLOR_OBRA_DEFAULT = '#9E9E9E'; // estado no reconocido / ausente
 const COLOR_ESCUELA_CENTRO_VOTACION = '#1976D2';
 const COLOR_ESCUELA_SIN_VOTACION = '#9E9E9E';
 const COLOR_BORDE_PENDIENTE_REVISION = '#F57F17';
+const COLOR_PAUTA = '#D500F9'; // violeta/fucsia, no choca con la paleta de estados de Obras ni Circuitos
+
+// Opacidad de relleno de Circuitos cuando hay alguna capa de puntos activa (Obras,
+// Pauta o Escuelas): los rellenos categóricos fuertes (0.7/0.9) matan el contraste de
+// los puntos, así que se atenúan a este valor tenue para que los puntos dominen
+// visualmente y el color de categoría se siga percibiendo de fondo.
+const FILL_OPACITY_CIRCUITO_ATENUADO = 0.25;
+
+// Star de 24x24 (path estándar de 5 puntas), con halo blanco (stroke) — mismo criterio
+// de "halo blanco" que los CircleMarker de Obras, pero como DivIcon a mano (SVG inline,
+// sin librerías de íconos) porque CircleMarker no puede dibujar una forma de estrella.
+function crearIconoPautaEstrella() {
+  const L = require('leaflet');
+  const svg = `
+    <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+        fill="${COLOR_PAUTA}" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" />
+    </svg>
+  `;
+  return L.divIcon({
+    html: svg,
+    className: 'pauta-star-icon',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -10],
+  });
+}
 
 // Normaliza nombres de barrio para cruzar recorridos_barrios.json con barrios_geo.json
 // (nombre_barrio): mismo texto pero con diferencias de espacios dobles, tildes y el
@@ -140,11 +167,22 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra }) {
   const geoJsonRef = useRef(null);
 
-  const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, escuelas: false });
+  const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, pauta: false, escuelas: false });
   const toggleCapa = (capa) => setCapasActivas(prev => ({ ...prev, [capa]: !prev[capa] }));
+
+  // Cuenta como "capa de puntos" para la atenuación del relleno de Circuitos (punto 1):
+  // Obras, Pauta y Escuelas comparten el mismo criterio de necesitar contraste contra
+  // el relleno categórico de circuito.
+  const hayCapaPuntosActiva = capasActivas.obras || capasActivas.pauta || capasActivas.escuelas;
+  // Ref porque los handlers mouseover/mouseout de onEachFeature quedan atados al closure
+  // vigente en el momento del mount/remount de <GeoJSON> (que solo remonta por cambios de
+  // mapkeySeleccionado/filtroCategoria, no por capasActivas) — sin este ref, activar/
+  // desactivar Obras/Pauta/Escuelas no se reflejaría en el hover hasta el próximo remount.
+  const hayCapaPuntosActivaRef = useRef(hayCapaPuntosActiva);
+  useEffect(() => { hayCapaPuntosActivaRef.current = hayCapaPuntosActiva; }, [hayCapaPuntosActiva]);
 
   // A diferencia de filtroCategoria (lifted a pages/index.js porque VistaCapital también
   // lo consume, y se limpia al navegar a un circuito/barrio puntual porque es un filtro
@@ -175,16 +213,49 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
   const escuelasParaMostrar = useMemo(() => escuelasData?.escuelas || [], [escuelasData]);
 
+  // pautas_barrios.json viene indexado por nombre de barrio (nivel barrio, no por
+  // anuncio individual) — un marker por barrio con pauta, ubicado en el centroide de su
+  // polígono en barrios_geo.json (mismo cruce normalizado que ya usa este archivo para
+  // Barrios/Territorio). barrios_geo.json tiene 16 nombres de barrio duplicados
+  // (fragmentos no contiguos, ver comentario de resolverCircuitoPrincipalDeBarrio en
+  // pages/index.js) — para el marker se toma el primer fragmento que matchea, sin
+  // intentar elegir "el principal" (no hay campo que lo indique). Los barrios de pauta
+  // sin ningún fragmento que matchee ni con normalización quedan afuera del mapa (no se
+  // inventa ubicación) y se listan en consola para poder avisarlos.
+  const pautaBarrioMarkers = useMemo(() => {
+    if (!pautasBarriosData || !barriosGeoData) return [];
+    const sinMatch = [];
+    const markers = Object.keys(pautasBarriosData).map(nombreBarrio => {
+      const normalizado = normalizarNombreBarrio(nombreBarrio);
+      const feature = barriosGeoData.features.find(f => normalizarNombreBarrio(f.properties?.nombre_barrio) === normalizado);
+      const lat = feature?.properties?.centroid_lat;
+      const lon = feature?.properties?.centroid_lon;
+      if (lat == null || lon == null) {
+        sinMatch.push(nombreBarrio);
+        return null;
+      }
+      return { nombreBarrio, lat, lon, pautas: pautasBarriosData[nombreBarrio].pautas || [] };
+    }).filter(Boolean);
+    if (sinMatch.length > 0) {
+      console.warn('Pauta: barrios sin match geográfico en barrios_geo.json (excluidos del mapa):', sinMatch);
+    }
+    return markers;
+  }, [pautasBarriosData, barriosGeoData]);
+
+  const iconoPautaEstrella = useMemo(() => crearIconoPautaEstrella(), []);
+
   const getBarrioStyle = (feature) => {
     const nombre = feature.properties?.nombre_barrio;
     const isSelected = barrioSeleccionado && normalizarNombreBarrio(nombre) === normalizarNombreBarrio(barrioSeleccionado);
     return {
       fillOpacity: isSelected ? 0.2 : 0,
       fillColor: '#5C6BC0',
-      color: isSelected ? '#3949AB' : '#455A64',
-      weight: isSelected ? 2.5 : 1,
-      opacity: isSelected ? 0.9 : 0.5,
-      dashArray: isSelected ? null : '3,3',
+      // Barrio = línea punteada oscura vs. circuito = línea blanca sólida, para que se
+      // distingan a simple vista (antes competían: ambas finitas y sutiles).
+      color: isSelected ? '#3949AB' : '#37474F',
+      weight: isSelected ? 2.5 : 2,
+      opacity: isSelected ? 0.9 : 0.65,
+      dashArray: isSelected ? null : '6,4',
     };
   };
 
@@ -217,12 +288,22 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
     
     // Si hay filtro y este circuito no coincide, hacerlo muy tenue
     const isFiltered = filtroCategoria && categoria !== filtroCategoria;
-    
+
+    // Atenuación (punto 1): con alguna capa de puntos activa, el relleno baja a un tenue
+    // fijo para que Obras/Pauta/Escuelas dominen visualmente — la selección se sigue
+    // marcando por el borde (ver más abajo), no por el relleno.
+    let fillOpacity;
+    if (isFiltered) fillOpacity = 0.15;
+    else if (hayCapaPuntosActiva) fillOpacity = FILL_OPACITY_CIRCUITO_ATENUADO;
+    else fillOpacity = isSelected ? 0.9 : 0.7;
+
     return {
       fillColor: color,
-      fillOpacity: isFiltered ? 0.15 : (isSelected ? 0.9 : 0.7),
-      color: isSelected ? '#1565C0' : '#ffffff',
-      weight: isSelected ? 3 : 1,
+      fillOpacity,
+      // Selección (punto 4): borde más grueso y de un azul más contrastante para que el
+      // circuito activo salte a la vista incluso con el relleno atenuado.
+      color: isSelected ? '#2962FF' : '#ffffff',
+      weight: isSelected ? 5 : 1,
       opacity: isFiltered ? 0.3 : 1,
     };
   };
@@ -246,15 +327,20 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
     layer.on('mouseover', (e) => {
       if (mapkey !== mapkeySeleccionado) {
-        e.target.setStyle({ fillOpacity: 0.85, weight: 2 });
+        // hayCapaPuntosActivaRef porque este handler queda atado al closure de cuando se
+        // montó la capa (ver comentario junto a su declaración) — sin el ref, el hover
+        // ignoraría cambios de capasActivas hechos después del mount.
+        const opacidadTenue = hayCapaPuntosActivaRef.current ? 0.35 : 0.85;
+        e.target.setStyle({ fillOpacity: opacidadTenue, weight: 2 });
       }
     });
-    
+
     layer.on('mouseout', (e) => {
       if (mapkey !== mapkeySeleccionado) {
         const datosC = datosLookup[mapkey];
         const isFiltered = filtroCategoria && datosC?.Categoria_v4 !== filtroCategoria;
-        e.target.setStyle({ fillOpacity: isFiltered ? 0.15 : 0.7, weight: 1 });
+        const fillOpacityBase = hayCapaPuntosActivaRef.current ? FILL_OPACITY_CIRCUITO_ATENUADO : 0.7;
+        e.target.setStyle({ fillOpacity: isFiltered ? 0.15 : fillOpacityBase, weight: 1 });
       }
     });
   };
@@ -266,7 +352,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
         if (feature) layer.setStyle(getStyle(feature));
       });
     }
-  }, [mapkeySeleccionado, datosLookup, filtroCategoria]);
+  }, [mapkeySeleccionado, datosLookup, filtroCategoria, hayCapaPuntosActiva]);
   
   if (!geoJsonData) {
     return (
@@ -283,6 +369,8 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
         .custom-tooltip .leaflet-tooltip-content { margin: 0; }
         .custom-tooltip-barrio { background: #37474F; color: #fff; border: none; font-size: 12px; padding: 3px 8px; }
         .leaflet-container { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .leaflet-interactive { transition: fill-opacity 0.35s ease, opacity 0.35s ease; }
+        .pauta-star-icon { background: transparent; border: none; }
       `}</style>
 
       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '10px 12px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', fontSize: '13px', minWidth: '140px' }}>
@@ -298,6 +386,10 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', cursor: 'pointer' }}>
           <input type="checkbox" checked={capasActivas.obras} onChange={() => toggleCapa('obras')} />
           Obras
+        </label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', cursor: 'pointer' }}>
+          <input type="checkbox" checked={capasActivas.pauta} onChange={() => toggleCapa('pauta')} />
+          Pauta
         </label>
         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
           <input type="checkbox" checked={capasActivas.escuelas} onChange={() => toggleCapa('escuelas')} />
@@ -378,11 +470,31 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
               key={`obra-${obra.id}-${i}`}
               center={[obra.lat, obra.lon]}
               radius={6}
-              pathOptions={{ color: '#fff', weight: 1, fillColor: colorEstado, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
+              pathOptions={{ color: '#fff', weight: 2, fillColor: colorEstado, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
               eventHandlers={{ click: () => onSelectObra && onSelectObra(obra) }}
             />
           );
         })}
+        {capasActivas.pauta && pautaBarrioMarkers.map((m) => (
+          <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={iconoPautaEstrella}>
+            <Popup offset={[0, -8]}>
+              <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
+                <strong style={{ fontSize: '13px' }}>{m.nombreBarrio}</strong>
+                <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                  {m.pautas.map((p, i) => (
+                    <div key={p.fila_origen ?? i} style={{ borderTop: i > 0 ? '1px solid #eee' : 'none', paddingTop: i > 0 ? '6px' : 0 }}>
+                      <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.codigo_anuncio || '—'}</div>
+                      <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+                        Alcance: {p.alcance?.toLocaleString() ?? '—'} · Gasto: {p.importe_gastado != null ? `$${p.importe_gastado.toLocaleString()}` : '—'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
         {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
           const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
           const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
