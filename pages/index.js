@@ -155,7 +155,7 @@ const getNumeroBase = (circuitoKey) => {
   return String(circuitoKey).replace(/[A-Za-z]/g, '');
 };
 // Mismo criterio de normalización usado en components/MapaCircuitos.js para cruzar
-// barrios_por_circuito.json / recorridos_barrios.json con barrios_geo.json
+// barrios_por_circuito_completo.json / recorridos_barrios.json con barrios_geo.json
 const normalizarNombreBarrio = (s) => (s || '')
   .toUpperCase()
   .replace(/[ºª]/g, 'O')
@@ -194,10 +194,17 @@ function barriosCercanos(nombreBarrio, barriosGeoData, radioKm = RADIO_BARRIOS_C
     .map(f => {
       const { centroid_lat: lat2, centroid_lon: lon2 } = f.properties;
       if (lat2 == null || lon2 == null) return null;
-      return { nombre: f.properties.nombre_barrio, distanciaKm: distanciaHaversineKm(lat1, lon1, lat2, lon2) };
+      return { nombre: f.properties.nombre_barrio, distanciaKm: distanciaHaversineKm(lat1, lon1, lat2, lon2), poblacion: f.properties.poblacion };
     })
     .filter((b) => b && b.distanciaKm <= radioKm)
     .sort((a, b) => a.distanciaKm - b.distanciaKm);
+}
+
+// Suma ponderada de población por barrio dentro del circuito (poblacion del barrio ×
+// % de ese barrio que cae en este circuito). Es una estimación vía barrios_por_circuito_completo.json,
+// distinta y no necesariamente igual al padrón electoral (personas habilitadas a votar).
+function poblacionEstimadaCircuito(barriosCircuito) {
+  return (barriosCircuito || []).reduce((sum, b) => sum + (b.poblacion || 0) * (b.pct_en_circuito || 0) / 100, 0);
 }
 
 // Compara IDs de circuito (Mapkey) en orden natural: primero el numero base,
@@ -513,7 +520,9 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
 
 const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCircuito }) => {
   const mapkey = datos?.Mapkey;
-  const barriosCircuito = barrios?.[mapkey] || [];
+  const barriosCircuito = barrios?.[mapkey]?.barrios || [];
+  const poblacionEstimada = poblacionEstimadaCircuito(barriosCircuito);
+  const pctPadronDePoblacion = poblacionEstimada > 0 && datos?.Padron_G23 != null ? (datos.Padron_G23 / poblacionEstimada) * 100 : null;
   const numeroBase = getNumeroBase(circuito);
   const vecinos = todosLosDatos?.filter(d => {
     if (d.CircuitoKey === circuito) return false;
@@ -538,7 +547,7 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
                       <tr key={i} style={{ borderTop: '1px solid var(--border)', backgroundColor: i === 0 ? '#1976D208' : 'transparent' }}>
                         <td style={{ padding: '10px 14px', fontWeight: i === 0 ? 600 : 400 }}>{barrio.nombre || barrio}</td>
                         <td style={{ padding: '10px 14px', textAlign: 'right' }}>{barrio.poblacion != null ? barrio.poblacion.toLocaleString() : '—'}</td>
-                        <td style={{ padding: '10px 14px', textAlign: 'right' }}>{barrio.porcentaje != null ? `${barrio.porcentaje.toFixed(1)}%` : '—'}</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right' }}>{barrio.pct_en_circuito != null ? `${barrio.pct_en_circuito.toFixed(1)}%` : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -548,6 +557,13 @@ const SolapaTerritorio = ({ circuito, datos, barrios, todosLosDatos, onSelectCir
                 Total barrios: <strong style={{ color: 'var(--text-primary)' }}>{barriosCircuito.length}</strong>
                 <span style={{ margin: '0 14px' }}>│</span>
                 Padrón electoral (circuito): <strong style={{ color: 'var(--text-primary)' }}>{datos?.Padron_G23?.toLocaleString() || '—'}</strong>
+                {poblacionEstimada > 0 && (
+                  <>
+                    <span style={{ margin: '0 14px' }}>│</span>
+                    Población estimada (barrios): <strong style={{ color: 'var(--text-primary)' }}>{Math.round(poblacionEstimada).toLocaleString()}</strong>
+                    {pctPadronDePoblacion != null && <span> — el padrón representa ~{pctPadronDePoblacion.toFixed(0)}% de esa población</span>}
+                  </>
+                )}
               </div>
             </>
           ) : <div style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>No hay información de barrios disponible</div>}
@@ -763,11 +779,12 @@ const SolapaTerritorioBarrio = ({ nombreBarrio, barriosGeoData }) => {
       ) : (
         <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Distancia</th></tr></thead>
+            <thead><tr style={{ backgroundColor: 'var(--bg-secondary)' }}><th style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Población</th><th style={{ padding: '8px 14px', textAlign: 'right', fontWeight: 500, color: 'var(--text-tertiary)' }}>Distancia</th></tr></thead>
             <tbody>
               {cercanos.map((b, i) => (
                 <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
                   <td style={{ padding: '8px 14px' }}>{b.nombre}</td>
+                  <td style={{ padding: '8px 14px', textAlign: 'right' }}>{b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td>
                   <td style={{ padding: '8px 14px', textAlign: 'right' }}>{b.distanciaKm.toFixed(2)} km</td>
                 </tr>
               ))}
@@ -2380,7 +2397,9 @@ const generarFichaPDF = ({
   votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
 }) => {
   const mapkey = datos.Mapkey;
-  const barriosCircuito = barrios?.[mapkey] || [];
+  const barriosCircuito = barrios?.[mapkey]?.barrios || [];
+  const poblacionEstimada = poblacionEstimadaCircuito(barriosCircuito);
+  const pctPadronDePoblacion = poblacionEstimada > 0 && datos.Padron_G23 != null ? (datos.Padron_G23 / poblacionEstimada) * 100 : null;
   const pctPadron = padronTotal > 0 ? ((datos.Padron_G23 / padronTotal) * 100).toFixed(2) : 0;
   const partidosG23 = partidos?.[datos.CircuitoKey]?.['G23'] || [];
   const partidosL25 = partidos?.[datos.CircuitoKey]?.['L25'] || [];
@@ -2427,7 +2446,7 @@ const generarFichaPDF = ({
 </div>
 <div class="section">
   <h3>Barrios cercanos (≤1,5 km)</h3>
-  ${cercanosBarrio.length === 0 ? `<p style="color:#999;font-size:12px">Sin barrios cercanos dentro de 1,5 km.</p>` : `<table><thead><tr><th>Barrio</th><th class="text-right">Distancia</th></tr></thead><tbody>${cercanosBarrio.map(b => `<tr><td>${b.nombre}</td><td class="text-right">${b.distanciaKm.toFixed(2)} km</td></tr>`).join('')}</tbody></table>`}
+  ${cercanosBarrio.length === 0 ? `<p style="color:#999;font-size:12px">Sin barrios cercanos dentro de 1,5 km.</p>` : `<table><thead><tr><th>Barrio</th><th class="text-right">Población</th><th class="text-right">Distancia</th></tr></thead><tbody>${cercanosBarrio.map(b => `<tr><td>${b.nombre}</td><td class="text-right">${b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td><td class="text-right">${b.distanciaKm.toFixed(2)} km</td></tr>`).join('')}</tbody></table>`}
 </div>
 <div class="subheader">Cobertura territorial del barrio</div>
 <div class="section"><h3>Visitas del Gobernador</h3>${htmlVisitasPDF(visitasBarrio)}</div>
@@ -2510,7 +2529,7 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 </div>
 
 <div class="metrics">
-  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div></div>
+  <div class="metric"><div class="metric-label">Padrón electoral (circuito) <span title="Personas habilitadas para votar en este circuito según el padrón electoral 2023." style="display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid #999;color:#999;font-size:9px;cursor:help;">i</span></div><div class="metric-value">${datos.Padron_G23?.toLocaleString() || '—'}</div><div class="metric-sub">${pctPadron}% de Capital</div>${poblacionEstimada > 0 ? `<div class="metric-sub">Pob. estimada (barrios): ${Math.round(poblacionEstimada).toLocaleString()}${pctPadronDePoblacion != null ? ` · padrón ~${pctPadronDePoblacion.toFixed(0)}%` : ''}</div>` : ''}</div>
   <div class="metric"><div class="metric-label">Victorias</div><div class="metric-value">${datos.Victorias_Total}/4</div></div>
   <div class="metric"><div class="metric-label">Gob. 2023</div><div class="metric-value ${datos.Share_G23 >= 0.5 ? 'green' : 'red'}">${(datos.Share_G23 * 100).toFixed(1)}%</div></div>
   <div class="metric"><div class="metric-label">Dip. 2025</div><div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div></div>
@@ -2575,10 +2594,7 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 ${barriosCircuito.length > 0 ? `
 <div class="section">
   <h3>Barrios del circuito (${barriosCircuito.length})</h3>
-  <div style="display:flex;flex-wrap:wrap;gap:6px">
-    ${barriosCircuito.slice(0, 12).map(b => `<span style="padding:4px 10px;background:#f5f5f5;border-radius:4px;font-size:11px">${b.nombre || b}</span>`).join('')}
-    ${barriosCircuito.length > 12 ? `<span style="padding:4px 10px;font-size:11px;color:#666">+${barriosCircuito.length - 12} más</span>` : ''}
-  </div>
+  <table><thead><tr><th>Barrio</th><th class="text-right">Población</th><th class="text-right">% del barrio en el circuito</th></tr></thead><tbody>${barriosCircuito.map(b => `<tr><td>${b.nombre}</td><td class="text-right">${b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td><td class="text-right">${b.pct_en_circuito != null ? b.pct_en_circuito.toFixed(1) + '%' : '—'}</td></tr>`).join('')}</tbody></table>
 </div>
 ` : ''}
 
@@ -2635,7 +2651,7 @@ export default function Home() {
       try {
         const [datosRes, partidosRes, barriosRes, geoRes, barriosGeoRes, obrasRes, cruceRes, recorridosRes, pautasBarriosRes, encuestasRes, encuestasMetaRes, escuelasRes, votosEscuelasCircuitoRes, votosEscuelasBarrioRes] = await Promise.all([
           fetch('/data/circuitos_completo.json'), fetch('/data/partidos_por_eleccion.json'),
-          fetch('/data/barrios_por_circuito.json'), fetch('/data/circuitos_cordoba.json'),
+          fetch('/data/barrios_por_circuito_completo.json'), fetch('/data/circuitos_cordoba.json'),
           fetch('/data/barrios_geo.json'), fetch('/data/obras_capital.json'),
           fetch('/data/circuito_barrios_cruce.json'),
           fetch('/data/recorridos_barrios.json'),
