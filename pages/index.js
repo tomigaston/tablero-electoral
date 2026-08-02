@@ -1328,143 +1328,79 @@ function pathSuave(puntos) {
   return d;
 }
 
-// datos: [{ fecha, valor }], ya ordenado cronológicamente. Cada punto es hoverable
-// (mouse) / tocable (click) y muestra fecha + valor puntual en un tooltip.
-const Sparkline = ({ datos, width = 100, height = 28, color = '#1976D2' }) => {
-  const [hoverIdx, setHoverIdx] = useState(null);
-  if (!datos || datos.length < 2) return null;
+// ============================================
+// VISTA "COMPARATIVO" (solapa Encuestas) — funciones puras de generación de
+// HTML/SVG, sin JSX ni estado. Se usan tal cual tanto en pantalla (inyectadas vía
+// dangerouslySetInnerHTML desde ComparativoEncuesta) como en el PDF (htmlEncuestasComparativoPDF),
+// así ninguna de las dos queda desincronizada de la otra. Todos los colores van
+// hardcodeados (no var(--...)) porque el documento del PDF no hereda esas custom
+// properties — y los valores por defecto de :root ya coinciden con estos hex.
+// Convención de deltas: siempre última ronda vs. primera ronda (no la ronda
+// inmediatamente anterior), igual que ya usaban deltaEncuestaPDF/deltaMejoraPDF.
+// ============================================
+
+// Sparkline con fecha (dd-mm-yyyy) siempre visible en el primer y último punto —
+// a diferencia del Sparkline hover-based que reemplaza, no necesita estado.
+function svgSparklineFechas(datos, { width = 130, height = 40, color = '#1976D2' } = {}) {
+  if (!datos || datos.length < 2) return `<div style="height:${height}px"></div>`;
   const valores = datos.map(d => d.valor);
   const min = Math.min(...valores), max = Math.max(...valores);
   const rango = max - min || 1;
-  const pad = 4;
+  const padX = 4, padTop = 6, padBottom = 14;
   const puntos = datos.map((d, i) => [
-    pad + (i / (datos.length - 1)) * (width - pad * 2),
-    pad + (1 - (d.valor - min) / rango) * (height - pad * 2),
+    padX + (i / (datos.length - 1)) * (width - padX * 2),
+    padTop + (1 - (d.valor - min) / rango) * (height - padTop - padBottom),
   ]);
-  return (
-    <div style={{ position: 'relative' }}>
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ display: 'block', overflow: 'visible' }}>
-        <path d={pathSuave(puntos)} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        {puntos.map(([x, y], i) => (
-          <g key={i}>
-            <circle cx={x} cy={y} r={hoverIdx === i ? 4 : 2.5} fill={color} />
-            <circle
-              cx={x} cy={y} r="8" fill="transparent" style={{ cursor: 'pointer' }}
-              onMouseEnter={() => setHoverIdx(i)}
-              onMouseLeave={() => setHoverIdx(null)}
-              onClick={() => setHoverIdx(hoverIdx === i ? null : i)}
-            />
-          </g>
-        ))}
-      </svg>
-      {hoverIdx != null && (
-        <div style={{
-          position: 'absolute', bottom: `${height - puntos[hoverIdx][1] + 10}px`, left: `${puntos[hoverIdx][0]}px`, transform: 'translateX(-50%)',
-          backgroundColor: '#1a1a1a', color: '#fff', padding: '3px 7px', borderRadius: '5px',
-          fontSize: '10px', whiteSpace: 'nowrap', zIndex: 50, pointerEvents: 'none',
-        }}>
-          {formatearFecha(datos[hoverIdx].fecha)} · {datos[hoverIdx].valor}%
-        </div>
-      )}
-    </div>
-  );
-};
+  const dots = puntos.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" fill="${color}" />`).join('');
+  const fechaIni = formatearFecha(datos[0].fecha);
+  const fechaFin = formatearFecha(datos[datos.length - 1].fecha);
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="display:block;overflow:visible">
+    <path d="${pathSuave(puntos)}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    ${dots}
+    <text x="${puntos[0][0]}" y="${height - 2}" font-size="8" fill="#999" text-anchor="start">${fechaIni}</text>
+    <text x="${puntos[puntos.length - 1][0]}" y="${height - 2}" font-size="8" fill="#999" text-anchor="end">${fechaFin}</text>
+  </svg>`;
+}
 
-const KPIComparativo = ({ label, pregunta, categoria, rondas }) => {
-  const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
-  if (datos.length < 2) return null;
-  const vActual = datos[datos.length - 1].valor;
-  const delta = vActual - datos[datos.length - 2].valor;
-  return (
-    <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', minWidth: '150px' }}>
-      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{label}</div>
-      <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)' }}>{vActual}%</div>
-      <div style={{ fontSize: '12px', fontWeight: 600, color: delta > 0 ? '#2E7D32' : delta < 0 ? '#C62828' : 'var(--text-tertiary)' }}>
-        {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} {delta > 0 ? '+' : ''}{delta.toFixed(1)} pp
-      </div>
-      <div style={{ marginTop: '6px' }}><Sparkline datos={datos} width={110} height={26} /></div>
-    </div>
-  );
-};
+// Solo la barra apilada Positiva/Regular/Negativa/Ns-Nc (sin label), para poder
+// componerla tanto en una fila de mini-pendiente (fecha a la izquierda) como en
+// htmlBarraCategoriasPDF (label arriba). Mismos colores/umbral de texto que BarraGestion.
+function htmlBarraSegmentosPDF(data, { height = 18 } = {}) {
+  if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
+  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  const segmentos = categorias.map(cat => {
+    const v = data[cat];
+    if (!v || v <= 0) return '';
+    const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
+    return `<div style="width:${v}%;background:${COLOR_GESTION[cat]};display:flex;align-items:center;justify-content:center">${texto}</div>`;
+  }).join('');
+  return `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
+}
 
-const KPIGestionComparativo = ({ funcionario, rondas }) => {
-  const pregunta = `Gestión del ${funcionario}`;
-  const series = ['Positiva', 'Regular', 'Negativa'].map(cat => ({
-    cat,
-    datos: rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[cat] })).filter(d => d.valor != null),
-  }));
-  if (series.every(s => s.datos.length < 2)) return null;
-  return (
-    <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', minWidth: '210px' }}>
-      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Calificación de gestión: {funcionario}</div>
-      <div style={{ display: 'flex', gap: '12px' }}>
-        {series.map(({ cat, datos }) => {
-          if (datos.length < 2) return null;
-          const vA = datos[datos.length - 1].valor, vB = datos[datos.length - 2].valor;
-          const delta = vA - vB;
-          return (
-            <div key={cat} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>{cat}</div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{vA}%</div>
-              <div style={{ fontSize: '11px', fontWeight: 500, color: delta > 0 ? '#2E7D32' : delta < 0 ? '#C62828' : 'var(--text-tertiary)' }}>
-                {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'}{Math.abs(delta).toFixed(1)}
-              </div>
-              <Sparkline datos={datos} width={56} height={20} color={COLOR_GESTION[cat]} />
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
+function htmlDeltaBadge(delta, { invertir = false, sufijo = ' pp' } = {}) {
+  if (delta == null) return `<span style="color:#ccc;font-size:11px">—</span>`;
+  const sube = delta > 0, baja = delta < 0;
+  const bueno = invertir ? baja : sube;
+  const malo = invertir ? sube : baja;
+  const color = bueno ? '#2E7D32' : malo ? '#C62828' : '#999';
+  const arrow = sube ? '▲' : baja ? '▼' : '—';
+  const signo = sube ? '+' : '';
+  return `<span style="font-size:11px;font-weight:600;color:${color}">${arrow} ${signo}${delta.toFixed(1)}${sufijo}</span>`;
+}
 
-const TarjetaProblemaEvolucion = ({ nombre, datos, umbral }) => {
-  const primero = datos[0].valor, ultimo = datos[datos.length - 1].valor;
-  const delta = ultimo - primero;
-  const significativo = Math.abs(delta) >= umbral;
-  return (
-    <div style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-        <div style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 500 }}>{nombre}</div>
-        <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', flexShrink: 0 }}>{ultimo}%</div>
-      </div>
-      <div style={{ marginTop: '6px' }}><Sparkline datos={datos} width={130} height={36} /></div>
-      {significativo && (
-        <div style={{ fontSize: '11px', fontWeight: 600, color: delta > 0 ? '#C62828' : '#2E7D32', marginTop: '4px' }}>
-          {delta > 0 ? '↑' : '↓'} {delta > 0 ? '+' : ''}{delta.toFixed(1)} pp
-        </div>
-      )}
-    </div>
-  );
-};
+// --- A.1: línea resumen "Subió / Bajó", sin cambios visuales — solo ahora compara
+// siempre primera vs. última ronda (antes comparaba contra la ronda inmediata anterior,
+// lo que coincidía con "primera" únicamente cuando había exactamente 2 rondas). ---
+function htmlResumenVariacionesProblemas(rondas, umbral) {
+  const primera = rondas[0], ultima = rondas[rondas.length - 1];
+  const probActual = ultima.preguntas?.['Problemas principales'];
+  const probPrimera = primera.preguntas?.['Problemas principales'];
+  if (!probActual || !probPrimera) return '';
 
-const GridProblemasEvolucion = ({ rondas, umbral }) => {
-  const categorias = Array.from(new Set(rondas.flatMap(r => Object.keys(r.preguntas?.['Problemas principales'] || {}))));
-  const conDatos = categorias
-    .map(cat => ({
-      nombre: cat,
-      datos: rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.['Problemas principales']?.[cat] })).filter(d => d.valor != null),
-    }))
-    .filter(c => c.datos.length >= 2)
-    .sort((a, b) => b.datos[b.datos.length - 1].valor - a.datos[a.datos.length - 1].valor);
-
-  if (conDatos.length === 0) return null;
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '12px' }}>
-      {conDatos.map(c => <TarjetaProblemaEvolucion key={c.nombre} nombre={c.nombre} datos={c.datos} umbral={umbral} />)}
-    </div>
-  );
-};
-
-const ResumenAutomaticoProblemas = ({ actual, anterior, umbral }) => {
-  const probActual = actual.preguntas?.['Problemas principales'];
-  const probAnterior = anterior.preguntas?.['Problemas principales'];
-  if (!probActual || !probAnterior) return null;
-
-  const categorias = new Set([...Object.keys(probActual), ...Object.keys(probAnterior)]);
+  const categorias = new Set([...Object.keys(probActual), ...Object.keys(probPrimera)]);
   const variaciones = [];
   categorias.forEach(cat => {
-    const vA = probActual[cat], vB = probAnterior[cat];
+    const vA = probActual[cat], vB = probPrimera[cat];
     if (vA == null || vB == null) return;
     const delta = vA - vB;
     if (Math.abs(delta) >= umbral) variaciones.push({ cat, delta });
@@ -1473,48 +1409,142 @@ const ResumenAutomaticoProblemas = ({ actual, anterior, umbral }) => {
   const bajan = variaciones.filter(v => v.delta < 0).sort((a, b) => a.delta - b.delta);
 
   if (suben.length === 0 && bajan.length === 0) {
-    return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>Sin variaciones significativas (≥{umbral}pp) entre rondas.</div>;
+    return `<div style="font-size:12px;color:#999;margin-bottom:12px">Sin variaciones significativas (≥${umbral}pp) entre rondas.</div>`;
   }
-  return (
-    <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-      {suben.length > 0 && <span>🔺 Subió: {suben.map(v => `${v.cat} (+${v.delta.toFixed(1)}pp)`).join(' · ')}</span>}
-      {bajan.length > 0 && <span>🔻 Bajó: {bajan.map(v => `${v.cat} (${v.delta.toFixed(1)}pp)`).join(' · ')}</span>}
-    </div>
-  );
-};
+  const partes = [];
+  if (suben.length > 0) partes.push(`<span>🔺 Subió: ${suben.map(v => `${v.cat} (+${v.delta.toFixed(1)}pp)`).join(' · ')}</span>`);
+  if (bajan.length > 0) partes.push(`<span>🔻 Bajó: ${bajan.map(v => `${v.cat} (${v.delta.toFixed(1)}pp)`).join(' · ')}</span>`);
+  return `<div style="font-size:12px;color:#1a1a1a;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:16px">${partes.join('')}</div>`;
+}
 
-const ComparativoEncuesta = ({ encuesta, umbral }) => {
-  const rondas = encuesta.rondas;
-  const actual = rondas[rondas.length - 1];
-  const anterior = rondas[rondas.length - 2];
+// --- A.2: grilla de cards uniformes (Aprobación x3, Reelección x2, Cordobeses en
+// Alerta) — valor actual + badge de delta (subir es bueno en los seis) + sparkline
+// con todas las rondas. ---
+function htmlIndicadorCard(label, rondas, pregunta, categoria) {
+  const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
+  const actual = datos.length > 0 ? datos[datos.length - 1].valor : null;
+  const delta = datos.length >= 2 ? actual - datos[0].valor : null;
+  return `<div style="padding:14px;background:#f5f5f5;border-radius:10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:150px;justify-content:center">
+    <div style="font-size:11px;color:#666">${label}</div>
+    <div style="font-size:22px;font-weight:700;color:#1a1a1a">${actual != null ? actual + '%' : '—'}</div>
+    <div style="height:16px;display:flex;align-items:center">${htmlDeltaBadge(delta)}</div>
+    <div style="margin-top:2px">${svgSparklineFechas(datos, { width: 140, height: 38 })}</div>
+  </div>`;
+}
 
-  const kpis = [
-    { label: 'Aprobación Intendente', pregunta: 'Aprobación Intendente', categoria: 'Apruebo' },
-    { label: 'Aprobación Gobernador', pregunta: 'Aprobación Gobernador', categoria: 'Apruebo' },
-    { label: 'Aprobación Presidente', pregunta: 'Aprobación Presidente', categoria: 'Apruebo' },
-    { label: 'Reelección Llaryora', pregunta: 'Reelección Llaryora', categoria: 'Si' },
-    { label: 'Reelección Milei', pregunta: 'Reelección Milei', categoria: 'Si' },
+function htmlGridIndicadores(rondas) {
+  const items = [
+    ['Aprobación Intendente', 'Aprobación Intendente', 'Apruebo'],
+    ['Aprobación Gobernador', 'Aprobación Gobernador', 'Apruebo'],
+    ['Aprobación Presidente', 'Aprobación Presidente', 'Apruebo'],
+    ['Reelección Llaryora', 'Reelección Llaryora', 'Si'],
+    ['Reelección Milei', 'Reelección Milei', 'Si'],
+    ['Cordobeses en Alerta', 'Cordobeses en Alerta (existencia)', 'Si'],
   ];
+  const cards = items.map(([label, pregunta, cat]) => htmlIndicadorCard(label, rondas, pregunta, cat)).join('');
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:12px">${cards}</div>`;
+}
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Comparativo · {formatearFecha(anterior.fecha)} → {formatearFecha(actual.fecha)}</h4>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {kpis.map(k => <KPIComparativo key={k.label} {...k} rondas={rondas} />)}
-          {['Intendente', 'Gobernador', 'Presidente'].map(func => (
-            <KPIGestionComparativo key={func} funcionario={func} rondas={rondas} />
-          ))}
-        </div>
-      </div>
-      <div>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Principales problemas — evolución</h4>
-        <ResumenAutomaticoProblemas actual={actual} anterior={anterior} umbral={umbral} />
-        <GridProblemasEvolucion rondas={rondas} umbral={umbral} />
-      </div>
+// --- A.3: mini-pendientes de gestión — una fila por ronda (fecha a la izquierda +
+// barra apilada, reutilizando el mismo dibujo de barra que BarraGestion en la vista
+// Resumen), apiladas verticalmente; delta de "Positiva" (1ª→última) como badge del bloque. ---
+function htmlMiniPendienteGestion(funcionario, rondas) {
+  const pregunta = `Gestión del ${funcionario}`;
+  const filas = rondas.map(r => ({ fecha: r.fecha, data: r.preguntas?.[pregunta] })).filter(f => f.data);
+  if (filas.length === 0) {
+    return `<div style="margin-bottom:16px"><div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div><p style="font-size:12px;color:#999">Sin dato.</p></div>`;
+  }
+  const positivas = filas.map(f => f.data.Positiva).filter(v => v != null);
+  const delta = positivas.length >= 2 ? positivas[positivas.length - 1] - positivas[0] : null;
+  const filasHtml = filas.map(f => `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <span style="width:82px;flex-shrink:0;font-size:11px;color:#999">${formatearFecha(f.fecha)}</span>
+      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22 })}</div>
+    </div>`).join('');
+  return `<div style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:13px;color:#666;font-weight:500">Calificación de gestión: ${funcionario}</span>
+      ${htmlDeltaBadge(delta)}
     </div>
-  );
-};
+    ${filasHtml}
+  </div>`;
+}
+
+function htmlMiniPendientesGestion(rondas) {
+  return ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas)).join('');
+}
+
+function htmlLegendGestion() {
+  const items = ['Positiva', 'Regular', 'Negativa'].map(cat =>
+    `<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${COLOR_GESTION[cat]}"></div><span style="font-size:11px;color:#666">${cat}</span></div>`
+  ).join('');
+  return `<div style="display:flex;gap:14px;margin-top:6px">${items}</div>`;
+}
+
+// --- A.4: tabla ranqueada de problemas, descendente por % actual. Acá "subir es
+// malo" (más gente señalando un problema es peor), a diferencia de los indicadores
+// de A.2 — de ahí invertir:true. Se omiten problemas en 0% en todas las rondas. ---
+function htmlTablaProblemasEvolucion(rondas) {
+  const categorias = Array.from(new Set(rondas.flatMap(r => Object.keys(r.preguntas?.['Problemas principales'] || {}))));
+  const filas = categorias
+    .map(cat => ({
+      cat,
+      datos: rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.['Problemas principales']?.[cat] })).filter(d => d.valor != null),
+    }))
+    .filter(f => f.datos.length > 0 && f.datos.some(d => d.valor > 0))
+    .sort((a, b) => b.datos[b.datos.length - 1].valor - a.datos[a.datos.length - 1].valor);
+
+  if (filas.length === 0) return `<p style="font-size:12px;color:#999">Sin datos de problemas.</p>`;
+
+  const filasHtml = filas.map(f => {
+    const actual = f.datos[f.datos.length - 1].valor;
+    const delta = f.datos.length >= 2 ? actual - f.datos[0].valor : null;
+    const sparkHtml = f.datos.length >= 2 ? svgSparklineFechas(f.datos, { width: 110, height: 30 }) : '';
+    return `<tr>
+      <td style="padding:8px;border-top:1px solid #e0e0e0">${f.cat}</td>
+      <td style="padding:8px;border-top:1px solid #e0e0e0;text-align:right"><strong>${actual.toFixed(1)}%</strong></td>
+      <td style="padding:8px;border-top:1px solid #e0e0e0;text-align:right">${htmlDeltaBadge(delta, { invertir: true })}</td>
+      <td style="padding:8px;border-top:1px solid #e0e0e0;text-align:center">${sparkHtml}</td>
+    </tr>`;
+  }).join('');
+
+  return `<table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr>
+      <th style="padding:8px;text-align:left;background:#f5f5f5;font-weight:500">Problema</th>
+      <th style="padding:8px;text-align:right;background:#f5f5f5;font-weight:500">% actual</th>
+      <th style="padding:8px;text-align:right;background:#f5f5f5;font-weight:500">Δ vs 1ª ronda</th>
+      <th style="padding:8px;text-align:center;background:#f5f5f5;font-weight:500">Evolución</th>
+    </tr></thead>
+    <tbody>${filasHtml}</tbody>
+  </table>`;
+}
+
+// Cuerpo completo de la vista Comparativo — única función de generación, reusada
+// tal cual por ComparativoEncuesta (pantalla, vía dangerouslySetInnerHTML) y por
+// htmlEncuestasComparativoPDF (impresión), para no duplicar este markup entre las dos.
+function htmlComparativoEncuestaBody(encuesta, umbral) {
+  const rondas = encuesta.rondas;
+  return `
+    ${htmlResumenVariacionesProblemas(rondas, umbral)}
+    <div style="margin-bottom:24px">
+      <h4 style="font-size:13px;color:#666;margin-bottom:12px;font-weight:500">Indicadores</h4>
+      ${htmlGridIndicadores(rondas)}
+    </div>
+    <div style="margin-bottom:24px">
+      <h4 style="font-size:13px;color:#666;margin-bottom:12px;font-weight:500">Calificación de gestión</h4>
+      ${htmlMiniPendientesGestion(rondas)}
+      ${htmlLegendGestion()}
+    </div>
+    <div>
+      <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Principales problemas — evolución</h4>
+      ${htmlTablaProblemasEvolucion(rondas)}
+    </div>
+  `;
+}
+
+const ComparativoEncuesta = ({ encuesta, umbral }) => (
+  <div dangerouslySetInnerHTML={{ __html: htmlComparativoEncuestaBody(encuesta, umbral) }} />
+);
 
 const SolapaEncuestas = ({ encuesta, metadata }) => {
   const [rondaIdx, setRondaIdx] = useState(encuesta.rondas.length - 1);
@@ -2003,33 +2033,84 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
   );
 };
 
-// Selector previo a exportar la ficha de un circuito: qué barrios llevan su propia
-// sección en el PDF (además del circuito, que siempre se incluye). Mismos datos que la
-// tabla "Barrios del circuito" de la solapa Territorio, pero ordenados por población
-// (no por orden_importancia) y con el principal premarcado.
-const DialogExportBarrios = ({ datosCircuito, dialog, onToggle, onExportar, onCancelar }) => {
+// Diálogo unificado "Opciones de exportación" previo a exportar la ficha de un
+// circuito: sección "Barrios" (qué barrios llevan su propia sección en el PDF,
+// además del circuito que siempre se incluye) + sección "Encuestas" (qué rondas/vista
+// de encuesta incluir — solo visible con 2+ rondas). Datos de barrios: mismos que la
+// tabla "Barrios del circuito" de la solapa Territorio, ordenados por población (no
+// por orden_importancia) y con el principal premarcado.
+const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBarrio, onSetModoEncuestas, onToggleRonda, onExportar, onCancelar }) => {
   if (!dialog) return null;
-  const { barrios, seleccionados } = dialog;
-  const totalSecciones = seleccionados.size + 1;
+  const { barrios, seleccionados, principalNorm, modoEncuestas, rondasSeleccionadas } = dialog;
+  const cantidadBarrios = seleccionados.size;
+  const textoBoton = cantidadBarrios === 0
+    ? 'Exportar circuito'
+    : `Exportar circuito + ${cantidadBarrios} barrio${cantidadBarrios !== 1 ? 's' : ''}`;
+  const rondas = encuestaCircuito?.rondas || [];
+  const mostrarSeccionEncuestas = rondas.length >= 2;
+
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
-        <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Exportar ficha — Circuito {datosCircuito.CircuitoKey}</h2>
-        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '16px' }}>El circuito siempre se incluye. Elegí qué barrios llevan además su propia sección completa.</p>
-        <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px' }}>
-          {barrios.length === 0 ? (
-            <div style={{ padding: '14px', fontSize: '13px', color: 'var(--text-tertiary)' }}>Sin barrios registrados para este circuito.</div>
-          ) : barrios.map((b, i) => (
-            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', fontSize: '13px', cursor: 'pointer', backgroundColor: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)' }}>
-              <input type="checkbox" checked={seleccionados.has(b.nombre)} onChange={() => onToggle(b.nombre)} />
-              <span style={{ flex: 1, color: 'var(--text-primary)' }}>{b.nombre}</span>
-              <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>{b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</span>
-            </label>
-          ))}
+      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Opciones de exportación — Circuito {datosCircuito.CircuitoKey}</h2>
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '18px' }}>El circuito siempre se incluye en el PDF.</p>
+
+        <div style={{ marginBottom: '20px' }}>
+          <h3 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Barrios</h3>
+          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Elegí qué barrios llevan además su propia sección completa.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
+            {barrios.length === 0 ? (
+              <div style={{ padding: '14px', fontSize: '13px', color: 'var(--text-tertiary)' }}>Sin barrios registrados para este circuito.</div>
+            ) : barrios.map((b, i) => {
+              const esPrincipal = principalNorm != null && normalizarNombreBarrio(b.nombre) === principalNorm;
+              return (
+                <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', fontSize: '13px', cursor: 'pointer', backgroundColor: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)' }}>
+                  <input type="checkbox" checked={seleccionados.has(b.nombre)} onChange={() => onToggleBarrio(b.nombre)} />
+                  <span style={{ flex: 1, color: 'var(--text-primary)' }}>
+                    {b.nombre}
+                    {esPrincipal && <span style={{ color: 'var(--text-tertiary)', fontWeight: 400 }}> (barrio principal)</span>}
+                  </span>
+                  <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>{b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</span>
+                </label>
+              );
+            })}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+
+        {mostrarSeccionEncuestas && (
+          <div style={{ marginBottom: '8px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+            <h3 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Encuestas</h3>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>El circuito tiene {rondas.length} rondas. Elegí qué incluir en el PDF.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                <input type="radio" name="modoEncuestasExport" checked={modoEncuestas === 'ultima'} onChange={() => onSetModoEncuestas('ultima')} />
+                Última ronda
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                <input type="radio" name="modoEncuestasExport" checked={modoEncuestas === 'elegir'} onChange={() => onSetModoEncuestas('elegir')} />
+                Elegir rondas
+              </label>
+              {modoEncuestas === 'elegir' && (
+                <div style={{ marginLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px', padding: '8px 0' }}>
+                  {rondas.map((r, i) => (
+                    <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={rondasSeleccionadas.has(i)} onChange={() => onToggleRonda(i)} />
+                      {formatearFecha(r.fecha)}
+                    </label>
+                  ))}
+                </div>
+              )}
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                <input type="radio" name="modoEncuestasExport" checked={modoEncuestas === 'comparativo'} onChange={() => onSetModoEncuestas('comparativo')} />
+                Comparativo
+              </label>
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
           <button onClick={onCancelar} style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-secondary)' }}>Cancelar</button>
-          <button onClick={onExportar} style={{ padding: '9px 16px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>📄 Exportar ({totalSecciones} secci{totalSecciones !== 1 ? 'ones' : 'ón'})</button>
+          <button onClick={onExportar} style={{ padding: '9px 16px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>📄 {textoBoton}</button>
         </div>
       </div>
     </div>
@@ -2516,17 +2597,10 @@ function htmlGaugeAprobacionPDF(label, data, delta) {
 }
 function htmlBarraCategoriasPDF(label, data, delta) {
   if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
-  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
-  const segmentos = categorias.map(cat => {
-    const v = data[cat];
-    if (!v || v <= 0) return '';
-    const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
-    return `<div style="width:${v}%;background:${COLOR_GESTION[cat]};display:flex;align-items:center;justify-content:center">${texto}</div>`;
-  }).join('');
   const deltaHtml = delta != null ? `<span class="${delta > 0 ? 'green' : delta < 0 ? 'red' : ''}" style="font-weight:600">${delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} ${delta > 0 ? '+' : ''}${delta.toFixed(1)} pp</span>` : '';
   return `<div style="margin-bottom:10px">
     <div style="font-size:11px;color:#1a1a1a;margin-bottom:4px;display:flex;justify-content:space-between"><span>${label}</span>${deltaHtml}</div>
-    <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
+    ${htmlBarraSegmentosPDF(data, { height: 18 })}
   </div>`;
 }
 function htmlMejoraPDF(label, data, delta) {
@@ -2545,20 +2619,11 @@ function htmlMejoraPDF(label, data, delta) {
     <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
   </div>`;
 }
-function htmlEncuestasPDF(encuestaCircuito) {
-  if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
-    return `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
-  }
-  const rondas = encuestaCircuito.rondas;
-  const ultima = rondas[rondas.length - 1];
-  const preguntas = ultima.preguntas || {};
-  const comparativo = !!encuestaCircuito.tiene_comparativo && rondas.length >= 2;
-  const delta = (pregunta, categoria) => comparativo ? deltaEncuestaPDF(rondas, pregunta, categoria) : null;
-  const deltaMejora = (pregunta) => comparativo ? deltaMejoraPDF(rondas, pregunta) : null;
-
-  const problemas = preguntas['Problemas principales'] || {};
-  const topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
-
+// Cuerpo de UNA ronda (Aprobación/Gestión/Reelección/Funcionamiento/Alerta/Mejoras),
+// extraído de lo que antes era el cuerpo fijo de htmlEncuestasPDF, para poder
+// reusarlo tanto con delta (modo "Última ronda", comparando contra la 1ª) como sin
+// delta (modo "Elegir rondas", cada ronda mostrada de forma independiente).
+function htmlResumenRondaPDF(preguntas, delta, deltaMejora) {
   const aprobacion = ['Intendente', 'Gobernador', 'Presidente'].map(f => {
     const d = preguntas[`Aprobación ${f}`];
     return htmlGaugeAprobacionPDF(f, d, delta(`Aprobación ${f}`, 'Apruebo'));
@@ -2590,13 +2655,10 @@ function htmlEncuestasPDF(encuestaCircuito) {
     ['Ordenamiento naranjitas y limpiavidrios', 'Mejoras en ordenamiento naranjitas y limpiavidrios'],
   ].map(([nom, key]) => htmlMejoraPDF(nom, preguntas[key], deltaMejora(key))).join('');
 
+  const problemas = preguntas['Problemas principales'] || {};
+  const topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
   return `
-<div class="section">
-  <h3>Encuestas</h3>
-  <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
-    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${formatearFecha(ultima.fecha)}</div></div>
-    <div class="metric"><div class="metric-label">Cobertura</div><div class="metric-value" style="font-size:14px">${comparativo ? 'Con comparativo' : 'Ronda única'}</div></div>
-  </div>
   ${topProblemas.length > 0 ? `<div style="margin-bottom:16px"><table><thead><tr><th>Principales problemas</th><th class="text-right">%</th></tr></thead><tbody>${topProblemas.map(([nombre, pct]) => `<tr><td>${nombre}</td><td class="text-right"><strong>${pct.toFixed(1)}%</strong></td></tr>`).join('')}</tbody></table></div>` : ''}
 
   <div class="mini-title">Aprobación de gestión</div>
@@ -2615,8 +2677,63 @@ function htmlEncuestasPDF(encuestaCircuito) {
   ${cordobesesAlerta}
 
   <div class="mini-title">Mejoras percibidas (ronda actual)</div>
-  ${mejoras}
+  ${mejoras}`;
+}
+
+// Modo "Última ronda" del diálogo de export — comportamiento sin cambios respecto
+// al que existía antes de las 3 opciones de export: última ronda, con delta vs. la
+// 1ª si el circuito tiene comparativo.
+function htmlEncuestasPDF(encuestaCircuito) {
+  if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
+    return `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
+  }
+  const rondas = encuestaCircuito.rondas;
+  const ultima = rondas[rondas.length - 1];
+  const preguntas = ultima.preguntas || {};
+  const comparativo = !!encuestaCircuito.tiene_comparativo && rondas.length >= 2;
+  const delta = (pregunta, categoria) => comparativo ? deltaEncuestaPDF(rondas, pregunta, categoria) : null;
+  const deltaMejora = (pregunta) => comparativo ? deltaMejoraPDF(rondas, pregunta) : null;
+
+  return `
+<div class="section">
+  <h3>Encuestas</h3>
+  <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
+    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${formatearFecha(ultima.fecha)}</div></div>
+    <div class="metric"><div class="metric-label">Cobertura</div><div class="metric-value" style="font-size:14px">${comparativo ? 'Con comparativo' : 'Ronda única'}</div></div>
+  </div>
+  ${htmlResumenRondaPDF(preguntas, delta, deltaMejora)}
 </div>`;
+}
+
+// Modo "Elegir rondas" — una sección de encuesta completa por cada ronda elegida
+// (en el orden en que vienen los índices, ya ordenados cronológicamente por el
+// diálogo), cada una con su fecha como subtítulo y sin deltas (cada ronda se
+// muestra de forma independiente, no hay "ronda base" con la que compararlas).
+function htmlEncuestasElegirRondasPDF(encuestaCircuito, indicesRondas) {
+  const rondas = encuestaCircuito.rondas;
+  const seleccion = (indicesRondas || []).filter(i => rondas[i]);
+  if (seleccion.length === 0) {
+    return `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin rondas seleccionadas.</p></div>`;
+  }
+  const sinDelta = () => null;
+  return seleccion.map(i => {
+    const ronda = rondas[i];
+    return `
+<div class="section">
+  <h3>Encuestas</h3>
+  <div class="mini-title" style="margin-top:0">${formatearFecha(ronda.fecha)}</div>
+  ${htmlResumenRondaPDF(ronda.preguntas || {}, sinDelta, sinDelta)}
+</div>`;
+  }).join('');
+}
+
+// Modo "Comparativo" — misma vista (resumen + cards + barras apiladas + tabla) que
+// el bloque A en pantalla, generada por la misma función htmlComparativoEncuestaBody.
+function htmlEncuestasComparativoPDF(encuestaCircuito, umbral) {
+  if (!encuestaCircuito || encuestaCircuito.rondas.length < 2) {
+    return `<div class="section"><h3>Encuestas — Comparativo</h3><p style="color:#999;font-size:12px">Sin datos suficientes para comparar.</p></div>`;
+  }
+  return `<div class="section"><h3>Encuestas — Comparativo</h3>${htmlComparativoEncuestaBody(encuestaCircuito, umbral)}</div>`;
 }
 
 // Sección "barrio" del PDF (población, contexto político, barrios cercanos, visitas,
@@ -2768,7 +2885,7 @@ ${seccionBarrio}
 
 const generarFichaPDF = ({
   datos, barrios, partidos, padronTotal,
-  eventosPorCircuito, encuestaCircuito, encuestasData,
+  eventosPorCircuito, encuestaCircuito, encuestasData, encuestasMetadata,
   cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
   recorridosLookup, pautasBarriosData, obrasEnriquecidas,
   votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
@@ -2777,6 +2894,11 @@ const generarFichaPDF = ({
   // (puede ser [], uno, o varios). Sin este parámetro (llamador legado), se cae al
   // comportamiento de siempre: solo el barrio principal.
   nombresBarriosParaExportar,
+  // Sección "Encuestas" del diálogo de export: 'ultima' (default, comportamiento de
+  // siempre) | 'elegir' (una sección completa por ronda, ver rondasSeleccionadas) |
+  // 'comparativo' (vista comparativa del bloque A, en versión print).
+  modoEncuestas,
+  rondasSeleccionadas,
 }) => {
   const mapkey = datos.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
@@ -2795,8 +2917,16 @@ const generarFichaPDF = ({
   // --- Barrio principal del circuito (dirección inversa de resolverCircuitoPrincipalDeBarrio) ---
   const barrioPrincipal = resolverBarrioPrincipalDeCircuito(datos, cruceData, barriosGeoLookup);
 
-  // --- Encuestas del circuito: mismo criterio de agrupación que ResumenEncuesta en pantalla ---
-  const encuestaHtml = htmlEncuestasPDF(encuestaCircuito);
+  // --- Encuestas del circuito: mismo criterio de agrupación que ResumenEncuesta en pantalla.
+  // modoEncuestas viene del diálogo de export; sin dato (llamador legado) se cae al
+  // comportamiento de siempre (última ronda). ---
+  const umbralComparativo = encuestasMetadata?.umbral_variacion_pp ?? 2.5;
+  const encuestaHtml = (() => {
+    if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) return htmlEncuestasPDF(encuestaCircuito);
+    if (modoEncuestas === 'comparativo') return htmlEncuestasComparativoPDF(encuestaCircuito, umbralComparativo);
+    if (modoEncuestas === 'elegir') return htmlEncuestasElegirRondasPDF(encuestaCircuito, rondasSeleccionadas || []);
+    return htmlEncuestasPDF(encuestaCircuito);
+  })();
 
   const escuelasCircuitoHtml = INCLUIR_ESCUELAS_PDF ? `
 <div class="section">
@@ -2976,7 +3106,7 @@ export default function Home() {
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
   const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
-  const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre> } | null — selector de barrios antes de exportar la ficha de un circuito
+  const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre>, principalNorm, modoEncuestas, rondasSeleccionadas: Set<idx> } | null — diálogo de opciones de exportación de la ficha de un circuito
   const [solapaActivaBarrio, setSolapaActivaBarrio] = useState('resumen'); // estado de tabs separado del de circuito (evita choques de clave, ej. 'resumen'/'escuelas'/'obras' existen en los dos)
 
   useEffect(() => {
@@ -3242,7 +3372,9 @@ export default function Home() {
 
   // Arma la lista del diálogo con los mismos datos que la tabla "Barrios del circuito"
   // de Territorio, pero ordenados por población (no por orden_importancia) — el
-  // barrio principal viene premarcado.
+  // barrio principal viene premarcado. Si el circuito tiene encuesta con 2+ rondas,
+  // arranca con todas las rondas tildadas (para "Elegir rondas") y modo "Última ronda"
+  // por defecto (mismo comportamiento que antes de existir estas 3 opciones).
   const abrirSelectorExportCircuito = () => {
     if (!datosCircuito) return;
     const mapkey = datosCircuito.Mapkey;
@@ -3252,7 +3384,14 @@ export default function Home() {
     const seleccionados = new Set(
       barriosCircuitoOrdenados.filter(b => principalNorm && normalizarNombreBarrio(b.nombre) === principalNorm).map(b => b.nombre)
     );
-    setDialogExportCircuito({ barrios: barriosCircuitoOrdenados, seleccionados });
+    const cantidadRondas = encuestaCircuito?.cantidad_rondas || 0;
+    setDialogExportCircuito({
+      barrios: barriosCircuitoOrdenados,
+      seleccionados,
+      principalNorm,
+      modoEncuestas: 'ultima',
+      rondasSeleccionadas: new Set(Array.from({ length: cantidadRondas }, (_, i) => i)),
+    });
   };
 
   const toggleBarrioExportCircuito = (nombre) => {
@@ -3264,17 +3403,32 @@ export default function Home() {
     });
   };
 
+  const setModoEncuestasExportCircuito = (modo) => {
+    setDialogExportCircuito(prev => prev ? { ...prev, modoEncuestas: modo } : prev);
+  };
+
+  const toggleRondaExportCircuito = (idx) => {
+    setDialogExportCircuito(prev => {
+      if (!prev) return prev;
+      const rondasSeleccionadas = new Set(prev.rondasSeleccionadas);
+      if (rondasSeleccionadas.has(idx)) rondasSeleccionadas.delete(idx); else rondasSeleccionadas.add(idx);
+      return { ...prev, rondasSeleccionadas };
+    });
+  };
+
   // Cero barrios marcados = solo la parte de circuito (generarFichaPDF no agrega
   // ninguna sección de barrio); varios marcados = una sección por cada uno, en orden.
   const confirmarExportCircuito = () => {
     if (!datosCircuito || !dialogExportCircuito) return;
     const html = generarFichaPDF({
       datos: datosCircuito, barrios, partidos, padronTotal,
-      eventosPorCircuito, encuestaCircuito, encuestasData,
+      eventosPorCircuito, encuestaCircuito, encuestasData, encuestasMetadata,
       cruceData, barriosGeoLookup, barriosGeoData, poblacionTotalPorBarrio,
       recorridosLookup, pautasBarriosData, obrasEnriquecidas,
       votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
       nombresBarriosParaExportar: Array.from(dialogExportCircuito.seleccionados),
+      modoEncuestas: dialogExportCircuito.modoEncuestas,
+      rondasSeleccionadas: Array.from(dialogExportCircuito.rondasSeleccionadas).sort((a, b) => a - b),
     });
     abrirVentanaImpresion(html);
     setDialogExportCircuito(null);
@@ -3297,10 +3451,13 @@ export default function Home() {
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
       <ModalObra obra={obraSeleccionada} onClose={() => setObraSeleccionada(null)} onSelectObra={setObraSeleccionada} obrasEnriquecidas={obrasEnriquecidas} />
       {datosCircuito && (
-        <DialogExportBarrios
+        <DialogExportFicha
           datosCircuito={datosCircuito}
           dialog={dialogExportCircuito}
-          onToggle={toggleBarrioExportCircuito}
+          encuestaCircuito={encuestaCircuito}
+          onToggleBarrio={toggleBarrioExportCircuito}
+          onSetModoEncuestas={setModoEncuestasExportCircuito}
+          onToggleRonda={toggleRondaExportCircuito}
           onExportar={confirmarExportCircuito}
           onCancelar={() => setDialogExportCircuito(null)}
         />
