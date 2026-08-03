@@ -45,8 +45,11 @@ const FILL_OPACITY_CIRCUITO_ATENUADO = 0.25;
 // determinado por el pane, no por el orden de montaje/activación de cada capa —
 // Circuitos y Barrios comparten "panePoligonos" (mismo comportamiento entre sí que
 // antes, dentro del mismo pane) y Obras/Pauta/Escuelas comparten "panePuntos", por
-// encima. tooltipPane (650) y popupPane (700) de Leaflet, sin tocar, ya quedan por
-// encima de ambos.
+// encima. tooltipPane (650) y popupPane (700) de Leaflet quedan por encima de ambos
+// SIEMPRE QUE los <Popup> no hereden el pane del <Pane> que los contiene: react-leaflet
+// propaga el nombre del Pane ambiente a cualquier <Popup>/<Tooltip> hijo que no fije su
+// propio prop "pane" (ver @react-leaflet/core withPane), así que cada <Popup> dentro de
+// PANE_PUNTOS necesita pane="popupPane" explícito o termina renderizando a z-index 450.
 const PANE_POLIGONOS = 'panePoligonos';
 const PANE_PUNTOS = 'panePuntos';
 
@@ -531,7 +534,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
           })}
           {capasActivas.pauta && pautaBarrioMarkers.map((m) => (
             <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={m.tieneActiva ? iconoPautaActiva : iconoPautaFinalizada}>
-              <Popup offset={[0, -8]}>
+              <Popup offset={[0, -8]} pane="popupPane">
                 <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600,
@@ -579,7 +582,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                   fillOpacity: 0.9,
                 }}
               >
-                <Popup offset={[0, -6]}>
+                <Popup offset={[0, -6]} pane="popupPane">
                   <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '230px' }}>
                     <strong style={{ fontSize: '13px' }}>{esc.nombre}</strong>
                     <div style={{ fontSize: '12px', color: '#666', marginTop: '3px' }}>{esc.barrio}</div>
