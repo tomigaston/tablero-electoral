@@ -160,6 +160,10 @@ const InfoModal = ({ isOpen, onClose }) => {
 
 const formatPct = (val) => val != null ? `${(val * 100).toFixed(1)}%` : '—';
 const formatPP = (val) => val != null ? `${val > 0 ? '+' : ''}${(val * 100).toFixed(1)} pp` : '—';
+// Fecha de una ronda de encuesta + su "n" (cantidad de encuestados) cuando está
+// disponible — casos es number | null; null (o el campo ausente en rondas viejas)
+// se trata como dato ausente, nunca como 0, así que se omite el "n=" en ese caso.
+const formatearFechaRonda = (fecha, casos) => `${formatearFecha(fecha)}${casos != null ? ` · n=${casos}` : ''}`;
 const getNumeroBase = (circuitoKey) => {
   if (!circuitoKey) return '';
   return String(circuitoKey).replace(/[A-Za-z]/g, '');
@@ -1450,7 +1454,7 @@ function htmlGridIndicadores(rondas) {
 // Resumen), apiladas verticalmente; delta de "Positiva" (1ª→última) como badge del bloque. ---
 function htmlMiniPendienteGestion(funcionario, rondas) {
   const pregunta = `Gestión del ${funcionario}`;
-  const filas = rondas.map(r => ({ fecha: r.fecha, data: r.preguntas?.[pregunta] })).filter(f => f.data);
+  const filas = rondas.map(r => ({ fecha: r.fecha, casos: r.casos, data: r.preguntas?.[pregunta] })).filter(f => f.data);
   if (filas.length === 0) {
     return `<div style="margin-bottom:16px"><div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div><p style="font-size:12px;color:#999">Sin dato.</p></div>`;
   }
@@ -1458,7 +1462,7 @@ function htmlMiniPendienteGestion(funcionario, rondas) {
   const delta = positivas.length >= 2 ? positivas[positivas.length - 1] - positivas[0] : null;
   const filasHtml = filas.map(f => `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <span style="width:82px;flex-shrink:0;font-size:11px;color:#999">${formatearFecha(f.fecha)}</span>
+      <span style="width:130px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
       <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22 })}</div>
     </div>`).join('');
   return `<div style="margin-bottom:16px">
@@ -1556,12 +1560,12 @@ const SolapaEncuestas = ({ encuesta, metadata }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
-          {vista === 'resumen' ? `Encuesta · ${formatearFecha(ronda.fecha)}` : 'Comparativo entre rondas'}
+          {vista === 'resumen' ? `Encuesta · ${formatearFechaRonda(ronda.fecha, ronda.casos)}` : 'Comparativo entre rondas'}
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {vista === 'resumen' && encuesta.rondas.length > 1 && (
             <select value={rondaIdx} onChange={(e) => setRondaIdx(Number(e.target.value))} style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '12px', backgroundColor: '#fff' }}>
-              {encuesta.rondas.map((r, i) => <option key={i} value={i}>{formatearFecha(r.fecha)}</option>)}
+              {encuesta.rondas.map((r, i) => <option key={i} value={i}>{formatearFechaRonda(r.fecha, r.casos)}</option>)}
             </select>
           )}
           {encuesta.tiene_comparativo && (
@@ -2698,7 +2702,7 @@ function htmlEncuestasPDF(encuestaCircuito) {
 <div class="section">
   <h3>Encuestas</h3>
   <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
-    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${formatearFecha(ultima.fecha)}</div></div>
+    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${formatearFechaRonda(ultima.fecha, ultima.casos)}</div></div>
     <div class="metric"><div class="metric-label">Cobertura</div><div class="metric-value" style="font-size:14px">${comparativo ? 'Con comparativo' : 'Ronda única'}</div></div>
   </div>
   ${htmlResumenRondaPDF(preguntas, delta, deltaMejora)}
@@ -2721,7 +2725,7 @@ function htmlEncuestasElegirRondasPDF(encuestaCircuito, indicesRondas) {
     return `
 <div class="section">
   <h3>Encuestas</h3>
-  <div class="mini-title" style="margin-top:0">${formatearFecha(ronda.fecha)}</div>
+  <div class="mini-title" style="margin-top:0">${formatearFechaRonda(ronda.fecha, ronda.casos)}</div>
   ${htmlResumenRondaPDF(ronda.preguntas || {}, sinDelta, sinDelta)}
 </div>`;
   }).join('');
