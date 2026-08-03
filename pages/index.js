@@ -2807,7 +2807,7 @@ ${INCLUIR_ESCUELAS_PDF ? `<div class="section"><h3>Votos por escuela</h3>${htmlE
 // consistentes con el resto de la ficha.
 function estilosFichaPDF() {
   return `
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:30px;max-width:850px;margin:0 auto;color:#1a1a1a;font-size:13px}
 .header{border-bottom:3px solid #1976D2;padding-bottom:16px;margin-bottom:24px}
 .header h1{font-size:24px;font-weight:700}
