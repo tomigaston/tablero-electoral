@@ -1780,7 +1780,7 @@ const ResumenCircuitoMini = ({ datos, padronTotal, encuestasData }) => {
           <BadgeCobertura encuestado={!!cobertura?.encuestado} />
           {cobertura?.encuestado && (
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '6px' }}>
-              {cobertura.cantidad_rondas} ronda{cobertura.cantidad_rondas !== 1 ? 's' : ''}: {(cobertura.fechas_rondas || []).join(', ')}
+              {cobertura.cantidad_rondas} ronda{cobertura.cantidad_rondas !== 1 ? 's' : ''}: {(cobertura.fechas_rondas || []).map(formatearFecha).join(', ')}
             </div>
           )}
         </div>

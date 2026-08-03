@@ -114,6 +114,13 @@ function formatNivelEscuela(nivelRaw) {
   return nivelRaw;
 }
 
+// Mismas 3 categorías que la leyenda de Escuelas: sirve tanto para elegir color/estilo
+// del marker como para el filtro por click (setFiltroTipoEscuela).
+function tipoEscuela(esc) {
+  if (!esc.es_centro_votacion) return 'sin_votacion';
+  return esc.confianza === 'pendiente_revision' ? 'pendiente_revision' : 'centro_votacion';
+}
+
 function MapController({ mapkeySeleccionado, geoJsonData, zoomBarrioSolicitado, barriosGeoData, barriosVisible }) {
   const map = useMap();
   const ultimoZoomBarrioRef = useRef(null);
@@ -223,6 +230,12 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
   // "Finalizado — Inaugurable" mientras se está parado en una ficha) — por eso vive local
   // y no se resetea en navegación.
   const [filtroEstadoObra, setFiltroEstadoObra] = useState(null);
+  // Mismo criterio que filtroEstadoObra: filtro local (no lifted), sigue teniendo
+  // sentido con un circuito/barrio enfocado y no se resetea en navegación.
+  const [filtroTipoEscuela, setFiltroTipoEscuela] = useState(null);
+  // Mismo criterio que filtroEstadoObra/filtroTipoEscuela: filtro local (no lifted),
+  // sigue teniendo sentido con un circuito/barrio enfocado y no se resetea en navegación.
+  const [filtroTipoPauta, setFiltroTipoPauta] = useState(null);
 
   const geoJsonData = useMemo(() => {
     if (!geoData) return null;
@@ -449,23 +462,48 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
         </label>
       </div>
 
+      {capasActivas.pauta && (
+        <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Pauta (click para filtrar)</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {[
+              { tipo: 'activa', color: COLOR_PAUTA, label: 'Pauta activa' },
+              { tipo: 'finalizada', color: COLOR_PAUTA_FINALIZADA, label: 'Pauta expirada' },
+            ].map(({ tipo, color, label }) => (
+              <div
+                key={tipo}
+                onClick={() => setFiltroTipoPauta(filtroTipoPauta === tipo ? null : tipo)}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: filtroTipoPauta === tipo ? `${color}20` : 'transparent', border: filtroTipoPauta === tipo ? `1px solid ${color}` : '1px solid transparent' }}
+              >
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: color, border: '1px solid #fff', boxShadow: `0 0 0 1px ${color}`, flexShrink: 0 }} />
+                <span style={{ fontSize: '9px', color: '#546E7A' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+          {filtroTipoPauta && <button onClick={() => setFiltroTipoPauta(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
+        </div>
+      )}
+
       {capasActivas.escuelas && (
         <div style={{ position: 'absolute', bottom: '10px', left: '210px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '190px' }}>
-          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Escuelas</div>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Escuelas (click para filtrar)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_ESCUELA_CENTRO_VOTACION, border: '1px solid #fff', boxShadow: '0 0 0 1px ' + COLOR_ESCUELA_CENTRO_VOTACION, flexShrink: 0 }} />
-              <span style={{ fontSize: '9px', color: '#546E7A' }}>Centro de votación</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_ESCUELA_CENTRO_VOTACION, border: `1.5px dashed ${COLOR_BORDE_PENDIENTE_REVISION}`, flexShrink: 0 }} />
-              <span style={{ fontSize: '9px', color: '#546E7A' }}>Match pendiente de revisión</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_ESCUELA_SIN_VOTACION, border: '1px solid #fff', boxShadow: '0 0 0 1px ' + COLOR_ESCUELA_SIN_VOTACION, flexShrink: 0 }} />
-              <span style={{ fontSize: '9px', color: '#546E7A' }}>Escuela sin centro de votación</span>
-            </div>
+            {[
+              { tipo: 'centro_votacion', label: 'Centro de votación', color: COLOR_ESCUELA_CENTRO_VOTACION, dot: { backgroundColor: COLOR_ESCUELA_CENTRO_VOTACION, border: '1px solid #fff', boxShadow: '0 0 0 1px ' + COLOR_ESCUELA_CENTRO_VOTACION } },
+              { tipo: 'pendiente_revision', label: 'Match pendiente de revisión', color: COLOR_BORDE_PENDIENTE_REVISION, dot: { backgroundColor: COLOR_ESCUELA_CENTRO_VOTACION, border: `1.5px dashed ${COLOR_BORDE_PENDIENTE_REVISION}` } },
+              { tipo: 'sin_votacion', label: 'Escuela sin centro de votación', color: COLOR_ESCUELA_SIN_VOTACION, dot: { backgroundColor: COLOR_ESCUELA_SIN_VOTACION, border: '1px solid #fff', boxShadow: '0 0 0 1px ' + COLOR_ESCUELA_SIN_VOTACION } },
+            ].map(({ tipo, label, color, dot }) => (
+              <div
+                key={tipo}
+                onClick={() => setFiltroTipoEscuela(filtroTipoEscuela === tipo ? null : tipo)}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: filtroTipoEscuela === tipo ? `${color}20` : 'transparent', border: filtroTipoEscuela === tipo ? `1px solid ${color}` : '1px solid transparent' }}
+              >
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0, ...dot }} />
+                <span style={{ fontSize: '9px', color: '#546E7A' }}>{label}</span>
+              </div>
+            ))}
           </div>
+          {filtroTipoEscuela && <button onClick={() => setFiltroTipoEscuela(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
         </div>
       )}
 
@@ -488,7 +526,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
         </div>
       )}
 
-      {coloresCategoria && (
+      {capasActivas.circuitos && coloresCategoria && (
         <div style={{ position: 'absolute', bottom: '10px', left: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '190px' }}>
           <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Leyenda (click para filtrar)</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px' }}>
@@ -532,8 +570,12 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
               />
             );
           })}
-          {capasActivas.pauta && pautaBarrioMarkers.map((m) => (
-            <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={m.tieneActiva ? iconoPautaActiva : iconoPautaFinalizada}>
+          {capasActivas.pauta && pautaBarrioMarkers.map((m) => {
+            // Mismo criterio de aislar/restaurar que filtroEstadoObra/filtroTipoEscuela:
+            // se atenúa (no se oculta) lo que no matchea el filtro activo.
+            const isFiltered = filtroTipoPauta && (filtroTipoPauta === 'activa') !== m.tieneActiva;
+            return (
+            <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={m.tieneActiva ? iconoPautaActiva : iconoPautaFinalizada} opacity={isFiltered ? 0.25 : 1}>
               <Popup offset={[0, -8]} pane="popupPane">
                 <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
                   <div style={{
@@ -565,10 +607,14 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                 </div>
               </Popup>
             </Marker>
-          ))}
+            );
+          })}
           {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
             const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
             const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
+            // Mismo criterio de aislar/restaurar que filtroEstadoObra usa para Obras
+            // (fillOpacity 0.15 / opacity 0.3 para lo que no matchea el filtro activo).
+            const isFiltered = filtroTipoEscuela && tipoEscuela(esc) !== filtroTipoEscuela;
             return (
               <CircleMarker
                 key={`escuela-${esc.cue}`}
@@ -579,7 +625,8 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                   weight: pendienteRevision ? 1.5 : 1,
                   dashArray: pendienteRevision ? '2,2' : null,
                   fillColor: colorRelleno,
-                  fillOpacity: 0.9,
+                  fillOpacity: isFiltered ? 0.15 : 0.9,
+                  opacity: isFiltered ? 0.3 : 1,
                 }}
               >
                 <Popup offset={[0, -6]} pane="popupPane">
