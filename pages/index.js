@@ -75,6 +75,24 @@ const Badge = ({ categoria, tipo = 'v4' }) => {
   );
 };
 
+// Ícono de tendencia (círculo relleno + glifo blanco) que reemplaza los símbolos
+// Unicode ✓/○/✗ del insight de "Tendencias del circuito" — esos caracteres no
+// renderizan bien en todas las fuentes/plataformas. 3 variantes según nivel:
+// 'positivo' (check), 'neutro' (guion), 'negativo' (cruz). Mismo criterio de "SVG a
+// mano, sin librería de íconos" que crearIconoPautaEstrella en MapaCircuitos.js.
+const COLOR_ICONO_TENDENCIA = { positivo: '#2E7D32', neutro: '#F57F17', negativo: '#C62828' };
+const IconoTendencia = ({ nivel, size = 16 }) => {
+  const color = COLOR_ICONO_TENDENCIA[nivel] || '#9E9E9E';
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
+      <circle cx="8" cy="8" r="8" fill={color} />
+      {nivel === 'positivo' && <path d="M4.5 8.3L6.8 10.8L11.5 5.3" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />}
+      {nivel === 'neutro' && <line x1="4.5" y1="8" x2="11.5" y2="8" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />}
+      {nivel === 'negativo' && <path d="M5 5L11 11M11 5L5 11" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />}
+    </svg>
+  );
+};
+
 // Mismo criterio de estado (activa/finalizada/sin_pauta) que calcularCoberturaBarrio —
 // usado en la tabla "Barrios del circuito" para que la columna Pauta se lea a simple
 // vista sin abrir la ficha del barrio.
@@ -793,7 +811,10 @@ const SolapaComparativas = ({ circuito, datos }) => {
           <div style={{ padding: '10px 14px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Evolución Llaryora</div><Badge categoria={datos.Categoria_ML} tipo="ml" /></div>
           <div style={{ padding: '10px 14px', backgroundColor: 'var(--bg-primary)', borderRadius: '10px' }}><div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Efecto legislativo</div><span style={{ fontSize: '13px', fontWeight: 600, color: datos.Sch_Mejoro ? '#2E7D32' : '#C62828' }}>{datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'} ({formatPP(datos.Sch_Efecto)})</span></div>
         </div>
-        <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>{datos.Victorias_Total >= 3 ? '✓' : datos.Victorias_Total >= 2 ? '○' : '✗'} {datos.Victorias_Total >= 3 ? 'Circuito sólido para el oficialismo' : datos.Victorias_Total >= 2 ? 'Circuito con potencial de recuperación' : 'Circuito difícil, requiere estrategia específica'}</div>
+        <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <IconoTendencia nivel={datos.Victorias_Total >= 3 ? 'positivo' : datos.Victorias_Total >= 2 ? 'neutro' : 'negativo'} />
+          <span>{datos.Victorias_Total >= 3 ? 'Circuito sólido para el oficialismo' : datos.Victorias_Total >= 2 ? 'Circuito con potencial de recuperación' : 'Circuito difícil, requiere estrategia específica'}</span>
+        </div>
         <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>Ganó {datos.Victorias_Total}/4 elecciones. {datos.Crecio_vs_Capital ? 'Creció más que Capital con Llaryora.' : 'Creció menos que Capital con Llaryora.'} {datos.Sch_Mejoro ? 'Mejoró en legislativas.' : 'Empeoró en legislativas.'}</div>
       </div>
     </div>
@@ -2576,6 +2597,38 @@ function badgeDeltaPDF(delta) {
 function htmlMetricPDF(label, valor, delta) {
   return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value" style="font-size:18px">${valor}</div>${badgeDeltaPDF(delta)}</div>`;
 }
+// Mismo ícono (círculo relleno + glifo blanco) y mismo criterio de color por nivel
+// que IconoTendencia en pantalla (solapa Comparativas) — no es una versión distinta,
+// es el mismo dibujo, solo con colores fijos en vez de variables CSS.
+function htmlIconoTendenciaPDF(nivel) {
+  const color = { positivo: '#2E7D32', neutro: '#F57F17', negativo: '#C62828' }[nivel] || '#9E9E9E';
+  const glifo = nivel === 'positivo'
+    ? '<path d="M4.5 8.3L6.8 10.8L11.5 5.3" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />'
+    : nivel === 'negativo'
+    ? '<path d="M5 5L11 11M11 5L5 11" stroke="#fff" stroke-width="1.6" stroke-linecap="round" />'
+    : '<line x1="4.5" y1="8" x2="11.5" y2="8" stroke="#fff" stroke-width="1.8" stroke-linecap="round" />';
+  return `<svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0"><circle cx="8" cy="8" r="8" fill="${color}" />${glifo}</svg>`;
+}
+// Bloque "Tendencias del circuito" de la solapa Comparativas — mismo layout que en
+// pantalla (SolapaComparativas): 3 badges (Diagnóstico / Evolución Llaryora / Efecto
+// legislativo) + renglón de insight con ícono debajo. Antes no se exportaba al PDF.
+function htmlTendenciasCircuitoPDF(datos) {
+  const nivel = datos.Victorias_Total >= 3 ? 'positivo' : datos.Victorias_Total >= 2 ? 'neutro' : 'negativo';
+  const textoInsight = datos.Victorias_Total >= 3 ? 'Circuito sólido para el oficialismo' : datos.Victorias_Total >= 2 ? 'Circuito con potencial de recuperación' : 'Circuito difícil, requiere estrategia específica';
+  const catV4 = COLORES_CATEGORIA[datos.Categoria_v4] || { bg: '#9E9E9E', text: '#424242', label: datos.Categoria_v4 || '—' };
+  const catML = COLORES_ML[datos.Categoria_ML] || { bg: '#9E9E9E', text: '#424242', label: datos.Categoria_ML || '—' };
+  return `
+<div class="section" style="background:${datos.Victorias_Total >= 2 ? '#4CAF5012' : '#EF535012'};border:1px solid ${datos.Victorias_Total >= 2 ? '#4CAF5040' : '#EF535040'};border-radius:12px;padding:16px">
+  <h3>Tendencias del circuito</h3>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+    <div style="padding:10px 14px;background:#fff;border-radius:10px"><div style="font-size:12px;color:#666;margin-bottom:6px">Diagnóstico</div><span class="badge" style="background:${catV4.bg}22;color:${catV4.text}">${catV4.label}</span></div>
+    <div style="padding:10px 14px;background:#fff;border-radius:10px"><div style="font-size:12px;color:#666;margin-bottom:6px">Evolución Llaryora</div><span class="badge" style="background:${catML.bg}22;color:${catML.text}">${catML.label}</span></div>
+    <div style="padding:10px 14px;background:#fff;border-radius:10px"><div style="font-size:12px;color:#666;margin-bottom:6px">Efecto legislativo</div><span style="font-size:13px;font-weight:600" class="${datos.Sch_Mejoro ? 'green' : 'red'}">${datos.Sch_Mejoro ? 'MEJORÓ' : 'EMPEORÓ'} (${formatPP(datos.Sch_Efecto)})</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1a1a1a;font-weight:500">${htmlIconoTendenciaPDF(nivel)}<span>${textoInsight}</span></div>
+  <div style="font-size:13px;color:#666;margin-top:10px">Ganó ${datos.Victorias_Total}/4 elecciones. ${datos.Crecio_vs_Capital ? 'Creció más que Capital con Llaryora.' : 'Creció menos que Capital con Llaryora.'} ${datos.Sch_Mejoro ? 'Mejoró en legislativas.' : 'Empeoró en legislativas.'}</div>
+</div>`;
+}
 // Mismo gauge semáforo (SVG a mano) y mismo criterio de color por valor que
 // GaugeAprobacion en pantalla (solapa Encuestas) — no es una versión distinta, es el
 // mismo dibujo, solo con colores fijos en vez de variables CSS (el HTML del PDF no
@@ -3037,6 +3090,7 @@ ${poblacionCircuitoTotal > 0 ? `<p style="font-size:11px;color:#666;margin:-10px
     <div class="comp-box"><h4>Efecto Llaryora (Int.19→G.23)</h4><div class="comp-value ${datos.Efecto_ML >= 0 ? 'green' : 'red'}">${datos.Efecto_ML >= 0 ? '+' : ''}${datos.Efecto_ML.toFixed(1)} pp</div></div>
     <div class="comp-box"><h4>Efecto Legislativo (D.21→D.25)</h4><div class="comp-value ${datos.Sch_Efecto >= 0 ? 'green' : 'red'}">${datos.Sch_Efecto >= 0 ? '+' : ''}${(datos.Sch_Efecto * 100).toFixed(1)} pp</div></div>
   </div>
+  ${htmlTendenciasCircuitoPDF(datos)}
 </div>
 
 <div class="section">
