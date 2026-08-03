@@ -160,10 +160,10 @@ const InfoModal = ({ isOpen, onClose }) => {
 
 const formatPct = (val) => val != null ? `${(val * 100).toFixed(1)}%` : '—';
 const formatPP = (val) => val != null ? `${val > 0 ? '+' : ''}${(val * 100).toFixed(1)} pp` : '—';
-// Fecha de una ronda de encuesta + su "n" (cantidad de encuestados) cuando está
+// Fecha de una ronda de encuesta + su cantidad de encuestados cuando está
 // disponible — casos es number | null; null (o el campo ausente en rondas viejas)
-// se trata como dato ausente, nunca como 0, así que se omite el "n=" en ese caso.
-const formatearFechaRonda = (fecha, casos) => `${formatearFecha(fecha)}${casos != null ? ` · n=${casos}` : ''}`;
+// se trata como dato ausente, nunca como 0, así que se omite "Respuestas" en ese caso.
+const formatearFechaRonda = (fecha, casos) => `${formatearFecha(fecha)}${casos != null ? ` · Respuestas: ${casos}` : ''}`;
 const getNumeroBase = (circuitoKey) => {
   if (!circuitoKey) return '';
   return String(circuitoKey).replace(/[A-Za-z]/g, '');
@@ -1462,7 +1462,7 @@ function htmlMiniPendienteGestion(funcionario, rondas) {
   const delta = positivas.length >= 2 ? positivas[positivas.length - 1] - positivas[0] : null;
   const filasHtml = filas.map(f => `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <span style="width:130px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
+      <span style="width:175px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
       <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22 })}</div>
     </div>`).join('');
   return `<div style="margin-bottom:16px">
