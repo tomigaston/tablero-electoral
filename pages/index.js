@@ -2078,11 +2078,11 @@ const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBa
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
         <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Opciones de exportación — Circuito {datosCircuito.CircuitoKey}</h2>
-        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '18px' }}>El circuito siempre se incluye en el PDF.</p>
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '18px' }}>El circuito se incluye siempre en el PDF. Además, podés sumar la ficha completa de barrios específicos.</p>
 
         <div style={{ marginBottom: '20px' }}>
           <h3 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Barrios</h3>
-          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Elegí qué barrios llevan además su propia sección completa.</p>
+          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Elegí qué barrios querés incluir con todo su detalle.</p>
           <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
             {barrios.length === 0 ? (
               <div style={{ padding: '14px', fontSize: '13px', color: 'var(--text-tertiary)' }}>Sin barrios registrados para este circuito.</div>
