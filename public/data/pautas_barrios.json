@@ -130,7 +130,7 @@
         "clics": 1362,
         "ctr": 0.180095,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'VILLA EL CHAPARRAL'"
+        "observaciones": "Barrio original: VILLA EL CHAPARRAL"
       }
     ]
   },
@@ -205,7 +205,7 @@
         "clics": 10,
         "ctr": 0.449375,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'SAN CARLOS DE HORIZONTE'"
+        "observaciones": "Barrio original: SAN CARLOS DE HORIZONTE"
       },
       {
         "fila_origen": 23,
@@ -225,7 +225,7 @@
         "clics": 1649,
         "ctr": 0.202624,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'SAN CARLOS DE HORIZONTE'"
+        "observaciones": "Barrio original: SAN CARLOS DE HORIZONTE"
       },
       {
         "fila_origen": 42,
@@ -245,7 +245,7 @@
         "clics": null,
         "ctr": 0.328343,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'PARQUE HORIZONTE'"
+        "observaciones": "Barrio original: PARQUE HORIZONTE"
       },
       {
         "fila_origen": 44,
@@ -265,7 +265,7 @@
         "clics": null,
         "ctr": 0.412655,
         "requiere_auditoria": false,
-        "observaciones": "Fila original multi-barrio ('PARQUE HORIZONTE'), repetida por barrio. Metricas duplicadas por fila, NO sumar entre barrios."
+        "observaciones": "Fila repetida por multi-barrio (Parque Horizonte/Irupé/Los Molinos); métricas duplicadas por fila, NO sumar entre barrios al totalizar"
       }
     ]
   },
@@ -290,7 +290,7 @@
         "clics": 5,
         "ctr": 0.206275,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'ARENALES'"
+        "observaciones": "Barrio original: ARENALES"
       },
       {
         "fila_origen": 18,
@@ -310,12 +310,12 @@
         "clics": 2,
         "ctr": 0.129183,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'ARENALES'"
+        "observaciones": "Barrio original: ARENALES"
       }
     ]
   },
   "ALTA CORDOBA": {
-    "total_pautas": 1,
+    "total_pautas": 2,
     "pautas": [
       {
         "fila_origen": 9,
@@ -334,6 +334,26 @@
         "tipo_presupuesto": "Total",
         "clics": 12,
         "ctr": 0.303598,
+        "requiere_auditoria": false,
+        "observaciones": null
+      },
+      {
+        "fila_origen": 55,
+        "codigo_anuncio": "CBACORCGU02575",
+        "nombre_anuncio": "CBACORCGU02575 - Barrio Alta Córdoba - SEGURIDAD - Agenda de Martín Acto de Lanzamiento de nuevos barrios que se suman a Cordobeses en Alerta  Alta Córdoba (Carrusel) - Agenda de Martín - A05937- Feed - C/D - Alcance con freq",
+        "circuito_electoral": "7B",
+        "fecha_creacion": "2026-07-31",
+        "fecha_finalizacion": "2026-08-10",
+        "alcance": 79640,
+        "frecuencia": 1.418973,
+        "impresiones": 113007,
+        "visualizaciones": 113388,
+        "cpm": 1531.428053,
+        "importe_gastado": 173062.09,
+        "presupuesto": 192000,
+        "tipo_presupuesto": "Total",
+        "clics": 333,
+        "ctr": 0.463688,
         "requiere_auditoria": false,
         "observaciones": null
       }
@@ -430,7 +450,7 @@
         "clics": 1,
         "ctr": 0.123306,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'VILLA ASPACIA'"
+        "observaciones": "Barrio original: VILLA ASPACIA"
       }
     ]
   },
@@ -455,7 +475,7 @@
         "clics": 7,
         "ctr": 0.813282,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'SAN ROQUE'"
+        "observaciones": "Barrio original: SAN ROQUE"
       }
     ]
   },
@@ -505,7 +525,7 @@
         "clics": 2,
         "ctr": 0.111566,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'VILLA 9 DE JULIO & VILLA SERRANA'"
+        "observaciones": "Barrio original: VILLA 9 DE JULIO & VILLA SERRANA"
       }
     ]
   },
@@ -530,7 +550,7 @@
         "clics": 2,
         "ctr": 0.111566,
         "requiere_auditoria": false,
-        "observaciones": "Barrio original: 'VILLA 9 DE JULIO & VILLA SERRANA'"
+        "observaciones": "Barrio original: VILLA 9 DE JULIO & VILLA SERRANA"
       }
     ]
   },
@@ -980,7 +1000,7 @@
         "clics": null,
         "ctr": 0.412655,
         "requiere_auditoria": false,
-        "observaciones": "Fila original multi-barrio ('PARQUE HORIZONTE'), repetida por barrio. Metricas duplicadas por fila, NO sumar entre barrios."
+        "observaciones": "Fila repetida por multi-barrio (Parque Horizonte/Irupé/Los Molinos); métricas duplicadas por fila, NO sumar entre barrios al totalizar"
       }
     ]
   },
@@ -1005,12 +1025,12 @@
         "clics": null,
         "ctr": 0.412655,
         "requiere_auditoria": false,
-        "observaciones": "Fila original multi-barrio ('PARQUE HORIZONTE'), repetida por barrio. Metricas duplicadas por fila, NO sumar entre barrios."
+        "observaciones": "Fila repetida por multi-barrio (Parque Horizonte/Irupé/Los Molinos); métricas duplicadas por fila, NO sumar entre barrios al totalizar"
       }
     ]
   },
   "LAS PALMAS": {
-    "total_pautas": 1,
+    "total_pautas": 2,
     "pautas": [
       {
         "fila_origen": 48,
@@ -1031,11 +1051,31 @@
         "ctr": 0.249626,
         "requiere_auditoria": false,
         "observaciones": null
+      },
+      {
+        "fila_origen": 53,
+        "codigo_anuncio": "CBACORCGU02582",
+        "nombre_anuncio": "CBACORCGU02582 - Barrio Las Palmas/30 a 65 años - Seguridad - Agenda de Martín Nuevos barrios que se suman a Cordobeses en Alerta Los Naranjos (VIDEO) - Agenda de Martín - A05944 - Reel - C/D - Alcance",
+        "circuito_electoral": "11C",
+        "fecha_creacion": "2026-07-31",
+        "fecha_finalizacion": "2026-08-10",
+        "alcance": 2194,
+        "frecuencia": 1.183227,
+        "impresiones": 2596,
+        "visualizaciones": 2787,
+        "cpm": 10137.569337,
+        "importe_gastado": 26317.13,
+        "presupuesto": 192000,
+        "tipo_presupuesto": "Total",
+        "clics": null,
+        "ctr": 0.154083,
+        "requiere_auditoria": false,
+        "observaciones": null
       }
     ]
   },
   "LOS NARANJOS": {
-    "total_pautas": 1,
+    "total_pautas": 2,
     "pautas": [
       {
         "fila_origen": 49,
@@ -1056,6 +1096,101 @@
         "ctr": 0.272982,
         "requiere_auditoria": false,
         "observaciones": null
+      },
+      {
+        "fila_origen": 52,
+        "codigo_anuncio": "CBACORCGU02581",
+        "nombre_anuncio": "CBACORCGU02581 - Barrio Los Naranjos/30 a 65 años - Seguridad - Agenda de Martín Nuevos barrios que se suman a Cordobeses en Alerta Las Palmas (VIDEO) - Agenda de Martín - A05943 - Reel - C/D - Alcance",
+        "circuito_electoral": "11D",
+        "fecha_creacion": "2026-07-31",
+        "fecha_finalizacion": "2026-08-10",
+        "alcance": 26924,
+        "frecuencia": 1.481801,
+        "impresiones": 39896,
+        "visualizaciones": 42585,
+        "cpm": 4371.080058,
+        "importe_gastado": 174388.61,
+        "presupuesto": 192000,
+        "tipo_presupuesto": "Total",
+        "clics": null,
+        "ctr": 0.365951,
+        "requiere_auditoria": false,
+        "observaciones": null
+      }
+    ]
+  },
+  "INAUDI": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 54,
+        "codigo_anuncio": "CBACORCGU02576",
+        "nombre_anuncio": "CBACORCGU02576 - Barrio Inaudi - SEGURIDAD - Agenda de Martín Acto de Lanzamiento de nuevos barrios que se suman a Cordobeses en Alerta  Inaudi (Carrusel) - Agenda de Martín - A05938- Feed - C/D - Alcance con freq",
+        "circuito_electoral": "4C",
+        "fecha_creacion": "2026-07-31",
+        "fecha_finalizacion": "2026-08-10",
+        "alcance": 15704,
+        "frecuencia": 1.404419,
+        "impresiones": 22055,
+        "visualizaciones": 22134,
+        "cpm": 1113.936976,
+        "importe_gastado": 24567.88,
+        "presupuesto": 109920,
+        "tipo_presupuesto": "Total",
+        "clics": 55,
+        "ctr": 0.448878,
+        "requiere_auditoria": false,
+        "observaciones": null
+      }
+    ]
+  },
+  "ARGUELLO": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 56,
+        "codigo_anuncio": "CBACORCGU02574",
+        "nombre_anuncio": "CBACORCGU02574 - Barrio Argüello - SEGURIDAD - Agenda de Martín Acto de Lanzamiento de nuevos barrios que se suman a Cordobeses en Alerta  Argüello (Carrusel) - Agenda de Martín - A05936 - Feed - C/D - Alcance con freq",
+        "circuito_electoral": "14",
+        "fecha_creacion": "2026-07-31",
+        "fecha_finalizacion": "2026-08-10",
+        "alcance": 41339,
+        "frecuencia": 1.399768,
+        "impresiones": 57865,
+        "visualizaciones": 58094,
+        "cpm": 2980.548518,
+        "importe_gastado": 172469.44,
+        "presupuesto": 192000,
+        "tipo_presupuesto": "Total",
+        "clics": 251,
+        "ctr": 0.532273,
+        "requiere_auditoria": false,
+        "observaciones": null
+      }
+    ]
+  },
+  "JARDIN ESPINOSA": {
+    "total_pautas": 1,
+    "pautas": [
+      {
+        "fila_origen": 57,
+        "codigo_anuncio": "CBACORCPE02610",
+        "nombre_anuncio": "CBACORCPE02610 - Barrio Córdoba Athletic/30 a 65 años - DEPORTES - Agenda de Martín Entrega de Elementos Deportivos en Club Athletic para la Selección Cordobesa de Hockey ID  Jardín Espinosa (Carrusel) - Agenda de Martín - A06003 - Feed - C/D - Alcance con freq",
+        "circuito_electoral": "4B",
+        "fecha_creacion": "2026-08-07",
+        "fecha_finalizacion": "2026-08-14",
+        "alcance": 135631,
+        "frecuencia": 1.375836,
+        "impresiones": 186606,
+        "visualizaciones": 186918,
+        "cpm": 445.970548,
+        "importe_gastado": 83220.78,
+        "presupuesto": 245760,
+        "tipo_presupuesto": "Total",
+        "clics": 356,
+        "ctr": 0.284557,
+        "requiere_auditoria": false,
+        "observaciones": "Barrio original: CORDOBA ATHLETIC"
       }
     ]
   }
