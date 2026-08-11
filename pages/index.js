@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
@@ -1571,8 +1571,16 @@ const ComparativoEncuesta = ({ encuesta, umbral }) => (
   <div dangerouslySetInnerHTML={{ __html: htmlComparativoEncuestaBody(encuesta, umbral) }} />
 );
 
-const SolapaEncuestas = ({ encuesta, metadata }) => {
-  const [rondaIdx, setRondaIdx] = useState(encuesta.rondas.length - 1);
+// fechaRondaInicial (opcional): pedido puntual de qué ronda mostrar al montar (ver
+// click en evento de Medición de TablaEventosCobertura, irACircuitoDesdeGrillaMedicion).
+// Sin ese pedido, o si la fecha no matchea ninguna ronda de ESTE circuito, se cae al
+// comportamiento de siempre (última ronda) — no rompe ningún otro caller.
+const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
+  const [rondaIdx, setRondaIdx] = useState(() => {
+    if (!fechaRondaInicial) return encuesta.rondas.length - 1;
+    const idx = encuesta.rondas.findIndex(r => r.fecha === fechaRondaInicial);
+    return idx >= 0 ? idx : encuesta.rondas.length - 1;
+  });
   const [vista, setVista] = useState('resumen');
   const ronda = encuesta.rondas[rondaIdx];
   const umbral = metadata?.umbral_variacion_pp ?? 2.5;
@@ -2295,52 +2303,103 @@ const PillFiltro = ({ activo, color, onClick, children }) => (
   </button>
 );
 
-const CeldaEvento = ({ evento }) => {
+// Agrupa eventos consecutivos del mismo circuito por tipo+fecha exacta (comparación de
+// string directa, ya alcanza porque esFechaValida ya validó "YYYY-MM-DD" al construirlos)
+// en un solo registro representativo (el primero del grupo, por orden cronológico) con
+// _grupo = [todos los eventos agrupados, incluido el representante]. El orden de
+// aparición sigue siendo el de "eventos" (ya viene ordenado por fecha desde
+// construirEventosPorCircuito) — Map preserva el orden de primera aparición de cada
+// clave tipo+fecha.
+function agruparEventosPorFechaYTipo(eventos) {
+  const indice = new Map();
+  const grupos = [];
+  eventos.forEach(e => {
+    const clave = `${e.tipo}|${e.fecha}`;
+    if (indice.has(clave)) {
+      grupos[indice.get(clave)]._grupo.push(e);
+    } else {
+      indice.set(clave, grupos.length);
+      grupos.push({ ...e, _grupo: [e] });
+    }
+  });
+  return grupos;
+}
+
+// Detalle de UN evento individual (usado tanto para una celda sin agrupar como para
+// cada entrada del tooltip de una celda agrupada) — mismo markup que ya mostraba
+// CeldaEvento antes de agrupar, solo extraído para no duplicarlo por cada item del grupo.
+const DetalleEventoCobertura = ({ evento }) => {
+  if (evento.tipo === 'medicion') {
+    return <div style={{ color: 'var(--text-secondary)' }}>Ronda {evento.detalle.ronda} de {evento.detalle.totalRondas}</div>;
+  }
+  if (evento.tipo === 'visita') {
+    return (
+      <>
+        <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Tipo: {evento.detalle.tipo_visita}</div>
+        <div style={{ color: 'var(--text-secondary)', marginBottom: '6px' }}>Contacto con vecinos: {evento.detalle.contacto_vecinos}</div>
+        {evento.detalle.info && <div style={{ color: 'var(--text-primary)', marginBottom: '6px' }}>{evento.detalle.info}</div>}
+        {evento.detalle.link && <a href={evento.detalle.link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver nota →</a>}
+      </>
+    );
+  }
+  return (
+    <>
+      <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>
+        {evento.detalle.nombre_anuncio}
+        {evento.detalle.requiere_auditoria && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309' }}>⚠ Pendiente de revisión</span>}
+      </div>
+      <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
+      <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.fecha_creacion)} → {formatearFecha(evento.detalle.fecha_finalizacion)}</div>
+      <div style={{ color: 'var(--text-secondary)' }}>
+        Alcance: {evento.detalle.alcance?.toLocaleString() ?? '—'} · Impresiones: {evento.detalle.impresiones?.toLocaleString() ?? '—'}
+      </div>
+      <div style={{ color: 'var(--text-secondary)' }}>
+        Gasto: {evento.detalle.importe_gastado != null ? `$${evento.detalle.importe_gastado.toLocaleString()}` : '—'}
+        {typeof evento.detalle.ctr === 'number' && ` · CTR: ${evento.detalle.ctr.toFixed(2)}%`}
+      </div>
+      {evento.detalle.observaciones && (
+        <div style={{ color: 'var(--text-tertiary)', fontStyle: 'italic', marginTop: '2px' }}>{evento.detalle.observaciones}</div>
+      )}
+    </>
+  );
+};
+
+// evento acá es siempre el representante de un grupo (_grupo con 1+ eventos, ver
+// agruparEventosPorFechaYTipo) — onClick usa ese representante (el primero del grupo)
+// como referencia de navegación, según lo pedido para celdas agrupadas.
+const CeldaEvento = ({ evento, onClick }) => {
   const [hover, setHover] = useState(false);
   if (!evento) return <td style={{ padding: '4px', borderBottom: '1px solid var(--border)' }} />;
   const tipo = TIPOS_EVENTO_COBERTURA[evento.tipo];
+  const grupo = evento._grupo || [evento];
+  const esGrupo = grupo.length > 1;
+  // Solo relevante para pauta: un circuito puede tocar varios barrios, así que una celda
+  // agrupada de pauta puede mezclar eventos de barrios distintos — se avisa en el tooltip
+  // porque el click sigue navegando a uno solo (el del evento representante).
+  const barriosDistintos = evento.tipo === 'pauta' ? new Set(grupo.map(e => e.detalle.barrio)) : null;
+  const etiqueta = `${tipo.label} · ${formatearFecha(evento.fecha)}${esGrupo ? ` (${grupo.length})` : ''}`;
   return (
     <td
       style={{ padding: '4px', borderBottom: '1px solid var(--border)', position: 'relative' }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <div style={{ backgroundColor: tipo.bg, color: tipo.color, borderRadius: '6px', padding: '5px 8px', fontSize: '11px', fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
-        {tipo.label} · {formatearFecha(evento.fecha)}
+      <div
+        onClick={onClick}
+        style={{ backgroundColor: tipo.bg, color: tipo.color, borderRadius: '6px', padding: '5px 8px', fontSize: '11px', fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap', cursor: onClick ? 'pointer' : 'default' }}
+      >
+        {etiqueta}
       </div>
       {hover && (
         <div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 30, backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 12px', boxShadow: '0 4px 12px rgba(0,0,0,0.18)', minWidth: '220px', maxWidth: '280px', fontSize: '12px', marginTop: '4px' }}>
-          <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>{tipo.label} · {formatearFecha(evento.fecha)}</div>
-          {evento.tipo === 'medicion' && (
-            <div style={{ color: 'var(--text-secondary)' }}>Ronda {evento.detalle.ronda} de {evento.detalle.totalRondas}</div>
-          )}
-          {evento.tipo === 'visita' && (
-            <>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Tipo: {evento.detalle.tipo_visita}</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '6px' }}>Contacto con vecinos: {evento.detalle.contacto_vecinos}</div>
-              {evento.detalle.info && <div style={{ color: 'var(--text-primary)', marginBottom: '6px' }}>{evento.detalle.info}</div>}
-              {evento.detalle.link && <a href={evento.detalle.link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver nota →</a>}
-            </>
-          )}
-          {evento.tipo === 'pauta' && (
-            <>
-              <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>
-                {evento.detalle.nombre_anuncio}
-                {evento.detalle.requiere_auditoria && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309' }}>⚠ Pendiente de revisión</span>}
-              </div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
-              <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.fecha_creacion)} → {formatearFecha(evento.detalle.fecha_finalizacion)}</div>
-              <div style={{ color: 'var(--text-secondary)' }}>
-                Alcance: {evento.detalle.alcance?.toLocaleString() ?? '—'} · Impresiones: {evento.detalle.impresiones?.toLocaleString() ?? '—'}
-              </div>
-              <div style={{ color: 'var(--text-secondary)' }}>
-                Gasto: {evento.detalle.importe_gastado != null ? `$${evento.detalle.importe_gastado.toLocaleString()}` : '—'}
-                {typeof evento.detalle.ctr === 'number' && ` · CTR: ${evento.detalle.ctr.toFixed(2)}%`}
-              </div>
-              {evento.detalle.observaciones && (
-                <div style={{ color: 'var(--text-tertiary)', fontStyle: 'italic', marginTop: '2px' }}>{evento.detalle.observaciones}</div>
-              )}
-            </>
+          <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>{etiqueta}</div>
+          {grupo.map((e, i) => (
+            <div key={i} style={i > 0 ? { borderTop: '1px solid #eee', marginTop: '6px', paddingTop: '6px' } : undefined}>
+              <DetalleEventoCobertura evento={e} />
+            </div>
+          ))}
+          {barriosDistintos && barriosDistintos.size > 1 && (
+            <div style={{ marginTop: '6px', fontSize: '10px', fontWeight: 600, color: '#B45309' }}>⚠ Incluye pautas de distintos barrios — el click abre "{evento.detalle.barrio}"</div>
           )}
         </div>
       )}
@@ -2348,10 +2407,11 @@ const CeldaEvento = ({ evento }) => {
   );
 };
 
-const TablaEventosCobertura = ({ datos, eventosPorCircuito, onSelectCircuito }) => {
+const TablaEventosCobertura = ({ datos, eventosPorCircuito, onClickVisita, onClickMedicion, onClickPauta }) => {
   const [tiposActivos, setTiposActivos] = useState({ medicion: true, visita: true, pauta: true });
   const [rangoSeleccionado, setRangoSeleccionado] = useState(null);
   const [orden, setOrden] = useState('id');
+  const [busquedaCircuito, setBusquedaCircuito] = useState('');
 
   const toggleTipo = (tipo) => setTiposActivos(prev => ({ ...prev, [tipo]: !prev[tipo] }));
 
@@ -2363,14 +2423,26 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onSelectCircuito }) 
 
   const rangoEfectivo = rangoSeleccionado || aniosDisponibles[0] || 'todo';
 
+  // Mismo criterio de normalización que normalizarNombreBarrio (mayúsculas + sin
+  // tildes) ya usa en todo el proyecto para cruzar/comparar texto — se reaprovecha acá
+  // para el buscador aunque el nombre del helper diga "Barrio", es genérico.
+  const busquedaNormalizada = useMemo(() => normalizarNombreBarrio(busquedaCircuito), [busquedaCircuito]);
+
   const filas = useMemo(() => {
-    return datos.map(d => {
-      const eventos = (eventosPorCircuito[d.Mapkey] || [])
-        .filter(e => tiposActivos[e.tipo])
-        .filter(e => rangoEfectivo === 'todo' || e.fecha.startsWith(rangoEfectivo));
-      return { circuito: d, eventos };
-    });
-  }, [datos, eventosPorCircuito, tiposActivos, rangoEfectivo]);
+    return datos
+      .filter(d => {
+        if (!busquedaNormalizada) return true;
+        return normalizarNombreBarrio(d.Mapkey).includes(busquedaNormalizada)
+          || normalizarNombreBarrio(String(d.CircuitoKey ?? '')).includes(busquedaNormalizada)
+          || normalizarNombreBarrio(d.cirn_nom).includes(busquedaNormalizada);
+      })
+      .map(d => {
+        const eventosFiltrados = (eventosPorCircuito[d.Mapkey] || [])
+          .filter(e => tiposActivos[e.tipo])
+          .filter(e => rangoEfectivo === 'todo' || e.fecha.startsWith(rangoEfectivo));
+        return { circuito: d, eventos: agruparEventosPorFechaYTipo(eventosFiltrados) };
+      });
+  }, [datos, eventosPorCircuito, tiposActivos, rangoEfectivo, busquedaNormalizada]);
 
   const filasOrdenadas = useMemo(() => {
     const copia = [...filas];
@@ -2386,7 +2458,15 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onSelectCircuito }) 
     return copia;
   }, [filas, orden]);
 
+  // maxColumnas ya considera los eventos agrupados (eventos acá es el resultado de
+  // agruparEventosPorFechaYTipo) — menos columnas que antes cuando hay agrupamientos.
   const maxColumnas = Math.max(1, ...filas.map(f => f.eventos.length));
+
+  const manejarClickEvento = (evento, circuito) => {
+    if (evento.tipo === 'visita') onClickVisita(circuito.CircuitoKey);
+    else if (evento.tipo === 'medicion') onClickMedicion(circuito.CircuitoKey, evento.fecha);
+    else if (evento.tipo === 'pauta') onClickPauta(evento.detalle.barrio);
+  };
 
   return (
     <div style={{ padding: '14px' }}>
@@ -2396,7 +2476,14 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onSelectCircuito }) 
       `}</style>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            type="text"
+            value={busquedaCircuito}
+            onChange={(e) => setBusquedaCircuito(e.target.value)}
+            placeholder="Buscar circuito..."
+            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', color: 'var(--text-primary)', backgroundColor: '#fff', width: '150px' }}
+          />
           {Object.entries(TIPOS_EVENTO_COBERTURA).map(([key, tipo]) => (
             <PillFiltro key={key} activo={tiposActivos[key]} color={tipo.color} onClick={() => toggleTipo(key)}>
               {tiposActivos[key] ? '✓ ' : ''}{tipo.label}
@@ -2419,43 +2506,72 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onSelectCircuito }) 
         </div>
       </div>
 
-      <div style={{ overflow: 'auto', maxHeight: '420px', border: '1px solid var(--border)', borderRadius: '10px' }}>
-        <table style={{ borderCollapse: 'collapse', fontSize: '12px', width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ position: 'sticky', left: 0, top: 0, zIndex: 3, backgroundColor: '#fff', borderBottom: '1px solid var(--border)', padding: '8px 10px', textAlign: 'left', minWidth: '190px' }}>Circuito</th>
-              {Array.from({ length: maxColumnas }).map((_, i) => (
-                <th key={i} style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#fff', borderBottom: '1px solid var(--border)', padding: '8px 10px', fontWeight: 500, color: 'var(--text-tertiary)', minWidth: '120px' }}>
-                  Evento {i + 1}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filasOrdenadas.map(({ circuito, eventos }) => (
-              <tr key={circuito.Mapkey} className="fila-tabla-cobertura" onClick={() => onSelectCircuito(circuito.CircuitoKey)} style={{ cursor: 'pointer' }}>
-                <td style={{ position: 'sticky', left: 0, zIndex: 1, borderBottom: '1px solid var(--border)', padding: '8px 10px', fontWeight: 500, color: 'var(--text-primary)' }}>
-                  {circuito.Mapkey} · {circuito.cirn_nom}
-                </td>
+      {filasOrdenadas.length === 0 ? (
+        <div style={{ padding: '32px', textAlign: 'center', fontSize: '13px', color: 'var(--text-tertiary)', border: '1px solid var(--border)', borderRadius: '10px' }}>
+          Sin resultados
+        </div>
+      ) : (
+        <div style={{ overflow: 'auto', maxHeight: '420px', border: '1px solid var(--border)', borderRadius: '10px' }}>
+          <table style={{ borderCollapse: 'collapse', fontSize: '12px', width: '100%' }}>
+            <thead>
+              <tr>
+                <th style={{ position: 'sticky', left: 0, top: 0, zIndex: 3, backgroundColor: '#fff', borderBottom: '1px solid var(--border)', padding: '8px 10px', textAlign: 'left', minWidth: '190px' }}>Circuito</th>
                 {Array.from({ length: maxColumnas }).map((_, i) => (
-                  <CeldaEvento key={i} evento={eventos[i]} />
+                  <th key={i} style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#fff', borderBottom: '1px solid var(--border)', padding: '8px 10px', fontWeight: 500, color: 'var(--text-tertiary)', minWidth: '120px' }}>
+                    Evento {i + 1}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filasOrdenadas.map(({ circuito, eventos }) => (
+                <tr key={circuito.Mapkey} className="fila-tabla-cobertura">
+                  <td style={{ position: 'sticky', left: 0, zIndex: 1, borderBottom: '1px solid var(--border)', padding: '8px 10px', fontWeight: 500, color: 'var(--text-primary)' }}>
+                    {circuito.Mapkey} · {circuito.cirn_nom}
+                  </td>
+                  {Array.from({ length: maxColumnas }).map((_, i) => (
+                    <CeldaEvento key={i} evento={eventos[i]} onClick={eventos[i] ? () => manejarClickEvento(eventos[i], circuito) : undefined} />
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
 
-const BarraCobertura = ({ resumen, datos, eventosPorCircuito, onSelectCircuito }) => {
+const BarraCobertura = ({ resumen, datos, eventosPorCircuito, onClickVisita, onClickMedicion, onClickPauta }) => {
   const [expandida, setExpandida] = useState(false);
+  const contenedorRef = useRef(null);
+
+  // Cierra el panel "Ver detalle" con click afuera o Escape. El ref envuelve TODO el
+  // componente (barra + panel), así que clicks en el botón toggle, filtros, buscador,
+  // celdas o el scroll interno de la tabla quedan "adentro" y no disparan el cierre —
+  // solo un click fuera de este contenedor cuenta como "afuera". Los listeners se
+  // agregan/quitan según `expandida` (no quedan colgados cuando el panel está cerrado).
+  useEffect(() => {
+    if (!expandida) return;
+    const handleClickAfuera = (e) => {
+      if (contenedorRef.current && !contenedorRef.current.contains(e.target)) setExpandida(false);
+    };
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setExpandida(false);
+    };
+    document.addEventListener('mousedown', handleClickAfuera);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickAfuera);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [expandida]);
+
   if (!resumen) return null;
   const pct = resumen.total > 0 ? Math.round((resumen.encuestados / resumen.total) * 100) : 0;
 
   return (
-    <div style={{ position: 'relative', backgroundColor: '#fff', borderBottom: '1px solid var(--border)' }}>
+    <div ref={contenedorRef} style={{ position: 'relative', backgroundColor: '#fff', borderBottom: '1px solid var(--border)' }}>
       <div style={{ padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Cobertura de encuesta</span>
         <div style={{ flex: '0 1 220px', minWidth: '140px', height: '8px', borderRadius: '4px', backgroundColor: 'var(--bg-secondary)', overflow: 'hidden' }}>
@@ -2471,7 +2587,13 @@ const BarraCobertura = ({ resumen, datos, eventosPorCircuito, onSelectCircuito }
       </div>
       {expandida && (
         <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#fff', border: '1px solid var(--border)', borderTop: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 900 }}>
-          <TablaEventosCobertura datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={(c) => { onSelectCircuito(c); setExpandida(false); }} />
+          <TablaEventosCobertura
+            datos={datos}
+            eventosPorCircuito={eventosPorCircuito}
+            onClickVisita={(c) => { onClickVisita(c); setExpandida(false); }}
+            onClickMedicion={(c, f) => { onClickMedicion(c, f); setExpandida(false); }}
+            onClickPauta={(b) => { onClickPauta(b); setExpandida(false); }}
+          />
         </div>
       )}
     </div>
@@ -3161,6 +3283,7 @@ export default function Home() {
   const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital'
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
+  const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
   const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
@@ -3319,6 +3442,7 @@ export default function Home() {
     // valor explícito gane.
     setSolapaActiva('resumen');
     setSolapaActivaBarrio('resumen');
+    setRondaFechaSolicitada(null); // idem: solo irACircuitoDesdeGrillaMedicion pide una ronda puntual, y la pisa después de llamar acá
     const d = datos.find(x => x.CircuitoKey === c);
     const clave = d ? `${d.Mapkey} - ${d.cirn_nom}` : null;
     const lista = clave ? cruceData?.circuito_to_barrios?.[clave] : null;
@@ -3362,6 +3486,7 @@ export default function Home() {
     setFiltroCategoria(null);
     setSolapaActiva('resumen');
     setSolapaActivaBarrio('resumen');
+    setRondaFechaSolicitada(null); // no pasa por handleSelectCircuito — mismo reset, evita arrastrar una ronda pedida para el circuito anterior
   };
 
   // Click en una celda de la grilla de cobertura: selecciona el circuito y vuelve
@@ -3404,6 +3529,18 @@ export default function Home() {
   const irABarrioDesdeMapaPauta = (nombreBarrio) => {
     handleSelectBarrio(nombreBarrio, 'pauta');
     setVistaFicha('barrio');
+  };
+
+  // Click en un evento de tipo Medición (tabla de cobertura, BarraCobertura): mismo
+  // patrón que irACircuitoDesdeListadoEncuestas (ficha completa, solapa Encuestas),
+  // sumando la fecha de la ronda pedida — handleSelectCircuito ya resetea
+  // rondaFechaSolicitada a null, así que fijarlo acá DESPUÉS es lo que hace que la
+  // ronda pedida gane (mismo orden que ya usa el archivo para solapaActiva).
+  const irACircuitoDesdeGrillaMedicion = (circuitoKey, fecha) => {
+    handleSelectCircuito(circuitoKey);
+    setVistaFicha('circuito');
+    setSolapaActiva('encuestas');
+    setRondaFechaSolicitada(fecha);
   };
 
   // Escuelas y Obras se fusionaron dentro de Territorio (población/padrón, Obras,
@@ -3604,7 +3741,7 @@ export default function Home() {
           </div>
         )}
 
-        <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onSelectCircuito={irACircuitoDesdeGrilla} />
+        <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onClickVisita={irACircuitoDesdeGrilla} onClickMedicion={irACircuitoDesdeGrillaMedicion} onClickPauta={irABarrioDesdeMapaPauta} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
           {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio') ? (
@@ -3708,7 +3845,14 @@ export default function Home() {
                         />
                       )}
                       {solapaActiva === 'comparativas' && <SolapaComparativas circuito={circuitoSeleccionado} datos={datosCircuito} />}
-                      {solapaActiva === 'encuestas' && encuestaCircuito && <SolapaEncuestas encuesta={encuestaCircuito} metadata={encuestasMetadata} />}
+                      {solapaActiva === 'encuestas' && encuestaCircuito && (
+                        <SolapaEncuestas
+                          key={`${circuitoSeleccionado}-${rondaFechaSolicitada || 'ultima'}`}
+                          encuesta={encuestaCircuito}
+                          metadata={encuestasMetadata}
+                          fechaRondaInicial={rondaFechaSolicitada}
+                        />
+                      )}
                     </div>
                   </>
                 ) : (
