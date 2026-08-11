@@ -1378,8 +1378,8 @@ function calcularVariacionIndicador(datos, umbral) {
 }
 
 // positivoEsSubir: polaridad del indicador, no del delta — true para Aprobación/
-// Reelección/Gestión/Cordobeses en Alerta (subir es buena noticia en las 9 cards,
-// ver ITEMS_INDICADORES_COMPARATIVO), false para "Principales problemas" (subir es
+// Reelección/Cordobeses en Alerta (subir es buena noticia en las 6 cards, ver
+// ITEMS_INDICADORES_COMPARATIVO), false para "Principales problemas" (subir es
 // siempre mala noticia, constante para esa tabla). colorNeutro es configurable porque
 // pantalla usa var(--text-tertiary) y el PDF necesita un hex fijo (no hereda custom
 // properties).
@@ -1397,23 +1397,22 @@ function textoVariacionIndicador(v) {
   return `${flecha} ${verbo} desde ${v.primera.toFixed(1)}%`;
 }
 
-// 9 cards: Aprobación x3 + Reelección x2 + Calificación de gestión x3 (Positiva% como
-// "el valor" de gestión) + Cordobeses en Alerta. Esta última pregunta en
-// encuestas_metadata.json es tipo "Servicio" ("¿Tu barrio tiene el servicio de
+// 6 cards: Aprobación x3 + Reelección x2 + Cordobeses en Alerta. Esta última pregunta
+// en encuestas_metadata.json es tipo "Servicio" ("¿Tu barrio tiene el servicio de
 // CORDOBESES EN ALERTA?", categorías Si/No) — pregunta por COBERTURA del programa en
 // el barrio, no por percepción de inseguridad/alerta, así que subir (más barrios con
-// el servicio) es buena noticia igual que las otras 8 — NO es el caso "problema/alerta"
+// el servicio) es buena noticia igual que las otras 5 — NO es el caso "problema/alerta"
 // que ameritaría invertir. 4º elemento de cada tupla = positivoEsSubir (default true
-// si se omite, ninguna de las 9 lo necesita en false).
+// si se omite, ninguna de las 6 lo necesita en false).
+// "Calificación de gestión" NO es una card de este grid — sigue siendo la sección
+// aparte de barras apiladas de siempre (htmlMiniPendientesGestion/ComparativoEncuesta
+// más abajo), sin ningún cambio de diseño.
 const ITEMS_INDICADORES_COMPARATIVO = [
   ['Aprobación Intendente', 'Aprobación Intendente', 'Apruebo'],
   ['Aprobación Gobernador', 'Aprobación Gobernador', 'Apruebo'],
   ['Aprobación Presidente', 'Aprobación Presidente', 'Apruebo'],
   ['Reelección Llaryora', 'Reelección Llaryora', 'Si'],
   ['Reelección Milei', 'Reelección Milei', 'Si'],
-  ['Gestión Intendente', 'Gestión del Intendente', 'Positiva'],
-  ['Gestión Gobernador', 'Gestión del Gobernador', 'Positiva'],
-  ['Gestión Presidente', 'Gestión del Presidente', 'Positiva'],
   ['Cordobeses en Alerta', 'Cordobeses en Alerta (existencia)', 'Si'],
 ];
 
@@ -1453,8 +1452,9 @@ function calcularResumenVariacionesProblemas(rondas, umbral) {
 }
 
 // --- Render PDF (HTML-string, colores hardcodeados porque el documento no hereda
-// var(--...)) de las mismas 3 piezas que arma ComparativoEncuesta en pantalla, sobre
-// la MISMA lógica de cálculo de arriba — ver htmlComparativoEncuestaBody más abajo. ---
+// var(--...)) del resumen/cards/tabla que arma ComparativoEncuesta en pantalla, sobre
+// la MISMA lógica de cálculo de arriba — ver htmlComparativoEncuestaBody más abajo.
+// "Calificación de gestión" (barras apiladas) no pasa por acá, ver más abajo. ---
 function htmlIndicadorCardPlano(label, rondas, pregunta, categoria, umbral, positivoEsSubir) {
   const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
   const v = calcularVariacionIndicador(datos, umbral);
@@ -1504,11 +1504,60 @@ function htmlResumenVariacionesPlano(rondas, umbral) {
   return `<div style="font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:18px;display:flex;flex-direction:column;gap:6px">${partes.join('')}</div>`;
 }
 
+// --- "Calificación de gestión" (barras apiladas) — SIN NINGÚN CAMBIO de diseño, se
+// restaura tal cual funcionaba antes del rediseño de cards (esas 3 métricas NO son
+// cards del grid de Indicadores, ver comentario de ITEMS_INDICADORES_COMPARATIVO).
+// Una fila por ronda (fecha a la izquierda + barra apilada Positiva/Regular/Negativa/
+// Ns-Nc, reutilizando htmlBarraSegmentosPDF), apiladas verticalmente; delta de
+// "Positiva" (1ª→última) como badge al lado del título de cada funcionario. ---
+function htmlDeltaBadge(delta, { invertir = false, sufijo = ' pp' } = {}) {
+  if (delta == null) return `<span style="color:#ccc;font-size:11px">—</span>`;
+  const sube = delta > 0, baja = delta < 0;
+  const bueno = invertir ? baja : sube;
+  const malo = invertir ? sube : baja;
+  const color = bueno ? '#2E7D32' : malo ? '#C62828' : '#999';
+  const arrow = sube ? '▲' : baja ? '▼' : '—';
+  const signo = sube ? '+' : '';
+  return `<span style="font-size:11px;font-weight:600;color:${color}">${arrow} ${signo}${delta.toFixed(1)}${sufijo}</span>`;
+}
+
+function htmlMiniPendienteGestion(funcionario, rondas) {
+  const pregunta = `Gestión del ${funcionario}`;
+  const filas = rondas.map(r => ({ fecha: r.fecha, casos: r.casos, data: r.preguntas?.[pregunta] })).filter(f => f.data);
+  if (filas.length === 0) {
+    return `<div style="margin-bottom:16px"><div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div><p style="font-size:12px;color:#999">Sin dato.</p></div>`;
+  }
+  const positivas = filas.map(f => f.data.Positiva).filter(v => v != null);
+  const delta = positivas.length >= 2 ? positivas[positivas.length - 1] - positivas[0] : null;
+  const filasHtml = filas.map(f => `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <span style="width:175px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
+      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22 })}</div>
+    </div>`).join('');
+  return `<div style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:13px;color:#666;font-weight:500">Calificación de gestión: ${funcionario}</span>
+      ${htmlDeltaBadge(delta)}
+    </div>
+    ${filasHtml}
+  </div>`;
+}
+
+function htmlMiniPendientesGestion(rondas) {
+  return ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas)).join('');
+}
+
+function htmlLegendGestion() {
+  const items = ['Positiva', 'Regular', 'Negativa'].map(cat =>
+    `<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${COLOR_GESTION[cat]}"></div><span style="font-size:11px;color:#666">${cat}</span></div>`
+  ).join('');
+  return `<div style="display:flex;gap:14px;margin-top:6px">${items}</div>`;
+}
+
 // Cuerpo completo de la vista Comparativo para el PDF — mismo criterio que
-// ComparativoEncuesta en pantalla (cards sin sparkline + tabla ordenada con frase en
-// texto plano), aplicado en paralelo. "Calificación de gestión" ya no es una sección
-// aparte con barras apiladas (htmlMiniPendientesGestion/htmlLegendGestion, retiradas):
-// sus 3 métricas (Positiva%) se sumaron a la grilla de 9 cards, igual que en pantalla.
+// ComparativoEncuesta en pantalla: cards sin sparkline + tabla ordenada con frase en
+// texto plano para Indicadores/Principales problemas, "Calificación de gestión" sin
+// tocar (barras apiladas de siempre, ver bloque de arriba).
 function htmlComparativoEncuestaBody(encuesta, umbral) {
   const rondas = encuesta.rondas;
   return `
@@ -1516,6 +1565,11 @@ function htmlComparativoEncuestaBody(encuesta, umbral) {
     <div style="margin-bottom:20px">
       <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Indicadores</h4>
       ${htmlGridIndicadoresPlano(rondas, umbral)}
+    </div>
+    <div style="margin-bottom:20px">
+      <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Calificación de gestión</h4>
+      ${htmlMiniPendientesGestion(rondas)}
+      ${htmlLegendGestion()}
     </div>
     <div>
       <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Principales problemas — evolución</h4>
@@ -1598,6 +1652,14 @@ const ComparativoEncuesta = ({ encuesta, umbral }) => {
       <div style={{ marginBottom: '28px' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
         <GridIndicadoresComparativo rondas={rondas} umbral={umbral} />
+      </div>
+      {/* Sin cambios de diseño: mismo HTML de siempre (barras apiladas Positiva/Regular/
+          Negativa/Ns-Nc por ronda + delta al lado del título), vía dangerouslySetInnerHTML
+          para garantizar que quede pixel-a-pixel igual a como funcionaba antes — no es
+          una card del grid de Indicadores de arriba. */}
+      <div style={{ marginBottom: '28px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
+        <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas) + htmlLegendGestion() }} />
       </div>
       <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Principales problemas — evolución</h4>
