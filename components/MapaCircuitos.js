@@ -177,6 +177,30 @@ function MapController({ mapkeySeleccionado, geoJsonData, zoomBarrioSolicitado, 
   return null;
 }
 
+// Botón "Ver en solapa Pauta" del popup de estrella de pauta: usa useMap() (mismo hook
+// que MapController) para cerrar el popup del mapa antes de disparar la navegación a la
+// ficha completa — funciona porque el contenido de <Popup> sigue dentro del mismo árbol
+// de React que <MapContainer> (Leaflet lo porta al DOM, pero el context no se pierde).
+function BotonVerBarrioEnPauta({ nombreBarrio, onVerBarrioEnPauta }) {
+  const map = useMap();
+  if (!onVerBarrioEnPauta) return null;
+  return (
+    <button
+      onClick={() => {
+        map.closePopup();
+        onVerBarrioEnPauta(nombreBarrio);
+      }}
+      style={{
+        marginTop: '10px', width: '100%', padding: '6px 10px', borderRadius: '6px',
+        border: 'none', backgroundColor: COLOR_PAUTA, color: '#fff',
+        fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+      }}
+    >
+      Ver en solapa Pauta
+    </button>
+  );
+}
+
 // Detecta con turf, en un único click de mapa, qué circuito y qué barrio contienen
 // el punto clickeado (booleanPointInPolygon), sin importar cuál capa esté arriba
 // visualmente ni cuál esté tildada en el panel de Capas.
@@ -206,7 +230,7 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta }) {
   const geoJsonRef = useRef(null);
 
   const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, pauta: false, escuelas: false });
@@ -278,10 +302,21 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
     const sinMatch = [];
     let sinFechaValidaCount = 0;
 
+    // Orden por fecha_creacion (inicio de vigencia) descendente — la pauta más
+    // reciente primero. No hay fecha_salida en el esquema actual (esquema viejo, ver
+    // comentario arriba de parsearFechaISO); fecha_creacion es el equivalente vigente.
+    // Sin fecha_creacion parseable -> se manda al final (no rompe el orden del resto).
     const anotarPautas = (pautasRaw) => (pautasRaw || []).map(p => {
       const fechaFin = parsearFechaISO(p.fecha_finalizacion);
       if (!fechaFin) sinFechaValidaCount += 1;
       return { ...p, _activa: fechaFin ? fechaFin >= hoy : false };
+    }).sort((a, b) => {
+      const fa = parsearFechaISO(a.fecha_creacion);
+      const fb = parsearFechaISO(b.fecha_creacion);
+      if (!fa && !fb) return 0;
+      if (!fa) return 1;
+      if (!fb) return -1;
+      return fb - fa;
     });
 
     const markers = Object.keys(pautasBarriosData).map(nombreBarrio => {
@@ -589,7 +624,10 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                   <div><strong style={{ fontSize: '13px' }}>{m.nombreBarrio}</strong></div>
                   <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
-                    {m.pautas.map((p, i) => (
+                    {/* Solo las 2 pautas más recientes (m.pautas ya viene ordenado por
+                        fecha_creacion desc) — el contador de arriba sigue mostrando el
+                        total real (m.pautas.length), no el límite acá aplicado. */}
+                    {m.pautas.slice(0, 2).map((p, i) => (
                       <div key={p.fila_origen ?? i} style={{ borderTop: i > 0 ? '1px solid #eee' : 'none', paddingTop: i > 0 ? '6px' : 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
                           <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.codigo_anuncio || '—'}</div>
@@ -604,6 +642,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                       </div>
                     ))}
                   </div>
+                  <BotonVerBarrioEnPauta nombreBarrio={m.nombreBarrio} onVerBarrioEnPauta={onVerBarrioEnPauta} />
                 </div>
               </Popup>
             </Marker>

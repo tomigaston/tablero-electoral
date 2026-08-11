@@ -3333,7 +3333,10 @@ export default function Home() {
   };
   // Usado por los links "Otros barrios en este circuito": solo cambia el barrio, el circuito
   // actual no se toca (seguimos en el mismo circuito, solo mostrando otro barrio suyo).
-  const handleSelectBarrio = (nombre) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio('resumen'); };
+  // "solapa" es opcional (default 'resumen', mismo criterio que onVerFicha para circuito
+  // en la línea de abajo) — permite pedir que la ficha de barrio aterrice en una solapa
+  // puntual (ver irABarrioDesdeMapaPauta) sin romper los callers existentes.
+  const handleSelectBarrio = (nombre, solapa) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio(solapa || 'resumen'); };
 
   // Selección de barrio desde el buscador: a diferencia de "Otros barrios en este circuito"
   // (que mantiene el circuito activo sin tocarlo), acá no hay circuito activo relevante que
@@ -3392,6 +3395,14 @@ export default function Home() {
   // completa y el click debe llevar a otra).
   const irABarrioDesdeTerritorio = (nombreBarrio) => {
     handleSelectBarrio(nombreBarrio);
+    setVistaFicha('barrio');
+  };
+
+  // Click en "Ver en solapa Pauta" del popup de estrella de pauta (MapaCircuitos):
+  // mismo patrón que irABarrioDesdeTerritorio (selección no geográfica de barrio +
+  // apertura de ficha completa), pidiendo la solapa 'pauta' en vez del default 'resumen'.
+  const irABarrioDesdeMapaPauta = (nombreBarrio) => {
+    handleSelectBarrio(nombreBarrio, 'pauta');
     setVistaFicha('barrio');
   };
 
@@ -3712,7 +3723,7 @@ export default function Home() {
 
               <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} />
                 </div>
               </div>
             </>
@@ -3720,7 +3731,7 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} />
                 </div>
               </div>
 
