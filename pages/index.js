@@ -1349,16 +1349,23 @@ const ResumenEncuesta = ({ preguntas }) => (
 // Solo la barra apilada Positiva/Regular/Negativa/Ns-Nc (sin label), para poder
 // componerla tanto en una fila de mini-pendiente (fecha a la izquierda) como en
 // htmlBarraCategoriasPDF (label arriba). Mismos colores/umbral de texto que BarraGestion.
-function htmlBarraSegmentosPDF(data, { height = 18 } = {}) {
+// deltas (opcional): {categoria: delta} para pintar, arriba de CADA segmento presente,
+// su variación en pp — se usa solo en la barra de la última ronda mostrada (ver
+// htmlMiniPendienteGestion). Cada label ocupa el mismo ancho % que su segmento para
+// quedar centrado justo arriba de él.
+function htmlBarraSegmentosPDF(data, { height = 18, deltas = null } = {}) {
   if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
   const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
-  const segmentos = categorias.map(cat => {
+  const presentes = categorias.filter(cat => data[cat] > 0);
+  const segmentos = presentes.map(cat => {
     const v = data[cat];
-    if (!v || v <= 0) return '';
     const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
     return `<div style="width:${v}%;background:${COLOR_GESTION[cat]};display:flex;align-items:center;justify-content:center">${texto}</div>`;
   }).join('');
-  return `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
+  const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
+  if (!deltas) return barra;
+  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat]) : ''}</div>`).join('');
+  return `<div style="display:flex;margin-bottom:3px">${labels}</div>${barra}`;
 }
 
 // Arma {actual, fechaActual, primera, delta, estado} para un indicador a partir de
@@ -1504,21 +1511,39 @@ function htmlResumenVariacionesPlano(rondas, umbral) {
   return `<div style="font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:18px;display:flex;flex-direction:column;gap:6px">${partes.join('')}</div>`;
 }
 
-// --- "Calificación de gestión" (barras apiladas) — SIN NINGÚN CAMBIO de diseño, se
-// restaura tal cual funcionaba antes del rediseño de cards (esas 3 métricas NO son
-// cards del grid de Indicadores, ver comentario de ITEMS_INDICADORES_COMPARATIVO).
-// Una fila por ronda (fecha a la izquierda + barra apilada Positiva/Regular/Negativa/
-// Ns-Nc, reutilizando htmlBarraSegmentosPDF), apiladas verticalmente; delta de
-// "Positiva" (1ª→última) como badge al lado del título de cada funcionario. ---
-function htmlDeltaBadge(delta, { invertir = false, sufijo = ' pp' } = {}) {
-  if (delta == null) return `<span style="color:#ccc;font-size:11px">—</span>`;
-  const sube = delta > 0, baja = delta < 0;
-  const bueno = invertir ? baja : sube;
-  const malo = invertir ? sube : baja;
-  const color = bueno ? '#2E7D32' : malo ? '#C62828' : '#999';
-  const arrow = sube ? '▲' : baja ? '▼' : '—';
+// --- "Calificación de gestión" (barras apiladas). Una fila por ronda (fecha a la
+// izquierda + barra apilada Positiva/Regular/Negativa/Ns-Nc, reutilizando
+// htmlBarraSegmentosPDF), apiladas verticalmente. Ya no hay un badge único arriba del
+// título (ambiguo: solo mostraba el delta de "Positiva") — en su lugar, cada segmento
+// de la ÚLTIMA barra lleva su propio delta arriba, ver htmlDeltaSegmentoBadge/
+// calcularDeltasCategoriasGestion. ---
+function htmlDeltaSegmentoBadge(delta) {
+  const redondeado = Math.round(delta * 10) / 10;
+  if (redondeado === 0) return `<span style="font-size:10px;font-weight:600;color:#999">— 0.0 pp</span>`;
+  const sube = redondeado > 0;
+  const color = sube ? '#2E7D32' : '#C62828';
+  const arrow = sube ? '▲' : '▼';
   const signo = sube ? '+' : '';
-  return `<span style="font-size:11px;font-weight:600;color:${color}">${arrow} ${signo}${delta.toFixed(1)}${sufijo}</span>`;
+  return `<span style="font-size:10px;font-weight:600;color:${color}">${arrow} ${signo}${redondeado.toFixed(1)} pp</span>`;
+}
+
+// Delta por categoría (Positiva/Regular/Negativa/Ns-Nc) entre la primera y la última
+// fila con dato para este funcionario — reemplaza el viejo badge único de "Positiva".
+// Variación cruda por signo (sube=verde, baja=rojo), sin lógica de "bueno/malo" según
+// qué representa cada categoría, igual para las 4. Si una categoría existe en la
+// última ronda pero no en la primera (ej. Ns/Nc recién aparece), se toma 0% como valor
+// de esa primera ronda. null si hay menos de 2 filas (nada que comparar todavía).
+function calcularDeltasCategoriasGestion(filas) {
+  if (filas.length < 2) return null;
+  const primera = filas[0].data, ultima = filas[filas.length - 1].data;
+  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  const deltas = {};
+  categorias.forEach(cat => {
+    const vUltima = ultima[cat];
+    if (!vUltima || vUltima <= 0) return; // sin segmento en la última barra => sin badge
+    deltas[cat] = vUltima - (primera[cat] || 0);
+  });
+  return deltas;
 }
 
 function htmlMiniPendienteGestion(funcionario, rondas) {
@@ -1527,18 +1552,14 @@ function htmlMiniPendienteGestion(funcionario, rondas) {
   if (filas.length === 0) {
     return `<div style="margin-bottom:16px"><div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div><p style="font-size:12px;color:#999">Sin dato.</p></div>`;
   }
-  const positivas = filas.map(f => f.data.Positiva).filter(v => v != null);
-  const delta = positivas.length >= 2 ? positivas[positivas.length - 1] - positivas[0] : null;
-  const filasHtml = filas.map(f => `
+  const deltas = calcularDeltasCategoriasGestion(filas);
+  const filasHtml = filas.map((f, i) => `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
       <span style="width:175px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
-      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22 })}</div>
+      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22, deltas: i === filas.length - 1 ? deltas : null })}</div>
     </div>`).join('');
   return `<div style="margin-bottom:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:13px;color:#666;font-weight:500">Calificación de gestión: ${funcionario}</span>
-      ${htmlDeltaBadge(delta)}
-    </div>
+    <div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div>
     ${filasHtml}
   </div>`;
 }
