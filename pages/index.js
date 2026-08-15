@@ -1158,6 +1158,30 @@ function resolverBarrioPrincipalDeCircuito(datosCircuito, cruceData, barriosGeoL
   return { nombreBarrio, props: props || null };
 }
 
+// TODOS los barrios que tocan un circuito (no solo el principal) según
+// circuito_barrios_cruce.json → circuito_to_barrios. Usado para los bloques de circuito
+// "Visitas del Gobernador" y "Pauta publicitaria" del PDF (generarFichaPDF), que
+// concatenan la cobertura de cada barrio del circuito con su columna de origen.
+// circuito_to_barrios trae fragmentos no contiguos del mismo barrio (mismo caso que
+// documenta buscarPautaCircuito) y a veces una fila sintética "Sin Barrio - Circuito
+// ..." sin barrio real detrás — se dedupea por nombre normalizado y se descarta esa
+// fila sintética para no listar dos veces la cobertura del mismo barrio ni intentar
+// resolver un barrio que no existe.
+function resolverBarriosDelCircuito(datosCircuito, cruceData) {
+  const clave = `${datosCircuito.Mapkey} - ${datosCircuito.cirn_nom}`;
+  const lista = cruceData?.circuito_to_barrios?.[clave] || [];
+  const vistos = new Set();
+  const resultado = [];
+  lista.forEach(b => {
+    if (!b.barrio || b.barrio.startsWith('Sin Barrio')) return;
+    const key = normalizarNombreBarrio(b.barrio_normalizado || b.barrio);
+    if (!key || vistos.has(key)) return;
+    vistos.add(key);
+    resultado.push({ nombre: b.barrio, key });
+  });
+  return resultado;
+}
+
 function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoKey) {
   if (!pautasBarriosData || !barriosGeoData || !datos || !circuitoKey) return [];
   const circuitoRecord = datos.find(d => String(d.CircuitoKey) === String(circuitoKey));
@@ -2761,6 +2785,44 @@ function htmlPautaPDF(pautas) {
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada.</p>`;
   return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${formatearFecha(p.fecha_creacion)} → ${formatearFecha(p.fecha_finalizacion)}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td></tr>`).join('')}</tbody></table>`;
 }
+
+// --- Bloques de circuito "Visitas del Gobernador" / "Pauta publicitaria" (generarFichaPDF) ---
+// Concatenan la cobertura de TODOS los barrios del circuito (resolverBarriosDelCircuito),
+// cada fila con su barrio de origen — sin agregación ni dedupe entre barrios, cada
+// visita/pauta pertenece a un solo barrio y se lista tal cual viene de su fuente.
+
+// Visitas: mismo criterio de fuente que a nivel barrio (recorridosLookup), concatenadas
+// y ordenadas por fecha descendente (más reciente primero).
+function visitasCircuitoPDF(datosCircuito, cruceData, recorridosLookup, barriosGeoLookup) {
+  const visitas = [];
+  resolverBarriosDelCircuito(datosCircuito, cruceData).forEach(({ nombre, key }) => {
+    const nombreDisplay = barriosGeoLookup?.[key]?.nombre_barrio || nombre;
+    (recorridosLookup?.[key]?.visitas || []).forEach(v => visitas.push({ ...v, _barrio: nombreDisplay }));
+  });
+  return visitas.sort((a, b) => b.fecha.localeCompare(a.fecha));
+}
+function htmlVisitasCircuitoPDF(visitas) {
+  if (!visitas || visitas.length === 0) return `<p style="color:#999;font-size:12px">Sin visitas registradas en los barrios de este circuito.</p>`;
+  return `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Contacto vecinos</th><th>Detalle</th><th>Barrio</th></tr></thead><tbody>${visitas.map(v => `<tr><td>${formatearFecha(v.fecha)}</td><td>${v.tipo_visita || '—'}</td><td>${v.contacto_vecinos || 'NO'}</td><td>${v.info || '—'}</td><td>${v._barrio}</td></tr>`).join('')}</tbody></table>`;
+}
+
+// Pauta: mismo criterio de fuente que a nivel barrio (pautasBarriosData), concatenadas
+// agrupadas por barrio (mismo orden que trae el JSON, igual que a nivel barrio) — sin
+// columna Gasto (se saca por espacio, ya con la columna Barrio agregada).
+function pautaCircuitoPDF(datosCircuito, cruceData, pautasBarriosData, barriosGeoLookup) {
+  const pautas = [];
+  resolverBarriosDelCircuito(datosCircuito, cruceData).forEach(({ nombre, key }) => {
+    const nombreDisplay = barriosGeoLookup?.[key]?.nombre_barrio || nombre;
+    const claveOriginal = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
+    if (!claveOriginal) return;
+    (pautasBarriosData[claveOriginal].pautas || []).forEach(p => pautas.push({ ...p, _barrio: nombreDisplay }));
+  });
+  return pautas;
+}
+function htmlPautaCircuitoPDF(pautas) {
+  if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada en los barrios de este circuito.</p>`;
+  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th><th>Barrio</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${formatearFecha(p.fecha_creacion)} → ${formatearFecha(p.fecha_finalizacion)}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td><td>${p._barrio}</td></tr>`).join('')}</tbody></table>`;
+}
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
   return `<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Estado</th><th>Barrio / Circuito</th></tr></thead><tbody>${obras.map(o => {
@@ -3043,6 +3105,12 @@ function htmlEncuestasComparativoPDF(encuestaCircuito, umbral) {
 // resolverCircuitoPrincipalDeBarrio (necesita cruceData/barriosGeoLookup/todosLosDatos).
 function generarSeccionBarrioPDF({
   nombreBarrio, props, tituloParte, incluirEncabezadoParte = true, circuitoContexto,
+  // true cuando se llama desde generarFichaPDF (embebida en la ficha de circuito): en
+  // ese caso "Visitas del Gobernador" y "Pauta publicitaria" ya se muestran arriba, a
+  // nivel circuito (con columna Barrio), así que acá no se repiten — la "Cobertura
+  // territorial del barrio" queda solo con Obras. false (default) = comportamiento de
+  // siempre, usado por generarFichaBarrioPDF (standalone), donde sí se muestran ambas.
+  modoEmbebidoEnCircuito = false,
   cruceData, barriosGeoLookup, todosLosDatos, encuestasData,
   recorridosLookup, pautasBarriosData, obrasEnriquecidas, barriosGeoData,
   votosEscuelasBarrioLookup, votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito,
@@ -3089,8 +3157,8 @@ ${htmlContextoPoliticoPDF(circuito, encuestasData)}
   ${cercanosBarrio.length === 0 ? `<p style="color:#999;font-size:12px">Sin barrios cercanos dentro de 1,5 km.</p>` : `<table><thead><tr><th>Barrio</th><th class="text-right">Población</th><th class="text-right">Distancia</th></tr></thead><tbody>${cercanosBarrio.map(b => `<tr><td>${b.nombre}</td><td class="text-right">${b.poblacion != null ? b.poblacion.toLocaleString() : '—'}</td><td class="text-right">${b.distanciaKm.toFixed(2)} km</td></tr>`).join('')}</tbody></table>`}
 </div>
 <div class="subheader">Cobertura territorial del barrio</div>
-<div class="section"><h3>Visitas del Gobernador</h3>${htmlVisitasPDF(visitasBarrio)}</div>
-<div class="section"><h3>Pauta publicitaria</h3>${htmlPautaPDF(pautaBarrio)}</div>
+${!modoEmbebidoEnCircuito ? `<div class="section"><h3>Visitas del Gobernador</h3>${htmlVisitasPDF(visitasBarrio)}</div>` : ''}
+${!modoEmbebidoEnCircuito ? `<div class="section"><h3>Pauta publicitaria</h3>${htmlPautaPDF(pautaBarrio)}</div>` : ''}
 <div class="section"><h3>Obras (en el barrio)</h3>${htmlObrasPDF(obrasBarrio)}</div>
 ${INCLUIR_ESCUELAS_PDF ? `<div class="section"><h3>Votos por escuela</h3>${htmlEscuelasPDF(votosEscuelasBarrio?.escuelas, votosEscuelasBarrioData?.promedio_capital_pct)}</div>` : ''}
 `;
@@ -3232,6 +3300,12 @@ const generarFichaPDF = ({
   ${htmlEscuelasPDF(votosEscuelasCircuitoData?.circuitos?.[mapkey]?.escuelas, votosEscuelasCircuitoData?.promedio_capital_pct)}
 </div>` : '';
 
+  // --- Visitas del Gobernador / Pauta publicitaria a nivel circuito: concatenan la
+  // cobertura de TODOS los barrios del circuito (no solo el principal), cada fila con
+  // su barrio de origen — ver resolverBarriosDelCircuito. ---
+  const visitasCircuitoHtml = htmlVisitasCircuitoPDF(visitasCircuitoPDF(datos, cruceData, recorridosLookup, barriosGeoLookup));
+  const pautaCircuitoHtml = htmlPautaCircuitoPDF(pautaCircuitoPDF(datos, cruceData, pautasBarriosData, barriosGeoLookup));
+
   // Selección de barrios a exportar como sección propia: por defecto (sin diálogo, ej.
   // llamadas legadas) solo el barrio principal; con el diálogo de export, la selección
   // explícita del usuario — puede ser ninguno, uno o varios. Cada uno pertenece por
@@ -3249,6 +3323,7 @@ const generarFichaPDF = ({
       props: feature,
       tituloParte: esPrincipal ? 'BARRIO PRINCIPAL' : 'BARRIO',
       circuitoContexto: datos,
+      modoEmbebidoEnCircuito: true,
       cruceData, barriosGeoLookup, encuestasData,
       recorridosLookup, pautasBarriosData, obrasEnriquecidas, barriosGeoData,
       votosEscuelasBarrioLookup, votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito,
@@ -3290,6 +3365,14 @@ const generarFichaPDF = ({
   <div class="metric"><div class="metric-label">Dip. 2025</div><div class="metric-value ${datos.Share_L25 >= 0.3 ? 'green' : 'red'}">${(datos.Share_L25 * 100).toFixed(1)}%</div></div>
 </div>
 ${poblacionCircuitoTotal > 0 ? `<p style="font-size:11px;color:#666;margin:-10px 0 20px">En los barrios de este circuito viven ${Math.round(poblacionCircuitoTotal).toLocaleString()} personas; el padrón habilitado es ${datos.Padron_G23?.toLocaleString() || '—'}${pctPadronDePoblacion != null ? ` (${pctPadronDePoblacion.toFixed(0)}%)` : ''}.</p>` : ''}
+
+<div class="section"><h3>Obras (en el circuito)</h3>${htmlObrasPDF(obrasCircuito)}</div>
+
+<div class="section"><h3>Visitas del Gobernador</h3>${visitasCircuitoHtml}</div>
+
+${encuestaHtml}
+
+<div class="section"><h3>Pauta publicitaria</h3>${pautaCircuitoHtml}</div>
 
 <div class="section">
   <h3>Evolución histórica - Gobernador</h3>
@@ -3359,10 +3442,6 @@ ${barriosCircuito.length > 0 ? `
 </div>
 ` : ''}
 
-${encuestaHtml}
-
-<div class="subheader">Cobertura territorial del circuito</div>
-<div class="section"><h3>Obras (en el circuito)</h3>${htmlObrasPDF(obrasCircuito)}</div>
 ${escuelasCircuitoHtml}
 
 ${barrioPartHtml}
