@@ -794,29 +794,26 @@
             "Otro": 19
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 11.9,
-            "Buena": 14.3,
+            "Positiva": 26.2,
             "Regular": 7.1,
-            "Mala": 26.2,
-            "No se": 40.5
+            "Negativa": 26.2,
+            "Ns/Nc": 40.5
           },
           "Funcionamiento CPC": {
-            "Muy buena": 11.9,
-            "Buena": 26.2,
+            "Positiva": 38.1,
             "Regular": 23.8,
-            "Mala": 19,
-            "No se": 19
+            "Negativa": 19,
+            "Ns/Nc": 19
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 64.3,
             "No": 35.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 11.9,
-            "Buena": 9.5,
+            "Positiva": 21.4,
             "Regular": 7.1,
-            "Mala": 19,
-            "No se": 52.4
+            "Negativa": 19,
+            "Ns/Nc": 52.4
           },
           "Mejoras en bacheos": {
             "Si, mucho": 11.9,
@@ -839,25 +836,22 @@
             "No": 40.5
           },
           "Gestión del Intendente": {
-            "Muy buena": 14.3,
-            "Buena": 11.9,
+            "Positiva": 26.2,
             "Regular": 38.1,
-            "Mala": 26.2,
-            "No se": 9.5
+            "Negativa": 26.2,
+            "Ns/Nc": 9.5
           },
           "Gestión del Gobernador": {
-            "Muy buena": 19.3,
-            "Buena": 26.2,
+            "Positiva": 45.5,
             "Regular": 19,
-            "Mala": 33.1,
-            "No se": 2.4
+            "Negativa": 33.1,
+            "Ns/Nc": 2.4
           },
           "Gestión del Presidente": {
-            "Muy buena": 7.1,
-            "Buena": 16.7,
+            "Positiva": 23.8,
             "Regular": 9.5,
-            "Mala": 66.7,
-            "No se": 0
+            "Negativa": 66.7,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 45.2,
@@ -1336,50 +1330,44 @@
             "Otro": 12.2
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 4.9,
-            "Buena": 9.8,
+            "Positiva": 14.7,
             "Regular": 31.7,
-            "Mala": 26.8,
-            "No se": 26.8
+            "Negativa": 26.8,
+            "Ns/Nc": 26.8
           },
           "Funcionamiento CPC": {
-            "Muy buena": 2.4,
-            "Buena": 22,
+            "Positiva": 24.4,
             "Regular": 34.1,
-            "Mala": 26.8,
-            "No se": 14.6
+            "Negativa": 26.8,
+            "Ns/Nc": 14.6
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 14.6,
             "No": 85.4
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 2.4,
-            "Buena": 4.9,
+            "Positiva": 7.3,
             "Regular": 14.6,
-            "Mala": 12.2,
-            "No se": 65.9
+            "Negativa": 12.2,
+            "Ns/Nc": 65.9
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 2.4,
+            "Positiva": 2.4,
             "Regular": 39,
-            "Mala": 53.7,
-            "No se": 4.9
+            "Negativa": 53.7,
+            "Ns/Nc": 4.9
           },
           "Gestión del Gobernador": {
-            "Muy buena": 5,
-            "Buena": 9.8,
+            "Positiva": 14.8,
             "Regular": 41.5,
-            "Mala": 38.9,
-            "No se": 4.9
+            "Negativa": 38.9,
+            "Ns/Nc": 4.9
           },
           "Gestión del Presidente": {
-            "Muy buena": 17.1,
-            "Buena": 17.1,
+            "Positiva": 34.2,
             "Regular": 22,
-            "Mala": 41.5,
-            "No se": 2.4
+            "Negativa": 41.5,
+            "Ns/Nc": 2.4
           },
           "Aprobación Intendente": {
             "Apruebo": 22,
@@ -1420,29 +1408,26 @@
             "Otro": 15
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 10,
-            "Buena": 13.3,
+            "Positiva": 23.3,
             "Regular": 18.3,
-            "Mala": 31.7,
-            "No se": 26.7
+            "Negativa": 31.7,
+            "Ns/Nc": 26.7
           },
           "Funcionamiento CPC": {
-            "Muy buena": 6.7,
-            "Buena": 28.3,
+            "Positiva": 35,
             "Regular": 25,
-            "Mala": 23.3,
-            "No se": 16.7
+            "Negativa": 23.3,
+            "Ns/Nc": 16.7
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 11.7,
             "No": 88.3
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 5,
-            "Buena": 6.7,
+            "Positiva": 11.7,
             "Regular": 11.7,
-            "Mala": 11.7,
-            "No se": 65
+            "Negativa": 11.7,
+            "Ns/Nc": 65
           },
           "Mejoras en bacheos": {
             "Si, mucho": 15,
@@ -1465,25 +1450,22 @@
             "No": 50
           },
           "Gestión del Intendente": {
-            "Muy buena": 5,
-            "Buena": 16.7,
+            "Positiva": 21.7,
             "Regular": 20,
-            "Mala": 50,
-            "No se": 8.3
+            "Negativa": 50,
+            "Ns/Nc": 8.3
           },
           "Gestión del Gobernador": {
-            "Muy buena": 16.7,
-            "Buena": 13.3,
+            "Positiva": 30,
             "Regular": 16.7,
-            "Mala": 48.3,
-            "No se": 5
+            "Negativa": 48.3,
+            "Ns/Nc": 5
           },
           "Gestión del Presidente": {
-            "Muy buena": 20,
-            "Buena": 28.3,
+            "Positiva": 48.3,
             "Regular": 11.7,
-            "Mala": 36.7,
-            "No se": 3.3
+            "Negativa": 36.7,
+            "Ns/Nc": 3.3
           },
           "Aprobación Intendente": {
             "Apruebo": 28.3,
@@ -1732,29 +1714,26 @@
             "Otro": 7.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 28.6,
-            "Buena": 7.1,
+            "Positiva": 35.7,
             "Regular": 21.4,
-            "Mala": 42.9,
-            "No se": 0
+            "Negativa": 42.9,
+            "Ns/Nc": 0
           },
           "Funcionamiento CPC": {
-            "Muy buena": 7.1,
-            "Buena": 21.4,
+            "Positiva": 28.5,
             "Regular": 35.7,
-            "Mala": 28.6,
-            "No se": 7.1
+            "Negativa": 28.6,
+            "Ns/Nc": 7.1
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 14.3,
             "No": 85.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 7.1,
-            "Buena": 7.1,
+            "Positiva": 14.2,
             "Regular": 7.1,
-            "Mala": 21.4,
-            "No se": 57.1
+            "Negativa": 21.4,
+            "Ns/Nc": 57.1
           },
           "Mejoras en bacheos": {
             "Si, mucho": 14.3,
@@ -1777,25 +1756,22 @@
             "No": 50
           },
           "Gestión del Intendente": {
-            "Muy buena": 21.4,
-            "Buena": 14.3,
+            "Positiva": 35.7,
             "Regular": 14.3,
-            "Mala": 50,
-            "No se": 0
+            "Negativa": 50,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 26.4,
-            "Buena": 14.3,
+            "Positiva": 40.7,
             "Regular": 21.4,
-            "Mala": 37.9,
-            "No se": 0
+            "Negativa": 37.9,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 7.1,
-            "Buena": 42.9,
+            "Positiva": 50,
             "Regular": 42.9,
-            "Mala": 7.1,
-            "No se": 0
+            "Negativa": 7.1,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 35.7,
@@ -2111,29 +2087,26 @@
             "Otro": 11.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 7.5,
-            "Buena": 26.4,
+            "Positiva": 33.9,
             "Regular": 15.1,
-            "Mala": 18.9,
-            "No se": 32.1
+            "Negativa": 18.9,
+            "Ns/Nc": 32.1
           },
           "Funcionamiento CPC": {
-            "Muy buena": 18.9,
-            "Buena": 30.2,
+            "Positiva": 49.1,
             "Regular": 24.5,
-            "Mala": 5.7,
-            "No se": 20.8
+            "Negativa": 5.7,
+            "Ns/Nc": 20.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 71.7,
             "No": 28.3
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 26.4,
-            "Buena": 18.9,
+            "Positiva": 45.3,
             "Regular": 17,
-            "Mala": 7.5,
-            "No se": 30.2
+            "Negativa": 7.5,
+            "Ns/Nc": 30.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 7.5,
@@ -2156,25 +2129,22 @@
             "No": 39.6
           },
           "Gestión del Intendente": {
-            "Muy buena": 9.4,
-            "Buena": 30.2,
+            "Positiva": 39.6,
             "Regular": 22.6,
-            "Mala": 35.8,
-            "No se": 1.9
+            "Negativa": 35.8,
+            "Ns/Nc": 1.9
           },
           "Gestión del Gobernador": {
-            "Muy buena": 16.3,
-            "Buena": 30.2,
+            "Positiva": 46.5,
             "Regular": 22.6,
-            "Mala": 29,
-            "No se": 1.9
+            "Negativa": 29,
+            "Ns/Nc": 1.9
           },
           "Gestión del Presidente": {
-            "Muy buena": 13.2,
-            "Buena": 22.6,
+            "Positiva": 35.8,
             "Regular": 30.2,
-            "Mala": 32.1,
-            "No se": 1.9
+            "Negativa": 32.1,
+            "Ns/Nc": 1.9
           },
           "Aprobación Intendente": {
             "Apruebo": 50.9,
@@ -2358,29 +2328,26 @@
             "Otro": 9.4
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 9.4,
-            "Buena": 15.6,
+            "Positiva": 25,
             "Regular": 12.5,
-            "Mala": 28.1,
-            "No se": 34.4
+            "Negativa": 28.1,
+            "Ns/Nc": 34.4
           },
           "Funcionamiento CPC": {
-            "Muy buena": 3.1,
-            "Buena": 28.1,
+            "Positiva": 31.2,
             "Regular": 34.4,
-            "Mala": 15.6,
-            "No se": 18.8
+            "Negativa": 15.6,
+            "Ns/Nc": 18.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 65.6,
             "No": 34.4
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 15.6,
-            "Buena": 18.8,
+            "Positiva": 34.4,
             "Regular": 9.4,
-            "Mala": 15.6,
-            "No se": 40.6
+            "Negativa": 15.6,
+            "Ns/Nc": 40.6
           },
           "Mejoras en bacheos": {
             "Si, mucho": 3.1,
@@ -2403,25 +2370,22 @@
             "No": 46.9
           },
           "Gestión del Intendente": {
-            "Muy buena": 9.4,
-            "Buena": 6.3,
+            "Positiva": 15.7,
             "Regular": 28.1,
-            "Mala": 56.3,
-            "No se": 0
+            "Negativa": 56.3,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 17.5,
-            "Buena": 12.5,
+            "Positiva": 30,
             "Regular": 25,
-            "Mala": 45,
-            "No se": 0
+            "Negativa": 45,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 15.6,
-            "Buena": 25,
+            "Positiva": 40.6,
             "Regular": 15.6,
-            "Mala": 43.8,
-            "No se": 0
+            "Negativa": 43.8,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 31.3,
@@ -2663,29 +2627,26 @@
             "Otro": 11.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 9.5,
-            "Buena": 17.5,
+            "Positiva": 27,
             "Regular": 12.7,
-            "Mala": 49.2,
-            "No se": 11.1
+            "Negativa": 49.2,
+            "Ns/Nc": 11.1
           },
           "Funcionamiento CPC": {
-            "Muy buena": 7.9,
-            "Buena": 19,
+            "Positiva": 26.9,
             "Regular": 34.9,
-            "Mala": 23.8,
-            "No se": 14.3
+            "Negativa": 23.8,
+            "Ns/Nc": 14.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 41.3,
             "No": 58.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 3.2,
-            "Buena": 12.7,
+            "Positiva": 15.9,
             "Regular": 14.3,
-            "Mala": 15.9,
-            "No se": 54
+            "Negativa": 15.9,
+            "Ns/Nc": 54
           },
           "Mejoras en bacheos": {
             "Si, mucho": 1.6,
@@ -2708,25 +2669,22 @@
             "No": 42.9
           },
           "Gestión del Intendente": {
-            "Muy buena": 3.2,
-            "Buena": 20.6,
+            "Positiva": 23.8,
             "Regular": 23.8,
-            "Mala": 49.2,
-            "No se": 3.2
+            "Negativa": 49.2,
+            "Ns/Nc": 3.2
           },
           "Gestión del Gobernador": {
-            "Muy buena": 11.3,
-            "Buena": 23.8,
+            "Positiva": 35.1,
             "Regular": 31.7,
-            "Mala": 31.6,
-            "No se": 1.6
+            "Negativa": 31.6,
+            "Ns/Nc": 1.6
           },
           "Gestión del Presidente": {
-            "Muy buena": 15.9,
-            "Buena": 23.8,
+            "Positiva": 39.7,
             "Regular": 25.4,
-            "Mala": 34.9,
-            "No se": 0
+            "Negativa": 34.9,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 25.4,
@@ -3073,29 +3031,26 @@
             "Otro": 8.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 4.2,
-            "Buena": 16.7,
+            "Positiva": 20.9,
             "Regular": 12.5,
-            "Mala": 54.2,
-            "No se": 12.5
+            "Negativa": 54.2,
+            "Ns/Nc": 12.5
           },
           "Funcionamiento CPC": {
-            "Muy buena": 0,
-            "Buena": 25,
+            "Positiva": 25,
             "Regular": 41.7,
-            "Mala": 8.3,
-            "No se": 25
+            "Negativa": 8.3,
+            "Ns/Nc": 25
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 25,
             "No": 75
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 0,
-            "Buena": 12.5,
+            "Positiva": 12.5,
             "Regular": 25,
-            "Mala": 12.5,
-            "No se": 50
+            "Negativa": 12.5,
+            "Ns/Nc": 50
           },
           "Mejoras en bacheos": {
             "Si, mucho": 12.5,
@@ -3118,25 +3073,22 @@
             "No": 58.3
           },
           "Gestión del Intendente": {
-            "Muy buena": 4.2,
-            "Buena": 8.3,
+            "Positiva": 12.5,
             "Regular": 33.3,
-            "Mala": 50,
-            "No se": 4.2
+            "Negativa": 50,
+            "Ns/Nc": 4.2
           },
           "Gestión del Gobernador": {
-            "Muy buena": 13.3,
-            "Buena": 8.3,
+            "Positiva": 21.6,
             "Regular": 41.7,
-            "Mala": 36.7,
-            "No se": 0
+            "Negativa": 36.7,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 16.7,
-            "Buena": 29.2,
+            "Positiva": 45.9,
             "Regular": 25,
-            "Mala": 29.2,
-            "No se": 0
+            "Negativa": 29.2,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 33.3,
@@ -4206,29 +4158,26 @@
             "Otro": 20
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 10,
-            "Buena": 25,
+            "Positiva": 35,
             "Regular": 15,
-            "Mala": 40,
-            "No se": 10
+            "Negativa": 40,
+            "Ns/Nc": 10
           },
           "Funcionamiento CPC": {
-            "Muy buena": 10,
-            "Buena": 10,
+            "Positiva": 20,
             "Regular": 30,
-            "Mala": 40,
-            "No se": 10
+            "Negativa": 40,
+            "Ns/Nc": 10
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 15,
             "No": 85
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 10,
-            "Buena": 0,
+            "Positiva": 10,
             "Regular": 0,
-            "Mala": 20,
-            "No se": 70
+            "Negativa": 20,
+            "Ns/Nc": 70
           },
           "Mejoras en bacheos": {
             "Si, mucho": 25,
@@ -4251,25 +4200,22 @@
             "No": 70
           },
           "Gestión del Intendente": {
-            "Muy buena": 10,
-            "Buena": 5,
+            "Positiva": 15,
             "Regular": 30,
-            "Mala": 55,
-            "No se": 0
+            "Negativa": 55,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 15,
-            "Buena": 5,
+            "Positiva": 20,
             "Regular": 25,
-            "Mala": 55,
-            "No se": 0
+            "Negativa": 55,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 0,
-            "Buena": 30,
+            "Positiva": 30,
             "Regular": 10,
-            "Mala": 60,
-            "No se": 0
+            "Negativa": 60,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 30,
@@ -4572,29 +4518,26 @@
             "Otro": 33.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 0,
-            "Buena": 41.7,
+            "Positiva": 41.7,
             "Regular": 33.3,
-            "Mala": 16.7,
-            "No se": 8.3
+            "Negativa": 16.7,
+            "Ns/Nc": 8.3
           },
           "Funcionamiento CPC": {
-            "Muy buena": 0,
-            "Buena": 58.3,
+            "Positiva": 58.3,
             "Regular": 25,
-            "Mala": 8.3,
-            "No se": 8.3
+            "Negativa": 8.3,
+            "Ns/Nc": 8.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 16.7,
             "No": 83.3
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 16.7,
-            "Buena": 16.7,
+            "Positiva": 33.4,
             "Regular": 8.3,
-            "Mala": 8.3,
-            "No se": 50
+            "Negativa": 8.3,
+            "Ns/Nc": 50
           },
           "Mejoras en bacheos": {
             "Si, mucho": 16.7,
@@ -4617,25 +4560,22 @@
             "No": 50
           },
           "Gestión del Intendente": {
-            "Muy buena": 8.3,
-            "Buena": 41.7,
+            "Positiva": 50,
             "Regular": 50,
-            "Mala": 0,
-            "No se": 0
+            "Negativa": 0,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 21.7,
-            "Buena": 25,
+            "Positiva": 46.7,
             "Regular": 50,
-            "Mala": 3.3,
-            "No se": 0
+            "Negativa": 3.3,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 33.3,
-            "Buena": 0,
+            "Positiva": 33.3,
             "Regular": 8.3,
-            "Mala": 50,
-            "No se": 8.3
+            "Negativa": 50,
+            "Ns/Nc": 8.3
           },
           "Aprobación Intendente": {
             "Apruebo": 58.3,
@@ -4938,29 +4878,26 @@
             "Otro": 6.9
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 10.3,
-            "Buena": 31,
+            "Positiva": 41.3,
             "Regular": 37.9,
-            "Mala": 17.2,
-            "No se": 3.4
+            "Negativa": 17.2,
+            "Ns/Nc": 3.4
           },
           "Funcionamiento CPC": {
-            "Muy buena": 3.4,
-            "Buena": 20.7,
+            "Positiva": 24.1,
             "Regular": 34.5,
-            "Mala": 10.3,
-            "No se": 31
+            "Negativa": 10.3,
+            "Ns/Nc": 31
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 6.9,
             "No": 93.1
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 0,
-            "Buena": 6.9,
+            "Positiva": 6.9,
             "Regular": 10.3,
-            "Mala": 24.1,
-            "No se": 58.6
+            "Negativa": 24.1,
+            "Ns/Nc": 58.6
           },
           "Mejoras en bacheos": {
             "Si, mucho": 13.8,
@@ -4983,25 +4920,22 @@
             "No": 82.8
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 10.3,
+            "Positiva": 10.3,
             "Regular": 37.9,
-            "Mala": 48.3,
-            "No se": 3.4
+            "Negativa": 48.3,
+            "Ns/Nc": 3.4
           },
           "Gestión del Gobernador": {
-            "Muy buena": 5,
-            "Buena": 20.7,
+            "Positiva": 25.7,
             "Regular": 27.6,
-            "Mala": 43.3,
-            "No se": 3.4
+            "Negativa": 43.3,
+            "Ns/Nc": 3.4
           },
           "Gestión del Presidente": {
-            "Muy buena": 13.8,
-            "Buena": 17.2,
+            "Positiva": 31,
             "Regular": 24.1,
-            "Mala": 37.9,
-            "No se": 6.9
+            "Negativa": 37.9,
+            "Ns/Nc": 6.9
           },
           "Aprobación Intendente": {
             "Apruebo": 24.1,
@@ -5219,29 +5153,26 @@
             "Otro": 33.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 8.3,
-            "Buena": 12.5,
+            "Positiva": 20.8,
             "Regular": 33.3,
-            "Mala": 4.2,
-            "No se": 41.7
+            "Negativa": 4.2,
+            "Ns/Nc": 41.7
           },
           "Funcionamiento CPC": {
-            "Muy buena": 12.5,
-            "Buena": 45.8,
+            "Positiva": 58.3,
             "Regular": 29.2,
-            "Mala": 4.2,
-            "No se": 8.3
+            "Negativa": 4.2,
+            "Ns/Nc": 8.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 25,
             "No": 75
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 0,
-            "Buena": 20.8,
+            "Positiva": 20.8,
             "Regular": 8.3,
-            "Mala": 16.7,
-            "No se": 54.2
+            "Negativa": 16.7,
+            "Ns/Nc": 54.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 4.2,
@@ -5264,25 +5195,22 @@
             "No": 58.3
           },
           "Gestión del Intendente": {
-            "Muy buena": 4.2,
-            "Buena": 20.8,
+            "Positiva": 25,
             "Regular": 16.7,
-            "Mala": 37.5,
-            "No se": 20.8
+            "Negativa": 37.5,
+            "Ns/Nc": 20.8
           },
           "Gestión del Gobernador": {
-            "Muy buena": 13.4,
-            "Buena": 16.7,
+            "Positiva": 30.1,
             "Regular": 20.8,
-            "Mala": 40.8,
-            "No se": 8.3
+            "Negativa": 40.8,
+            "Ns/Nc": 8.3
           },
           "Gestión del Presidente": {
-            "Muy buena": 20.8,
-            "Buena": 25,
+            "Positiva": 45.8,
             "Regular": 12.5,
-            "Mala": 41.7,
-            "No se": 0
+            "Negativa": 41.7,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 41.7,
@@ -5415,29 +5343,26 @@
             "Otro": 18.9
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 2.7,
-            "Buena": 24.3,
+            "Positiva": 27,
             "Regular": 24.3,
-            "Mala": 29.7,
-            "No se": 18.9
+            "Negativa": 29.7,
+            "Ns/Nc": 18.9
           },
           "Funcionamiento CPC": {
-            "Muy buena": 8.1,
-            "Buena": 24.3,
+            "Positiva": 32.4,
             "Regular": 32.4,
-            "Mala": 13.5,
-            "No se": 21.6
+            "Negativa": 13.5,
+            "Ns/Nc": 21.6
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 91.9,
             "No": 8.1
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 8.1,
-            "Buena": 21.6,
+            "Positiva": 29.7,
             "Regular": 43.2,
-            "Mala": 10.8,
-            "No se": 16.2
+            "Negativa": 10.8,
+            "Ns/Nc": 16.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 13.5,
@@ -5460,25 +5385,22 @@
             "No": 67.6
           },
           "Gestión del Intendente": {
-            "Muy buena": 5.4,
-            "Buena": 2.7,
+            "Positiva": 8.1,
             "Regular": 29.7,
-            "Mala": 56.8,
-            "No se": 5.4
+            "Negativa": 56.8,
+            "Ns/Nc": 5.4
           },
           "Gestión del Gobernador": {
-            "Muy buena": 13.1,
-            "Buena": 5.4,
+            "Positiva": 18.5,
             "Regular": 18.9,
-            "Mala": 57.2,
-            "No se": 5.4
+            "Negativa": 57.2,
+            "Ns/Nc": 5.4
           },
           "Gestión del Presidente": {
-            "Muy buena": 13.5,
-            "Buena": 29.7,
+            "Positiva": 43.2,
             "Regular": 18.9,
-            "Mala": 37.8,
-            "No se": 0
+            "Negativa": 37.8,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 27,
@@ -5611,29 +5533,26 @@
             "Otro": 11.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 22.2,
-            "Buena": 11.1,
+            "Positiva": 33.3,
             "Regular": 18.5,
-            "Mala": 18.5,
-            "No se": 29.6
+            "Negativa": 18.5,
+            "Ns/Nc": 29.6
           },
           "Funcionamiento CPC": {
-            "Muy buena": 11.1,
-            "Buena": 25.9,
+            "Positiva": 37,
             "Regular": 40.7,
-            "Mala": 14.8,
-            "No se": 7.4
+            "Negativa": 14.8,
+            "Ns/Nc": 7.4
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 22.2,
             "No": 77.8
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 0,
-            "Buena": 0,
+            "Positiva": 0,
             "Regular": 14.8,
-            "Mala": 18.5,
-            "No se": 66.7
+            "Negativa": 18.5,
+            "Ns/Nc": 66.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 3.7,
@@ -5656,25 +5575,22 @@
             "No": 55.6
           },
           "Gestión del Intendente": {
-            "Muy buena": 3.7,
-            "Buena": 11.1,
+            "Positiva": 14.8,
             "Regular": 18.5,
-            "Mala": 66.7,
-            "No se": 0
+            "Negativa": 66.7,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 12.4,
-            "Buena": 14.8,
+            "Positiva": 27.2,
             "Regular": 22.2,
-            "Mala": 46.9,
-            "No se": 3.7
+            "Negativa": 46.9,
+            "Ns/Nc": 3.7
           },
           "Gestión del Presidente": {
-            "Muy buena": 14.8,
-            "Buena": 25.9,
+            "Positiva": 40.7,
             "Regular": 33.3,
-            "Mala": 25.9,
-            "No se": 0
+            "Negativa": 25.9,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 22.2,
@@ -5807,29 +5723,26 @@
             "Otro": 12.9
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 0,
-            "Buena": 16.1,
+            "Positiva": 16.1,
             "Regular": 22.6,
-            "Mala": 32.3,
-            "No se": 29
+            "Negativa": 32.3,
+            "Ns/Nc": 29
           },
           "Funcionamiento CPC": {
-            "Muy buena": 19.4,
-            "Buena": 32.3,
+            "Positiva": 51.7,
             "Regular": 16.1,
-            "Mala": 19.4,
-            "No se": 12.9
+            "Negativa": 19.4,
+            "Ns/Nc": 12.9
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 16.1,
             "No": 83.9
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 3.2,
-            "Buena": 3.2,
+            "Positiva": 6.4,
             "Regular": 9.7,
-            "Mala": 22.6,
-            "No se": 61.3
+            "Negativa": 22.6,
+            "Ns/Nc": 61.3
           },
           "Mejoras en bacheos": {
             "Si, mucho": 16.1,
@@ -5852,25 +5765,22 @@
             "No": 54.8
           },
           "Gestión del Intendente": {
-            "Muy buena": 9.7,
-            "Buena": 9.7,
+            "Positiva": 19.4,
             "Regular": 32.3,
-            "Mala": 45.2,
-            "No se": 3.2
+            "Negativa": 45.2,
+            "Ns/Nc": 3.2
           },
           "Gestión del Gobernador": {
-            "Muy buena": 8.2,
-            "Buena": 3.2,
+            "Positiva": 11.4,
             "Regular": 54.8,
-            "Mala": 27.3,
-            "No se": 6.5
+            "Negativa": 27.3,
+            "Ns/Nc": 6.5
           },
           "Gestión del Presidente": {
-            "Muy buena": 16.1,
-            "Buena": 12.9,
+            "Positiva": 29,
             "Regular": 45.2,
-            "Mala": 25.8,
-            "No se": 0
+            "Negativa": 25.8,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 32.3,
@@ -5918,29 +5828,26 @@
             "Otro": 12.5
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 0,
-            "Buena": 5,
+            "Positiva": 5,
             "Regular": 22.5,
-            "Mala": 37.5,
-            "No se": 35
+            "Negativa": 37.5,
+            "Ns/Nc": 35
           },
           "Funcionamiento CPC": {
-            "Muy buena": 0,
-            "Buena": 25,
+            "Positiva": 25,
             "Regular": 37.5,
-            "Mala": 35,
-            "No se": 2.5
+            "Negativa": 35,
+            "Ns/Nc": 2.5
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 62.5,
             "No": 37.5
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 7.5,
-            "Buena": 17.5,
+            "Positiva": 25,
             "Regular": 22.5,
-            "Mala": 30,
-            "No se": 22.5
+            "Negativa": 30,
+            "Ns/Nc": 22.5
           },
           "Mejoras en bacheos": {
             "Si, mucho": 5,
@@ -5963,25 +5870,22 @@
             "No": 62.5
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 7.5,
+            "Positiva": 7.5,
             "Regular": 27.5,
-            "Mala": 65,
-            "No se": 0
+            "Negativa": 65,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 5,
-            "Buena": 7.5,
+            "Positiva": 12.5,
             "Regular": 25,
-            "Mala": 60,
-            "No se": 2.5
+            "Negativa": 60,
+            "Ns/Nc": 2.5
           },
           "Gestión del Presidente": {
-            "Muy buena": 17.5,
-            "Buena": 22.5,
+            "Positiva": 40,
             "Regular": 22.5,
-            "Mala": 37.5,
-            "No se": 0
+            "Negativa": 37.5,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 22.5,
@@ -6110,29 +6014,26 @@
             "Otro": 3.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 3.8,
-            "Buena": 3.8,
+            "Positiva": 7.6,
             "Regular": 26.9,
-            "Mala": 30.8,
-            "No se": 34.6
+            "Negativa": 30.8,
+            "Ns/Nc": 34.6
           },
           "Funcionamiento CPC": {
-            "Muy buena": 9.6,
-            "Buena": 23.1,
+            "Positiva": 32.7,
             "Regular": 21.2,
-            "Mala": 28.8,
-            "No se": 17.3
+            "Negativa": 28.8,
+            "Ns/Nc": 17.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 11.5,
             "No": 88.5
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 1.9,
-            "Buena": 3.8,
+            "Positiva": 5.7,
             "Regular": 3.8,
-            "Mala": 19.2,
-            "No se": 71.2
+            "Negativa": 19.2,
+            "Ns/Nc": 71.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 17.3,
@@ -6155,25 +6056,22 @@
             "No": 71.2
           },
           "Gestión del Intendente": {
-            "Muy buena": 3.8,
-            "Buena": 5.8,
+            "Positiva": 9.6,
             "Regular": 17.3,
-            "Mala": 67.3,
-            "No se": 5.8
+            "Negativa": 67.3,
+            "Ns/Nc": 5.8
           },
           "Gestión del Gobernador": {
-            "Muy buena": 8.9,
-            "Buena": 11.5,
+            "Positiva": 20.4,
             "Regular": 17.3,
-            "Mala": 60.4,
-            "No se": 1.9
+            "Negativa": 60.4,
+            "Ns/Nc": 1.9
           },
           "Gestión del Presidente": {
-            "Muy buena": 26.9,
-            "Buena": 15.4,
+            "Positiva": 42.3,
             "Regular": 25,
-            "Mala": 32.7,
-            "No se": 0
+            "Negativa": 32.7,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 19.2,
@@ -6306,29 +6204,26 @@
             "Otro": 27.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 6.1,
-            "Buena": 3,
+            "Positiva": 9.1,
             "Regular": 15.2,
-            "Mala": 45.5,
-            "No se": 30.3
+            "Negativa": 45.5,
+            "Ns/Nc": 30.3
           },
           "Funcionamiento CPC": {
-            "Muy buena": 18.2,
-            "Buena": 18.2,
+            "Positiva": 36.4,
             "Regular": 21.2,
-            "Mala": 21.2,
-            "No se": 21.2
+            "Negativa": 21.2,
+            "Ns/Nc": 21.2
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 21.2,
             "No": 78.8
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 3,
-            "Buena": 0,
+            "Positiva": 3,
             "Regular": 3,
-            "Mala": 27.3,
-            "No se": 66.7
+            "Negativa": 27.3,
+            "Ns/Nc": 66.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 27.3,
@@ -6351,25 +6246,22 @@
             "No": 48.5
           },
           "Gestión del Intendente": {
-            "Muy buena": 15.2,
-            "Buena": 3,
+            "Positiva": 18.2,
             "Regular": 27.3,
-            "Mala": 54.5,
-            "No se": 0
+            "Negativa": 54.5,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 23.2,
-            "Buena": 9.1,
+            "Positiva": 32.3,
             "Regular": 24.2,
-            "Mala": 43.5,
-            "No se": 0
+            "Negativa": 43.5,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 15.2,
-            "Buena": 9.1,
+            "Positiva": 24.3,
             "Regular": 30.3,
-            "Mala": 42.4,
-            "No se": 3
+            "Negativa": 42.4,
+            "Ns/Nc": 3
           },
           "Aprobación Intendente": {
             "Apruebo": 30.3,
@@ -6587,29 +6479,26 @@
             "Otro": 15.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 5.3,
-            "Buena": 10.5,
+            "Positiva": 15.8,
             "Regular": 10.5,
-            "Mala": 21.1,
-            "No se": 52.6
+            "Negativa": 21.1,
+            "Ns/Nc": 52.6
           },
           "Funcionamiento CPC": {
-            "Muy buena": 5.3,
-            "Buena": 15.8,
+            "Positiva": 21.1,
             "Regular": 26.3,
-            "Mala": 26.3,
-            "No se": 26.3
+            "Negativa": 26.3,
+            "Ns/Nc": 26.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 21.1,
             "No": 78.9
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 5.3,
-            "Buena": 10.5,
+            "Positiva": 15.8,
             "Regular": 0,
-            "Mala": 15.8,
-            "No se": 68.4
+            "Negativa": 15.8,
+            "Ns/Nc": 68.4
           },
           "Mejoras en bacheos": {
             "Si, mucho": 0,
@@ -6632,25 +6521,22 @@
             "No": 73.7
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 5.3,
+            "Positiva": 5.3,
             "Regular": 21.1,
-            "Mala": 63.2,
-            "No se": 10.5
+            "Negativa": 63.2,
+            "Ns/Nc": 10.5
           },
           "Gestión del Gobernador": {
-            "Muy buena": 5,
-            "Buena": 5.3,
+            "Positiva": 10.3,
             "Regular": 21.1,
-            "Mala": 58.1,
-            "No se": 10.5
+            "Negativa": 58.1,
+            "Ns/Nc": 10.5
           },
           "Gestión del Presidente": {
-            "Muy buena": 5.3,
-            "Buena": 10.5,
+            "Positiva": 15.8,
             "Regular": 36.8,
-            "Mala": 42.1,
-            "No se": 5.3
+            "Negativa": 42.1,
+            "Ns/Nc": 5.3
           },
           "Aprobación Intendente": {
             "Apruebo": 21.1,
@@ -6698,29 +6584,26 @@
             "Otro": 25
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 0,
-            "Buena": 8.3,
+            "Positiva": 8.3,
             "Regular": 25,
-            "Mala": 50,
-            "No se": 16.7
+            "Negativa": 50,
+            "Ns/Nc": 16.7
           },
           "Funcionamiento CPC": {
-            "Muy buena": 0,
-            "Buena": 16.7,
+            "Positiva": 16.7,
             "Regular": 16.7,
-            "Mala": 58.3,
-            "No se": 8.3
+            "Negativa": 58.3,
+            "Ns/Nc": 8.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 25,
             "No": 75
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 0,
-            "Buena": 8.3,
+            "Positiva": 8.3,
             "Regular": 16.7,
-            "Mala": 33.3,
-            "No se": 41.7
+            "Negativa": 33.3,
+            "Ns/Nc": 41.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 8.3,
@@ -6743,25 +6626,22 @@
             "No": 75
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 0,
+            "Positiva": 0,
             "Regular": 33.3,
-            "Mala": 66.7,
-            "No se": 0
+            "Negativa": 66.7,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 5,
-            "Buena": 8.3,
+            "Positiva": 13.3,
             "Regular": 16.7,
-            "Mala": 70,
-            "No se": 0
+            "Negativa": 70,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 8.3,
-            "Buena": 58.3,
+            "Positiva": 66.6,
             "Regular": 8.3,
-            "Mala": 25,
-            "No se": 0
+            "Negativa": 25,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 16.7,
@@ -6887,29 +6767,26 @@
             "Otro": 28.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 3.1,
-            "Buena": 0,
+            "Positiva": 3.1,
             "Regular": 21.9,
-            "Mala": 40.6,
-            "No se": 34.4
+            "Negativa": 40.6,
+            "Ns/Nc": 34.4
           },
           "Funcionamiento CPC": {
-            "Muy buena": 3.1,
-            "Buena": 3.1,
+            "Positiva": 6.2,
             "Regular": 12.5,
-            "Mala": 37.5,
-            "No se": 43.8
+            "Negativa": 37.5,
+            "Ns/Nc": 43.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 62.5,
             "No": 37.5
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 3.1,
-            "Buena": 6.3,
+            "Positiva": 9.4,
             "Regular": 18.8,
-            "Mala": 37.5,
-            "No se": 34.4
+            "Negativa": 37.5,
+            "Ns/Nc": 34.4
           },
           "Mejoras en bacheos": {
             "Si, mucho": 6.3,
@@ -6932,25 +6809,22 @@
             "No": 40.6
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 3.1,
+            "Positiva": 3.1,
             "Regular": 18.8,
-            "Mala": 78.1,
-            "No se": 0
+            "Negativa": 78.1,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 8.1,
-            "Buena": 12.5,
+            "Positiva": 20.6,
             "Regular": 28.1,
-            "Mala": 48.2,
-            "No se": 3.1
+            "Negativa": 48.2,
+            "Ns/Nc": 3.1
           },
           "Gestión del Presidente": {
-            "Muy buena": 12.5,
-            "Buena": 31.3,
+            "Positiva": 43.8,
             "Regular": 15.6,
-            "Mala": 40.6,
-            "No se": 0
+            "Negativa": 40.6,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 15.6,
@@ -8479,29 +8353,26 @@
             "Otro": 31.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 3.1,
-            "Buena": 7.8,
+            "Positiva": 10.9,
             "Regular": 17.2,
-            "Mala": 23.4,
-            "No se": 48.4
+            "Negativa": 23.4,
+            "Ns/Nc": 48.4
           },
           "Funcionamiento CPC": {
-            "Muy buena": 9.4,
-            "Buena": 21.9,
+            "Positiva": 31.3,
             "Regular": 21.9,
-            "Mala": 15.6,
-            "No se": 31.3
+            "Negativa": 15.6,
+            "Ns/Nc": 31.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 70.3,
             "No": 29.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 4.7,
-            "Buena": 21.9,
+            "Positiva": 26.6,
             "Regular": 23.4,
-            "Mala": 17.2,
-            "No se": 32.8
+            "Negativa": 17.2,
+            "Ns/Nc": 32.8
           },
           "Mejoras en bacheos": {
             "Si, mucho": 6.3,
@@ -8524,25 +8395,22 @@
             "No": 43.8
           },
           "Gestión del Intendente": {
-            "Muy buena": 1.6,
-            "Buena": 12.5,
+            "Positiva": 14.1,
             "Regular": 23.4,
-            "Mala": 59.4,
-            "No se": 3.1
+            "Negativa": 59.4,
+            "Ns/Nc": 3.1
           },
           "Gestión del Gobernador": {
-            "Muy buena": 8.1,
-            "Buena": 7.8,
+            "Positiva": 15.9,
             "Regular": 21.9,
-            "Mala": 59.1,
-            "No se": 3.1
+            "Negativa": 59.1,
+            "Ns/Nc": 3.1
           },
           "Gestión del Presidente": {
-            "Muy buena": 7.8,
-            "Buena": 18.8,
+            "Positiva": 26.6,
             "Regular": 23.4,
-            "Mala": 50,
-            "No se": 0
+            "Negativa": 50,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 18.8,
@@ -8590,29 +8458,26 @@
             "Otro": 20.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 0,
-            "Buena": 20.8,
+            "Positiva": 20.8,
             "Regular": 29.2,
-            "Mala": 12.5,
-            "No se": 37.5
+            "Negativa": 12.5,
+            "Ns/Nc": 37.5
           },
           "Funcionamiento CPC": {
-            "Muy buena": 8.3,
-            "Buena": 20.8,
+            "Positiva": 29.1,
             "Regular": 25,
-            "Mala": 0,
-            "No se": 45.8
+            "Negativa": 0,
+            "Ns/Nc": 45.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 91.7,
             "No": 8.3
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 12.5,
-            "Buena": 20.8,
+            "Positiva": 33.3,
             "Regular": 37.5,
-            "Mala": 4.2,
-            "No se": 25
+            "Negativa": 4.2,
+            "Ns/Nc": 25
           },
           "Mejoras en bacheos": {
             "Si, mucho": 0,
@@ -8635,25 +8500,22 @@
             "No": 41.7
           },
           "Gestión del Intendente": {
-            "Muy buena": 0,
-            "Buena": 12.5,
+            "Positiva": 12.5,
             "Regular": 29.2,
-            "Mala": 50,
-            "No se": 8.3
+            "Negativa": 50,
+            "Ns/Nc": 8.3
           },
           "Gestión del Gobernador": {
-            "Muy buena": 5,
-            "Buena": 12.5,
+            "Positiva": 17.5,
             "Regular": 16.7,
-            "Mala": 57.5,
-            "No se": 8.3
+            "Negativa": 57.5,
+            "Ns/Nc": 8.3
           },
           "Gestión del Presidente": {
-            "Muy buena": 4.2,
-            "Buena": 33.3,
+            "Positiva": 37.5,
             "Regular": 41.7,
-            "Mala": 20.8,
-            "No se": 0
+            "Negativa": 20.8,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 20.8,
@@ -9101,29 +8963,26 @@
             "Otro": 26.5
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 6.1,
-            "Buena": 16.3,
+            "Positiva": 22.4,
             "Regular": 4.1,
-            "Mala": 12.2,
-            "No se": 61.2
+            "Negativa": 12.2,
+            "Ns/Nc": 61.2
           },
           "Funcionamiento CPC": {
-            "Muy buena": 8.2,
-            "Buena": 16.3,
+            "Positiva": 24.5,
             "Regular": 16.3,
-            "Mala": 8.2,
-            "No se": 51
+            "Negativa": 8.2,
+            "Ns/Nc": 51
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 77.6,
             "No": 22.4
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 4.1,
-            "Buena": 18.4,
+            "Positiva": 22.5,
             "Regular": 26.5,
-            "Mala": 18.4,
-            "No se": 32.7
+            "Negativa": 18.4,
+            "Ns/Nc": 32.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 4.1,
@@ -9146,25 +9005,22 @@
             "No": 36.7
           },
           "Gestión del Intendente": {
-            "Muy buena": 4.1,
-            "Buena": 6.1,
+            "Positiva": 10.2,
             "Regular": 34.7,
-            "Mala": 55.1,
-            "No se": 0
+            "Negativa": 55.1,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Muy buena": 11.1,
-            "Buena": 8.2,
+            "Positiva": 19.3,
             "Regular": 28.6,
-            "Mala": 52.1,
-            "No se": 0
+            "Negativa": 52.1,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 18.4,
-            "Buena": 12.2,
+            "Positiva": 30.6,
             "Regular": 18.4,
-            "Mala": 51,
-            "No se": 0
+            "Negativa": 51,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 18.4,
@@ -9368,29 +9224,26 @@
             "Otro": 7.4
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 4.3,
-            "Buena": 19.1,
+            "Positiva": 23.4,
             "Regular": 19.1,
-            "Mala": 26.6,
-            "No se": 30.9
+            "Negativa": 26.6,
+            "Ns/Nc": 30.9
           },
           "Funcionamiento CPC": {
-            "Muy buena": 11.7,
-            "Buena": 40.4,
+            "Positiva": 52.1,
             "Regular": 26.6,
-            "Mala": 14.9,
-            "No se": 6.4
+            "Negativa": 14.9,
+            "Ns/Nc": 6.4
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 63.8,
             "No": 36.2
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 9.6,
-            "Buena": 12.8,
+            "Positiva": 22.4,
             "Regular": 16,
-            "Mala": 16,
-            "No se": 45.7
+            "Negativa": 16,
+            "Ns/Nc": 45.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 10.6,
@@ -9413,25 +9266,22 @@
             "No": 45.7
           },
           "Gestión del Intendente": {
-            "Muy buena": 2.1,
-            "Buena": 10.6,
+            "Positiva": 12.7,
             "Regular": 29.8,
-            "Mala": 55.3,
-            "No se": 2.1
+            "Negativa": 55.3,
+            "Ns/Nc": 2.1
           },
           "Gestión del Gobernador": {
-            "Muy buena": 9.3,
-            "Buena": 14.9,
+            "Positiva": 24.2,
             "Regular": 26.6,
-            "Mala": 47.1,
-            "No se": 2.1
+            "Negativa": 47.1,
+            "Ns/Nc": 2.1
           },
           "Gestión del Presidente": {
-            "Muy buena": 11.7,
-            "Buena": 24.5,
+            "Positiva": 36.2,
             "Regular": 27.7,
-            "Mala": 34,
-            "No se": 2.1
+            "Negativa": 34,
+            "Ns/Nc": 2.1
           },
           "Aprobación Intendente": {
             "Apruebo": 27.7,
@@ -9557,29 +9407,26 @@
             "Otro": 11.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 17.6,
-            "Buena": 29.4,
+            "Positiva": 47,
             "Regular": 20.6,
-            "Mala": 20.6,
-            "No se": 11.8
+            "Negativa": 20.6,
+            "Ns/Nc": 11.8
           },
           "Funcionamiento CPC": {
-            "Muy buena": 8.8,
-            "Buena": 29.4,
+            "Positiva": 38.2,
             "Regular": 38.2,
-            "Mala": 11.8,
-            "No se": 11.8
+            "Negativa": 11.8,
+            "Ns/Nc": 11.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 58.8,
             "No": 41.2
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 8.8,
-            "Buena": 14.7,
+            "Positiva": 23.5,
             "Regular": 20.6,
-            "Mala": 11.8,
-            "No se": 44.1
+            "Negativa": 11.8,
+            "Ns/Nc": 44.1
           },
           "Mejoras en bacheos": {
             "Si, mucho": 2.9,
@@ -9602,25 +9449,22 @@
             "No": 61.8
           },
           "Gestión del Intendente": {
-            "Muy buena": 8.8,
-            "Buena": 23.5,
+            "Positiva": 32.3,
             "Regular": 23.5,
-            "Mala": 38.2,
-            "No se": 5.9
+            "Negativa": 38.2,
+            "Ns/Nc": 5.9
           },
           "Gestión del Gobernador": {
-            "Muy buena": 19.8,
-            "Buena": 17.6,
+            "Positiva": 37.4,
             "Regular": 20.6,
-            "Mala": 39.1,
-            "No se": 2.9
+            "Negativa": 39.1,
+            "Ns/Nc": 2.9
           },
           "Gestión del Presidente": {
-            "Muy buena": 11.8,
-            "Buena": 20.6,
+            "Positiva": 32.4,
             "Regular": 38.2,
-            "Mala": 29.4,
-            "No se": 0
+            "Negativa": 29.4,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 32.4,
@@ -10448,29 +10292,26 @@
             "Otro": 23.7
           },
           "Funcionamiento Centro Vecinal": {
-            "Muy buena": 7.9,
-            "Buena": 15.8,
+            "Positiva": 23.7,
             "Regular": 21.1,
-            "Mala": 15.8,
-            "No se": 39.5
+            "Negativa": 15.8,
+            "Ns/Nc": 39.5
           },
           "Funcionamiento CPC": {
-            "Muy buena": 7.9,
-            "Buena": 28.9,
+            "Positiva": 36.8,
             "Regular": 10.5,
-            "Mala": 7.9,
-            "No se": 44.7
+            "Negativa": 7.9,
+            "Ns/Nc": 44.7
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 68.4,
             "No": 31.6
           },
           "Calificación Cordobeses en Alerta": {
-            "Muy buena": 10.5,
-            "Buena": 39.5,
+            "Positiva": 50,
             "Regular": 13.2,
-            "Mala": 2.6,
-            "No se": 34.2
+            "Negativa": 2.6,
+            "Ns/Nc": 34.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 15.8,
@@ -10493,25 +10334,22 @@
             "No": 47.4
           },
           "Gestión del Intendente": {
-            "Muy buena": 7.9,
-            "Buena": 15.8,
+            "Positiva": 23.7,
             "Regular": 34.2,
-            "Mala": 39.5,
-            "No se": 2.6
+            "Negativa": 39.5,
+            "Ns/Nc": 2.6
           },
           "Gestión del Gobernador": {
-            "Muy buena": 15.5,
-            "Buena": 13.2,
+            "Positiva": 28.7,
             "Regular": 31.6,
-            "Mala": 39.7,
-            "No se": 0
+            "Negativa": 39.7,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Muy buena": 7.9,
-            "Buena": 10.5,
+            "Positiva": 18.4,
             "Regular": 10.5,
-            "Mala": 71.1,
-            "No se": 0
+            "Negativa": 71.1,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 39.5,
