@@ -1212,6 +1212,24 @@ function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoK
 
 const COLOR_GESTION = { 'Positiva': '#22C55E', 'Regular': '#FBBF24', 'Negativa': '#EF4444', 'Ns/Nc': '#CBD5E1' };
 
+// Barra horizontal azul con % embebido (dentro si entra, afuera si no) — compartida
+// con FilasProblemasComparativo (vista Comparativo), que agrega badge de variación al
+// lado. Misma pieza en los dos lugares, sin duplicar el cálculo de si el texto entra
+// adentro de la barra o no.
+const BarraHorizontalPct = ({ pct }) => {
+  const anchoPct = Math.min(pct, 100);
+  const cabeAdentro = anchoPct >= 15; // suficiente lugar para el texto dentro del relleno
+  return (
+    <div style={{ flex: 1, backgroundColor: 'var(--bg-secondary)', borderRadius: '5px', height: '20px', position: 'relative' }}>
+      <div style={{ width: `${anchoPct}%`, backgroundColor: '#1976D2', height: '100%', borderRadius: '5px' }} />
+      <span style={{
+        position: 'absolute', top: '2px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
+        ...(cabeAdentro ? { left: '8px', color: '#fff' } : { left: `calc(${anchoPct}% + 6px)`, color: 'var(--text-primary)' }),
+      }}>{pct}%</span>
+    </div>
+  );
+};
+
 const BarraProblemas = ({ problemas }) => {
   if (!problemas) return null;
   const entradas = Object.entries(problemas).sort((a, b) => b[1] - a[1]);
@@ -1222,21 +1240,7 @@ const BarraProblemas = ({ problemas }) => {
         {entradas.map(([nombre, pct]) => (
           <div key={nombre} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '190px', flexShrink: 0, fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'right' }}>{nombre}</div>
-            <div style={{ flex: 1, backgroundColor: 'var(--bg-secondary)', borderRadius: '5px', height: '20px', position: 'relative' }}>
-              <div style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: '#1976D2', height: '100%', borderRadius: '5px' }} />
-              {(() => {
-                const anchoPct = Math.min(pct, 100);
-                const cabeAdentro = anchoPct >= 15; // suficiente lugar para el texto dentro del relleno
-                return (
-                  <span style={{
-                    position: 'absolute', top: '2px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
-                    ...(cabeAdentro
-                      ? { left: '8px', color: '#fff' }
-                      : { left: `calc(${anchoPct}% + 6px)`, color: 'var(--text-primary)' }),
-                  }}>{pct}%</span>
-                );
-              })()}
-            </div>
+            <BarraHorizontalPct pct={pct} />
           </div>
         ))}
       </div>
@@ -1367,17 +1371,20 @@ const ResumenEncuesta = ({ preguntas }) => (
 // directa en texto plano, ver calcularVariacionIndicador/textoVariacionIndicador) ni
 // una única función de HTML compartida: cada lado renderiza con su propia técnica
 // (JSX vs. HTML-string) sobre la MISMA lógica de cálculo, para no desincronizarse.
-// Convención de deltas sin cambios: siempre última ronda vs. primera ronda.
+// Convención de deltas: última ronda vs. anteúltima ronda (NO contra la primera) —
+// con exactamente 2 rondas la anteúltima es la primera, caso base sin nada especial.
 // ============================================
 
 // Solo la barra apilada Positiva/Regular/Negativa/Ns-Nc (sin label), para poder
 // componerla tanto en una fila de mini-pendiente (fecha a la izquierda) como en
 // htmlBarraCategoriasPDF (label arriba). Mismos colores/umbral de texto que BarraGestion.
 // deltas (opcional): {categoria: delta} para pintar, arriba de CADA segmento presente,
-// su variación en pp — se usa solo en la barra de la última ronda mostrada (ver
-// htmlMiniPendienteGestion). Cada label ocupa el mismo ancho % que su segmento para
-// quedar centrado justo arriba de él.
-function htmlBarraSegmentosPDF(data, { height = 18, deltas = null } = {}) {
+// su variación en pp contra la barra INMEDIATAMENTE ANTERIOR — se pasa null en la
+// primera barra de la serie (nada previo con qué comparar, ver htmlMiniPendienteGestion).
+// Cada label ocupa el mismo ancho % que su segmento para quedar centrado justo arriba
+// de él. umbral: mismo umbral_variacion_pp del resto — por debajo, el segmento se trata
+// como estable (ver htmlDeltaSegmentoBadge).
+function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 } = {}) {
   if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
   const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
   const presentes = categorias.filter(cat => data[cat] > 0);
@@ -1388,24 +1395,28 @@ function htmlBarraSegmentosPDF(data, { height = 18, deltas = null } = {}) {
   }).join('');
   const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
   if (!deltas) return barra;
-  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat]) : ''}</div>`).join('');
+  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat], umbral) : ''}</div>`).join('');
   return `<div style="display:flex;margin-bottom:3px">${labels}</div>${barra}`;
 }
 
-// Arma {actual, fechaActual, primera, delta, estado} para un indicador a partir de
-// [{fecha, valor}] ya sin nulls, en orden cronológico. Compartida por pantalla
-// (ComparativoEncuesta, JSX) y PDF (htmlComparativoEncuestaBody, HTML-string) — es
-// pura lógica de datos, sin JSX ni HTML, así que no hay nada que duplicar entre las
-// dos. estado: 'sube' | 'baja' | 'estable' (|delta| < umbral) según primera vs.
-// última, o null con < 2 rondas con dato (nada que comparar todavía).
+// Arma {actual, fechaActual, actualCasos, anterior, delta, estado} para un indicador a
+// partir de [{fecha, valor, casos}] ya sin nulls, en orden cronológico. Compartida por
+// pantalla (ComparativoEncuesta, JSX) y PDF (htmlComparativoEncuestaBody, HTML-string) —
+// es pura lógica de datos, sin JSX ni HTML, así que no hay nada que duplicar entre las
+// dos. "anterior" es el penúltimo elemento CON DATO de esta lista ya filtrada — si la
+// pregunta no está presente en la ronda anteúltima global pero sí en una previa, se
+// compara contra esa (mismo criterio de "omitir el hueco puntual sin romper el resto"
+// que ya aplicaba con la convención vieja). estado: 'sube' | 'baja' | 'estable'
+// (|delta| < umbral) según anterior vs. actual, o null con < 2 rondas con dato (nada
+// que comparar todavía).
 function calcularVariacionIndicador(datos, umbral) {
   if (!datos || datos.length === 0) return null;
   const actual = datos[datos.length - 1];
-  const primera = datos[0];
-  if (datos.length < 2) return { actual: actual.valor, fechaActual: actual.fecha, primera: null, delta: null, estado: null };
-  const delta = actual.valor - primera.valor;
+  if (datos.length < 2) return { actual: actual.valor, fechaActual: actual.fecha, actualCasos: actual.casos, anterior: null, delta: null, estado: null };
+  const anterior = datos[datos.length - 2];
+  const delta = actual.valor - anterior.valor;
   const estado = Math.abs(delta) < umbral ? 'estable' : (delta > 0 ? 'sube' : 'baja');
-  return { actual: actual.valor, fechaActual: actual.fecha, primera: primera.valor, delta, estado };
+  return { actual: actual.valor, fechaActual: actual.fecha, actualCasos: actual.casos, anterior: anterior.valor, delta, estado };
 }
 
 // positivoEsSubir: polaridad del indicador, no del delta — true para Aprobación/
@@ -1420,12 +1431,14 @@ function colorVariacionIndicador(estado, positivoEsSubir, colorNeutro = 'var(--t
   return esBueno ? '#2E7D32' : '#C62828';
 }
 
+// Usado solo por el PDF (htmlIndicadorCardPlano/htmlTablaProblemasPlano) — pantalla
+// tiene su propio formateo de 2 líneas, ver formatoVariacionCard/BadgeVariacionProblema.
 function textoVariacionIndicador(v) {
   if (!v || v.estado == null) return null;
-  if (v.estado === 'estable') return `≈ estable (${v.primera.toFixed(1)}%)`;
+  if (v.estado === 'estable') return `≈ estable (${v.anterior.toFixed(1)}%)`;
   const flecha = v.estado === 'sube' ? '▲' : '▼';
   const verbo = v.estado === 'sube' ? 'subió' : 'bajó';
-  return `${flecha} ${verbo} desde ${v.primera.toFixed(1)}%`;
+  return `${flecha} ${verbo} desde ${v.anterior.toFixed(1)}%`;
 }
 
 // 6 cards: Aprobación x3 + Reelección x2 + Cordobeses en Alerta. Esta última pregunta
@@ -1461,17 +1474,18 @@ function calcularFilasProblemasComparativo(rondas, umbral) {
     .sort((a, b) => b.v.actual - a.v.actual);
 }
 
-// Resumen "🔺 Subió / 🔻 Bajó" — misma lógica sin cambios (umbral, primera vs. última
-// ronda de "Problemas principales").
+// Resumen "🔺 Subió / 🔻 Bajó" — última ronda vs. anteúltima (misma convención que el
+// resto de Comparativo; con exactamente 2 rondas la anteúltima es la primera).
 function calcularResumenVariacionesProblemas(rondas, umbral) {
-  const primera = rondas[0], ultima = rondas[rondas.length - 1];
+  if (rondas.length < 2) return { suben: [], bajan: [] };
+  const anterior = rondas[rondas.length - 2], ultima = rondas[rondas.length - 1];
   const probActual = ultima.preguntas?.['Problemas principales'];
-  const probPrimera = primera.preguntas?.['Problemas principales'];
-  if (!probActual || !probPrimera) return { suben: [], bajan: [] };
-  const categorias = new Set([...Object.keys(probActual), ...Object.keys(probPrimera)]);
+  const probAnterior = anterior.preguntas?.['Problemas principales'];
+  if (!probActual || !probAnterior) return { suben: [], bajan: [] };
+  const categorias = new Set([...Object.keys(probActual), ...Object.keys(probAnterior)]);
   const variaciones = [];
   categorias.forEach(cat => {
-    const vA = probActual[cat], vB = probPrimera[cat];
+    const vA = probActual[cat], vB = probAnterior[cat];
     if (vA == null || vB == null) return;
     const delta = vA - vB;
     if (Math.abs(delta) >= umbral) variaciones.push({ cat, delta });
@@ -1537,13 +1551,16 @@ function htmlResumenVariacionesPlano(rondas, umbral) {
 
 // --- "Calificación de gestión" (barras apiladas). Una fila por ronda (fecha a la
 // izquierda + barra apilada Positiva/Regular/Negativa/Ns-Nc, reutilizando
-// htmlBarraSegmentosPDF), apiladas verticalmente. Ya no hay un badge único arriba del
-// título (ambiguo: solo mostraba el delta de "Positiva") — en su lugar, cada segmento
-// de la ÚLTIMA barra lleva su propio delta arriba, ver htmlDeltaSegmentoBadge/
-// calcularDeltasCategoriasGestion. ---
-function htmlDeltaSegmentoBadge(delta) {
+// htmlBarraSegmentosPDF), apiladas verticalmente. Cada barra desde la SEGUNDA en
+// adelante lleva, arriba de cada segmento, su delta contra la barra INMEDIATAMENTE
+// ANTERIOR (no contra la primera) — ver htmlDeltaSegmentoBadge/
+// calcularDeltasCategoriasGestion. La primera barra nunca lleva badge (nada previo
+// con qué comparar). ---
+// umbral: por debajo, "estable" (mismo criterio que el resto de Comparativo) en vez
+// de forzar una flecha por un cambio de redondeo.
+function htmlDeltaSegmentoBadge(delta, umbral = 2.5) {
   const redondeado = Math.round(delta * 10) / 10;
-  if (redondeado === 0) return `<span style="font-size:10px;font-weight:600;color:#999">— 0.0 pp</span>`;
+  if (Math.abs(redondeado) < umbral) return `<span style="font-size:10px;font-weight:600;color:#999">· Estable</span>`;
   const sube = redondeado > 0;
   const color = sube ? '#2E7D32' : '#C62828';
   const arrow = sube ? '▲' : '▼';
@@ -1551,45 +1568,45 @@ function htmlDeltaSegmentoBadge(delta) {
   return `<span style="font-size:10px;font-weight:600;color:${color}">${arrow} ${signo}${redondeado.toFixed(1)} pp</span>`;
 }
 
-// Delta por categoría (Positiva/Regular/Negativa/Ns-Nc) entre la primera y la última
-// fila con dato para este funcionario — reemplaza el viejo badge único de "Positiva".
-// Variación cruda por signo (sube=verde, baja=rojo), sin lógica de "bueno/malo" según
-// qué representa cada categoría, igual para las 4. Si una categoría existe en la
-// última ronda pero no en la primera (ej. Ns/Nc recién aparece), se toma 0% como valor
-// de esa primera ronda. null si hay menos de 2 filas (nada que comparar todavía).
-function calcularDeltasCategoriasGestion(filas) {
-  if (filas.length < 2) return null;
-  const primera = filas[0].data, ultima = filas[filas.length - 1].data;
+// Delta por categoría (Positiva/Regular/Negativa/Ns-Nc) entre dos filas CONSECUTIVAS
+// (anterior/actual) para un funcionario — se llama una vez por cada par de barras
+// adyacentes, no solo primera-vs-última. Variación cruda por signo (sube=verde,
+// baja=rojo), sin lógica de "bueno/malo" según qué representa cada categoría, igual
+// para las 4. Si una categoría existe en la barra actual pero no en la anterior (ej.
+// Ns/Nc recién aparece), se toma 0% como valor de esa categoría en la anterior.
+function calcularDeltasCategoriasGestion(anteriorData, actualData) {
   const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
   const deltas = {};
   categorias.forEach(cat => {
-    const vUltima = ultima[cat];
-    if (!vUltima || vUltima <= 0) return; // sin segmento en la última barra => sin badge
-    deltas[cat] = vUltima - (primera[cat] || 0);
+    const vActual = actualData[cat];
+    if (!vActual || vActual <= 0) return; // sin segmento en esta barra => sin badge
+    deltas[cat] = vActual - (anteriorData[cat] || 0);
   });
   return deltas;
 }
 
-function htmlMiniPendienteGestion(funcionario, rondas) {
+function htmlMiniPendienteGestion(funcionario, rondas, umbral) {
   const pregunta = `Gestión del ${funcionario}`;
   const filas = rondas.map(r => ({ fecha: r.fecha, casos: r.casos, data: r.preguntas?.[pregunta] })).filter(f => f.data);
   if (filas.length === 0) {
     return `<div style="margin-bottom:16px"><div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div><p style="font-size:12px;color:#999">Sin dato.</p></div>`;
   }
-  const deltas = calcularDeltasCategoriasGestion(filas);
-  const filasHtml = filas.map((f, i) => `
+  const filasHtml = filas.map((f, i) => {
+    const deltas = i > 0 ? calcularDeltasCategoriasGestion(filas[i - 1].data, f.data) : null;
+    return `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
       <span style="width:175px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
-      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22, deltas: i === filas.length - 1 ? deltas : null })}</div>
-    </div>`).join('');
+      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22, deltas, umbral })}</div>
+    </div>`;
+  }).join('');
   return `<div style="margin-bottom:16px">
     <div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div>
     ${filasHtml}
   </div>`;
 }
 
-function htmlMiniPendientesGestion(rondas) {
-  return ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas)).join('');
+function htmlMiniPendientesGestion(rondas, umbral) {
+  return ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral)).join('');
 }
 
 function htmlLegendGestion() {
@@ -1613,7 +1630,7 @@ function htmlComparativoEncuestaBody(encuesta, umbral) {
     </div>
     <div style="margin-bottom:20px">
       <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Calificación de gestión</h4>
-      ${htmlMiniPendientesGestion(rondas)}
+      ${htmlMiniPendientesGestion(rondas, umbral)}
       ${htmlLegendGestion()}
     </div>
     <div>
@@ -1625,57 +1642,108 @@ function htmlComparativoEncuestaBody(encuesta, umbral) {
 
 // ============================================
 // VISTA "COMPARATIVO" EN PANTALLA — JSX puro sobre la lógica de cálculo de arriba
-// (calcularVariacionIndicador/textoVariacionIndicador/etc.), independiente del
-// renderer del PDF (htmlComparativoEncuestaBody, HTML-string) aunque comparten esa
-// misma lógica — ver comentario de la sección de arriba.
+// (calcularVariacionIndicador/etc.), independiente del renderer del PDF
+// (htmlComparativoEncuestaBody, HTML-string) aunque comparten esa misma lógica — ver
+// comentario de la sección de arriba. El PDF sigue con su propio formato de texto
+// plano (textoVariacionIndicador) sin cambios visuales — acá abajo va el rediseño de
+// pantalla: cards de 2 líneas con acento por tipo de pregunta, badge en vez de frase
+// para Principales problemas, y umbral aplicado en el badge de gestión.
 // ============================================
 
-const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true }) => {
-  const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
+// Acento por tipo de pregunta (encuestas_metadata.json → preguntas[pregunta].tipo) —
+// mismos colores ya usados en otras partes del tablero, no inventados para esto:
+// Aprobación = azul primario del tablero, Reelección = teal de TERRITORIO LEAL/
+// Relevado, neutro = gris pizarra de EN DISPUTA/ADVERSO (fallback para cualquier tipo
+// futuro sin color asignado, ej. "Cordobeses en Alerta" que es tipo "Servicio").
+const ACENTO_TIPO_PREGUNTA = { Aprobacion: '#1976D2', Reeleccion: '#26A69A' };
+const ACENTO_TIPO_NEUTRO = '#78909C';
+const colorAcentoTipoPregunta = (tipo) => ACENTO_TIPO_PREGUNTA[tipo] || ACENTO_TIPO_NEUTRO;
+
+// Formato de 2 líneas de la card, sobre calcularVariacionIndicador (anterior vs.
+// actual): con cambio ≥umbral, línea1 = delta en negrita+color, línea2 = "De A% a B%"
+// muted; por debajo del umbral, una sola línea "· Estable (A% → B%)" en gris — no hay
+// "subida"/"bajada" que destacar, así que no tiene sentido partirla en 2.
+function formatoVariacionCard(v, positivoEsSubir) {
+  if (!v || v.estado == null) return null;
+  const color = colorVariacionIndicador(v.estado, positivoEsSubir);
+  if (v.estado === 'estable') return { color, linea1: `· Estable (${v.anterior.toFixed(1)}% → ${v.actual.toFixed(1)}%)`, linea2: null };
+  const flecha = v.estado === 'sube' ? '▲' : '▼';
+  const verbo = v.estado === 'sube' ? 'Subió' : 'Bajó';
+  return { color, linea1: `${flecha} ${verbo} ${Math.abs(v.delta).toFixed(1)} p.p`, linea2: `De ${v.anterior.toFixed(1)}% a ${v.actual.toFixed(1)}%` };
+}
+
+const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento }) => {
+  const datos = rondas.map(r => ({ fecha: r.fecha, casos: r.casos, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
   const v = calcularVariacionIndicador(datos, umbral);
-  const frase = textoVariacionIndicador(v);
+  const cambio = formatoVariacionCard(v, positivoEsSubir);
   return (
-    <div style={{ padding: '16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '110px' }}>
-      <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{label}</div>
-      <div style={{ fontSize: '26px', fontWeight: 500, color: 'var(--text-primary)' }}>{v?.actual != null ? `${v.actual.toFixed(1)}%` : '—'}</div>
-      {frase && <div style={{ fontSize: '12px', fontWeight: 600, color: colorVariacionIndicador(v.estado, positivoEsSubir) }}>{frase}</div>}
-      {v?.fechaActual && <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '2px' }}>{formatearFecha(v.fechaActual)}</div>}
+    <div style={{ padding: '14px 16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderLeft: `3px solid ${colorAcento}`, borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }}>
+      <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{label}</div>
+      {cambio ? (
+        <>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: cambio.color }}>{cambio.linea1}</div>
+          {cambio.linea2 && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{cambio.linea2}</div>}
+        </>
+      ) : (
+        <div style={{ fontSize: '20px', fontWeight: 500, color: 'var(--text-primary)' }}>{v?.actual != null ? `${v.actual.toFixed(1)}%` : '—'}</div>
+      )}
+      {v?.fechaActual && <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '2px' }}>{formatearFechaRonda(v.fechaActual, v.actualCasos)}</div>}
     </div>
   );
 };
 
-const GridIndicadoresComparativo = ({ rondas, umbral }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '12px' }}>
+// Una sola grilla continua con wrap para Aprobación + Reelección + cualquier otra
+// pregunta que se agregue (mismo orden relativo de ITEMS_INDICADORES_COMPARATIVO) —
+// la diferenciación entre categorías es el acento de color, no separación de layout.
+const GridIndicadoresComparativo = ({ rondas, umbral, metadata }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
     {ITEMS_INDICADORES_COMPARATIVO.map(([label, pregunta, categoria, positivoEsSubir = true]) => (
-      <CardIndicadorComparativo key={label} label={label} rondas={rondas} pregunta={pregunta} categoria={categoria} umbral={umbral} positivoEsSubir={positivoEsSubir} />
+      <CardIndicadorComparativo
+        key={label} label={label} rondas={rondas} pregunta={pregunta} categoria={categoria} umbral={umbral} positivoEsSubir={positivoEsSubir}
+        colorAcento={colorAcentoTipoPregunta(metadata?.preguntas?.[pregunta]?.tipo)}
+      />
     ))}
   </div>
 );
 
-// "Principales problemas": subir SIEMPRE es rojo (más gente lo percibe como problema)
-// y bajar SIEMPRE es verde — polaridad constante, no depende del tipo de pregunta como
-// en las cards de arriba (por eso positivoEsSubir=false fijo acá).
-const TablaProblemasComparativo = ({ rondas, umbral }) => {
-  const filas = calcularFilasProblemasComparativo(rondas, umbral);
+// Badge de variación para una fila de Principales problemas — subir SIEMPRE es rojo
+// (más gente lo percibe como problema) y bajar SIEMPRE es verde, polaridad constante
+// (por eso positivoEsSubir=false fijo, a diferencia de las cards de arriba).
+const BadgeVariacionProblema = ({ v }) => {
+  if (!v || v.estado == null) return <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>—</span>;
+  const color = colorVariacionIndicador(v.estado, false);
+  if (v.estado === 'estable') return <span style={{ fontSize: '12px', fontWeight: 600, color }}>· Estable</span>;
+  const flecha = v.estado === 'sube' ? '▲' : '▼';
+  const verbo = v.estado === 'sube' ? 'Subió' : 'Bajó';
+  return <span style={{ fontSize: '12px', fontWeight: 600, color, whiteSpace: 'nowrap' }}>{flecha} {verbo} {Math.abs(v.delta).toFixed(1)} p.p</span>;
+};
+
+// Top 5 categorías por % actual, cada fila: nombre + barra horizontal + % actual +
+// badge de variación (última vs. anteúltima ronda). El corte a 5 es solo de pantalla
+// (calcularFilasProblemasComparativo se comparte con el PDF, que sigue mostrando la
+// tabla completa) — no se filtran filas "vacías" si el circuito tiene menos de 5
+// categorías con datos.
+const FilasProblemasComparativo = ({ rondas, umbral }) => {
+  const filas = calcularFilasProblemasComparativo(rondas, umbral).slice(0, 5);
   if (filas.length === 0) return <p style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin datos de problemas.</p>;
   return (
-    <div>
-      {filas.map((f, i) => (
-        <div key={f.cat} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 4px', borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}>
-          <div style={{ flex: 1, fontSize: '13px', color: 'var(--text-primary)' }}>{f.cat}</div>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', minWidth: '52px', textAlign: 'right' }}>{f.v.actual.toFixed(1)}%</div>
-          <div style={{ fontSize: '12px', fontWeight: 600, minWidth: '160px', textAlign: 'right', color: colorVariacionIndicador(f.v.estado, false) }}>
-            {textoVariacionIndicador(f.v) || '—'}
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {filas.map(f => (
+        <div key={f.cat} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '170px', flexShrink: 0, fontSize: '13px', color: 'var(--text-primary)' }}>{f.cat}</div>
+          <BarraHorizontalPct pct={Number(f.v.actual.toFixed(1))} />
+          <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', minWidth: '48px', textAlign: 'right' }}>{f.v.actual.toFixed(1)}%</div>
+          <div style={{ minWidth: '100px', textAlign: 'right' }}><BadgeVariacionProblema v={f.v} /></div>
         </div>
       ))}
     </div>
   );
 };
 
-// Resumen automático "🔺 Subió / 🔻 Bajó" — misma lógica sin cambios (umbral 2.5pp,
-// primera vs. última ronda), solo con más jerarquía visual (antes 12px sin destacar):
-// va primero, más grande y en negrita, para que sea lo primero que se lee.
+// Resumen automático "🔺 Subió / 🔻 Bajó" — última ronda vs. anteúltima (misma
+// convención que el resto de Comparativo, ver calcularResumenVariacionesProblemas),
+// con más jerarquía visual (antes 12px sin destacar): va primero, más grande y en
+// negrita, para que sea lo primero que se lee.
 const ResumenVariacionesComparativo = ({ rondas, umbral }) => {
   const { suben, bajan } = calcularResumenVariacionesProblemas(rondas, umbral);
   if (suben.length === 0 && bajan.length === 0) {
@@ -1689,26 +1757,26 @@ const ResumenVariacionesComparativo = ({ rondas, umbral }) => {
   );
 };
 
-const ComparativoEncuesta = ({ encuesta, umbral }) => {
+const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
   const rondas = encuesta.rondas;
   return (
     <div>
       <ResumenVariacionesComparativo rondas={rondas} umbral={umbral} />
       <div style={{ marginBottom: '28px' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
-        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} />
+        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} />
       </div>
-      {/* Sin cambios de diseño: mismo HTML de siempre (barras apiladas Positiva/Regular/
-          Negativa/Ns-Nc por ronda + delta al lado del título), vía dangerouslySetInnerHTML
-          para garantizar que quede pixel-a-pixel igual a como funcionaba antes — no es
-          una card del grid de Indicadores de arriba. */}
+      {/* Barras apiladas Positiva/Regular/Negativa/Ns-Nc por ronda, vía
+          dangerouslySetInnerHTML para reusar exactamente el mismo render que el PDF
+          (htmlMiniPendientesGestion) — ahora con badge de delta en todas las barras
+          menos la primera, ver htmlDeltaSegmentoBadge/calcularDeltasCategoriasGestion. */}
       <div style={{ marginBottom: '28px' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
-        <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas) + htmlLegendGestion() }} />
+        <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas, umbral) + htmlLegendGestion() }} />
       </div>
       <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Principales problemas — evolución</h4>
-        <TablaProblemasComparativo rondas={rondas} umbral={umbral} />
+        <FilasProblemasComparativo rondas={rondas} umbral={umbral} />
       </div>
     </div>
   );
@@ -1751,7 +1819,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
 
       {vista === 'resumen'
         ? <ResumenEncuesta preguntas={ronda.preguntas} />
-        : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} />}
+        : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} metadata={metadata} />}
     </div>
   );
 };
