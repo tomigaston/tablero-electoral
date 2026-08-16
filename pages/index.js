@@ -23,6 +23,30 @@ const COLORES_CATEGORIA = {
   'C': { bg: '#EF5350', text: '#B71C1C', label: 'TERRITORIO HOSTIL' },
 };
 
+// Semáforo de diagnóstico (punto de color sin texto, header de circuito — solapa +
+// PDF). Mapeo FIJO desde el código de Categoria_v4, no se deriva de nuevo con lógica
+// propia: los 3 "buenos" (Bastión Sólido/con Erosión, Territorio Leal) a verde, "En
+// Disputa" (código B.2 y su alias D, ver COLORES_CATEGORIA arriba) a amarillo, y los
+// 2 "perdidos" (Pérdida 2023, Territorio Hostil) a rojo. Gris neutro de fallback para
+// categoría ausente/desconocida — no debe romper (mismo criterio de fallback que ya
+// usa Badge más abajo).
+const COLOR_DIAGNOSTICO_V4 = {
+  'A.1': '#22C55E', 'A.2': '#22C55E', 'B.1': '#22C55E',
+  'B.2': '#FBBF24', 'D': '#FBBF24',
+  'B.3': '#EF4444', 'C': '#EF4444',
+};
+const COLOR_DIAGNOSTICO_NEUTRO = '#9E9E9E';
+const colorDiagnosticoV4 = (categoria) => COLOR_DIAGNOSTICO_V4[categoria] || COLOR_DIAGNOSTICO_NEUTRO;
+
+// Wording neutro para el tooltip (solo pantalla, on-hover) del punto — sin la palabra
+// "hostil", ver CONTEXTO_PROYECTO.md.
+const TEXTO_DIAGNOSTICO_V4 = {
+  'A.1': 'Diagnóstico general: favorable', 'A.2': 'Diagnóstico general: favorable', 'B.1': 'Diagnóstico general: favorable',
+  'B.2': 'Diagnóstico general: mixto', 'D': 'Diagnóstico general: mixto',
+  'B.3': 'Diagnóstico general: desfavorable', 'C': 'Diagnóstico general: desfavorable',
+};
+const textoDiagnosticoV4 = (categoria) => TEXTO_DIAGNOSTICO_V4[categoria] || 'Diagnóstico general: sin clasificar';
+
 const COLORES_ML = {
   'ML.1': { bg: '#4CAF50', text: '#1B5E20', label: 'FIEL CRECIENTE' },
   'ML.2': { bg: '#FFCA28', text: '#F57F17', label: 'FIEL ESTANCADO' },
@@ -112,6 +136,18 @@ const InfoTip = ({ texto }) => (
   <span title={texto} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '13px', height: '13px', borderRadius: '50%', border: '1px solid var(--text-tertiary)', color: 'var(--text-tertiary)', fontSize: '9px', lineHeight: 1, cursor: 'help', marginLeft: '5px', flexShrink: 0 }}>
     i
   </span>
+);
+
+// Punto de diagnóstico (semáforo por color, sin texto) del header de circuito — ver
+// COLOR_DIAGNOSTICO_V4 más arriba. Va inmediatamente antes del número de circuito.
+// Tooltip on-hover vía title nativo (mismo mecanismo que InfoTip): oculto por default,
+// solo aparece al interactuar. Equivalente PDF (estático, sin tooltip) en
+// generarFichaPDF más abajo.
+const PuntoDiagnostico = ({ categoria }) => (
+  <span
+    title={textoDiagnosticoV4(categoria)}
+    style={{ display: 'inline-block', width: '15px', height: '15px', borderRadius: '50%', backgroundColor: colorDiagnosticoV4(categoria), flexShrink: 0, cursor: 'help' }}
+  />
 );
 
 const MetricCard = ({ label, value, subtitle, trend, trendPositive }) => (
@@ -1395,7 +1431,7 @@ function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 
   }).join('');
   const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
   if (!deltas) return barra;
-  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat], umbral) : ''}</div>`).join('');
+  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat], umbral, cat) : ''}</div>`).join('');
   return `<div style="display:flex;margin-bottom:3px">${labels}</div>${barra}`;
 }
 
@@ -1420,7 +1456,7 @@ function calcularVariacionIndicador(datos, umbral) {
 }
 
 // positivoEsSubir: polaridad del indicador, no del delta — true para Aprobación/
-// Reelección/Cordobeses en Alerta (subir es buena noticia en las 6 cards, ver
+// Reelección (subir es buena noticia en las 5 cards, ver
 // ITEMS_INDICADORES_COMPARATIVO), false para "Principales problemas" (subir es
 // siempre mala noticia, constante para esa tabla). colorNeutro es configurable porque
 // pantalla usa var(--text-tertiary) y el PDF necesita un hex fijo (no hereda custom
@@ -1441,13 +1477,11 @@ function textoVariacionIndicador(v) {
   return `${flecha} ${verbo} desde ${v.anterior.toFixed(1)}%`;
 }
 
-// 6 cards: Aprobación x3 + Reelección x2 + Cordobeses en Alerta. Esta última pregunta
-// en encuestas_metadata.json es tipo "Servicio" ("¿Tu barrio tiene el servicio de
-// CORDOBESES EN ALERTA?", categorías Si/No) — pregunta por COBERTURA del programa en
-// el barrio, no por percepción de inseguridad/alerta, así que subir (más barrios con
-// el servicio) es buena noticia igual que las otras 5 — NO es el caso "problema/alerta"
-// que ameritaría invertir. 4º elemento de cada tupla = positivoEsSubir (default true
-// si se omite, ninguna de las 6 lo necesita en false).
+// 5 cards: Aprobación x3 + Reelección x2. 4º elemento de cada tupla = positivoEsSubir
+// (default true si se omite, ninguna de las 5 lo necesita en false).
+// "Cordobeses en Alerta" se sacó del tablero por completo (card removida acá y de
+// htmlResumenRondaPDF) — el grid es auto-fill así que no queda hueco en el layout,
+// mismo comportamiento que ya tiene el sistema para preguntas ausentes en una ronda.
 // "Calificación de gestión" NO es una card de este grid — sigue siendo la sección
 // aparte de barras apiladas de siempre (htmlMiniPendientesGestion/ComparativoEncuesta
 // más abajo), sin ningún cambio de diseño.
@@ -1457,7 +1491,6 @@ const ITEMS_INDICADORES_COMPARATIVO = [
   ['Aprobación Presidente', 'Aprobación Presidente', 'Apruebo'],
   ['Reelección Llaryora', 'Reelección Llaryora', 'Si'],
   ['Reelección Milei', 'Reelección Milei', 'Si'],
-  ['Cordobeses en Alerta', 'Cordobeses en Alerta (existencia)', 'Si'],
 ];
 
 // Mismo filtro de siempre (se omiten problemas en 0% en TODAS las rondas). Orden por
@@ -1556,13 +1589,26 @@ function htmlResumenVariacionesPlano(rondas, umbral) {
 // ANTERIOR (no contra la primera) — ver htmlDeltaSegmentoBadge/
 // calcularDeltasCategoriasGestion. La primera barra nunca lleva badge (nada previo
 // con qué comparar). ---
-// umbral: por debajo, "estable" (mismo criterio que el resto de Comparativo) en vez
-// de forzar una flecha por un cambio de redondeo.
-function htmlDeltaSegmentoBadge(delta, umbral = 2.5) {
+// Polaridad de "sube = buena noticia" por categoría de Calificación de gestión — a
+// diferencia de ITEMS_INDICADORES_COMPARATIVO (una sola polaridad para todo el
+// indicador), acá cada categoría de la MISMA barra apilada tiene sentido opuesto:
+// Positiva/Regular subiendo es buena noticia (verde), Negativa/Ns-Nc subiendo es mala
+// noticia (rojo) — y a la inversa si bajan. Reemplaza la lógica vieja de color por
+// signo crudo del delta (ver calcularDeltasCategoriasGestion).
+const POSITIVO_ES_SUBIR_GESTION = { 'Positiva': true, 'Regular': true, 'Negativa': false, 'Ns/Nc': false };
+
+// umbral: por debajo, "estable" (mismo criterio que el resto de Comparativo, misma
+// convención de < estricto que calcularVariacionIndicador) en vez de forzar un color
+// por un cambio de redondeo. categoria: Positiva/Regular/Negativa/Ns-Nc — decide el
+// color vía POSITIVO_ES_SUBIR_GESTION; sin categoría (llamador legado) cae a "sube
+// siempre es bueno" como estaba antes.
+function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria) {
   const redondeado = Math.round(delta * 10) / 10;
   if (Math.abs(redondeado) < umbral) return `<span style="font-size:10px;font-weight:600;color:#999">· Estable</span>`;
   const sube = redondeado > 0;
-  const color = sube ? '#2E7D32' : '#C62828';
+  const positivoEsSubir = POSITIVO_ES_SUBIR_GESTION[categoria] ?? true;
+  const esBueno = positivoEsSubir ? sube : !sube;
+  const color = esBueno ? '#2E7D32' : '#C62828';
   const arrow = sube ? '▲' : '▼';
   const signo = sube ? '+' : '';
   return `<span style="font-size:10px;font-weight:600;color:${color}">${arrow} ${signo}${redondeado.toFixed(1)} pp</span>`;
@@ -1570,9 +1616,9 @@ function htmlDeltaSegmentoBadge(delta, umbral = 2.5) {
 
 // Delta por categoría (Positiva/Regular/Negativa/Ns-Nc) entre dos filas CONSECUTIVAS
 // (anterior/actual) para un funcionario — se llama una vez por cada par de barras
-// adyacentes, no solo primera-vs-última. Variación cruda por signo (sube=verde,
-// baja=rojo), sin lógica de "bueno/malo" según qué representa cada categoría, igual
-// para las 4. Si una categoría existe en la barra actual pero no en la anterior (ej.
+// adyacentes, no solo primera-vs-última. Devuelve el delta crudo (con signo); el color
+// semántico según categoría se decide en htmlDeltaSegmentoBadge (POSITIVO_ES_SUBIR_GESTION),
+// no acá. Si una categoría existe en la barra actual pero no en la anterior (ej.
 // Ns/Nc recién aparece), se toma 0% como valor de esa categoría en la anterior.
 function calcularDeltasCategoriasGestion(anteriorData, actualData) {
   const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
@@ -1654,7 +1700,7 @@ function htmlComparativoEncuestaBody(encuesta, umbral) {
 // mismos colores ya usados en otras partes del tablero, no inventados para esto:
 // Aprobación = azul primario del tablero, Reelección = teal de TERRITORIO LEAL/
 // Relevado, neutro = gris pizarra de EN DISPUTA/ADVERSO (fallback para cualquier tipo
-// futuro sin color asignado, ej. "Cordobeses en Alerta" que es tipo "Servicio").
+// futuro sin color asignado en ITEMS_INDICADORES_COMPARATIVO).
 const ACENTO_TIPO_PREGUNTA = { Aprobacion: '#1976D2', Reeleccion: '#26A69A' };
 const ACENTO_TIPO_NEUTRO = '#78909C';
 const colorAcentoTipoPregunta = (tipo) => ACENTO_TIPO_PREGUNTA[tipo] || ACENTO_TIPO_NEUTRO;
@@ -3047,7 +3093,7 @@ function htmlMejoraPDF(label, data, delta) {
     <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
   </div>`;
 }
-// Cuerpo de UNA ronda (Aprobación/Gestión/Reelección/Funcionamiento/Alerta/Mejoras),
+// Cuerpo de UNA ronda (Aprobación/Gestión/Reelección/Funcionamiento/Mejoras),
 // extraído de lo que antes era el cuerpo fijo de htmlEncuestasPDF, para poder
 // reusarlo tanto con delta (modo "Última ronda", comparando contra la 1ª) como sin
 // delta (modo "Elegir rondas", cada ronda mostrada de forma independiente).
@@ -3069,12 +3115,6 @@ function htmlResumenRondaPDF(preguntas, delta, deltaMejora) {
   const funcionamiento = [['Centro Vecinal', 'Funcionamiento Centro Vecinal'], ['CPC', 'Funcionamiento CPC']].map(([nom, key]) =>
     htmlBarraCategoriasPDF(`Funcionamiento ${nom}`, preguntas[key], delta(key, 'Positiva'))
   ).join('');
-
-  const alertaExistencia = preguntas['Cordobeses en Alerta (existencia)'];
-  const alertaCalif = preguntas['Calificación Cordobeses en Alerta'];
-  const cordobesesAlerta = `
-    <div class="metrics" style="grid-template-columns:1fr;margin-bottom:10px">${htmlMetricPDF('Cordobeses en Alerta (conoce el programa)', alertaExistencia?.Si != null ? alertaExistencia.Si.toFixed(1) + '%' : '—', delta('Cordobeses en Alerta (existencia)', 'Si'))}</div>
-    ${htmlBarraCategoriasPDF('Calificación Cordobeses en Alerta', alertaCalif, delta('Calificación Cordobeses en Alerta', 'Positiva'))}`;
 
   const mejoras = [
     ['Bacheos', 'Mejoras en bacheos'],
@@ -3100,9 +3140,6 @@ function htmlResumenRondaPDF(preguntas, delta, deltaMejora) {
 
   <div class="mini-title">Funcionamiento de instituciones locales</div>
   ${funcionamiento}
-
-  <div class="mini-title">Cordobeses en Alerta</div>
-  ${cordobesesAlerta}
 
   <div class="mini-title">Mejoras percibidas (ronda actual)</div>
   ${mejoras}`;
@@ -3417,8 +3454,8 @@ const generarFichaPDF = ({
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ficha ${datos.CircuitoKey}</title>
 <style>${estilosFichaPDF()}</style></head><body>
 
-<div class="header">
-  <h1>CIRCUITO ${datos.CircuitoKey}</h1>
+<div class="header" style="border-bottom-color:${colorDiagnosticoV4(datos.Categoria_v4)}">
+  <h1 style="display:flex;align-items:center;gap:10px"><span style="display:inline-block;width:15px;height:15px;border-radius:50%;background:${colorDiagnosticoV4(datos.Categoria_v4)};flex-shrink:0"></span>CIRCUITO ${datos.CircuitoKey}</h1>
   <h2>${datos.cirn_nom}</h2>
   <div class="badges">
     <span class="badge" style="background:${COLORES_CATEGORIA[datos.Categoria_v4]?.bg}22;color:${COLORES_CATEGORIA[datos.Categoria_v4]?.text}">${COLORES_CATEGORIA[datos.Categoria_v4]?.label || datos.Categoria_v4}</span>
@@ -4066,9 +4103,10 @@ export default function Home() {
                   )
                 ) : circuitoSeleccionado && datosCircuito ? (
                   <>
-                    <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `3px solid ${colorDiagnosticoV4(datosCircuito.Categoria_v4)}` }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <PuntoDiagnostico categoria={datosCircuito.Categoria_v4} />
                           <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>CIRCUITO {circuitoSeleccionado}</h2>
                           <button onClick={() => { setCircuitoSeleccionado(null); setFiltroCategoria(null); setVistaFicha(null); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
                           <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
