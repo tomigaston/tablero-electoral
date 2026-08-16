@@ -1247,6 +1247,33 @@ function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoK
 }
 
 const COLOR_GESTION = { 'Positiva': '#22C55E', 'Regular': '#FBBF24', 'Negativa': '#EF4444', 'Ns/Nc': '#CBD5E1' };
+const ORDEN_CATEGORIAS_GESTION = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+
+// Fallback defensivo: si algún día una ronda vuelve a cargarse con un nombre de
+// categoría no reconocido (el mismo tipo de error que motivó el fix de "No se" ->
+// "Ns/Nc" en encuestas_circuitos.json), el segmento no debe desaparecer en silencio
+// del gráfico ni pintarse "undefined" — cae a gris neutro y avisa una vez por nombre
+// en consola, para detectarlo en QA en vez de mucho después. avisadas vive a nivel de
+// módulo a propósito: un solo aviso por nombre por sesión de la app alcanza para QA,
+// no hace falta repetirlo en cada render.
+const COLOR_GESTION_FALLBACK = '#9CA3AF';
+const categoriasGestionAvisadas = new Set();
+function colorCategoriaGestion(cat) {
+  if (COLOR_GESTION[cat]) return COLOR_GESTION[cat];
+  if (!categoriasGestionAvisadas.has(cat)) {
+    categoriasGestionAvisadas.add(cat);
+    console.warn(`Calificación de gestión: categoría "${cat}" no reconocida (sin color mapeado), usando gris de fallback.`);
+  }
+  return COLOR_GESTION_FALLBACK;
+}
+
+// Orden canónico primero, seguido de cualquier categoría inesperada presente en el
+// dato (para que también se dibuje su segmento en vez de perderse por no estar en
+// ORDEN_CATEGORIAS_GESTION) — ver colorCategoriaGestion.
+function categoriasGestion(data) {
+  const extra = Object.keys(data).filter(k => !ORDEN_CATEGORIAS_GESTION.includes(k));
+  return [...ORDEN_CATEGORIAS_GESTION, ...extra];
+}
 
 // Barra horizontal azul con % embebido (dentro si entra, afuera si no) — compartida
 // con FilasProblemasComparativo (vista Comparativo), que agrega badge de variación al
@@ -1286,7 +1313,7 @@ const BarraProblemas = ({ problemas }) => {
 
 const BarraGestion = ({ label, data }) => {
   if (!data) return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
-  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  const categorias = categoriasGestion(data);
   return (
     <div style={{ marginBottom: '10px' }}>
       <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
@@ -1299,7 +1326,7 @@ const BarraGestion = ({ label, data }) => {
             <div
               key={cat}
               title={esNsNc ? `${cat}: ${v}%` : undefined}
-              style={{ width: `${v}%`, backgroundColor: COLOR_GESTION[cat], display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: `${v}%`, backgroundColor: colorCategoriaGestion(cat), display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {!esNsNc && v > 8 && <span style={{ fontSize: '11px', color: '#fff', fontWeight: 600 }}>{v}%</span>}
             </div>
@@ -1422,12 +1449,12 @@ const ResumenEncuesta = ({ preguntas }) => (
 // como estable (ver htmlDeltaSegmentoBadge).
 function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 } = {}) {
   if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
-  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  const categorias = categoriasGestion(data);
   const presentes = categorias.filter(cat => data[cat] > 0);
   const segmentos = presentes.map(cat => {
     const v = data[cat];
     const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
-    return `<div style="width:${v}%;background:${COLOR_GESTION[cat]};display:flex;align-items:center;justify-content:center">${texto}</div>`;
+    return `<div style="width:${v}%;background:${colorCategoriaGestion(cat)};display:flex;align-items:center;justify-content:center">${texto}</div>`;
   }).join('');
   const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
   if (!deltas) return barra;
@@ -1606,6 +1633,13 @@ function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria) {
   const redondeado = Math.round(delta * 10) / 10;
   if (Math.abs(redondeado) < umbral) return `<span style="font-size:10px;font-weight:600;color:#999">· Estable</span>`;
   const sube = redondeado > 0;
+  // categoria == null es el llamador legado documentado arriba (cae a "sube = bueno"
+  // sin avisar); categoria definida pero ausente del mapa es el mismo tipo de nombre
+  // no reconocido que colorCategoriaGestion, con el mismo aviso una sola vez.
+  if (categoria != null && !(categoria in POSITIVO_ES_SUBIR_GESTION) && !categoriasGestionAvisadas.has(categoria)) {
+    categoriasGestionAvisadas.add(categoria);
+    console.warn(`Calificación de gestión: categoría "${categoria}" no reconocida (sin polaridad mapeada), asumiendo "sube = bueno".`);
+  }
   const positivoEsSubir = POSITIVO_ES_SUBIR_GESTION[categoria] ?? true;
   const esBueno = positivoEsSubir ? sube : !sube;
   const color = esBueno ? '#2E7D32' : '#C62828';
@@ -1621,7 +1655,7 @@ function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria) {
 // no acá. Si una categoría existe en la barra actual pero no en la anterior (ej.
 // Ns/Nc recién aparece), se toma 0% como valor de esa categoría en la anterior.
 function calcularDeltasCategoriasGestion(anteriorData, actualData) {
-  const categorias = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
+  const categorias = categoriasGestion(actualData);
   const deltas = {};
   categorias.forEach(cat => {
     const vActual = actualData[cat];
