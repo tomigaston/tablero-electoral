@@ -67,6 +67,20 @@ const COLOR_OBRA_ESTADO = {
 };
 const COLOR_OBRA_DEFAULT = '#9E9E9E';
 
+// Umbral de "Finalizada" para Vista Obras (tarjeta resumen + eventual filtro) — valor
+// por default a falta de un criterio oficial, fácil de ajustar en un solo lugar si
+// después se define otro corte.
+const UMBRAL_OBRA_FINALIZADA = 0.95;
+
+// Mismos 3 colores fijos por rango que pide la barra de avance de Vista Obras.
+const COLOR_AVANCE_OBRA = { bajo: '#EF5350', medio: '#FFA726', alto: '#66BB6A' };
+const colorAvanceObra = (avance) => {
+  const pct = (avance ?? 0) * 100;
+  if (pct < 30) return COLOR_AVANCE_OBRA.bajo;
+  if (pct < 70) return COLOR_AVANCE_OBRA.medio;
+  return COLOR_AVANCE_OBRA.alto;
+};
+
 // Descripciones CLARAS para el popup de info
 const DESCRIPCIONES_CATEGORIA = {
   'A.1': 'Ganó las 4 elecciones analizadas: Gob. 2019, Gob. 2023, Dip. 2021 y Dip. 2025.',
@@ -2038,6 +2052,263 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
 };
 
 // ============================================
+// VISTA OBRAS (Etapa 1 — estructura, resumen y tabla "Estado general")
+// ============================================
+// A diferencia de ObrasPanel/ModalObra (que muestran obras UNA POR UNA dentro de la
+// ficha de un circuito/barrio, ver más arriba), esta vista trabaja el conjunto de las
+// 756 obras. Trabaja directo sobre obras_capital.json crudo (prop obrasData, mismo
+// array que ya carga el fetch inicial) en vez de obrasEnriquecidas — no necesita
+// _circuitoMapkey derivado porque el registro crudo ya trae su propio campo `circuito`.
+//
+// id_obra NO es un campo del JSON: 809 registros = 756 obras, repetidas por
+// multi-barrio con id_registro tipo "OBRA-0049-a", "-b", etc. — se agrupa acá pelando
+// ese sufijo de una letra. Confirmado a mano: 756 ids base únicos.
+const idObraDeRegistro = (idRegistro) => (idRegistro || '').replace(/-[a-z]$/, '');
+
+// porcentaje_avance viene 0–1, pero hay al menos un registro con error de carga
+// (OBRA-0280 = 99 en vez de 0.99) — se acota acá solo para la vista, sin tocar el
+// archivo fuente (fuera de alcance de esta etapa).
+const normalizarAvanceObra = (v) => (v == null ? null : Math.min(v, 1));
+
+const RANGOS_AVANCE_OBRA = [
+  { key: '0-30', label: '0% – 30%', test: (pct) => pct >= 0 && pct < 30 },
+  { key: '30-70', label: '30% – 70%', test: (pct) => pct >= 30 && pct < 70 },
+  { key: '70-100', label: '70% – 100%', test: (pct) => pct >= 70 && pct <= 100 },
+];
+
+const TABS_VISTA_OBRAS = [
+  { key: 'estado_general', label: 'Estado general' },
+  { key: 'comunicacion', label: 'Planificación de comunicación' },
+];
+
+const BarraAvanceObra = ({ avance }) => {
+  const pct = Math.max(0, Math.min(100, (avance ?? 0) * 100));
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '110px' }}>
+      <div style={{ flex: 1, height: '8px', borderRadius: '4px', backgroundColor: 'var(--bg-secondary)', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', backgroundColor: colorAvanceObra(avance), borderRadius: '4px' }} />
+      </div>
+      <span style={{ fontSize: '11px', color: 'var(--text-secondary)', minWidth: '30px', textAlign: 'right', flexShrink: 0 }}>
+        {avance != null ? `${pct.toFixed(0)}%` : '—'}
+      </span>
+    </div>
+  );
+};
+
+// Columna Barrio/Circuito: obra de un solo barrio → "Barrio · Circuito"; multi-barrio
+// (mismo id_obra con varios id_registro) → "N barrios · multi", sin desplegar la lista
+// (eso es Etapa 2); tipo_ubicacion 'sin_geometria' pisa el nombre de barrio cuando la
+// obra es de un solo registro.
+const CeldaBarrioCircuitoObra = ({ grupo }) => {
+  if (grupo.multiBarrio) {
+    return <span>{grupo.registros.length} barrios · multi</span>;
+  }
+  const r = grupo.registros[0];
+  if (r.tipo_ubicacion === 'sin_geometria') return <span style={{ color: 'var(--text-tertiary)' }}>Sin geometría</span>;
+  if (!r.barrio) return <span style={{ color: 'var(--text-tertiary)' }}>{r.circuito || '—'}</span>;
+  return <span>{r.barrio}{r.circuito ? ` · ${r.circuito}` : ''}</span>;
+};
+
+const VistaObras = ({ obrasData }) => {
+  const [tabActiva, setTabActiva] = useState('estado_general');
+  const [filtroCircuito, setFiltroCircuito] = useState('');
+  const [filtroBarrio, setFiltroBarrio] = useState('');
+  const [filtroReparticion, setFiltroReparticion] = useState('');
+  const [filtroAvance, setFiltroAvance] = useState('');
+  const [ordenColumna, setOrdenColumna] = useState('nombreObra');
+  const [ordenAsc, setOrdenAsc] = useState(true);
+
+  // Una fila por id_obra único, no por id_registro (ver comentario de idObraDeRegistro).
+  const obrasUnicas = useMemo(() => {
+    const grupos = new Map();
+    (obrasData || []).forEach((o) => {
+      const idObra = idObraDeRegistro(o.id_registro);
+      if (!idObra) return;
+      if (!grupos.has(idObra)) grupos.set(idObra, []);
+      grupos.get(idObra).push(o);
+    });
+    return Array.from(grupos.entries()).map(([idObra, registros]) => {
+      const principal = registros[0];
+      return {
+        idObra,
+        nombreObra: principal.nombre_obra || '(sin nombre)',
+        reparticion: (principal.reparticion || '').trim() || '—',
+        avance: normalizarAvanceObra(principal.porcentaje_avance),
+        registros,
+        multiBarrio: registros.length > 1,
+      };
+    });
+  }, [obrasData]);
+
+  const opcionesCircuito = useMemo(() => (
+    Array.from(new Set((obrasData || []).map((o) => o.circuito).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es', { numeric: true }))
+  ), [obrasData]);
+  const opcionesBarrio = useMemo(() => (
+    Array.from(new Set((obrasData || []).map((o) => o.barrio).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'))
+  ), [obrasData]);
+  const opcionesReparticion = useMemo(() => (
+    Array.from(new Set((obrasData || []).map((o) => (o.reparticion || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'))
+  ), [obrasData]);
+
+  // Filtros sobre los datos ya deduplicados por id_obra: una obra multi-barrio queda
+  // adentro si CUALQUIERA de sus registros (barrios/circuitos) matchea.
+  const obrasFiltradas = useMemo(() => {
+    return obrasUnicas.filter((g) => {
+      if (filtroCircuito && !g.registros.some((r) => r.circuito === filtroCircuito)) return false;
+      if (filtroBarrio && !g.registros.some((r) => r.barrio === filtroBarrio)) return false;
+      if (filtroReparticion && g.reparticion !== filtroReparticion) return false;
+      if (filtroAvance) {
+        const rango = RANGOS_AVANCE_OBRA.find((r) => r.key === filtroAvance);
+        const pct = (g.avance ?? 0) * 100;
+        if (rango && !rango.test(pct)) return false;
+      }
+      return true;
+    });
+  }, [obrasUnicas, filtroCircuito, filtroBarrio, filtroReparticion, filtroAvance]);
+
+  const obrasOrdenadas = useMemo(() => {
+    const arr = [...obrasFiltradas];
+    arr.sort((a, b) => {
+      if (ordenColumna === 'avance') {
+        const valA = a.avance ?? -1, valB = b.avance ?? -1;
+        return ordenAsc ? valA - valB : valB - valA;
+      }
+      const valA = (a[ordenColumna] || '').toString();
+      const valB = (b[ordenColumna] || '').toString();
+      return ordenAsc ? valA.localeCompare(valB, 'es') : valB.localeCompare(valA, 'es');
+    });
+    return arr;
+  }, [obrasFiltradas, ordenColumna, ordenAsc]);
+
+  const handleOrdenar = (col) => { if (ordenColumna === col) setOrdenAsc(!ordenAsc); else { setOrdenColumna(col); setOrdenAsc(true); } };
+
+  const totalObras = obrasFiltradas.length;
+  // Nulo cuenta como 0 en el promedio, mismo criterio que "Sin iniciar" (que agrupa
+  // 0 y null) — no hay avance registrado todavía, no un dato ausente a ignorar.
+  const avancePromedio = totalObras > 0 ? obrasFiltradas.reduce((sum, g) => sum + (g.avance ?? 0), 0) / totalObras : 0;
+  const finalizadas = obrasFiltradas.filter((g) => (g.avance ?? 0) >= UMBRAL_OBRA_FINALIZADA).length;
+  const sinIniciar = obrasFiltradas.filter((g) => g.avance == null || g.avance === 0).length;
+  const hayFiltros = !!(filtroCircuito || filtroBarrio || filtroReparticion || filtroAvance);
+
+  const limpiarFiltros = () => { setFiltroCircuito(''); setFiltroBarrio(''); setFiltroReparticion(''); setFiltroAvance(''); };
+
+  const estiloSelect = { padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ padding: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>OBRAS</h2>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>{obrasUnicas.length} obras │ Córdoba Capital</div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+        {TABS_VISTA_OBRAS.map((t) => {
+          const activa = tabActiva === t.key;
+          const deshabilitada = t.key === 'comunicacion';
+          return (
+            <button
+              key={t.key}
+              disabled={deshabilitada}
+              onClick={() => !deshabilitada && setTabActiva(t.key)}
+              title={deshabilitada ? 'Se construye en la Etapa 3' : undefined}
+              style={{
+                padding: '10px 18px', borderRadius: '8px', border: 'none',
+                backgroundColor: activa ? '#1976D2' : 'transparent',
+                color: deshabilitada ? 'var(--text-tertiary)' : (activa ? '#fff' : 'var(--text-secondary)'),
+                fontSize: '13px', fontWeight: 500,
+                cursor: deshabilitada ? 'not-allowed' : 'pointer',
+                opacity: deshabilitada ? 0.6 : 1,
+                transition: 'all 0.2s',
+              }}
+            >
+              {t.label}{deshabilitada ? ' (próximamente)' : ''}
+            </button>
+          );
+        })}
+      </div>
+
+      {tabActiva === 'estado_general' ? (
+        <>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <MetricCard label="Total de obras" value={totalObras.toLocaleString('es-AR')} subtitle={hayFiltros ? `de ${obrasUnicas.length}` : undefined} />
+            <MetricCard label="Avance promedio" value={`${(avancePromedio * 100).toFixed(0)}%`} />
+            <MetricCard label="Finalizadas" value={finalizadas.toLocaleString('es-AR')} subtitle={`≥ ${(UMBRAL_OBRA_FINALIZADA * 100).toFixed(0)}%`} />
+            <MetricCard label="Sin iniciar" value={sinIniciar.toLocaleString('es-AR')} subtitle="0% o sin dato" />
+          </div>
+
+          <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+              Filtros
+              {hayFiltros && <button onClick={limpiarFiltros} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtros</button>}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <select value={filtroCircuito} onChange={(e) => setFiltroCircuito(e.target.value)} style={estiloSelect}>
+                <option value="">Circuito (todos)</option>
+                {opcionesCircuito.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select value={filtroBarrio} onChange={(e) => setFiltroBarrio(e.target.value)} style={estiloSelect}>
+                <option value="">Barrio (todos)</option>
+                {opcionesBarrio.map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
+              <select value={filtroReparticion} onChange={(e) => setFiltroReparticion(e.target.value)} style={estiloSelect}>
+                <option value="">Repartición (todas)</option>
+                {opcionesReparticion.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <select value={filtroAvance} onChange={(e) => setFiltroAvance(e.target.value)} style={estiloSelect}>
+                <option value="">Avance (todos)</option>
+                {RANGOS_AVANCE_OBRA.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{hayFiltros ? `Mostrando ${obrasFiltradas.length} de ${obrasUnicas.length} obras` : `Todas las obras (${obrasUnicas.length})`}</span>
+              <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Click en columna para ordenar</span>
+            </div>
+            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
+                  <tr>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('nombreObra')}>Obra {ordenColumna === 'nombreObra' && (ordenAsc ? '↑' : '↓')}</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio / Circuito</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('reparticion')}>Repartición {ordenColumna === 'reparticion' && (ordenAsc ? '↑' : '↓')}</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('avance')}>Avance {ordenColumna === 'avance' && (ordenAsc ? '↑' : '↓')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {obrasOrdenadas.map((g) => (
+                    <tr
+                      key={g.idObra}
+                      onClick={() => console.log('Obra seleccionada (ficha de detalle: Etapa 2)', g)}
+                      style={{ borderTop: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.1s' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <td style={{ padding: '10px 14px' }}>{g.nombreObra}</td>
+                      <td style={{ padding: '10px 14px' }}><CeldaBarrioCircuitoObra grupo={g} /></td>
+                      <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.reparticion}</td>
+                      <td style={{ padding: '10px 14px' }}><BarraAvanceObra avance={g.avance} /></td>
+                    </tr>
+                  ))}
+                  {obrasOrdenadas.length === 0 && (
+                    <tr><td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>Ninguna obra coincide con los filtros elegidos.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div style={{ padding: '40px 24px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '13px' }}>
+          Planificación de comunicación se construye en la Etapa 3.
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
 // PANEL LATERAL (VISTA MAPA)
 // ============================================
 const MetricCardMini = ({ label, value, subtitle, trend, trendPositive }) => (
@@ -3617,7 +3888,7 @@ export default function Home() {
   const [mostrarInfo, setMostrarInfo] = useState(false);
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
-  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital'
+  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital' | 'obras'
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
@@ -4021,6 +4292,7 @@ export default function Home() {
                   <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '6px', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 1999, minWidth: '210px', overflow: 'hidden' }}>
                     <button onClick={() => { setMostrarInfo(true); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>ℹ️ Info</button>
                     <button onClick={() => { setVistaFicha('capital'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📊 Estadísticas de Capital</button>
+                    <button onClick={() => { setVistaFicha('obras'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>🏗️ Obras</button>
                     <button
                       onClick={() => { setMostrarListadoEncuestas(true); setMostrarMenu(false); }}
                       style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}
@@ -4081,10 +4353,17 @@ export default function Home() {
         <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onClickVisita={irACircuitoDesdeGrilla} onClickMedicion={irACircuitoDesdeGrillaMedicion} onClickPauta={irABarrioDesdeMapaPauta} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
-          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio') ? (
+          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio' || vistaFicha === 'obras') ? (
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
-                {vistaFicha === 'barrio' ? (
+                {vistaFicha === 'obras' ? (
+                  <>
+                    <div style={{ marginBottom: '16px' }}>
+                      <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                    </div>
+                    <VistaObras obrasData={obrasData} />
+                  </>
+                ) : vistaFicha === 'barrio' ? (
                   barrioSeleccionado && barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)] ? (
                     <>
                       <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
