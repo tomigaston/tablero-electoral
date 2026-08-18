@@ -350,8 +350,27 @@ function barriosCercanos(nombreBarrio, barriosGeoData, radioKm = RADIO_BARRIOS_C
     .sort((a, b) => a.distanciaKm - b.distanciaKm);
 }
 
-// pautas_barrios.json trae la vigencia como fecha_creacion/fecha_finalizacion en
-// "YYYY-MM-DD" (esquema Meta Ads actual). Mismo criterio de vigencia que ya implementa
+// pautas_barrios.json (esquema campañas 2026) trae dos buckets: `barrios` (pautas
+// asignadas a un barrio) y `circuitos_sin_barrio` (pautas asignadas directo a un
+// circuito, ej. "10A", sin barrio identificado). Este helper resuelve la lista de
+// pautas de UN barrio, indexando por nombre normalizado (mismo criterio de cruce que
+// ya usa el resto del archivo).
+function obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio) {
+  const bucket = pautasBarriosData?.barrios;
+  if (!bucket) return [];
+  const key = normalizarNombreBarrio(nombreBarrio);
+  const claveOriginal = Object.keys(bucket).find(k => normalizarNombreBarrio(k) === key);
+  return claveOriginal ? (bucket[claveOriginal].pautas || []) : [];
+}
+// Pautas asignadas directo a un circuito (circuitos_sin_barrio) — indexado por
+// CircuitoKey (ej. "10A"), no por Mapkey.
+function obtenerPautasCircuitoSinBarrio(pautasBarriosData, circuitoKey) {
+  if (!circuitoKey) return [];
+  return pautasBarriosData?.circuitos_sin_barrio?.[String(circuitoKey)]?.pautas || [];
+}
+
+// pautas_barrios.json trae la vigencia como inicio/fin en "YYYY-MM-DD" (esquema
+// campañas 2026). Mismo criterio de vigencia que ya implementa
 // components/MapaCircuitos.js para los markers de la capa Pauta — duplicado acá a
 // propósito, mismo patrón ya aceptado en el proyecto para normalizarNombreBarrio entre
 // archivos (evita acoplar el mapa a este archivo por una función mínima).
@@ -363,19 +382,18 @@ function parsearFechaISOPauta(fechaStr) {
   const fecha = new Date(Number(y), Number(m) - 1, Number(d));
   return Number.isNaN(fecha.getTime()) ? null : fecha;
 }
-// 'activa' si tiene al menos una pauta con fecha_finalizacion >= hoy, 'finalizada' si
-// tiene pautas pero todas vencidas, 'sin_pauta' si no hay ninguna registrada.
+// 'activa' si tiene al menos una pauta con fin >= hoy, 'finalizada' si tiene pautas
+// pero todas vencidas, 'sin_pauta' si no hay ninguna registrada. Nota: esto es
+// independiente del campo `estado` (ACTIVO/INACTIVO) de cada pauta individual —
+// calcularCoberturaBarrio usa este resumen por vigencia de fecha, mismo criterio que
+// ya tenía antes del cambio de esquema.
 function estadoPautaBarrio(nombreBarrio, pautasBarriosData) {
-  if (!pautasBarriosData) return 'sin_pauta';
-  const key = normalizarNombreBarrio(nombreBarrio);
-  const claveOriginal = Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key);
-  if (!claveOriginal) return 'sin_pauta';
-  const pautas = pautasBarriosData[claveOriginal].pautas || [];
+  const pautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
   if (pautas.length === 0) return 'sin_pauta';
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
   const tieneActiva = pautas.some(p => {
-    const f = parsearFechaISOPauta(p.fecha_finalizacion);
+    const f = parsearFechaISOPauta(p.fin);
     return f ? f >= hoy : false;
   });
   return tieneActiva ? 'activa' : 'finalizada';
@@ -474,11 +492,12 @@ function construirEventosPorCircuito(datos, encuestasData, recorridosLookup, cru
   });
 
   // Pauta: derivada en runtime desde pautas_barrios.json (sin pautas_circuitos.json,
-  // mismo criterio que se usó para retirar cobertura_circuitos.json). fecha_creacion
-  // es la fecha del evento (cuando arranca el anuncio en Meta Ads).
+  // mismo criterio que se usó para retirar cobertura_circuitos.json). inicio es la
+  // fecha del evento (cuando arranca la pauta). Incluye tanto las pautas de los barrios
+  // del circuito como las de circuitos_sin_barrio (ver buscarPautaCircuito).
   datos.forEach(d => {
     buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, d.CircuitoKey).forEach(p => {
-      if (esFechaValida(p.fecha_creacion)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.fecha_creacion, detalle: p });
+      if (esFechaValida(p.inicio)) eventosPorMapkey[d.Mapkey].push({ tipo: 'pauta', fecha: p.inicio, detalle: p });
     });
   });
 
@@ -963,9 +982,7 @@ const SolapaResumenBarrio = ({
 
   const key = normalizarNombreBarrio(nombreBarrio);
   const totalVisitas = recorridosLookup?.[key]?.total_visitas || 0;
-  // pautas_barrios.json no viene normalizado (mismo cruce que ya usa buscarPautaCircuito).
-  const claveOriginalPauta = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
-  const totalPautas = claveOriginalPauta ? (pautasBarriosData[claveOriginalPauta].pautas || []).length : 0;
+  const totalPautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio).length;
   const totalObras = (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key).length;
   const escuelasBarrio = votosEscuelasBarrioLookup?.[key];
   const totalEscuelas = escuelasBarrio?.escuelas?.length ?? escuelasBarrio?.n_escuelas ?? 0;
@@ -1103,42 +1120,92 @@ const SolapaVisitasBarrio = ({ nombreBarrio, recorridosLookup }) => {
   );
 };
 
-// Mismos campos que ya muestra CeldaEvento para el tipo "pauta", salvo la línea de
-// barrio (redundante acá — ya estamos parados en la ficha de ese barrio).
-// Esquema Meta Ads (fila_origen/codigo_anuncio pueden repetirse entre registros —
-// son ad-sets o snapshots distintos del mismo anuncio, no duplicados a filtrar).
-// Card compacta: alcance/impresiones/gasto/CTR. Frecuencia, visualizaciones, CPM,
-// presupuesto y tipo_presupuesto quedan solo para el detalle del PDF (htmlPautaPDF).
-const FilaPauta = ({ pauta }) => (
-  <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{pauta.nombre_anuncio || '—'}</div>
-      {pauta.requiere_auditoria && (
-        <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309', whiteSpace: 'nowrap' }}>
-          ⚠ Pendiente de revisión
-        </span>
-      )}
-    </div>
-    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {formatearFecha(pauta.fecha_creacion)} → {formatearFecha(pauta.fecha_finalizacion)}</div>
-    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-      Alcance: {pauta.alcance?.toLocaleString() ?? '—'} · Impresiones: {pauta.impresiones?.toLocaleString() ?? '—'}
-    </div>
-    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-      Gasto: {pauta.importe_gastado != null ? `$${pauta.importe_gastado.toLocaleString()}` : '—'}
-      {typeof pauta.ctr === 'number' && ` · CTR: ${pauta.ctr.toFixed(2)}%`}
-    </div>
-    {pauta.observaciones && (
-      <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{pauta.observaciones}</div>
-    )}
-  </div>
-);
+// Etiquetas de metricas_ejecutadas que dependen de la plataforma: META reporta
+// impresiones/CPM, GOOGLE reporta visualizaciones/CPV — mismo campo crudo
+// (alcance_o_visualizaciones/costo_unitario) en ambos casos, solo cambia el label.
+function etiquetasMetricasPauta(plataforma) {
+  if (plataforma === 'META') return { alcance: 'Impresiones', costoUnitario: 'CPM' };
+  if (plataforma === 'GOOGLE') return { alcance: 'Visualizaciones', costoUnitario: 'CPV' };
+  return { alcance: 'Alcance/Visualizaciones', costoUnitario: 'Costo unitario' };
+}
+// Nunca "null"/"undefined"/"NaN" a la vista: campos ausentes de metricas_ejecutadas
+// (frecuencia/costo_unitario/inversion pueden venir null) se muestran como "s/d".
+function formatearMetricaPauta(valor, prefijo) {
+  if (valor == null || Number.isNaN(valor)) return 's/d';
+  return `${prefijo || ''}${valor.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`;
+}
 
-// Nueva (no existía ni siquiera inline en el panel mini): mismo cruce normalizado que ya
-// usa buscarPautaCircuito, pero directo por barrio (sin pasar por circuito_principal).
+// material.link + redes_publicadas.ig/fb/yt: enlaces clicables individuales, cada uno
+// solo si no es null (pueden venir 0, 1, 2 o 3 llenos). Si no hay ninguno, "Sin
+// material disponible" en vez de dejar el espacio vacío.
+const MaterialPautaLinks = ({ material }) => {
+  const redes = material?.redes_publicadas || {};
+  const links = [
+    material?.link ? { label: 'Ver material', href: material.link } : null,
+    redes.ig ? { label: 'Instagram', href: redes.ig } : null,
+    redes.fb ? { label: 'Facebook', href: redes.fb } : null,
+    redes.yt ? { label: 'YouTube', href: redes.yt } : null,
+  ].filter(Boolean);
+  if (links.length === 0) {
+    return <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sin material disponible</span>;
+  }
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
+      {links.map(l => (
+        <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#1976D2' }}>{l.label} →</a>
+      ))}
+    </div>
+  );
+};
+
+// Esquema campañas 2026 (reemplaza por completo al viejo esquema Meta Ads). Card
+// compacta: campaña/pieza, plataforma·objetivo·tipo, vigencia, estado, métricas
+// ejecutadas (con label según plataforma) y material/redes. observaciones NO se
+// muestra (uso interno de auditoría, ver prompt de esquema nuevo) — fila_origen/
+// pueden repetirse entre registros (son ad-sets o snapshots distintos, no duplicados
+// a filtrar).
+const FilaPauta = ({ pauta, mostrarBarrio }) => {
+  const etiquetas = etiquetasMetricasPauta(pauta.plataforma);
+  const m = pauta.metricas_ejecutadas || {};
+  const inactiva = pauta.estado === 'INACTIVO';
+  return (
+    <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px', opacity: inactiva ? 0.65 : 1 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+        <div>
+          <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{pauta.titulo_pieza || '—'}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{pauta.campania || '—'}</div>
+        </div>
+        <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: inactiva ? '#9E9E9E22' : '#2E7D3222', color: inactiva ? '#757575' : '#2E7D32', whiteSpace: 'nowrap' }}>
+          {inactiva ? 'Inactivo' : 'Activo'}
+        </span>
+      </div>
+      {mostrarBarrio && (
+        <div style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>
+          {pauta.barrio ? `Barrio: ${pauta.barrio}` : (
+            <span style={{ fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#9E9E9E22' }}>Sin barrio asignado</span>
+          )}
+        </div>
+      )}
+      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
+        {pauta.plataforma || '—'} · {pauta.objetivo_campana || '—'} · {pauta.tipo_pauta || '—'}
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {formatearFecha(pauta.inicio)} → {formatearFecha(pauta.fin)}</div>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+        {etiquetas.alcance}: {m.alcance_o_visualizaciones != null ? m.alcance_o_visualizaciones.toLocaleString() : 's/d'}
+        {m.frecuencia != null && ` · Frecuencia: ${m.frecuencia.toFixed(2)}`}
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+        {etiquetas.costoUnitario}: {formatearMetricaPauta(m.costo_unitario, '$')} · Inversión: {formatearMetricaPauta(m.inversion, '$')}
+      </div>
+      <MaterialPautaLinks material={pauta.material} />
+    </div>
+  );
+};
+
+// Mismo cruce normalizado que ya usa buscarPautaCircuito, pero directo por barrio (sin
+// pasar por circuito_principal).
 const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData }) => {
-  const key = normalizarNombreBarrio(nombreBarrio);
-  const claveOriginal = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
-  const pautas = claveOriginal ? (pautasBarriosData[claveOriginal].pautas || []) : [];
+  const pautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
   return (
     <div>
       <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Pauta publicitaria</h4>
@@ -1296,29 +1363,35 @@ function resolverBarriosDelCircuito(datosCircuito, cruceData) {
 }
 
 function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoKey) {
-  if (!pautasBarriosData || !barriosGeoData || !datos || !circuitoKey) return [];
+  if (!pautasBarriosData || !datos || !circuitoKey) return [];
   const circuitoRecord = datos.find(d => String(d.CircuitoKey) === String(circuitoKey));
   if (!circuitoRecord) return [];
   const mapkeyBuscado = circuitoRecord.Mapkey;
 
-  const barriosVistos = new Set();
   const pautas = [];
-  (barriosGeoData.features || []).forEach(feature => {
-    const props = feature.properties || {};
-    const nombreBarrio = props.nombre_barrio;
-    if (!nombreBarrio) return;
-    const mapkeyPrincipal = props.circuito_principal?.split(' - ')[0]?.trim();
-    if (!mapkeyPrincipal || mapkeyPrincipal !== mapkeyBuscado) return;
+  if (barriosGeoData) {
+    const barriosVistos = new Set();
+    (barriosGeoData.features || []).forEach(feature => {
+      const props = feature.properties || {};
+      const nombreBarrio = props.nombre_barrio;
+      if (!nombreBarrio) return;
+      const mapkeyPrincipal = props.circuito_principal?.split(' - ')[0]?.trim();
+      if (!mapkeyPrincipal || mapkeyPrincipal !== mapkeyBuscado) return;
 
-    const claveNormalizada = normalizarNombreBarrio(nombreBarrio);
-    if (barriosVistos.has(claveNormalizada)) return;
-    barriosVistos.add(claveNormalizada);
+      const claveNormalizada = normalizarNombreBarrio(nombreBarrio);
+      if (barriosVistos.has(claveNormalizada)) return;
+      barriosVistos.add(claveNormalizada);
 
-    const claveOriginal = Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === claveNormalizada);
-    if (!claveOriginal) return;
-    (pautasBarriosData[claveOriginal].pautas || []).forEach(p => {
-      pautas.push({ ...p, barrio: nombreBarrio });
+      obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio).forEach(p => {
+        pautas.push({ ...p, barrio: nombreBarrio });
+      });
     });
+  }
+  // Pautas asignadas directo al circuito (circuitos_sin_barrio, ver esquema campañas
+  // 2026) — no vienen de ningún barrio, se suman aparte con barrio: null para poder
+  // diferenciarlas visualmente ("Sin barrio asignado") en vez de inventarles un barrio.
+  obtenerPautasCircuitoSinBarrio(pautasBarriosData, circuitoRecord.CircuitoKey).forEach(p => {
+    pautas.push({ ...p, barrio: null });
   });
   return pautas;
 }
@@ -3080,10 +3153,9 @@ const ListaVotosEscuelas = ({ escuelas, promedioCapitalPct }) => {
 // OBRAS (obras_capital.json) — panel reusable, ver lib/obrasCercanas.js
 // ============================================
 
-// Badge de "requiere_auditoria" — mismo look que el badge "⚠ Pendiente de revisión" que
-// ya usa Pauta para requiere_auditoria (ver FilaPauta más arriba), pero con texto propio
-// de obras (el flag acá es "el lat/lon no cae en el polígono declarado", no una revisión
-// editorial). Título = observaciones_geo, la explicación puntual del desvío.
+// Badge de "requiere_auditoria" — propio de obras (el flag acá es "el lat/lon no cae
+// en el polígono declarado", no una revisión editorial; Pauta ya no tiene este campo
+// en el esquema campañas 2026). Título = observaciones_geo, la explicación puntual del desvío.
 const BadgeAuditoriaObra = ({ obra }) => (
   <span title={obra.observaciones_geo || undefined} style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309', whiteSpace: 'nowrap' }}>
     ⚠ Requiere auditoría
@@ -3584,24 +3656,22 @@ const DetalleEventoCobertura = ({ evento }) => {
       </>
     );
   }
+  // observaciones NO se muestra acá (uso interno de auditoría, esquema campañas 2026).
+  const etiquetas = etiquetasMetricasPauta(evento.detalle.plataforma);
+  const m = evento.detalle.metricas_ejecutadas || {};
+  const inactiva = evento.detalle.estado === 'INACTIVO';
   return (
     <>
       <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>
-        {evento.detalle.nombre_anuncio}
-        {evento.detalle.requiere_auditoria && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309' }}>⚠ Pendiente de revisión</span>}
+        {evento.detalle.titulo_pieza || '—'}
+        {inactiva && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#9E9E9E22', color: '#757575' }}>Inactivo</span>}
       </div>
-      <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio}</div>
-      <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.fecha_creacion)} → {formatearFecha(evento.detalle.fecha_finalizacion)}</div>
+      <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio || 'Sin barrio asignado'}</div>
+      <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.inicio)} → {formatearFecha(evento.detalle.fin)}</div>
       <div style={{ color: 'var(--text-secondary)' }}>
-        Alcance: {evento.detalle.alcance?.toLocaleString() ?? '—'} · Impresiones: {evento.detalle.impresiones?.toLocaleString() ?? '—'}
+        {etiquetas.alcance}: {m.alcance_o_visualizaciones != null ? m.alcance_o_visualizaciones.toLocaleString() : 's/d'}
+        {m.frecuencia != null && ` · Frecuencia: ${m.frecuencia.toFixed(2)}`}
       </div>
-      <div style={{ color: 'var(--text-secondary)' }}>
-        Gasto: {evento.detalle.importe_gastado != null ? `$${evento.detalle.importe_gastado.toLocaleString()}` : '—'}
-        {typeof evento.detalle.ctr === 'number' && ` · CTR: ${evento.detalle.ctr.toFixed(2)}%`}
-      </div>
-      {evento.detalle.observaciones && (
-        <div style={{ color: 'var(--text-tertiary)', fontStyle: 'italic', marginTop: '2px' }}>{evento.detalle.observaciones}</div>
-      )}
     </>
   );
 };
@@ -3641,7 +3711,7 @@ const CeldaEvento = ({ evento, onClick }) => {
             </div>
           ))}
           {barriosDistintos && barriosDistintos.size > 1 && (
-            <div style={{ marginTop: '6px', fontSize: '10px', fontWeight: 600, color: '#B45309' }}>⚠ Incluye pautas de distintos barrios — el click abre "{evento.detalle.barrio}"</div>
+            <div style={{ marginTop: '6px', fontSize: '10px', fontWeight: 600, color: '#B45309' }}>⚠ Incluye pautas de distintos barrios — el click abre "{evento.detalle.barrio || 'Sin barrio asignado'}"</div>
           )}
         </div>
       )}
@@ -3707,7 +3777,10 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onClickVisita, onCli
   const manejarClickEvento = (evento, circuito) => {
     if (evento.tipo === 'visita') onClickVisita(circuito.CircuitoKey);
     else if (evento.tipo === 'medicion') onClickMedicion(circuito.CircuitoKey, evento.fecha);
-    else if (evento.tipo === 'pauta') onClickPauta(evento.detalle.barrio);
+    // Pautas de circuitos_sin_barrio (barrio: null) no tienen ficha de barrio a la que
+    // navegar — el click queda sin efecto para esas (el badge "Sin barrio asignado" del
+    // tooltip ya avisa por qué).
+    else if (evento.tipo === 'pauta' && evento.detalle.barrio) onClickPauta(evento.detalle.barrio);
   };
 
   return (
@@ -3880,9 +3953,52 @@ function unificarVisitasPDF(visitasBarrio, visitasCircuito) {
   });
   return resultado.sort((a, b) => a.fecha.localeCompare(b.fecha));
 }
+// Formatea un valor de metricas_ejecutadas para el PDF (string, no JSX): nunca
+// "null"/"undefined"/"NaN" — "s/d" si el campo vino null.
+function htmlMetricaPauta(valor, prefijo) {
+  if (valor == null || Number.isNaN(valor)) return 's/d';
+  return `${prefijo || ''}${valor.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`;
+}
+// material.link + redes_publicadas.ig/fb/yt: enlaces individuales, solo los que no son
+// null. "Sin material disponible" si no hay ninguno.
+function htmlMaterialPauta(material) {
+  const redes = material?.redes_publicadas || {};
+  const links = [
+    material?.link ? { label: 'Material', href: material.link } : null,
+    redes.ig ? { label: 'IG', href: redes.ig } : null,
+    redes.fb ? { label: 'FB', href: redes.fb } : null,
+    redes.yt ? { label: 'YT', href: redes.yt } : null,
+  ].filter(Boolean);
+  if (links.length === 0) return `<span style="color:#ccc">Sin material disponible</span>`;
+  return links.map(l => `<a href="${l.href}" target="_blank" style="color:#1976D2;text-decoration:none;white-space:nowrap">${l.label} →</a>`).join('<br>');
+}
+// Badge Activo/Inactivo de UNA pauta (campo `estado`) — distinto de
+// pdfBadgeEstadoPauta (más abajo), que resume la vigencia por fecha de TODAS las
+// pautas de un barrio para la tabla "Barrios del circuito".
+function pdfBadgeEstadoPautaItem(estado) {
+  if (estado === 'ACTIVO') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#2E7D3222;color:#2E7D32;white-space:nowrap">Activo</span>`;
+  if (estado === 'INACTIVO') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#9E9E9E22;color:#757575;white-space:nowrap">Inactivo</span>`;
+  return `<span style="color:#ccc">—</span>`;
+}
+// Esquema campañas 2026: Pieza agrupa campaña/plataforma/objetivo/tipo (por espacio,
+// mismo criterio que ya usaba este archivo para compactar columnas secundarias en una
+// sola celda). observaciones NO se incluye (uso interno de auditoría).
 function htmlPautaPDF(pautas) {
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada.</p>`;
-  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">Gasto</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${formatearFecha(p.fecha_creacion)} → ${formatearFecha(p.fecha_finalizacion)}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${p.importe_gastado != null ? '$' + p.importe_gastado.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td></tr>`).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">Frecuencia</th><th class="text-right">CPM/CPV</th><th class="text-right">Inversión</th><th>Material</th></tr></thead><tbody>${pautas.map(p => {
+    const et = etiquetasMetricasPauta(p.plataforma);
+    const m = p.metricas_ejecutadas || {};
+    return `<tr${p.estado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
+      <td><strong>${p.titulo_pieza || '—'}</strong><br><span style="font-size:10px;color:#999">${p.campania || '—'} · ${p.plataforma || '—'} · ${p.objetivo_campana || '—'} · ${p.tipo_pauta || '—'}</span></td>
+      <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
+      <td class="text-center">${pdfBadgeEstadoPautaItem(p.estado)}</td>
+      <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
+      <td class="text-right">${m.frecuencia != null ? m.frecuencia.toFixed(2) : 's/d'}</td>
+      <td class="text-right">${htmlMetricaPauta(m.costo_unitario, '$')}</td>
+      <td class="text-right">${htmlMetricaPauta(m.inversion, '$')}</td>
+      <td>${htmlMaterialPauta(p.material)}</td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
 }
 
 // --- Bloques de circuito "Visitas del Gobernador" / "Pauta publicitaria" (generarFichaPDF) ---
@@ -3906,21 +4022,40 @@ function htmlVisitasCircuitoPDF(visitas) {
 }
 
 // Pauta: mismo criterio de fuente que a nivel barrio (pautasBarriosData), concatenadas
-// agrupadas por barrio (mismo orden que trae el JSON, igual que a nivel barrio) — sin
-// columna Gasto (se saca por espacio, ya con la columna Barrio agregada).
+// agrupadas por barrio (mismo orden que trae el JSON, igual que a nivel barrio), MÁS
+// las pautas de circuitos_sin_barrio (esquema campañas 2026) asignadas directo a este
+// circuito — no vienen de ningún barrio, se marcan con _barrio: null para que
+// htmlPautaCircuitoPDF las etiquete como "Sin barrio asignado" en vez de omitirlas (las
+// que sí vienen de un barrio muestran su nombre real en esa misma columna).
+// Sin columna Gasto/Frecuencia/Inversión: mismo criterio que ya se aplica a "Visitas del
+// Gobernador" al agregarse a nivel circuito (se resumen, el detalle completo de gasto
+// queda para la ficha de barrio — metricas_ejecutadas.inversion se sigue calculando y
+// guardando en el dato, solo no se pinta en esta vista agregada).
 function pautaCircuitoPDF(datosCircuito, cruceData, pautasBarriosData, barriosGeoLookup) {
   const pautas = [];
   resolverBarriosDelCircuito(datosCircuito, cruceData).forEach(({ nombre, key }) => {
     const nombreDisplay = barriosGeoLookup?.[key]?.nombre_barrio || nombre;
-    const claveOriginal = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
-    if (!claveOriginal) return;
-    (pautasBarriosData[claveOriginal].pautas || []).forEach(p => pautas.push({ ...p, _barrio: nombreDisplay }));
+    obtenerPautasDeBarrio(pautasBarriosData, nombre).forEach(p => pautas.push({ ...p, _barrio: nombreDisplay }));
   });
+  obtenerPautasCircuitoSinBarrio(pautasBarriosData, datosCircuito.CircuitoKey).forEach(p => pautas.push({ ...p, _barrio: null }));
   return pautas;
 }
 function htmlPautaCircuitoPDF(pautas) {
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada en los barrios de este circuito.</p>`;
-  return `<table><thead><tr><th>Anuncio</th><th>Vigencia</th><th class="text-right">Alcance</th><th class="text-right">Impresiones</th><th class="text-right">CTR</th><th class="text-right">Frecuencia</th><th class="text-right">CPM</th><th>Barrio</th></tr></thead><tbody>${pautas.map(p => `<tr><td>${p.nombre_anuncio || '—'}${p.observaciones ? `<br><span style="font-size:10px;color:#999;font-style:italic">${p.observaciones}</span>` : ''}</td><td style="white-space:nowrap">${formatearFecha(p.fecha_creacion)} → ${formatearFecha(p.fecha_finalizacion)}</td><td class="text-right">${p.alcance != null ? p.alcance.toLocaleString() : '—'}</td><td class="text-right">${p.impresiones != null ? p.impresiones.toLocaleString() : '—'}</td><td class="text-right">${typeof p.ctr === 'number' ? p.ctr.toFixed(2) + '%' : '—'}</td><td class="text-right">${typeof p.frecuencia === 'number' ? p.frecuencia.toFixed(2) : '—'}</td><td class="text-right">${typeof p.cpm === 'number' ? p.cpm.toFixed(2) : '—'}</td><td>${p._barrio}</td></tr>`).join('')}</tbody></table>`;
+  const badgeSinBarrio = `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#9E9E9E22;color:#757575;white-space:nowrap">Sin barrio asignado</span>`;
+  return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">CPM/CPV</th><th>Material</th><th>Barrio</th></tr></thead><tbody>${pautas.map(p => {
+    const et = etiquetasMetricasPauta(p.plataforma);
+    const m = p.metricas_ejecutadas || {};
+    return `<tr${p.estado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
+      <td><strong>${p.titulo_pieza || '—'}</strong><br><span style="font-size:10px;color:#999">${p.campania || '—'} · ${p.plataforma || '—'} · ${p.tipo_pauta || '—'}</span></td>
+      <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
+      <td class="text-center">${pdfBadgeEstadoPautaItem(p.estado)}</td>
+      <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
+      <td class="text-right">${htmlMetricaPauta(m.costo_unitario, '$')}</td>
+      <td>${htmlMaterialPauta(p.material)}</td>
+      <td>${p._barrio || badgeSinBarrio}</td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
 }
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
@@ -4225,8 +4360,7 @@ function generarSeccionBarrioPDF({
   // (que incluye TODOS los barrios con orden_importancia:1, no solo este) que no estén
   // ya cubiertas, dedupeando por fecha+detalle.
   const visitasBarrio = unificarVisitasPDF(recorridosLookup?.[key]?.visitas || [], visitasCircuito);
-  const claveOriginalPauta = pautasBarriosData ? Object.keys(pautasBarriosData).find(k => normalizarNombreBarrio(k) === key) : null;
-  const pautaBarrio = claveOriginalPauta ? (pautasBarriosData[claveOriginalPauta].pautas || []) : [];
+  const pautaBarrio = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
   const obrasBarrio = (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key);
   const cercanosBarrio = barriosCercanos(nombreBarrio, barriosGeoData);
   const votosEscuelasBarrio = votosEscuelasBarrioLookup?.[key] || null;
@@ -4305,8 +4439,16 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 
 // Abre la ventana de impresión con el HTML de la ficha ya armado — mismo mecanismo
 // (window.open + print) para el export de circuito y el de barrio individual.
+// window.open puede devolver null (bloqueador de popups del navegador, o el propio
+// entorno de testing) — sin este guard, ventana.document.write revienta con un
+// TypeError poco claro para quien lo ve. Se avisa con un alert accionable en vez de
+// dejar pasar una excepción sin manejar.
 function abrirVentanaImpresion(html) {
   const ventana = window.open('', '_blank');
+  if (!ventana) {
+    alert('No se pudo abrir la ventana de impresión: el navegador bloqueó el popup. Permití popups para este sitio (suele aparecer un ícono en la barra de direcciones) e intentá exportar de nuevo.');
+    return;
+  }
   ventana.document.write(html);
   ventana.document.close();
   setTimeout(() => ventana.print(), 500);

@@ -85,10 +85,10 @@ function crearIconoPautaEstrella(activa) {
   });
 }
 
-// pautas_barrios.json (esquema Meta Ads actual) trae la vigencia como fecha_creacion /
-// fecha_finalizacion en formato "YYYY-MM-DD" — NO fecha_salida/fecha_cierre (esquema
-// viejo, ya no existe). Se compara a nivel de día contra "hoy" del cliente. Fecha
-// ausente o no parseable -> null, tratado por el llamador como finalizada (no activa).
+// pautas_barrios.json (esquema campañas 2026) trae la vigencia como inicio / fin en
+// formato "YYYY-MM-DD" — NO fecha_creacion/fecha_finalizacion (esquema Meta Ads viejo,
+// ya no existe). Se compara a nivel de día contra "hoy" del cliente. Fecha ausente o no
+// parseable -> null, tratado por el llamador como finalizada (no activa).
 function parsearFechaISO(fechaStr) {
   if (!fechaStr || typeof fechaStr !== 'string') return null;
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
@@ -292,49 +292,52 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
   const escuelasParaMostrar = useMemo(() => escuelasData?.escuelas || [], [escuelasData]);
 
-  // pautas_barrios.json viene indexado por nombre de barrio (nivel barrio, no por
-  // anuncio individual) — un marker por barrio con pauta, ubicado en el centroide de su
-  // polígono en barrios_geo.json (mismo cruce normalizado que ya usa este archivo para
-  // Barrios/Territorio). barrios_geo.json tiene 16 nombres de barrio duplicados
-  // (fragmentos no contiguos, ver comentario de resolverCircuitoPrincipalDeBarrio en
-  // pages/index.js) — para el marker se toma el primer fragmento que matchea, sin
-  // intentar elegir "el principal" (no hay campo que lo indique). Los barrios de pauta
-  // sin ningún fragmento que matchee ni con normalización quedan afuera del mapa (no se
-  // inventa ubicación) y se listan en consola para poder avisarlos.
-  // Cada pauta se anota con _activa (fecha_finalizacion >= hoy) al vuelo acá — una sola
-  // vez por render de esta capa, no en el render de cada marker — y un barrio "tiene
-  // pauta activa" si alguna de sus pautas lo está. Fechas ausentes/no parseables se
-  // tratan como finalizadas (no rompen el cálculo) y se cuentan para avisar en consola.
+  // pautas_barrios.json (esquema campañas 2026) viene con dos buckets: `barrios`
+  // (indexado por nombre, nivel barrio, no por pieza individual) y `circuitos_sin_barrio`
+  // (pautas asignadas directo a un circuito, sin barrio identificado). Este marker por
+  // barrio solo recorre el bucket `barrios` — circuitos_sin_barrio queda deliberadamente
+  // fuera del mapa por ahora (se evalúa cómo mostrarlo más adelante), un marker por
+  // barrio con pauta, ubicado en el centroide de su polígono en barrios_geo.json (mismo
+  // cruce normalizado que ya usa este archivo para Barrios/Territorio). barrios_geo.json
+  // tiene 16 nombres de barrio duplicados (fragmentos no contiguos, ver comentario de
+  // resolverCircuitoPrincipalDeBarrio en pages/index.js) — para el marker se toma el
+  // primer fragmento que matchea, sin intentar elegir "el principal" (no hay campo que
+  // lo indique). Los barrios de pauta sin ningún fragmento que matchee ni con
+  // normalización quedan afuera del mapa (no se inventa ubicación) y se listan en
+  // consola para poder avisarlos.
+  // Cada pauta se anota con _activa (fin >= hoy) al vuelo acá — una sola vez por render
+  // de esta capa, no en el render de cada marker — y un barrio "tiene pauta activa" si
+  // alguna de sus pautas lo está. Fechas ausentes/no parseables se tratan como
+  // finalizadas (no rompen el cálculo) y se cuentan para avisar en consola.
   const pautaBarrioMarkers = useMemo(() => {
-    if (!pautasBarriosData || !barriosGeoData) return [];
+    const bucket = pautasBarriosData?.barrios;
+    if (!bucket || !barriosGeoData) return [];
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     const sinMatch = [];
     let sinFechaValidaCount = 0;
 
-    // Orden por fecha_creacion (inicio de vigencia) descendente — la pauta más
-    // reciente primero. No hay fecha_salida en el esquema actual (esquema viejo, ver
-    // comentario arriba de parsearFechaISO); fecha_creacion es el equivalente vigente.
-    // Sin fecha_creacion parseable -> se manda al final (no rompe el orden del resto).
+    // Orden por inicio (arranque de vigencia) descendente — la pauta más reciente
+    // primero. Sin inicio parseable -> se manda al final (no rompe el orden del resto).
     const anotarPautas = (pautasRaw) => (pautasRaw || []).map(p => {
-      const fechaFin = parsearFechaISO(p.fecha_finalizacion);
+      const fechaFin = parsearFechaISO(p.fin);
       if (!fechaFin) sinFechaValidaCount += 1;
       return { ...p, _activa: fechaFin ? fechaFin >= hoy : false };
     }).sort((a, b) => {
-      const fa = parsearFechaISO(a.fecha_creacion);
-      const fb = parsearFechaISO(b.fecha_creacion);
+      const fa = parsearFechaISO(a.inicio);
+      const fb = parsearFechaISO(b.inicio);
       if (!fa && !fb) return 0;
       if (!fa) return 1;
       if (!fb) return -1;
       return fb - fa;
     });
 
-    const markers = Object.keys(pautasBarriosData).map(nombreBarrio => {
+    const markers = Object.keys(bucket).map(nombreBarrio => {
       const normalizado = normalizarNombreBarrio(nombreBarrio);
       const feature = barriosGeoData.features.find(f => normalizarNombreBarrio(f.properties?.nombre_barrio) === normalizado);
       const lat = feature?.properties?.centroid_lat;
       const lon = feature?.properties?.centroid_lon;
-      const pautas = anotarPautas(pautasBarriosData[nombreBarrio].pautas);
+      const pautas = anotarPautas(bucket[nombreBarrio].pautas);
       if (lat == null || lon == null) {
         sinMatch.push(nombreBarrio);
         return null;
@@ -346,7 +349,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
       console.warn('Pauta: barrios sin match geográfico en barrios_geo.json (excluidos del mapa):', sinMatch);
     }
     if (sinFechaValidaCount > 0) {
-      console.warn(`Pauta: ${sinFechaValidaCount} registro(s) sin fecha_finalizacion parseable, tratados como finalizados.`);
+      console.warn(`Pauta: ${sinFechaValidaCount} registro(s) sin fin parseable, tratados como finalizados.`);
     }
     return markers;
   }, [pautasBarriosData, barriosGeoData]);
@@ -642,22 +645,27 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                   <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
                     {/* Solo las 2 pautas más recientes (m.pautas ya viene ordenado por
-                        fecha_creacion desc) — el contador de arriba sigue mostrando el
+                        inicio desc) — el contador de arriba sigue mostrando el
                         total real (m.pautas.length), no el límite acá aplicado. */}
-                    {m.pautas.slice(0, 2).map((p, i) => (
+                    {m.pautas.slice(0, 2).map((p, i) => {
+                      const etiqueta = p.plataforma === 'GOOGLE' ? 'Visualizaciones' : 'Impresiones';
+                      const inv = p.metricas_ejecutadas?.inversion;
+                      const alcance = p.metricas_ejecutadas?.alcance_o_visualizaciones;
+                      return (
                       <div key={p.fila_origen ?? i} style={{ borderTop: i > 0 ? '1px solid #eee' : 'none', paddingTop: i > 0 ? '6px' : 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.codigo_anuncio || '—'}</div>
+                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.titulo_pieza || '—'}</div>
                           <span style={{ flexShrink: 0, fontSize: '9px', fontWeight: 600, padding: '1px 6px', borderRadius: '8px', whiteSpace: 'nowrap', backgroundColor: p._activa ? '#2E7D3222' : '#9E9E9E22', color: p._activa ? '#2E7D32' : '#757575' }}>
                             {p._activa ? 'Activa' : 'Finalizada'}
                           </span>
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>Vigencia: {formatearFecha(p.fecha_creacion)} → {formatearFecha(p.fecha_finalizacion)}</div>
+                        <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>Vigencia: {formatearFecha(p.inicio)} → {formatearFecha(p.fin)}</div>
                         <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
-                          Alcance: {p.alcance?.toLocaleString() ?? '—'} · Gasto: {p.importe_gastado != null ? `$${p.importe_gastado.toLocaleString()}` : '—'}
+                          {etiqueta}: {alcance != null ? alcance.toLocaleString() : 's/d'} · Inversión: {inv != null ? `$${inv.toLocaleString()}` : 's/d'}
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <BotonVerBarrioEnPauta nombreBarrio={m.nombreBarrio} onVerBarrioEnPauta={onVerBarrioEnPauta} />
                 </div>
