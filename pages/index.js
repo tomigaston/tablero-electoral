@@ -2105,10 +2105,10 @@ const CeldaBarrioCircuitoObra = ({ grupo }) => {
 // este estado fuera local se perdería al volver. Mismo criterio que filtroCategoria
 // para VistaCapital (también lifted a Home por el mismo motivo).
 const VistaObras = ({
-  obrasData, tabActiva, setTabActiva, filtroCircuito, setFiltroCircuito, filtroBarrio, setFiltroBarrio, filtroReparticion, setFiltroReparticion, filtroAvance, setFiltroAvance, ordenColumna, setOrdenColumna, ordenAsc, setOrdenAsc, onSelectObra,
+  obrasData, tabActiva, setTabActiva, busqueda, setBusqueda, filtroCircuito, setFiltroCircuito, filtroBarrio, setFiltroBarrio, filtroReparticion, setFiltroReparticion, filtroAvance, setFiltroAvance, ordenColumna, setOrdenColumna, ordenAsc, setOrdenAsc, onSelectObra,
   // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que
   // el resto de los filtros/orden de Vista Obras (ver comentario arriba del componente).
-  comFiltroAptoDifusion, setComFiltroAptoDifusion, comFiltroEstadoRelevamiento, setComFiltroEstadoRelevamiento, comFiltroPrioridad, setComFiltroPrioridad,
+  comBusqueda, setComBusqueda, comFiltroAptoDifusion, setComFiltroAptoDifusion, comFiltroEstadoRelevamiento, setComFiltroEstadoRelevamiento, comFiltroPrioridad, setComFiltroPrioridad,
   comModo, setComModo, comAnio, setComAnio, comMes, setComMes,
 }) => {
   // Una fila por id_obra único, no por id_registro (ver comentario de idObraDeRegistro).
@@ -2158,9 +2158,14 @@ const VistaObras = ({
   ), [obrasData]);
 
   // Filtros sobre los datos ya deduplicados por id_obra: una obra multi-barrio queda
-  // adentro si CUALQUIERA de sus registros (barrios/circuitos) matchea.
+  // adentro si CUALQUIERA de sus registros (barrios/circuitos) matchea. El buscador de
+  // texto libre (Etapa 4) se combina en AND con el resto — contains, case-insensitive,
+  // sin tildes, con normalizarNombreBarrio (mismo criterio de normalización que ya usa
+  // el proyecto para nombres de barrio, reusado tal cual acá para nombre_obra).
   const obrasFiltradas = useMemo(() => {
+    const q = busqueda.trim() ? normalizarNombreBarrio(busqueda) : '';
     return obrasUnicas.filter((g) => {
+      if (q && !normalizarNombreBarrio(g.nombreObra).includes(q)) return false;
       if (filtroCircuito && !g.registros.some((r) => r.circuito === filtroCircuito)) return false;
       if (filtroBarrio && !g.registros.some((r) => r.barrio === filtroBarrio)) return false;
       if (filtroReparticion && g.reparticion !== filtroReparticion) return false;
@@ -2171,7 +2176,7 @@ const VistaObras = ({
       }
       return true;
     });
-  }, [obrasUnicas, filtroCircuito, filtroBarrio, filtroReparticion, filtroAvance]);
+  }, [obrasUnicas, busqueda, filtroCircuito, filtroBarrio, filtroReparticion, filtroAvance]);
 
   const obrasOrdenadas = useMemo(() => {
     const arr = [...obrasFiltradas];
@@ -2195,11 +2200,12 @@ const VistaObras = ({
   const avancePromedio = totalObras > 0 ? obrasFiltradas.reduce((sum, g) => sum + (g.avance ?? 0), 0) / totalObras : 0;
   const finalizadas = obrasFiltradas.filter((g) => (g.avance ?? 0) >= UMBRAL_OBRA_FINALIZADA).length;
   const sinIniciar = obrasFiltradas.filter((g) => g.avance == null || g.avance === 0).length;
-  const hayFiltros = !!(filtroCircuito || filtroBarrio || filtroReparticion || filtroAvance);
+  const hayFiltros = !!(busqueda || filtroCircuito || filtroBarrio || filtroReparticion || filtroAvance);
 
-  const limpiarFiltros = () => { setFiltroCircuito(''); setFiltroBarrio(''); setFiltroReparticion(''); setFiltroAvance(''); };
+  const limpiarFiltros = () => { setBusqueda(''); setFiltroCircuito(''); setFiltroBarrio(''); setFiltroReparticion(''); setFiltroAvance(''); };
 
   const estiloSelect = { padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' };
+  const estiloBuscador = { width: '100%', padding: '10px 14px', paddingLeft: '36px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -2245,6 +2251,10 @@ const VistaObras = ({
               {hayFiltros && <button onClick={limpiarFiltros} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtros</button>}
             </div>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: '2 1 240px', minWidth: '200px' }}>
+                <input type="text" placeholder="Buscar obra por nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={estiloBuscador} />
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '13px', pointerEvents: 'none' }}>🔍</span>
+              </div>
               <select value={filtroCircuito} onChange={(e) => setFiltroCircuito(e.target.value)} style={estiloSelect}>
                 <option value="">Circuito (todos)</option>
                 {opcionesCircuito.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -2269,8 +2279,10 @@ const VistaObras = ({
               <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{hayFiltros ? `Mostrando ${obrasFiltradas.length} de ${obrasUnicas.length} obras` : `Todas las obras (${obrasUnicas.length})`}</span>
               <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Click en columna para ordenar</span>
             </div>
-            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+            {/* overflowX: pantallas angostas (tablet) desbordan las 4 columnas — scroll
+                horizontal acá adentro en vez de romper el layout de la página. */}
+            <div style={{ maxHeight: '500px', overflow: 'auto' }}>
+              <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
                   <tr>
                     <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('nombreObra')}>Obra {ordenColumna === 'nombreObra' && (ordenAsc ? '↑' : '↓')}</th>
@@ -2295,7 +2307,7 @@ const VistaObras = ({
                     </tr>
                   ))}
                   {obrasOrdenadas.length === 0 && (
-                    <tr><td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>Ninguna obra coincide con los filtros elegidos.</td></tr>
+                    <tr><td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>{busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}</td></tr>
                   )}
                 </tbody>
               </table>
@@ -2306,6 +2318,7 @@ const VistaObras = ({
         <SolapaComunicacionObras
           obrasUnicas={obrasUnicas}
           onSelectObra={onSelectObra}
+          busqueda={comBusqueda} setBusqueda={setComBusqueda}
           filtroAptoDifusion={comFiltroAptoDifusion} setFiltroAptoDifusion={setComFiltroAptoDifusion}
           filtroEstadoRelevamiento={comFiltroEstadoRelevamiento} setFiltroEstadoRelevamiento={setComFiltroEstadoRelevamiento}
           filtroPrioridad={comFiltroPrioridad} setFiltroPrioridad={setComFiltroPrioridad}
@@ -2358,8 +2371,11 @@ const SeccionFicha = ({ titulo, children }) => (
   </div>
 );
 
+// <button>, no <span onClick>: foco de teclado + Enter/Space funcionan nativos
+// (globals.css ya define el anillo de foco para <button>, sin CSS aparte acá) — ver
+// Etapa 4, Paso 3.4.
 const ChipUbicacion = ({ label, onClick }) => (
-  <span onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', borderRadius: '999px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>{label}</span>
+  <button type="button" onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', borderRadius: '999px', border: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>{label}</button>
 );
 
 // Lista de chips con "+N más" que EXPANDE INLINE (no abre otro modal — evitar apilar
@@ -2372,7 +2388,7 @@ const ListaChipsUbicacion = ({ items, onSelectItem, limite = 4 }) => {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
       {visibles.map((item) => <ChipUbicacion key={item.valor} label={item.label} onClick={() => onSelectItem(item)} />)}
       {!expandido && restantes > 0 && (
-        <span onClick={() => setExpandido(true)} style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', borderRadius: '999px', backgroundColor: 'transparent', border: '1px dashed var(--border)', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>+{restantes} más</span>
+        <button type="button" onClick={() => setExpandido(true)} style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', borderRadius: '999px', backgroundColor: 'transparent', border: '1px dashed var(--border)', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>+{restantes} más</button>
       )}
     </div>
   );
@@ -2619,7 +2635,7 @@ const BadgeComunicacionObra = ({ texto, color }) => (
 );
 
 const SolapaComunicacionObras = ({
-  obrasUnicas, onSelectObra,
+  obrasUnicas, onSelectObra, busqueda, setBusqueda,
   filtroAptoDifusion, setFiltroAptoDifusion, filtroEstadoRelevamiento, setFiltroEstadoRelevamiento, filtroPrioridad, setFiltroPrioridad,
   modo, setModo, anio, setAnio, mes, setMes,
 }) => {
@@ -2628,16 +2644,22 @@ const SolapaComunicacionObras = ({
   const opcionesPrioridad = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.prioridad).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
 
   // Mismos filtros para tabla y calendario: si una obra queda afuera acá, no aparece
-  // en ninguno de los dos modos (Etapa 3 del prompt, Paso 2).
-  const obrasFiltradas = useMemo(() => obrasUnicas.filter((g) => {
-    if (filtroAptoDifusion && g.aptoDifusion !== filtroAptoDifusion) return false;
-    if (filtroEstadoRelevamiento && g.estadoRelevamiento !== filtroEstadoRelevamiento) return false;
-    if (filtroPrioridad && g.prioridad !== filtroPrioridad) return false;
-    return true;
-  }), [obrasUnicas, filtroAptoDifusion, filtroEstadoRelevamiento, filtroPrioridad]);
+  // en ninguno de los dos modos (Etapa 3 del prompt, Paso 2) — el buscador de texto
+  // libre (Etapa 4) es uno más de esta lista, mismo criterio de normalización
+  // (normalizarNombreBarrio) que el buscador de Estado general.
+  const obrasFiltradas = useMemo(() => {
+    const q = busqueda.trim() ? normalizarNombreBarrio(busqueda) : '';
+    return obrasUnicas.filter((g) => {
+      if (q && !normalizarNombreBarrio(g.nombreObra).includes(q)) return false;
+      if (filtroAptoDifusion && g.aptoDifusion !== filtroAptoDifusion) return false;
+      if (filtroEstadoRelevamiento && g.estadoRelevamiento !== filtroEstadoRelevamiento) return false;
+      if (filtroPrioridad && g.prioridad !== filtroPrioridad) return false;
+      return true;
+    });
+  }, [obrasUnicas, busqueda, filtroAptoDifusion, filtroEstadoRelevamiento, filtroPrioridad]);
 
-  const hayFiltros = !!(filtroAptoDifusion || filtroEstadoRelevamiento || filtroPrioridad);
-  const limpiarFiltros = () => { setFiltroAptoDifusion(''); setFiltroEstadoRelevamiento(''); setFiltroPrioridad(''); };
+  const hayFiltros = !!(busqueda || filtroAptoDifusion || filtroEstadoRelevamiento || filtroPrioridad);
+  const limpiarFiltros = () => { setBusqueda(''); setFiltroAptoDifusion(''); setFiltroEstadoRelevamiento(''); setFiltroPrioridad(''); };
 
   // Orden por defecto (Etapa 3, Paso 3): apto_difusion === 'Sí' primero, después por
   // fecha_disponible_inaugurar ascendente (más próximas arriba); sin esa fecha, al final.
@@ -2692,6 +2714,7 @@ const SolapaComunicacionObras = ({
   const esHoy = (dia) => dia === hoy.getDate() && mes === hoy.getMonth() && anio === hoy.getFullYear();
 
   const estiloSelect = { padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' };
+  const estiloBuscador = { width: '100%', padding: '10px 14px', paddingLeft: '36px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -2711,6 +2734,10 @@ const SolapaComunicacionObras = ({
           {hayFiltros && <button onClick={limpiarFiltros} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtros</button>}
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: '2 1 240px', minWidth: '200px' }}>
+            <input type="text" placeholder="Buscar obra por nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={estiloBuscador} />
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '13px', pointerEvents: 'none' }}>🔍</span>
+          </div>
           <select value={filtroAptoDifusion} onChange={(e) => setFiltroAptoDifusion(e.target.value)} style={estiloSelect}>
             <option value="">Apto difusión (todos)</option>
             {opcionesAptoDifusion.map((v) => <option key={v} value={v}>{v}</option>)}
@@ -2728,8 +2755,10 @@ const SolapaComunicacionObras = ({
 
       {modo === 'tabla' ? (
         <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
-          <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+          {/* overflowX: 8 columnas desbordan en tablet — scroll horizontal acá adentro
+              en vez de romper el layout de la página. */}
+          <div style={{ maxHeight: '500px', overflow: 'auto' }}>
+            <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '12px' }}>
               <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
                 <tr>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Obra</th>
@@ -2768,7 +2797,7 @@ const SolapaComunicacionObras = ({
                   </tr>
                 ))}
                 {obrasOrdenadas.length === 0 && (
-                  <tr><td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>Ninguna obra coincide con los filtros elegidos.</td></tr>
+                  <tr><td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>{busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}</td></tr>
                 )}
               </tbody>
             </table>
@@ -2782,39 +2811,58 @@ const SolapaComunicacionObras = ({
             <button onClick={mesSiguiente} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}>Mes siguiente →</button>
           </div>
 
-          <div style={{ display: 'flex', gap: '14px', marginBottom: '14px', flexWrap: 'wrap' }}>
-            {TIPOS_EVENTO_AGENDA_OBRA.map((t) => (
-              <div key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: t.color, flexShrink: 0 }} />
-                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.label}</span>
+          {obrasFiltradas.length === 0 ? (
+            // Ninguna obra matchea filtros/búsqueda — distinto de "hay obras pero
+            // ninguna tiene evento este mes" (eso es normal, no es un estado vacío:
+            // el grid simplemente no muestra puntos ese mes, ver eventosPorDia).
+            <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '13px' }}>
+              {busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', gap: '14px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                {TIPOS_EVENTO_AGENDA_OBRA.map((t) => (
+                  <div key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: t.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.label}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', backgroundColor: 'var(--border)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
-            {DIAS_SEMANA_CORTOS_OBRA.map((d, i) => (
-              <div key={i} style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-secondary)' }}>{d}</div>
-            ))}
-            {grilla.map((dia, i) => (
-              <div key={i} style={{ minHeight: '76px', padding: '6px', backgroundColor: dia && esHoy(dia) ? '#1976D210' : '#fff', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                {dia && (
-                  <>
-                    <span style={{ fontSize: '11px', fontWeight: esHoy(dia) ? 700 : 500, color: esHoy(dia) ? '#1976D2' : 'var(--text-tertiary)' }}>{dia}</span>
-                    {(eventosPorDia.get(dia) || []).map((ev, j) => (
-                      <div
-                        key={j}
-                        onClick={() => onSelectObra(ev.idObra)}
-                        title={`${ev.tipo.label}: ${ev.nombreObra}`}
-                        style={{ fontSize: '10px', padding: '2px 5px', borderRadius: '4px', backgroundColor: `${ev.tipo.color}22`, color: ev.tipo.color, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}
-                      >
-                        {ev.nombreObra}
-                      </div>
-                    ))}
-                  </>
-                )}
+              {/* overflowX: 7 columnas de calendario desbordan en tablet — scroll
+                  horizontal acá adentro en vez de romper el layout de la página. */}
+              <div style={{ overflowX: 'auto' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', backgroundColor: 'var(--border)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', minWidth: '560px' }}>
+                  {DIAS_SEMANA_CORTOS_OBRA.map((d, i) => (
+                    <div key={i} style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-secondary)' }}>{d}</div>
+                  ))}
+                  {grilla.map((dia, i) => (
+                    <div key={i} style={{ minHeight: '76px', padding: '6px', backgroundColor: dia && esHoy(dia) ? '#1976D210' : '#fff', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      {dia && (
+                        <>
+                          <span style={{ fontSize: '11px', fontWeight: esHoy(dia) ? 700 : 500, color: esHoy(dia) ? '#1976D2' : 'var(--text-tertiary)' }}>{dia}</span>
+                          {(eventosPorDia.get(dia) || []).map((ev, j) => (
+                            // <button>, no <div onClick>: foco de teclado + Enter/Space
+                            // funcionan nativos (globals.css ya define el anillo de foco
+                            // para <button>, sin CSS aparte acá) — ver Etapa 4, Paso 3.4.
+                            <button
+                              key={j}
+                              type="button"
+                              onClick={() => onSelectObra(ev.idObra)}
+                              title={`${ev.tipo.label}: ${ev.nombreObra}`}
+                              style={{ display: 'block', width: '100%', textAlign: 'left', fontSize: '10px', padding: '2px 5px', borderRadius: '4px', border: 'none', backgroundColor: `${ev.tipo.color}22`, color: ev.tipo.color, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500, fontFamily: 'inherit' }}
+                            >
+                              {ev.nombreObra}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -4458,6 +4506,9 @@ export default function Home() {
   // mismo motivo que filtroCategoria para VistaCapital.
   const [fichaObraIdSeleccionada, setFichaObraIdSeleccionada] = useState(null);
   const [vistaObrasTab, setVistaObrasTab] = useState('estado_general');
+  // Buscador de texto libre (Etapa 4) — independiente por pestaña a propósito (no
+  // comparten el texto buscado al cambiar de pestaña, ver prompt de Etapa 4 Paso 2).
+  const [vistaObrasBusqueda, setVistaObrasBusqueda] = useState('');
   const [vistaObrasFiltroCircuito, setVistaObrasFiltroCircuito] = useState('');
   const [vistaObrasFiltroBarrio, setVistaObrasFiltroBarrio] = useState('');
   const [vistaObrasFiltroReparticion, setVistaObrasFiltroReparticion] = useState('');
@@ -4466,6 +4517,7 @@ export default function Home() {
   const [vistaObrasOrdenAsc, setVistaObrasOrdenAsc] = useState(true);
   // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que el
   // resto del estado de Vista Obras (ver comentario junto a VistaObras).
+  const [vistaObrasComBusqueda, setVistaObrasComBusqueda] = useState('');
   const [vistaObrasComFiltroAptoDifusion, setVistaObrasComFiltroAptoDifusion] = useState('');
   const [vistaObrasComFiltroEstadoRelevamiento, setVistaObrasComFiltroEstadoRelevamiento] = useState('');
   const [vistaObrasComFiltroPrioridad, setVistaObrasComFiltroPrioridad] = useState('');
@@ -4971,6 +5023,7 @@ export default function Home() {
                     <VistaObras
                       obrasData={obrasData}
                       tabActiva={vistaObrasTab} setTabActiva={setVistaObrasTab}
+                      busqueda={vistaObrasBusqueda} setBusqueda={setVistaObrasBusqueda}
                       filtroCircuito={vistaObrasFiltroCircuito} setFiltroCircuito={setVistaObrasFiltroCircuito}
                       filtroBarrio={vistaObrasFiltroBarrio} setFiltroBarrio={setVistaObrasFiltroBarrio}
                       filtroReparticion={vistaObrasFiltroReparticion} setFiltroReparticion={setVistaObrasFiltroReparticion}
@@ -4978,6 +5031,7 @@ export default function Home() {
                       ordenColumna={vistaObrasOrdenColumna} setOrdenColumna={setVistaObrasOrdenColumna}
                       ordenAsc={vistaObrasOrdenAsc} setOrdenAsc={setVistaObrasOrdenAsc}
                       onSelectObra={setFichaObraIdSeleccionada}
+                      comBusqueda={vistaObrasComBusqueda} setComBusqueda={setVistaObrasComBusqueda}
                       comFiltroAptoDifusion={vistaObrasComFiltroAptoDifusion} setComFiltroAptoDifusion={setVistaObrasComFiltroAptoDifusion}
                       comFiltroEstadoRelevamiento={vistaObrasComFiltroEstadoRelevamiento} setComFiltroEstadoRelevamiento={setVistaObrasComFiltroEstadoRelevamiento}
                       comFiltroPrioridad={vistaObrasComFiltroPrioridad} setComFiltroPrioridad={setVistaObrasComFiltroPrioridad}
