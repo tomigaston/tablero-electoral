@@ -91,6 +91,78 @@ const DESCRIPCIONES_ML = {
 };
 
 // ============================================
+// FOCUS TRAP (accesibilidad — overlays tipo modal/popup)
+// ============================================
+// Selector de elementos "tabeables" estándar (mismo criterio que usan los focus traps
+// de las librerías de UI más comunes, WAI-ARIA Authoring Practices).
+const FOCUS_TRAP_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// Pila de contenedores con trap activo, compartida entre todas las instancias del hook
+// a propósito: cuando dos overlays quedan apilados (p.ej. PopupNavegacionCruzada abierto
+// sobre FichaObra) el Tab tiene que cicular SOLO dentro del que está arriba de todo — el
+// o los overlays de abajo se quedan callados (su handler no hace nada) hasta que el de
+// encima se desapile al cerrarse.
+const pilaFocusTrap = [];
+
+// Hook reusado por los 5 overlays tipo modal/popup del tablero (InfoModal, ModalObra,
+// FichaObra, DialogExportFicha, PopupNavegacionCruzada): al abrirse mueve el foco al
+// primer elemento foco-able de adentro (o al contenedor mismo si no hay ninguno),
+// mientras está abierto cicla Tab/Shift+Tab entre los elementos foco-ables de adentro
+// sin dejarlo salir hacia el resto de la página, y al cerrarse devuelve el foco a quien
+// lo disparó. `isOpen` cubre los dos patrones de overlay que conviven en el archivo:
+// los que se montan/desmontan condicionalmente desde el padre (FichaObra,
+// PopupNavegacionCruzada — pasarle siempre `true`, el mount ES la apertura) y los que
+// quedan montados fijos y prenden/apagan con un prop propio (InfoModal, ModalObra,
+// DialogExportFicha) — en ese caso el hook igual se llama en TODOS los renders, antes
+// de cualquier `if (!x) return null`, para no romper las Rules of Hooks. Devuelve un
+// ref para poner en el elemento contenedor del overlay (la "card" centrada, no el
+// backdrop) — hay que sumarle `tabIndex={-1}` en el JSX para que sea foco-able incluso
+// cuando no tiene ningún elemento interactivo adentro.
+function useFocusTrap(isOpen) {
+  const containerRef = useRef(null);
+  const previoFocoRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const contenedor = containerRef.current;
+    if (!contenedor) return undefined;
+
+    previoFocoRef.current = document.activeElement;
+    pilaFocusTrap.push(contenedor);
+
+    const focusables = () => Array.from(contenedor.querySelectorAll(FOCUS_TRAP_SELECTOR)).filter((el) => el.offsetParent !== null);
+    const primero = focusables()[0];
+    (primero || contenedor).focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key !== 'Tab') return;
+      if (pilaFocusTrap[pilaFocusTrap.length - 1] !== contenedor) return; // no es el tope de la pila: no responde
+      const items = focusables();
+      if (items.length === 0) { e.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const activo = document.activeElement;
+      if (e.shiftKey) {
+        if (activo === first || !contenedor.contains(activo)) { e.preventDefault(); last.focus(); }
+      } else if (activo === last || !contenedor.contains(activo)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      const idx = pilaFocusTrap.indexOf(contenedor);
+      if (idx !== -1) pilaFocusTrap.splice(idx, 1);
+      previoFocoRef.current?.focus?.();
+    };
+  }, [isOpen]);
+
+  return containerRef;
+}
+
+// ============================================
 // COMPONENTES REUTILIZABLES
 // ============================================
 const Badge = ({ categoria, tipo = 'v4' }) => {
@@ -174,11 +246,12 @@ const VictoriaIndicator = ({ label, gano }) => (
 
 // Modal de información
 const InfoModal = ({ isOpen, onClose }) => {
+  const overlayRef = useFocusTrap(isOpen);
   if (!isOpen) return null;
-  
+
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666' }}>×</button>
@@ -2401,6 +2474,7 @@ const ListaChipsUbicacion = ({ items, onSelectItem, limite = 4 }) => {
 // propio para no dispararle el onClick=onClose del overlay que lo contenga (FichaObra
 // u otro) cuando este popup se usa apilado sobre otro overlay.
 const PopupNavegacionCruzada = ({ tipo, nombre, onConfirmar, onCancelar }) => {
+  const overlayRef = useFocusTrap(true);
   useEffect(() => {
     const handleEscape = (e) => { if (e.key === 'Escape') onCancelar(); };
     document.addEventListener('keydown', handleEscape);
@@ -2408,7 +2482,7 @@ const PopupNavegacionCruzada = ({ tipo, nombre, onConfirmar, onCancelar }) => {
   }, [onCancelar]);
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10001 }} onClick={(e) => { e.stopPropagation(); onCancelar(); }}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '24px', maxWidth: '320px', width: '100%', margin: '20px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '24px', maxWidth: '320px', width: '100%', margin: '20px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginBottom: '20px' }}>
           Ir a la ficha de {tipo === 'barrio' ? 'barrio' : 'circuito'} <strong>{nombre}</strong> →
         </div>
@@ -2423,6 +2497,7 @@ const PopupNavegacionCruzada = ({ tipo, nombre, onConfirmar, onCancelar }) => {
 
 const FichaObra = ({ idObra, obrasEnriquecidas, onClose, onIrABarrio, onIrACircuito }) => {
   const [popupNav, setPopupNav] = useState(null); // { tipo: 'barrio'|'circuito', nombre, valor } | null
+  const overlayRef = useFocusTrap(true);
 
   // Todos los id_registro que comparten este id_obra (multi-barrio incluido).
   const registros = useMemo(
@@ -2470,7 +2545,7 @@ const FichaObra = ({ idObra, obrasEnriquecidas, onClose, onIrABarrio, onIrACircu
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '640px', width: '100%', maxHeight: '85vh', overflowY: 'auto', margin: '20px' }} onClick={(e) => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '640px', width: '100%', maxHeight: '85vh', overflowY: 'auto', margin: '20px' }} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '10px' }}>
           <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{principal.nombre_obra || '(sin nombre)'}</h2>
@@ -3145,6 +3220,7 @@ const BadgeObrasCercanas = ({ cantidad, onClick }) => (
 // (overlay + card flotante). Las filas de "Obras cercanas a esta obra" son clickeables
 // y vuelven a llamar a onSelectObra, para poder navegar de obra en obra sin cerrar.
 const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
+  const overlayRef = useFocusTrap(!!obra);
   if (!obra) return null;
   const avance = normalizarAvanceObra(obra.porcentaje_avance);
   const colorAvance = colorAvanceObra(avance);
@@ -3154,7 +3230,7 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666', flexShrink: 0 }}>×</button>
@@ -3223,6 +3299,7 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
 // tabla "Barrios del circuito" de la solapa Territorio, ordenados por población (no
 // por orden_importancia) y con el principal premarcado.
 const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBarrio, onSetModoEncuestas, onToggleRonda, onExportar, onCancelar }) => {
+  const overlayRef = useFocusTrap(!!dialog);
   if (!dialog) return null;
   const { barrios, seleccionados, principalNorm, modoEncuestas, rondasSeleccionadas } = dialog;
   const cantidadBarrios = seleccionados.size;
@@ -3234,7 +3311,7 @@ const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBa
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
         <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Opciones de exportación — Circuito {datosCircuito.CircuitoKey}</h2>
         <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '18px' }}>El circuito se incluye siempre en el PDF. Además, podés sumar la ficha completa de barrios específicos.</p>
 
