@@ -2104,7 +2104,13 @@ const CeldaBarrioCircuitoObra = ({ grupo }) => {
 // barrio/circuito, lo que desmonta VistaObras (vistaFicha deja de ser 'obras'); si
 // este estado fuera local se perdería al volver. Mismo criterio que filtroCategoria
 // para VistaCapital (también lifted a Home por el mismo motivo).
-const VistaObras = ({ obrasData, tabActiva, setTabActiva, filtroCircuito, setFiltroCircuito, filtroBarrio, setFiltroBarrio, filtroReparticion, setFiltroReparticion, filtroAvance, setFiltroAvance, ordenColumna, setOrdenColumna, ordenAsc, setOrdenAsc, onSelectObra }) => {
+const VistaObras = ({
+  obrasData, tabActiva, setTabActiva, filtroCircuito, setFiltroCircuito, filtroBarrio, setFiltroBarrio, filtroReparticion, setFiltroReparticion, filtroAvance, setFiltroAvance, ordenColumna, setOrdenColumna, ordenAsc, setOrdenAsc, onSelectObra,
+  // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que
+  // el resto de los filtros/orden de Vista Obras (ver comentario arriba del componente).
+  comFiltroAptoDifusion, setComFiltroAptoDifusion, comFiltroEstadoRelevamiento, setComFiltroEstadoRelevamiento, comFiltroPrioridad, setComFiltroPrioridad,
+  comModo, setComModo, comAnio, setComAnio, comMes, setComMes,
+}) => {
   // Una fila por id_obra único, no por id_registro (ver comentario de idObraDeRegistro).
   const obrasUnicas = useMemo(() => {
     const grupos = new Map();
@@ -2123,6 +2129,20 @@ const VistaObras = ({ obrasData, tabActiva, setTabActiva, filtroCircuito, setFil
         avance: normalizarAvanceObra(principal.porcentaje_avance),
         registros,
         multiBarrio: registros.length > 1,
+        // Campos de la pestaña Planificación de comunicación (Etapa 3) — se agregan
+        // acá, en la ÚNICA fuente de "una fila por id_obra", en vez de recalcular el
+        // agrupado de nuevo en otro componente. Consistentes entre registros de una
+        // misma obra multi-barrio (verificado en la Etapa 2: 0 grupos con valores
+        // distintos para ningún campo salvo barrio/circuito), tomar del principal es
+        // seguro.
+        prioridad: principal.prioridad || null,
+        aptoDifusion: principal.apto_difusion || null,
+        estadoRelevamiento: principal.estado_relevamiento?.trim() || null,
+        fechaDisponibleInaugurar: principal.fecha_disponible_inaugurar || null,
+        fechaRodaje: principal.fecha_rodaje || null,
+        fechaRelevamiento: principal.fecha_relevamiento || null,
+        entregaMaterialPautaLink: principal.entrega_material_pauta_link || null,
+        fechaPauta: principal.fecha_pauta || null,
       };
     });
   }, [obrasData]);
@@ -2191,24 +2211,20 @@ const VistaObras = ({ obrasData, tabActiva, setTabActiva, filtroCircuito, setFil
       <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
         {TABS_VISTA_OBRAS.map((t) => {
           const activa = tabActiva === t.key;
-          const deshabilitada = t.key === 'comunicacion';
           return (
             <button
               key={t.key}
-              disabled={deshabilitada}
-              onClick={() => !deshabilitada && setTabActiva(t.key)}
-              title={deshabilitada ? 'Se construye en la Etapa 3' : undefined}
+              onClick={() => setTabActiva(t.key)}
               style={{
                 padding: '10px 18px', borderRadius: '8px', border: 'none',
                 backgroundColor: activa ? '#1976D2' : 'transparent',
-                color: deshabilitada ? 'var(--text-tertiary)' : (activa ? '#fff' : 'var(--text-secondary)'),
+                color: activa ? '#fff' : 'var(--text-secondary)',
                 fontSize: '13px', fontWeight: 500,
-                cursor: deshabilitada ? 'not-allowed' : 'pointer',
-                opacity: deshabilitada ? 0.6 : 1,
+                cursor: 'pointer',
                 transition: 'all 0.2s',
               }}
             >
-              {t.label}{deshabilitada ? ' (próximamente)' : ''}
+              {t.label}
             </button>
           );
         })}
@@ -2287,9 +2303,16 @@ const VistaObras = ({ obrasData, tabActiva, setTabActiva, filtroCircuito, setFil
           </div>
         </>
       ) : (
-        <div style={{ padding: '40px 24px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '13px' }}>
-          Planificación de comunicación se construye en la Etapa 3.
-        </div>
+        <SolapaComunicacionObras
+          obrasUnicas={obrasUnicas}
+          onSelectObra={onSelectObra}
+          filtroAptoDifusion={comFiltroAptoDifusion} setFiltroAptoDifusion={setComFiltroAptoDifusion}
+          filtroEstadoRelevamiento={comFiltroEstadoRelevamiento} setFiltroEstadoRelevamiento={setComFiltroEstadoRelevamiento}
+          filtroPrioridad={comFiltroPrioridad} setFiltroPrioridad={setComFiltroPrioridad}
+          modo={comModo} setModo={setComModo}
+          anio={comAnio} setAnio={setComAnio}
+          mes={comMes} setMes={setComMes}
+        />
       )}
     </div>
   );
@@ -2537,6 +2560,262 @@ const FichaObra = ({ idObra, obrasEnriquecidas, onClose, onIrABarrio, onIrACircu
 
       {popupNav && (
         <PopupNavegacionCruzada tipo={popupNav.tipo} nombre={popupNav.nombre} onConfirmar={confirmarNav} onCancelar={() => setPopupNav(null)} />
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// PLANIFICACIÓN DE COMUNICACIÓN (Vista Obras, Etapa 3 — tabla + calendario)
+// ============================================
+// Fechas de AGENDA (van al calendario: alguien tiene que estar en un lugar en un
+// momento) vs. fechas de PROCESO (fecha_inicio/fecha_finalizacion/fecha_pauta, quedan
+// SOLO en la tabla) — distinción explícita del prompt de Etapa 3, no todas las fechas
+// de una obra son "eventos" de agenda.
+const TIPOS_EVENTO_AGENDA_OBRA = [
+  { key: 'relevamiento', campo: 'fechaRelevamiento', label: 'Relevamiento', color: '#5C6BC0' },
+  { key: 'rodaje', campo: 'fechaRodaje', label: 'Rodaje', color: '#FFA726' },
+  { key: 'inauguracion', campo: 'fechaDisponibleInaugurar', label: 'Disponible para inaugurar', color: '#2E7D32' },
+];
+
+const COLOR_APTO_DIFUSION_OBRA = { 'Sí': '#2E7D32', 'No': '#C62828', 'Sin iniciar': '#78909C' };
+const COLOR_ESTADO_RELEVAMIENTO_OBRA = { 'Relevado': '#2E7D32', 'En proceso': '#FFA726', 'Revisar Prioridad': '#EF5350', 'Sin Iniciar': '#78909C' };
+
+// Mismo criterio que parsearFechaISO en components/MapaCircuitos.js (duplicado a
+// propósito, mismo motivo que el resto de los helpers de fecha entre archivos): toma
+// el prefijo YYYY-MM-DD y arma un Date en horario LOCAL (no UTC), para que una fecha
+// tipo "2026-08-05" no se corra un día para atrás en husos horarios negativos como
+// Argentina (new Date("2026-08-05") sí lo haría, al interpretarse como UTC medianoche).
+function parsearFechaAgendaObra(fechaStr) {
+  if (!fechaStr || typeof fechaStr !== 'string') return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
+  if (!match) return null;
+  const [, y, m, d] = match;
+  const fecha = new Date(Number(y), Number(m) - 1, Number(d));
+  return Number.isNaN(fecha.getTime()) ? null : fecha;
+}
+
+const NOMBRES_MES_OBRA = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const DIAS_SEMANA_CORTOS_OBRA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+// Grilla de un mes (lunes primero, como el resto de calendarios en español): null de
+// relleno antes del día 1 y después del último día, hasta completar filas de 7.
+function generarGrillaMesObra(anio, mes) {
+  const primerDia = new Date(anio, mes, 1);
+  const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+  const offsetInicio = (primerDia.getDay() + 6) % 7; // getDay(): 0=domingo..6=sábado -> acá 0=lunes..6=domingo
+  const dias = [];
+  for (let i = 0; i < offsetInicio; i++) dias.push(null);
+  for (let d = 1; d <= diasEnMes; d++) dias.push(d);
+  while (dias.length % 7 !== 0) dias.push(null);
+  return dias;
+}
+
+// Badge denso para celda de tabla — mismo criterio de tamaño que el badge de estado
+// que ya usaba FilaObra (más chico que BadgeSimpleObra de FichaObra, pensado para un
+// header de ficha, no para una tabla densa).
+const BadgeComunicacionObra = ({ texto, color }) => (
+  <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${color}22`, color, whiteSpace: 'nowrap' }}>{texto}</span>
+);
+
+const SolapaComunicacionObras = ({
+  obrasUnicas, onSelectObra,
+  filtroAptoDifusion, setFiltroAptoDifusion, filtroEstadoRelevamiento, setFiltroEstadoRelevamiento, filtroPrioridad, setFiltroPrioridad,
+  modo, setModo, anio, setAnio, mes, setMes,
+}) => {
+  const opcionesAptoDifusion = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.aptoDifusion).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+  const opcionesEstadoRelevamiento = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.estadoRelevamiento).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+  const opcionesPrioridad = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.prioridad).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+
+  // Mismos filtros para tabla y calendario: si una obra queda afuera acá, no aparece
+  // en ninguno de los dos modos (Etapa 3 del prompt, Paso 2).
+  const obrasFiltradas = useMemo(() => obrasUnicas.filter((g) => {
+    if (filtroAptoDifusion && g.aptoDifusion !== filtroAptoDifusion) return false;
+    if (filtroEstadoRelevamiento && g.estadoRelevamiento !== filtroEstadoRelevamiento) return false;
+    if (filtroPrioridad && g.prioridad !== filtroPrioridad) return false;
+    return true;
+  }), [obrasUnicas, filtroAptoDifusion, filtroEstadoRelevamiento, filtroPrioridad]);
+
+  const hayFiltros = !!(filtroAptoDifusion || filtroEstadoRelevamiento || filtroPrioridad);
+  const limpiarFiltros = () => { setFiltroAptoDifusion(''); setFiltroEstadoRelevamiento(''); setFiltroPrioridad(''); };
+
+  // Orden por defecto (Etapa 3, Paso 3): apto_difusion === 'Sí' primero, después por
+  // fecha_disponible_inaugurar ascendente (más próximas arriba); sin esa fecha, al final.
+  const obrasOrdenadas = useMemo(() => {
+    const arr = [...obrasFiltradas];
+    arr.sort((a, b) => {
+      const aSi = a.aptoDifusion === 'Sí' ? 0 : 1;
+      const bSi = b.aptoDifusion === 'Sí' ? 0 : 1;
+      if (aSi !== bSi) return aSi - bSi;
+      const aFecha = parsearFechaAgendaObra(a.fechaDisponibleInaugurar);
+      const bFecha = parsearFechaAgendaObra(b.fechaDisponibleInaugurar);
+      if (aFecha && bFecha) return aFecha - bFecha;
+      if (aFecha) return -1;
+      if (bFecha) return 1;
+      return 0;
+    });
+    return arr;
+  }, [obrasFiltradas]);
+
+  // Un evento por cada fecha de agenda cargada, generado desde obrasFiltradas — que ya
+  // está deduplicada por id_obra (viene de obrasUnicas, VistaObras) — así una obra
+  // multi-barrio nunca genera más de un evento por tipo acá, sin importar cuántos
+  // id_registro/barrios tenga (no hay que deduplicar de nuevo).
+  const eventos = useMemo(() => {
+    const lista = [];
+    obrasFiltradas.forEach((g) => {
+      TIPOS_EVENTO_AGENDA_OBRA.forEach((tipo) => {
+        const fecha = parsearFechaAgendaObra(g[tipo.campo]);
+        if (fecha) lista.push({ idObra: g.idObra, nombreObra: g.nombreObra, tipo, fecha });
+      });
+    });
+    return lista;
+  }, [obrasFiltradas]);
+
+  const eventosPorDia = useMemo(() => {
+    const mapa = new Map();
+    eventos.forEach((ev) => {
+      if (ev.fecha.getFullYear() !== anio || ev.fecha.getMonth() !== mes) return;
+      const dia = ev.fecha.getDate();
+      if (!mapa.has(dia)) mapa.set(dia, []);
+      mapa.get(dia).push(ev);
+    });
+    return mapa;
+  }, [eventos, anio, mes]);
+
+  const grilla = useMemo(() => generarGrillaMesObra(anio, mes), [anio, mes]);
+
+  const mesAnterior = () => { if (mes === 0) { setMes(11); setAnio(anio - 1); } else setMes(mes - 1); };
+  const mesSiguiente = () => { if (mes === 11) { setMes(0); setAnio(anio + 1); } else setMes(mes + 1); };
+
+  const hoy = new Date();
+  const esHoy = (dia) => dia === hoy.getDate() && mes === hoy.getMonth() && anio === hoy.getFullYear();
+
+  const estiloSelect = { padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+          {hayFiltros ? `Mostrando ${obrasFiltradas.length} de ${obrasUnicas.length} obras` : `${obrasUnicas.length} obras`}
+        </div>
+        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', padding: '3px' }}>
+          <button onClick={() => setModo('tabla')} style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', backgroundColor: modo === 'tabla' ? '#1976D2' : 'transparent', color: modo === 'tabla' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>📋 Tabla</button>
+          <button onClick={() => setModo('calendario')} style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', backgroundColor: modo === 'calendario' ? '#1976D2' : 'transparent', color: modo === 'calendario' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>📅 Calendario</button>
+        </div>
+      </div>
+
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+          Filtros
+          {hayFiltros && <button onClick={limpiarFiltros} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtros</button>}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <select value={filtroAptoDifusion} onChange={(e) => setFiltroAptoDifusion(e.target.value)} style={estiloSelect}>
+            <option value="">Apto difusión (todos)</option>
+            {opcionesAptoDifusion.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+          <select value={filtroEstadoRelevamiento} onChange={(e) => setFiltroEstadoRelevamiento(e.target.value)} style={estiloSelect}>
+            <option value="">Estado de relevamiento (todos)</option>
+            {opcionesEstadoRelevamiento.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+          <select value={filtroPrioridad} onChange={(e) => setFiltroPrioridad(e.target.value)} style={estiloSelect}>
+            <option value="">Prioridad (todas)</option>
+            {opcionesPrioridad.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {modo === 'tabla' ? (
+        <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+              <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
+                <tr>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Obra</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Apto difusión</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Estado de relevamiento</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Disp. inaugurar</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Rodaje</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Pauta</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Fecha pauta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {obrasOrdenadas.map((g) => (
+                  <tr
+                    key={g.idObra}
+                    onClick={() => onSelectObra(g.idObra)}
+                    style={{ borderTop: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.1s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <td style={{ padding: '10px 14px' }}>{g.nombreObra}</td>
+                    <td style={{ padding: '10px 14px' }}><CeldaBarrioCircuitoObra grupo={g} /></td>
+                    <td style={{ padding: '10px 14px' }}>{g.aptoDifusion ? <BadgeComunicacionObra texto={g.aptoDifusion} color={COLOR_APTO_DIFUSION_OBRA[g.aptoDifusion] || '#78909C'} /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
+                    <td style={{ padding: '10px 14px' }}>{g.estadoRelevamiento ? <BadgeComunicacionObra texto={g.estadoRelevamiento} color={COLOR_ESTADO_RELEVAMIENTO_OBRA[g.estadoRelevamiento] || '#78909C'} /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaDisponibleInaugurar ? formatearFecha(g.fechaDisponibleInaugurar) : '—'}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaRodaje ? formatearFecha(g.fechaRodaje) : '—'}</td>
+                    <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                      {g.entregaMaterialPautaLink ? (
+                        esURLValida(g.entregaMaterialPautaLink)
+                          ? <a href={g.entregaMaterialPautaLink} target="_blank" rel="noopener noreferrer" title="Ver material de pauta" onClick={(e) => e.stopPropagation()} style={{ fontSize: '14px', textDecoration: 'none' }}>🔗</a>
+                          : <span title={g.entregaMaterialPautaLink} style={{ color: 'var(--text-tertiary)' }}>🔗</span>
+                      ) : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}
+                    </td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaPauta ? formatearFecha(g.fechaPauta) : '—'}</td>
+                  </tr>
+                ))}
+                {obrasOrdenadas.length === 0 && (
+                  <tr><td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>Ninguna obra coincide con los filtros elegidos.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <button onClick={mesAnterior} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}>← Mes anterior</button>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{NOMBRES_MES_OBRA[mes]} {anio}</div>
+            <button onClick={mesSiguiente} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}>Mes siguiente →</button>
+          </div>
+
+          <div style={{ display: 'flex', gap: '14px', marginBottom: '14px', flexWrap: 'wrap' }}>
+            {TIPOS_EVENTO_AGENDA_OBRA.map((t) => (
+              <div key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: t.color, flexShrink: 0 }} />
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', backgroundColor: 'var(--border)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+            {DIAS_SEMANA_CORTOS_OBRA.map((d, i) => (
+              <div key={i} style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-secondary)' }}>{d}</div>
+            ))}
+            {grilla.map((dia, i) => (
+              <div key={i} style={{ minHeight: '76px', padding: '6px', backgroundColor: dia && esHoy(dia) ? '#1976D210' : '#fff', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                {dia && (
+                  <>
+                    <span style={{ fontSize: '11px', fontWeight: esHoy(dia) ? 700 : 500, color: esHoy(dia) ? '#1976D2' : 'var(--text-tertiary)' }}>{dia}</span>
+                    {(eventosPorDia.get(dia) || []).map((ev, j) => (
+                      <div
+                        key={j}
+                        onClick={() => onSelectObra(ev.idObra)}
+                        title={`${ev.tipo.label}: ${ev.nombreObra}`}
+                        style={{ fontSize: '10px', padding: '2px 5px', borderRadius: '4px', backgroundColor: `${ev.tipo.color}22`, color: ev.tipo.color, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}
+                      >
+                        {ev.nombreObra}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
@@ -4185,6 +4464,14 @@ export default function Home() {
   const [vistaObrasFiltroAvance, setVistaObrasFiltroAvance] = useState('');
   const [vistaObrasOrdenColumna, setVistaObrasOrdenColumna] = useState('nombreObra');
   const [vistaObrasOrdenAsc, setVistaObrasOrdenAsc] = useState(true);
+  // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que el
+  // resto del estado de Vista Obras (ver comentario junto a VistaObras).
+  const [vistaObrasComFiltroAptoDifusion, setVistaObrasComFiltroAptoDifusion] = useState('');
+  const [vistaObrasComFiltroEstadoRelevamiento, setVistaObrasComFiltroEstadoRelevamiento] = useState('');
+  const [vistaObrasComFiltroPrioridad, setVistaObrasComFiltroPrioridad] = useState('');
+  const [vistaObrasComModo, setVistaObrasComModo] = useState('tabla'); // 'tabla' | 'calendario'
+  const [vistaObrasComAnio, setVistaObrasComAnio] = useState(() => new Date().getFullYear());
+  const [vistaObrasComMes, setVistaObrasComMes] = useState(() => new Date().getMonth());
   const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre>, principalNorm, modoEncuestas, rondasSeleccionadas: Set<idx> } | null — diálogo de opciones de exportación de la ficha de un circuito
   const [solapaActivaBarrio, setSolapaActivaBarrio] = useState('resumen'); // estado de tabs separado del de circuito (evita choques de clave, ej. 'resumen'/'escuelas'/'obras' existen en los dos)
 
@@ -4691,6 +4978,12 @@ export default function Home() {
                       ordenColumna={vistaObrasOrdenColumna} setOrdenColumna={setVistaObrasOrdenColumna}
                       ordenAsc={vistaObrasOrdenAsc} setOrdenAsc={setVistaObrasOrdenAsc}
                       onSelectObra={setFichaObraIdSeleccionada}
+                      comFiltroAptoDifusion={vistaObrasComFiltroAptoDifusion} setComFiltroAptoDifusion={setVistaObrasComFiltroAptoDifusion}
+                      comFiltroEstadoRelevamiento={vistaObrasComFiltroEstadoRelevamiento} setComFiltroEstadoRelevamiento={setVistaObrasComFiltroEstadoRelevamiento}
+                      comFiltroPrioridad={vistaObrasComFiltroPrioridad} setComFiltroPrioridad={setVistaObrasComFiltroPrioridad}
+                      comModo={vistaObrasComModo} setComModo={setVistaObrasComModo}
+                      comAnio={vistaObrasComAnio} setComAnio={setVistaObrasComAnio}
+                      comMes={vistaObrasComMes} setComMes={setVistaObrasComMes}
                     />
                   </>
                 ) : vistaFicha === 'barrio' ? (
