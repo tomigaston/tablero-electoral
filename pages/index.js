@@ -56,28 +56,13 @@ const COLORES_ML = {
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
 };
 
-// Esquema viejo de obras_capital.json (campo `estado`, texto) — el JSON actual ya no
-// trae ese campo (ver colorAvanceObra/COLOR_AVANCE_OBRA más abajo, que reemplazó a
-// esto en todo lo que se ve en pantalla: FilaObra, ModalObra, capa del mapa). Estas dos
-// constantes quedan SOLO por htmlObrasPDF (ficha PDF de circuito/barrio, más abajo),
-// que todavía no se actualizó al esquema nuevo — fuera de alcance de ese fix (no tocar
-// el PDF existente); hasta que se actualice, la tabla de obras del PDF sigue mostrando
-// "Sin dato" en la columna Estado.
-const COLOR_OBRA_ESTADO = {
-  'Por relevar': '#9E9E9E',
-  'Relevado': '#26A69A',
-  'En ejecución': '#FFA726',
-  'Finalizado': '#5C6BC0',
-  'Finalizado — Inaugurable': '#2E7D32',
-};
-const COLOR_OBRA_DEFAULT = '#9E9E9E';
-
 // Umbral de "Finalizada" para Vista Obras (tarjeta resumen + eventual filtro) — valor
 // por default a falta de un criterio oficial, fácil de ajustar en un solo lugar si
 // después se define otro corte.
 const UMBRAL_OBRA_FINALIZADA = 0.95;
 
-// Mismos 3 colores fijos por rango que pide la barra de avance de Vista Obras.
+// Mismos 3 colores fijos por rango que pide la barra de avance de Vista Obras; también
+// usado por htmlObrasPDF (ficha PDF de circuito/barrio) para el badge de avance.
 const COLOR_AVANCE_OBRA = { bajo: '#EF5350', medio: '#FFA726', alto: '#66BB6A' };
 const colorAvanceObra = (avance) => {
   const pct = (avance ?? 0) * 100;
@@ -2785,7 +2770,7 @@ const TIPO_VISITA_COLOR = {
   'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosCircuito, cruceData, onSelectCircuito, onVerFichaBarrio, onVerFichaCircuito, poblacionTotalPorBarrio }) => {
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosCircuito, cruceData, onSelectCircuito, onVerFichaBarrio, onVerFichaCircuito, poblacionTotalPorBarrio, obrasEnriquecidas }) => {
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -2800,7 +2785,12 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosC
   const otrosCircuitos = (listaCircuitos || [])
     .filter(c => c.circuito !== claveSel)
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
-  const obras = props.obras || [];
+  // barrio es la fuente de verdad: la lista de obras de este barrio se deriva acá en
+  // runtime filtrando obras_capital.json (obrasEnriquecidas), NUNCA de una copia
+  // estática — barrios_geo.json ya no trae `obras`/`cantidad_obras` embebidos (esa
+  // copia había quedado desincronizada del pipeline nuevo). Mismo criterio de
+  // normalización y de no deduplicar por id_obra que ya usa ObrasPanel para tipo="barrio".
+  const obrasBarrio = (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -2847,17 +2837,27 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosC
         ))}
       />
 
-      {props.cantidad_obras > 0 && (
+      {obrasBarrio.length > 0 && (
         <div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Obras ({props.cantidad_obras})</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Obras ({obrasBarrio.length})</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {obras.map((o, i) => (
-              <div key={i} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{o.programa || '—'}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{o.descripcion || '—'}</div>
-                <div style={{ fontSize: '11px', color: '#5C6BC0', fontWeight: 600, marginTop: '3px' }}>{o.estado || 'Sin dato'}</div>
-              </div>
-            ))}
+            {/* Vista compacta (sidebar angosto): nombre + repartición + avance alcanza,
+                el detalle completo (fechas, prioridad, auditoría, cercanas) vive en la
+                solapa Obras de la ficha completa del barrio (SolapaObrasBarrio → ObrasPanel,
+                a un click en "Ver ficha completa" de arriba). */}
+            {obrasBarrio.map((o, i) => {
+              const avance = normalizarAvanceObra(o.porcentaje_avance);
+              const colorAvance = colorAvanceObra(avance);
+              return (
+                <div key={`${o.id_registro}-${i}`} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{o.nombre_obra || '(sin nombre)'}</div>
+                    <span style={{ fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: `${colorAvance}22`, color: colorAvance, whiteSpace: 'nowrap', flexShrink: 0 }}>{avance != null ? `${(avance * 100).toFixed(0)}%` : 'Sin dato'}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{(o.reparticion || '').trim() || '—'}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -2874,7 +2874,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
         ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} onVerFichaBarrio={onVerFichaBarrio} onVerFichaCircuito={onVerFichaCircuito} poblacionTotalPorBarrio={poblacionTotalPorBarrio} />}
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} onVerFichaBarrio={onVerFichaBarrio} onVerFichaCircuito={onVerFichaCircuito} poblacionTotalPorBarrio={poblacionTotalPorBarrio} obrasEnriquecidas={obrasEnriquecidas} />}
     </div>
   </div>
 );
@@ -3276,9 +3276,11 @@ function htmlPautaCircuitoPDF(pautas) {
 }
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
-  return `<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Estado</th><th>Barrio / Circuito</th></tr></thead><tbody>${obras.map(o => {
-    const color = COLOR_OBRA_ESTADO[o.estado] || COLOR_OBRA_DEFAULT;
-    return `<tr><td>${o.nombre}</td><td>${o.tipo_obra || '—'}</td><td><span class="badge" style="background:${color}22;color:${color}">${o.estado || 'Sin dato'}</span></td><td>${o.barrio || 'Sin barrio asignado'}${o._circuitoNombre ? ' · ' + o._circuitoNombre : ''}</td></tr>`;
+  return `<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Avance</th><th>Barrio / Circuito</th></tr></thead><tbody>${obras.map(o => {
+    const avance = normalizarAvanceObra(o.porcentaje_avance);
+    const color = colorAvanceObra(avance);
+    const pctLabel = avance != null ? `${Math.round(avance * 100)}%` : 'Sin dato';
+    return `<tr><td>${o.nombre_obra || '(sin nombre)'}</td><td>${o.tipo_obra || '—'}</td><td><span class="badge" style="background:${color}22;color:${color}">${pctLabel}</span></td><td>${o.barrio || 'Sin barrio asignado'}${o._circuitoNombre ? ' · ' + o._circuitoNombre : ''}</td></tr>`;
   }).join('')}</tbody></table>`;
 }
 
