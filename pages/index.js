@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
-import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
+import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 import { formatearFecha } from '../lib/formatearFecha';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
@@ -56,16 +56,20 @@ const COLORES_ML = {
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
 };
 
-// Mismos colores por estado de obra que ya usa la capa Obras en components/MapaCircuitos.js
-// (duplicado a propósito, mismo criterio que normalizarNombreBarrio entre archivos).
-const COLOR_OBRA_ESTADO = {
-  'Por relevar': '#9E9E9E',
-  'Relevado': '#26A69A',
-  'En ejecución': '#FFA726',
-  'Finalizado': '#5C6BC0',
-  'Finalizado — Inaugurable': '#2E7D32',
+// Umbral de "Finalizada" para Vista Obras (tarjeta resumen + eventual filtro) — valor
+// por default a falta de un criterio oficial, fácil de ajustar en un solo lugar si
+// después se define otro corte.
+const UMBRAL_OBRA_FINALIZADA = 0.95;
+
+// Mismos 3 colores fijos por rango que pide la barra de avance de Vista Obras; también
+// usado por htmlObrasPDF (ficha PDF de circuito/barrio) para el badge de avance.
+const COLOR_AVANCE_OBRA = { bajo: '#EF5350', medio: '#FFA726', alto: '#66BB6A' };
+const colorAvanceObra = (avance) => {
+  const pct = (avance ?? 0) * 100;
+  if (pct < 30) return COLOR_AVANCE_OBRA.bajo;
+  if (pct < 70) return COLOR_AVANCE_OBRA.medio;
+  return COLOR_AVANCE_OBRA.alto;
 };
-const COLOR_OBRA_DEFAULT = '#9E9E9E';
 
 // Descripciones CLARAS para el popup de info
 const DESCRIPCIONES_CATEGORIA = {
@@ -85,6 +89,78 @@ const DESCRIPCIONES_ML = {
   'ML.5': 'Perdió en Gob. 2023 y además el porcentaje de votos bajó respecto a Int. 2019.',
   'ML.6': 'Perdió ambas elecciones con Llaryora: Int. 2019 y Gob. 2023.',
 };
+
+// ============================================
+// FOCUS TRAP (accesibilidad — overlays tipo modal/popup)
+// ============================================
+// Selector de elementos "tabeables" estándar (mismo criterio que usan los focus traps
+// de las librerías de UI más comunes, WAI-ARIA Authoring Practices).
+const FOCUS_TRAP_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// Pila de contenedores con trap activo, compartida entre todas las instancias del hook
+// a propósito: cuando dos overlays quedan apilados (p.ej. PopupNavegacionCruzada abierto
+// sobre FichaObra) el Tab tiene que cicular SOLO dentro del que está arriba de todo — el
+// o los overlays de abajo se quedan callados (su handler no hace nada) hasta que el de
+// encima se desapile al cerrarse.
+const pilaFocusTrap = [];
+
+// Hook reusado por los 5 overlays tipo modal/popup del tablero (InfoModal, ModalObra,
+// FichaObra, DialogExportFicha, PopupNavegacionCruzada): al abrirse mueve el foco al
+// primer elemento foco-able de adentro (o al contenedor mismo si no hay ninguno),
+// mientras está abierto cicla Tab/Shift+Tab entre los elementos foco-ables de adentro
+// sin dejarlo salir hacia el resto de la página, y al cerrarse devuelve el foco a quien
+// lo disparó. `isOpen` cubre los dos patrones de overlay que conviven en el archivo:
+// los que se montan/desmontan condicionalmente desde el padre (FichaObra,
+// PopupNavegacionCruzada — pasarle siempre `true`, el mount ES la apertura) y los que
+// quedan montados fijos y prenden/apagan con un prop propio (InfoModal, ModalObra,
+// DialogExportFicha) — en ese caso el hook igual se llama en TODOS los renders, antes
+// de cualquier `if (!x) return null`, para no romper las Rules of Hooks. Devuelve un
+// ref para poner en el elemento contenedor del overlay (la "card" centrada, no el
+// backdrop) — hay que sumarle `tabIndex={-1}` en el JSX para que sea foco-able incluso
+// cuando no tiene ningún elemento interactivo adentro.
+function useFocusTrap(isOpen) {
+  const containerRef = useRef(null);
+  const previoFocoRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const contenedor = containerRef.current;
+    if (!contenedor) return undefined;
+
+    previoFocoRef.current = document.activeElement;
+    pilaFocusTrap.push(contenedor);
+
+    const focusables = () => Array.from(contenedor.querySelectorAll(FOCUS_TRAP_SELECTOR)).filter((el) => el.offsetParent !== null);
+    const primero = focusables()[0];
+    (primero || contenedor).focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key !== 'Tab') return;
+      if (pilaFocusTrap[pilaFocusTrap.length - 1] !== contenedor) return; // no es el tope de la pila: no responde
+      const items = focusables();
+      if (items.length === 0) { e.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const activo = document.activeElement;
+      if (e.shiftKey) {
+        if (activo === first || !contenedor.contains(activo)) { e.preventDefault(); last.focus(); }
+      } else if (activo === last || !contenedor.contains(activo)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      const idx = pilaFocusTrap.indexOf(contenedor);
+      if (idx !== -1) pilaFocusTrap.splice(idx, 1);
+      previoFocoRef.current?.focus?.();
+    };
+  }, [isOpen]);
+
+  return containerRef;
+}
 
 // ============================================
 // COMPONENTES REUTILIZABLES
@@ -170,11 +246,12 @@ const VictoriaIndicator = ({ label, gano }) => (
 
 // Modal de información
 const InfoModal = ({ isOpen, onClose }) => {
+  const overlayRef = useFocusTrap(isOpen);
   if (!isOpen) return null;
-  
+
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '700px', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0 }}>Guía de categorías</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666' }}>×</button>
@@ -2038,6 +2115,836 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
 };
 
 // ============================================
+// VISTA OBRAS (Etapa 1 — estructura, resumen y tabla "Estado general")
+// ============================================
+// A diferencia de ObrasPanel/ModalObra (que muestran obras UNA POR UNA dentro de la
+// ficha de un circuito/barrio, ver más arriba), esta vista trabaja el conjunto de las
+// 756 obras. Trabaja directo sobre obras_capital.json crudo (prop obrasData, mismo
+// array que ya carga el fetch inicial) en vez de obrasEnriquecidas — no necesita
+// _circuitoMapkey derivado porque el registro crudo ya trae su propio campo `circuito`.
+//
+// id_obra NO es un campo del JSON: 809 registros = 756 obras, repetidas por
+// multi-barrio con id_registro tipo "OBRA-0049-a", "-b", etc. — se agrupa acá pelando
+// ese sufijo de una letra. Confirmado a mano: 756 ids base únicos.
+const idObraDeRegistro = (idRegistro) => (idRegistro || '').replace(/-[a-z]$/, '');
+
+// porcentaje_avance viene 0–1, pero hay al menos un registro con error de carga
+// (OBRA-0280 = 99 en vez de 0.99) — se acota acá solo para la vista, sin tocar el
+// archivo fuente (fuera de alcance de esta etapa).
+const normalizarAvanceObra = (v) => (v == null ? null : Math.min(v, 1));
+
+const RANGOS_AVANCE_OBRA = [
+  { key: '0-30', label: '0% – 30%', test: (pct) => pct >= 0 && pct < 30 },
+  { key: '30-70', label: '30% – 70%', test: (pct) => pct >= 30 && pct < 70 },
+  { key: '70-100', label: '70% – 100%', test: (pct) => pct >= 70 && pct <= 100 },
+];
+
+const TABS_VISTA_OBRAS = [
+  { key: 'estado_general', label: 'Estado general' },
+  { key: 'comunicacion', label: 'Planificación de comunicación' },
+];
+
+const BarraAvanceObra = ({ avance }) => {
+  const pct = Math.max(0, Math.min(100, (avance ?? 0) * 100));
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '110px' }}>
+      <div style={{ flex: 1, height: '8px', borderRadius: '4px', backgroundColor: 'var(--bg-secondary)', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', backgroundColor: colorAvanceObra(avance), borderRadius: '4px' }} />
+      </div>
+      <span style={{ fontSize: '11px', color: 'var(--text-secondary)', minWidth: '30px', textAlign: 'right', flexShrink: 0 }}>
+        {avance != null ? `${pct.toFixed(0)}%` : '—'}
+      </span>
+    </div>
+  );
+};
+
+// Columna Barrio/Circuito: obra de un solo barrio → "Barrio · Circuito"; multi-barrio
+// (mismo id_obra con varios id_registro) → "N barrios · multi", sin desplegar la lista
+// (eso es Etapa 2); tipo_ubicacion 'sin_geometria' pisa el nombre de barrio cuando la
+// obra es de un solo registro.
+const CeldaBarrioCircuitoObra = ({ grupo }) => {
+  if (grupo.multiBarrio) {
+    return <span>{grupo.registros.length} barrios · multi</span>;
+  }
+  const r = grupo.registros[0];
+  if (r.tipo_ubicacion === 'sin_geometria') return <span style={{ color: 'var(--text-tertiary)' }}>Sin geometría</span>;
+  if (!r.barrio) return <span style={{ color: 'var(--text-tertiary)' }}>{r.circuito || '—'}</span>;
+  return <span>{r.barrio}{r.circuito ? ` · ${r.circuito}` : ''}</span>;
+};
+
+// Filtros/orden/pestaña activa viven en el componente padre (Home), no acá adentro —
+// Etapa 2 abre FichaObra desde una fila y permite navegar a la ficha de un
+// barrio/circuito, lo que desmonta VistaObras (vistaFicha deja de ser 'obras'); si
+// este estado fuera local se perdería al volver. Mismo criterio que filtroCategoria
+// para VistaCapital (también lifted a Home por el mismo motivo).
+const VistaObras = ({
+  obrasData, tabActiva, setTabActiva, busqueda, setBusqueda, filtroCircuito, setFiltroCircuito, filtroBarrio, setFiltroBarrio, filtroReparticion, setFiltroReparticion, filtroAvance, setFiltroAvance, ordenColumna, setOrdenColumna, ordenAsc, setOrdenAsc, onSelectObra,
+  // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que
+  // el resto de los filtros/orden de Vista Obras (ver comentario arriba del componente).
+  comBusqueda, setComBusqueda, comFiltroAptoDifusion, setComFiltroAptoDifusion, comFiltroEstadoRelevamiento, setComFiltroEstadoRelevamiento, comFiltroPrioridad, setComFiltroPrioridad,
+  comModo, setComModo, comAnio, setComAnio, comMes, setComMes,
+}) => {
+  // Una fila por id_obra único, no por id_registro (ver comentario de idObraDeRegistro).
+  const obrasUnicas = useMemo(() => {
+    const grupos = new Map();
+    (obrasData || []).forEach((o) => {
+      const idObra = idObraDeRegistro(o.id_registro);
+      if (!idObra) return;
+      if (!grupos.has(idObra)) grupos.set(idObra, []);
+      grupos.get(idObra).push(o);
+    });
+    return Array.from(grupos.entries()).map(([idObra, registros]) => {
+      const principal = registros[0];
+      return {
+        idObra,
+        nombreObra: principal.nombre_obra || '(sin nombre)',
+        reparticion: (principal.reparticion || '').trim() || '—',
+        avance: normalizarAvanceObra(principal.porcentaje_avance),
+        registros,
+        multiBarrio: registros.length > 1,
+        // Campos de la pestaña Planificación de comunicación (Etapa 3) — se agregan
+        // acá, en la ÚNICA fuente de "una fila por id_obra", en vez de recalcular el
+        // agrupado de nuevo en otro componente. Consistentes entre registros de una
+        // misma obra multi-barrio (verificado en la Etapa 2: 0 grupos con valores
+        // distintos para ningún campo salvo barrio/circuito), tomar del principal es
+        // seguro.
+        prioridad: principal.prioridad || null,
+        aptoDifusion: principal.apto_difusion || null,
+        estadoRelevamiento: principal.estado_relevamiento?.trim() || null,
+        fechaDisponibleInaugurar: principal.fecha_disponible_inaugurar || null,
+        fechaRodaje: principal.fecha_rodaje || null,
+        fechaRelevamiento: principal.fecha_relevamiento || null,
+        entregaMaterialPautaLink: principal.entrega_material_pauta_link || null,
+        fechaPauta: principal.fecha_pauta || null,
+      };
+    });
+  }, [obrasData]);
+
+  const opcionesCircuito = useMemo(() => (
+    Array.from(new Set((obrasData || []).map((o) => o.circuito).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es', { numeric: true }))
+  ), [obrasData]);
+  const opcionesBarrio = useMemo(() => (
+    Array.from(new Set((obrasData || []).map((o) => o.barrio).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'))
+  ), [obrasData]);
+  const opcionesReparticion = useMemo(() => (
+    Array.from(new Set((obrasData || []).map((o) => (o.reparticion || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'))
+  ), [obrasData]);
+
+  // Filtros sobre los datos ya deduplicados por id_obra: una obra multi-barrio queda
+  // adentro si CUALQUIERA de sus registros (barrios/circuitos) matchea. El buscador de
+  // texto libre (Etapa 4) se combina en AND con el resto — contains, case-insensitive,
+  // sin tildes, con normalizarNombreBarrio (mismo criterio de normalización que ya usa
+  // el proyecto para nombres de barrio, reusado tal cual acá para nombre_obra).
+  const obrasFiltradas = useMemo(() => {
+    const q = busqueda.trim() ? normalizarNombreBarrio(busqueda) : '';
+    return obrasUnicas.filter((g) => {
+      if (q && !normalizarNombreBarrio(g.nombreObra).includes(q)) return false;
+      if (filtroCircuito && !g.registros.some((r) => r.circuito === filtroCircuito)) return false;
+      if (filtroBarrio && !g.registros.some((r) => r.barrio === filtroBarrio)) return false;
+      if (filtroReparticion && g.reparticion !== filtroReparticion) return false;
+      if (filtroAvance) {
+        const rango = RANGOS_AVANCE_OBRA.find((r) => r.key === filtroAvance);
+        const pct = (g.avance ?? 0) * 100;
+        if (rango && !rango.test(pct)) return false;
+      }
+      return true;
+    });
+  }, [obrasUnicas, busqueda, filtroCircuito, filtroBarrio, filtroReparticion, filtroAvance]);
+
+  const obrasOrdenadas = useMemo(() => {
+    const arr = [...obrasFiltradas];
+    arr.sort((a, b) => {
+      if (ordenColumna === 'avance') {
+        const valA = a.avance ?? -1, valB = b.avance ?? -1;
+        return ordenAsc ? valA - valB : valB - valA;
+      }
+      const valA = (a[ordenColumna] || '').toString();
+      const valB = (b[ordenColumna] || '').toString();
+      return ordenAsc ? valA.localeCompare(valB, 'es') : valB.localeCompare(valA, 'es');
+    });
+    return arr;
+  }, [obrasFiltradas, ordenColumna, ordenAsc]);
+
+  const handleOrdenar = (col) => { if (ordenColumna === col) setOrdenAsc(!ordenAsc); else { setOrdenColumna(col); setOrdenAsc(true); } };
+
+  const totalObras = obrasFiltradas.length;
+  // Nulo cuenta como 0 en el promedio, mismo criterio que "Sin iniciar" (que agrupa
+  // 0 y null) — no hay avance registrado todavía, no un dato ausente a ignorar.
+  const avancePromedio = totalObras > 0 ? obrasFiltradas.reduce((sum, g) => sum + (g.avance ?? 0), 0) / totalObras : 0;
+  const finalizadas = obrasFiltradas.filter((g) => (g.avance ?? 0) >= UMBRAL_OBRA_FINALIZADA).length;
+  const sinIniciar = obrasFiltradas.filter((g) => g.avance == null || g.avance === 0).length;
+  const hayFiltros = !!(busqueda || filtroCircuito || filtroBarrio || filtroReparticion || filtroAvance);
+
+  const limpiarFiltros = () => { setBusqueda(''); setFiltroCircuito(''); setFiltroBarrio(''); setFiltroReparticion(''); setFiltroAvance(''); };
+
+  const estiloSelect = { padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' };
+  const estiloBuscador = { width: '100%', padding: '10px 14px', paddingLeft: '36px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ padding: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>OBRAS</h2>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>{obrasUnicas.length} obras │ Córdoba Capital</div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+        {TABS_VISTA_OBRAS.map((t) => {
+          const activa = tabActiva === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setTabActiva(t.key)}
+              style={{
+                padding: '10px 18px', borderRadius: '8px', border: 'none',
+                backgroundColor: activa ? '#1976D2' : 'transparent',
+                color: activa ? '#fff' : 'var(--text-secondary)',
+                fontSize: '13px', fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {tabActiva === 'estado_general' ? (
+        <>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <MetricCard label="Total de obras" value={totalObras.toLocaleString('es-AR')} subtitle={hayFiltros ? `de ${obrasUnicas.length}` : undefined} />
+            <MetricCard label="Avance promedio" value={`${(avancePromedio * 100).toFixed(0)}%`} />
+            <MetricCard label="Finalizadas" value={finalizadas.toLocaleString('es-AR')} subtitle={`≥ ${(UMBRAL_OBRA_FINALIZADA * 100).toFixed(0)}%`} />
+            <MetricCard label="Sin iniciar" value={sinIniciar.toLocaleString('es-AR')} subtitle="0% o sin dato" />
+          </div>
+
+          <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+              Filtros
+              {hayFiltros && <button onClick={limpiarFiltros} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtros</button>}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: '2 1 240px', minWidth: '200px' }}>
+                <input type="text" placeholder="Buscar obra por nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={estiloBuscador} />
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '13px', pointerEvents: 'none' }}>🔍</span>
+              </div>
+              <select value={filtroCircuito} onChange={(e) => setFiltroCircuito(e.target.value)} style={estiloSelect}>
+                <option value="">Circuito (todos)</option>
+                {opcionesCircuito.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select value={filtroBarrio} onChange={(e) => setFiltroBarrio(e.target.value)} style={estiloSelect}>
+                <option value="">Barrio (todos)</option>
+                {opcionesBarrio.map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
+              <select value={filtroReparticion} onChange={(e) => setFiltroReparticion(e.target.value)} style={estiloSelect}>
+                <option value="">Repartición (todas)</option>
+                {opcionesReparticion.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <select value={filtroAvance} onChange={(e) => setFiltroAvance(e.target.value)} style={estiloSelect}>
+                <option value="">Avance (todos)</option>
+                {RANGOS_AVANCE_OBRA.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{hayFiltros ? `Mostrando ${obrasFiltradas.length} de ${obrasUnicas.length} obras` : `Todas las obras (${obrasUnicas.length})`}</span>
+              <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Click en columna para ordenar</span>
+            </div>
+            {/* overflowX: pantallas angostas (tablet) desbordan las 4 columnas — scroll
+                horizontal acá adentro en vez de romper el layout de la página. */}
+            <div style={{ maxHeight: '500px', overflow: 'auto' }}>
+              <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse', fontSize: '12px' }}>
+                <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
+                  <tr>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('nombreObra')}>Obra {ordenColumna === 'nombreObra' && (ordenAsc ? '↑' : '↓')}</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio / Circuito</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('reparticion')}>Repartición {ordenColumna === 'reparticion' && (ordenAsc ? '↑' : '↓')}</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', cursor: 'pointer' }} onClick={() => handleOrdenar('avance')}>Avance {ordenColumna === 'avance' && (ordenAsc ? '↑' : '↓')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {obrasOrdenadas.map((g) => (
+                    <tr
+                      key={g.idObra}
+                      onClick={() => onSelectObra(g.idObra)}
+                      style={{ borderTop: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.1s' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <td style={{ padding: '10px 14px' }}>{g.nombreObra}</td>
+                      <td style={{ padding: '10px 14px' }}><CeldaBarrioCircuitoObra grupo={g} /></td>
+                      <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.reparticion}</td>
+                      <td style={{ padding: '10px 14px' }}><BarraAvanceObra avance={g.avance} /></td>
+                    </tr>
+                  ))}
+                  {obrasOrdenadas.length === 0 && (
+                    <tr><td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>{busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      ) : (
+        <SolapaComunicacionObras
+          obrasUnicas={obrasUnicas}
+          onSelectObra={onSelectObra}
+          busqueda={comBusqueda} setBusqueda={setComBusqueda}
+          filtroAptoDifusion={comFiltroAptoDifusion} setFiltroAptoDifusion={setComFiltroAptoDifusion}
+          filtroEstadoRelevamiento={comFiltroEstadoRelevamiento} setFiltroEstadoRelevamiento={setComFiltroEstadoRelevamiento}
+          filtroPrioridad={comFiltroPrioridad} setFiltroPrioridad={setComFiltroPrioridad}
+          modo={comModo} setModo={setComModo}
+          anio={comAnio} setAnio={setComAnio}
+          mes={comMes} setMes={setComMes}
+        />
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// FICHA DE OBRA (Vista Obras, Etapa 2 — detalle completo + navegación cruzada)
+// ============================================
+// Componente nuevo, no una extensión de ModalObra (que sigue siendo el modal liviano
+// del mapa — mismo shell visual de overlay a propósito, pero sin compartir código, ver
+// "Qué NO hacer" del prompt de Etapa 2). Agrupa TODOS los id_registro que comparten un
+// mismo id_obra (multi-barrio), usando obrasEnriquecidas (no obrasData crudo) porque
+// necesita _circuitoMapkey/_circuitoNombre para el chip de circuito.
+
+function esURLValida(s) {
+  if (!s) return false;
+  try { new URL(s); return true; } catch { return false; }
+}
+
+const COLOR_PRIORIDAD_OBRA = { 'Alta': '#EF5350', 'Media': '#FFA726', 'Baja': '#78909C' };
+
+const BadgeSimpleObra = ({ texto, color = '#5C6BC0' }) => (
+  <span style={{ fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${color}22`, color, whiteSpace: 'nowrap' }}>{texto}</span>
+);
+
+// No se renderiza si el valor viene vacío/null — con 20+ campos posibles en una obra,
+// una ficha con "Sin dato" en cada campo ausente es peor que una ficha corta con lo
+// que sí hay (ver Etapa 2 del prompt, Paso 2).
+const FilaDetalleObra = ({ label, valor }) => {
+  if (valor == null || valor === '') return null;
+  return (
+    <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
+      <span style={{ color: 'var(--text-tertiary)', minWidth: '170px', flexShrink: 0 }}>{label}</span>
+      <span style={{ color: 'var(--text-primary)' }}>{valor}</span>
+    </div>
+  );
+};
+
+const SeccionFicha = ({ titulo, children }) => (
+  <div style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
+    <h4 style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '12px' }}>{titulo}</h4>
+    {children}
+  </div>
+);
+
+// <button>, no <span onClick>: foco de teclado + Enter/Space funcionan nativos
+// (globals.css ya define el anillo de foco para <button>, sin CSS aparte acá) — ver
+// Etapa 4, Paso 3.4.
+const ChipUbicacion = ({ label, onClick }) => (
+  <button type="button" onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', borderRadius: '999px', border: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>{label}</button>
+);
+
+// Lista de chips con "+N más" que EXPANDE INLINE (no abre otro modal — evitar apilar
+// overlays, ver Etapa 2 del prompt Paso 2.3) en vez de mostrar todos de entrada.
+const ListaChipsUbicacion = ({ items, onSelectItem, limite = 4 }) => {
+  const [expandido, setExpandido] = useState(false);
+  const visibles = expandido ? items : items.slice(0, limite);
+  const restantes = items.length - limite;
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+      {visibles.map((item) => <ChipUbicacion key={item.valor} label={item.label} onClick={() => onSelectItem(item)} />)}
+      {!expandido && restantes > 0 && (
+        <button type="button" onClick={() => setExpandido(true)} style={{ display: 'inline-flex', alignItems: 'center', padding: '5px 12px', borderRadius: '999px', backgroundColor: 'transparent', border: '1px dashed var(--border)', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>+{restantes} más</button>
+      )}
+    </div>
+  );
+};
+
+// Popup chico de confirmación antes de navegar a la ficha de un barrio/circuito —
+// reusable a propósito (no exclusivo de FichaObra, pensado para engancharse en otros
+// lugares del tablero más adelante, ver Etapa 2 del prompt Paso 3). Sin preview de
+// contenido: solo confirma la intención de navegar. stopPropagation en el backdrop
+// propio para no dispararle el onClick=onClose del overlay que lo contenga (FichaObra
+// u otro) cuando este popup se usa apilado sobre otro overlay.
+const PopupNavegacionCruzada = ({ tipo, nombre, onConfirmar, onCancelar }) => {
+  const overlayRef = useFocusTrap(true);
+  useEffect(() => {
+    const handleEscape = (e) => { if (e.key === 'Escape') onCancelar(); };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onCancelar]);
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10001 }} onClick={(e) => { e.stopPropagation(); onCancelar(); }}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '24px', maxWidth: '320px', width: '100%', margin: '20px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ fontSize: '14px', color: 'var(--text-primary)', marginBottom: '20px' }}>
+          Ir a la ficha de {tipo === 'barrio' ? 'barrio' : 'circuito'} <strong>{nombre}</strong> →
+        </div>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+          <button onClick={onCancelar} style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '13px', color: 'var(--text-secondary)', cursor: 'pointer' }}>Cancelar</button>
+          <button onClick={onConfirmar} style={{ padding: '9px 16px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Confirmar</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FichaObra = ({ idObra, obrasEnriquecidas, onClose, onIrABarrio, onIrACircuito }) => {
+  const [popupNav, setPopupNav] = useState(null); // { tipo: 'barrio'|'circuito', nombre, valor } | null
+  const overlayRef = useFocusTrap(true);
+
+  // Todos los id_registro que comparten este id_obra (multi-barrio incluido).
+  const registros = useMemo(
+    () => (obrasEnriquecidas || []).filter((o) => idObraDeRegistro(o.id_registro) === idObra),
+    [obrasEnriquecidas, idObra]
+  );
+  const principal = registros[0];
+
+  const barriosUnicos = useMemo(() => Array.from(new Set(registros.map((r) => r.barrio).filter(Boolean))), [registros]);
+  // Mapkey -> nombre legible (sin el prefijo de Mapkey), deduplicado — varios barrios
+  // de una misma obra pueden caer en el mismo circuito.
+  const circuitosUnicos = useMemo(() => {
+    const vistos = new Map();
+    registros.forEach((r) => {
+      if (r._circuitoMapkey && !vistos.has(r._circuitoMapkey)) {
+        vistos.set(r._circuitoMapkey, r._circuitoNombre ? r._circuitoNombre.split(' - ').slice(1).join(' - ') : r._circuitoMapkey);
+      }
+    });
+    return vistos;
+  }, [registros]);
+
+  // Escape cierra el popup de navegación si está abierto, si no cierra la ficha.
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key !== 'Escape') return;
+      if (popupNav) setPopupNav(null); else onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose, popupNav]);
+
+  if (!principal) return null;
+
+  const avance = normalizarAvanceObra(principal.porcentaje_avance);
+  const requiereAuditoria = registros.some((r) => r.requiere_auditoria);
+  const obraConAuditoria = registros.find((r) => r.requiere_auditoria);
+  const notaUbicacion = (barriosUnicos.length === 0 && circuitosUnicos.size === 0) ? NOTA_TIPO_UBICACION[principal.tipo_ubicacion] : null;
+
+  const confirmarNav = () => {
+    if (!popupNav) return;
+    if (popupNav.tipo === 'barrio') onIrABarrio(popupNav.valor); else onIrACircuito(popupNav.valor);
+    setPopupNav(null);
+    onClose();
+  };
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '640px', width: '100%', maxHeight: '85vh', overflowY: 'auto', margin: '20px' }} onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '10px' }}>
+          <h2 style={{ fontSize: '17px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{principal.nombre_obra || '(sin nombre)'}</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666', flexShrink: 0 }}>×</button>
+        </div>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+          {(principal.reparticion || '').trim() || '—'}{principal.sub_reparticion?.trim() ? ` · ${principal.sub_reparticion.trim()}` : ''}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+          {principal.prioridad && <BadgeSimpleObra texto={`Prioridad: ${principal.prioridad}`} color={COLOR_PRIORIDAD_OBRA[principal.prioridad] || '#78909C'} />}
+          {principal.apto_difusion && <BadgeSimpleObra texto={`Apto difusión: ${principal.apto_difusion}`} color="#5C6BC0" />}
+          {requiereAuditoria && <BadgeAuditoriaObra obra={obraConAuditoria} />}
+        </div>
+
+        <SeccionFicha titulo="Avance">
+          <BarraAvanceObra avance={avance} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
+            <FilaDetalleObra label="Inicio" valor={principal.fecha_inicio ? formatearFecha(principal.fecha_inicio) : null} />
+            <FilaDetalleObra label="Finalización" valor={principal.fecha_finalizacion ? formatearFecha(principal.fecha_finalizacion) : null} />
+            <FilaDetalleObra label="Disponible para inaugurar" valor={principal.fecha_disponible_inaugurar ? formatearFecha(principal.fecha_disponible_inaugurar) : null} />
+          </div>
+        </SeccionFicha>
+
+        {(barriosUnicos.length > 0 || circuitosUnicos.size > 0 || notaUbicacion) && (
+          <SeccionFicha titulo="Ubicación">
+            {barriosUnicos.length > 0 && (
+              <div style={{ marginBottom: circuitosUnicos.size > 0 ? '14px' : 0 }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>Barrios afectados ({barriosUnicos.length})</div>
+                <ListaChipsUbicacion items={barriosUnicos.map((b) => ({ valor: b, label: b }))} onSelectItem={(item) => setPopupNav({ tipo: 'barrio', nombre: item.label, valor: item.valor })} />
+              </div>
+            )}
+            {circuitosUnicos.size > 0 && (
+              <div>
+                <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>Circuitos ({circuitosUnicos.size})</div>
+                <ListaChipsUbicacion items={Array.from(circuitosUnicos.entries()).map(([mapkey, nombre]) => ({ valor: mapkey, label: nombre }))} onSelectItem={(item) => setPopupNav({ tipo: 'circuito', nombre: item.label, valor: item.valor })} />
+              </div>
+            )}
+            {notaUbicacion && <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600, marginTop: barriosUnicos.length || circuitosUnicos.size ? '10px' : 0 }}>{notaUbicacion}</div>}
+          </SeccionFicha>
+        )}
+
+        {(principal.descripcion || principal.tipo_obra || principal.nombre_plan) && (
+          <SeccionFicha titulo="Descripción">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <FilaDetalleObra label="Tipo de obra" valor={principal.tipo_obra} />
+              <FilaDetalleObra label="Plan" valor={principal.nombre_plan} />
+            </div>
+            {principal.descripcion && <p style={{ fontSize: '12px', color: 'var(--text-primary)', marginTop: '8px', lineHeight: 1.5 }}>{principal.descripcion}</p>}
+          </SeccionFicha>
+        )}
+
+        {(principal.estado_relevamiento || principal.fecha_relevamiento || principal.observaciones_relevamiento || principal.fecha_rodaje || principal.apto_difusion || principal.entrega_material_pauta_link || principal.fecha_pauta) && (
+          <SeccionFicha titulo="Comunicación">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <FilaDetalleObra label="Estado de relevamiento" valor={principal.estado_relevamiento?.trim()} />
+              <FilaDetalleObra label="Fecha de relevamiento" valor={principal.fecha_relevamiento ? formatearFecha(principal.fecha_relevamiento) : null} />
+              <FilaDetalleObra label="Observaciones de relevamiento" valor={principal.observaciones_relevamiento} />
+              <FilaDetalleObra label="Fecha de rodaje" valor={principal.fecha_rodaje ? formatearFecha(principal.fecha_rodaje) : null} />
+              <FilaDetalleObra label="Apto para difusión" valor={principal.apto_difusion} />
+              <FilaDetalleObra
+                label="Material de pauta"
+                valor={principal.entrega_material_pauta_link
+                  ? (esURLValida(principal.entrega_material_pauta_link)
+                    ? <a href={principal.entrega_material_pauta_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver material →</a>
+                    : principal.entrega_material_pauta_link)
+                  : null}
+              />
+              <FilaDetalleObra label="Fecha de pauta" valor={principal.fecha_pauta ? formatearFecha(principal.fecha_pauta) : null} />
+            </div>
+          </SeccionFicha>
+        )}
+
+        {(principal.link_memoria_descriptiva || principal.geolocalizacion_original) && (
+          <SeccionFicha titulo="Enlaces">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <FilaDetalleObra
+                label="Memoria descriptiva"
+                valor={principal.link_memoria_descriptiva
+                  ? (esURLValida(principal.link_memoria_descriptiva)
+                    ? <a href={principal.link_memoria_descriptiva} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver documento →</a>
+                    : principal.link_memoria_descriptiva)
+                  : null}
+              />
+              <FilaDetalleObra
+                label="Geolocalización (original)"
+                valor={principal.geolocalizacion_original
+                  ? (esURLValida(principal.geolocalizacion_original)
+                    ? <a href={principal.geolocalizacion_original} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver mapa →</a>
+                    : principal.geolocalizacion_original)
+                  : null}
+              />
+            </div>
+          </SeccionFicha>
+        )}
+
+        {principal.responsable_obra && (
+          <div>
+            <h4 style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Responsable</h4>
+            <div style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{principal.responsable_obra}</div>
+          </div>
+        )}
+      </div>
+
+      {popupNav && (
+        <PopupNavegacionCruzada tipo={popupNav.tipo} nombre={popupNav.nombre} onConfirmar={confirmarNav} onCancelar={() => setPopupNav(null)} />
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// PLANIFICACIÓN DE COMUNICACIÓN (Vista Obras, Etapa 3 — tabla + calendario)
+// ============================================
+// Fechas de AGENDA (van al calendario: alguien tiene que estar en un lugar en un
+// momento) vs. fechas de PROCESO (fecha_inicio/fecha_finalizacion/fecha_pauta, quedan
+// SOLO en la tabla) — distinción explícita del prompt de Etapa 3, no todas las fechas
+// de una obra son "eventos" de agenda.
+const TIPOS_EVENTO_AGENDA_OBRA = [
+  { key: 'relevamiento', campo: 'fechaRelevamiento', label: 'Relevamiento', color: '#5C6BC0' },
+  { key: 'rodaje', campo: 'fechaRodaje', label: 'Rodaje', color: '#FFA726' },
+  { key: 'inauguracion', campo: 'fechaDisponibleInaugurar', label: 'Disponible para inaugurar', color: '#2E7D32' },
+];
+
+const COLOR_APTO_DIFUSION_OBRA = { 'Sí': '#2E7D32', 'No': '#C62828', 'Sin iniciar': '#78909C' };
+const COLOR_ESTADO_RELEVAMIENTO_OBRA = { 'Relevado': '#2E7D32', 'En proceso': '#FFA726', 'Revisar Prioridad': '#EF5350', 'Sin Iniciar': '#78909C' };
+
+// Mismo criterio que parsearFechaISO en components/MapaCircuitos.js (duplicado a
+// propósito, mismo motivo que el resto de los helpers de fecha entre archivos): toma
+// el prefijo YYYY-MM-DD y arma un Date en horario LOCAL (no UTC), para que una fecha
+// tipo "2026-08-05" no se corra un día para atrás en husos horarios negativos como
+// Argentina (new Date("2026-08-05") sí lo haría, al interpretarse como UTC medianoche).
+function parsearFechaAgendaObra(fechaStr) {
+  if (!fechaStr || typeof fechaStr !== 'string') return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
+  if (!match) return null;
+  const [, y, m, d] = match;
+  const fecha = new Date(Number(y), Number(m) - 1, Number(d));
+  return Number.isNaN(fecha.getTime()) ? null : fecha;
+}
+
+const NOMBRES_MES_OBRA = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const DIAS_SEMANA_CORTOS_OBRA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+// Grilla de un mes (lunes primero, como el resto de calendarios en español): null de
+// relleno antes del día 1 y después del último día, hasta completar filas de 7.
+function generarGrillaMesObra(anio, mes) {
+  const primerDia = new Date(anio, mes, 1);
+  const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+  const offsetInicio = (primerDia.getDay() + 6) % 7; // getDay(): 0=domingo..6=sábado -> acá 0=lunes..6=domingo
+  const dias = [];
+  for (let i = 0; i < offsetInicio; i++) dias.push(null);
+  for (let d = 1; d <= diasEnMes; d++) dias.push(d);
+  while (dias.length % 7 !== 0) dias.push(null);
+  return dias;
+}
+
+// Badge denso para celda de tabla — mismo criterio de tamaño que el badge de estado
+// que ya usaba FilaObra (más chico que BadgeSimpleObra de FichaObra, pensado para un
+// header de ficha, no para una tabla densa).
+const BadgeComunicacionObra = ({ texto, color }) => (
+  <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${color}22`, color, whiteSpace: 'nowrap' }}>{texto}</span>
+);
+
+const SolapaComunicacionObras = ({
+  obrasUnicas, onSelectObra, busqueda, setBusqueda,
+  filtroAptoDifusion, setFiltroAptoDifusion, filtroEstadoRelevamiento, setFiltroEstadoRelevamiento, filtroPrioridad, setFiltroPrioridad,
+  modo, setModo, anio, setAnio, mes, setMes,
+}) => {
+  const opcionesAptoDifusion = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.aptoDifusion).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+  const opcionesEstadoRelevamiento = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.estadoRelevamiento).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+  const opcionesPrioridad = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.prioridad).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+
+  // Mismos filtros para tabla y calendario: si una obra queda afuera acá, no aparece
+  // en ninguno de los dos modos (Etapa 3 del prompt, Paso 2) — el buscador de texto
+  // libre (Etapa 4) es uno más de esta lista, mismo criterio de normalización
+  // (normalizarNombreBarrio) que el buscador de Estado general.
+  const obrasFiltradas = useMemo(() => {
+    const q = busqueda.trim() ? normalizarNombreBarrio(busqueda) : '';
+    return obrasUnicas.filter((g) => {
+      if (q && !normalizarNombreBarrio(g.nombreObra).includes(q)) return false;
+      if (filtroAptoDifusion && g.aptoDifusion !== filtroAptoDifusion) return false;
+      if (filtroEstadoRelevamiento && g.estadoRelevamiento !== filtroEstadoRelevamiento) return false;
+      if (filtroPrioridad && g.prioridad !== filtroPrioridad) return false;
+      return true;
+    });
+  }, [obrasUnicas, busqueda, filtroAptoDifusion, filtroEstadoRelevamiento, filtroPrioridad]);
+
+  const hayFiltros = !!(busqueda || filtroAptoDifusion || filtroEstadoRelevamiento || filtroPrioridad);
+  const limpiarFiltros = () => { setBusqueda(''); setFiltroAptoDifusion(''); setFiltroEstadoRelevamiento(''); setFiltroPrioridad(''); };
+
+  // Orden por defecto (Etapa 3, Paso 3): apto_difusion === 'Sí' primero, después por
+  // fecha_disponible_inaugurar ascendente (más próximas arriba); sin esa fecha, al final.
+  const obrasOrdenadas = useMemo(() => {
+    const arr = [...obrasFiltradas];
+    arr.sort((a, b) => {
+      const aSi = a.aptoDifusion === 'Sí' ? 0 : 1;
+      const bSi = b.aptoDifusion === 'Sí' ? 0 : 1;
+      if (aSi !== bSi) return aSi - bSi;
+      const aFecha = parsearFechaAgendaObra(a.fechaDisponibleInaugurar);
+      const bFecha = parsearFechaAgendaObra(b.fechaDisponibleInaugurar);
+      if (aFecha && bFecha) return aFecha - bFecha;
+      if (aFecha) return -1;
+      if (bFecha) return 1;
+      return 0;
+    });
+    return arr;
+  }, [obrasFiltradas]);
+
+  // Un evento por cada fecha de agenda cargada, generado desde obrasFiltradas — que ya
+  // está deduplicada por id_obra (viene de obrasUnicas, VistaObras) — así una obra
+  // multi-barrio nunca genera más de un evento por tipo acá, sin importar cuántos
+  // id_registro/barrios tenga (no hay que deduplicar de nuevo).
+  const eventos = useMemo(() => {
+    const lista = [];
+    obrasFiltradas.forEach((g) => {
+      TIPOS_EVENTO_AGENDA_OBRA.forEach((tipo) => {
+        const fecha = parsearFechaAgendaObra(g[tipo.campo]);
+        if (fecha) lista.push({ idObra: g.idObra, nombreObra: g.nombreObra, tipo, fecha });
+      });
+    });
+    return lista;
+  }, [obrasFiltradas]);
+
+  const eventosPorDia = useMemo(() => {
+    const mapa = new Map();
+    eventos.forEach((ev) => {
+      if (ev.fecha.getFullYear() !== anio || ev.fecha.getMonth() !== mes) return;
+      const dia = ev.fecha.getDate();
+      if (!mapa.has(dia)) mapa.set(dia, []);
+      mapa.get(dia).push(ev);
+    });
+    return mapa;
+  }, [eventos, anio, mes]);
+
+  const grilla = useMemo(() => generarGrillaMesObra(anio, mes), [anio, mes]);
+
+  const mesAnterior = () => { if (mes === 0) { setMes(11); setAnio(anio - 1); } else setMes(mes - 1); };
+  const mesSiguiente = () => { if (mes === 11) { setMes(0); setAnio(anio + 1); } else setMes(mes + 1); };
+
+  const hoy = new Date();
+  const esHoy = (dia) => dia === hoy.getDate() && mes === hoy.getMonth() && anio === hoy.getFullYear();
+
+  const estiloSelect = { padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' };
+  const estiloBuscador = { width: '100%', padding: '10px 14px', paddingLeft: '36px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '13px' };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+          {hayFiltros ? `Mostrando ${obrasFiltradas.length} de ${obrasUnicas.length} obras` : `${obrasUnicas.length} obras`}
+        </div>
+        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', padding: '3px' }}>
+          <button onClick={() => setModo('tabla')} style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', backgroundColor: modo === 'tabla' ? '#1976D2' : 'transparent', color: modo === 'tabla' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>📋 Tabla</button>
+          <button onClick={() => setModo('calendario')} style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', backgroundColor: modo === 'calendario' ? '#1976D2' : 'transparent', color: modo === 'calendario' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>📅 Calendario</button>
+        </div>
+      </div>
+
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+          Filtros
+          {hayFiltros && <button onClick={limpiarFiltros} style={{ marginLeft: '12px', padding: '4px 10px', fontSize: '11px', border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕ Limpiar filtros</button>}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: '2 1 240px', minWidth: '200px' }}>
+            <input type="text" placeholder="Buscar obra por nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={estiloBuscador} />
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '13px', pointerEvents: 'none' }}>🔍</span>
+          </div>
+          <select value={filtroAptoDifusion} onChange={(e) => setFiltroAptoDifusion(e.target.value)} style={estiloSelect}>
+            <option value="">Apto difusión (todos)</option>
+            {opcionesAptoDifusion.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+          <select value={filtroEstadoRelevamiento} onChange={(e) => setFiltroEstadoRelevamiento(e.target.value)} style={estiloSelect}>
+            <option value="">Estado de relevamiento (todos)</option>
+            {opcionesEstadoRelevamiento.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+          <select value={filtroPrioridad} onChange={(e) => setFiltroPrioridad(e.target.value)} style={estiloSelect}>
+            <option value="">Prioridad (todas)</option>
+            {opcionesPrioridad.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {modo === 'tabla' ? (
+        <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+          {/* overflowX: 8 columnas desbordan en tablet — scroll horizontal acá adentro
+              en vez de romper el layout de la página. */}
+          <div style={{ maxHeight: '500px', overflow: 'auto' }}>
+            <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '12px' }}>
+              <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
+                <tr>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Obra</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Apto difusión</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Estado de relevamiento</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Disp. inaugurar</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Rodaje</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Pauta</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Fecha pauta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {obrasOrdenadas.map((g) => (
+                  <tr
+                    key={g.idObra}
+                    onClick={() => onSelectObra(g.idObra)}
+                    style={{ borderTop: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.1s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <td style={{ padding: '10px 14px' }}>{g.nombreObra}</td>
+                    <td style={{ padding: '10px 14px' }}><CeldaBarrioCircuitoObra grupo={g} /></td>
+                    <td style={{ padding: '10px 14px' }}>{g.aptoDifusion ? <BadgeComunicacionObra texto={g.aptoDifusion} color={COLOR_APTO_DIFUSION_OBRA[g.aptoDifusion] || '#78909C'} /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
+                    <td style={{ padding: '10px 14px' }}>{g.estadoRelevamiento ? <BadgeComunicacionObra texto={g.estadoRelevamiento} color={COLOR_ESTADO_RELEVAMIENTO_OBRA[g.estadoRelevamiento] || '#78909C'} /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaDisponibleInaugurar ? formatearFecha(g.fechaDisponibleInaugurar) : '—'}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaRodaje ? formatearFecha(g.fechaRodaje) : '—'}</td>
+                    <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                      {g.entregaMaterialPautaLink ? (
+                        esURLValida(g.entregaMaterialPautaLink)
+                          ? <a href={g.entregaMaterialPautaLink} target="_blank" rel="noopener noreferrer" title="Ver material de pauta" onClick={(e) => e.stopPropagation()} style={{ fontSize: '14px', textDecoration: 'none' }}>🔗</a>
+                          : <span title={g.entregaMaterialPautaLink} style={{ color: 'var(--text-tertiary)' }}>🔗</span>
+                      ) : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}
+                    </td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaPauta ? formatearFecha(g.fechaPauta) : '—'}</td>
+                  </tr>
+                ))}
+                {obrasOrdenadas.length === 0 && (
+                  <tr><td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>{busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <button onClick={mesAnterior} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}>← Mes anterior</button>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{NOMBRES_MES_OBRA[mes]} {anio}</div>
+            <button onClick={mesSiguiente} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}>Mes siguiente →</button>
+          </div>
+
+          {obrasFiltradas.length === 0 ? (
+            // Ninguna obra matchea filtros/búsqueda — distinto de "hay obras pero
+            // ninguna tiene evento este mes" (eso es normal, no es un estado vacío:
+            // el grid simplemente no muestra puntos ese mes, ver eventosPorDia).
+            <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '13px' }}>
+              {busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', gap: '14px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                {TIPOS_EVENTO_AGENDA_OBRA.map((t) => (
+                  <div key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: t.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* overflowX: 7 columnas de calendario desbordan en tablet — scroll
+                  horizontal acá adentro en vez de romper el layout de la página. */}
+              <div style={{ overflowX: 'auto' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', backgroundColor: 'var(--border)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', minWidth: '560px' }}>
+                  {DIAS_SEMANA_CORTOS_OBRA.map((d, i) => (
+                    <div key={i} style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-secondary)' }}>{d}</div>
+                  ))}
+                  {grilla.map((dia, i) => (
+                    <div key={i} style={{ minHeight: '76px', padding: '6px', backgroundColor: dia && esHoy(dia) ? '#1976D210' : '#fff', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      {dia && (
+                        <>
+                          <span style={{ fontSize: '11px', fontWeight: esHoy(dia) ? 700 : 500, color: esHoy(dia) ? '#1976D2' : 'var(--text-tertiary)' }}>{dia}</span>
+                          {(eventosPorDia.get(dia) || []).map((ev, j) => (
+                            // <button>, no <div onClick>: foco de teclado + Enter/Space
+                            // funcionan nativos (globals.css ya define el anillo de foco
+                            // para <button>, sin CSS aparte acá) — ver Etapa 4, Paso 3.4.
+                            <button
+                              key={j}
+                              type="button"
+                              onClick={() => onSelectObra(ev.idObra)}
+                              title={`${ev.tipo.label}: ${ev.nombreObra}`}
+                              style={{ display: 'block', width: '100%', textAlign: 'left', fontSize: '10px', padding: '2px 5px', borderRadius: '4px', border: 'none', backgroundColor: `${ev.tipo.color}22`, color: ev.tipo.color, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500, fontFamily: 'inherit' }}
+                            >
+                              {ev.nombreObra}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
 // PANEL LATERAL (VISTA MAPA)
 // ============================================
 const MetricCardMini = ({ label, value, subtitle, trend, trendPositive }) => (
@@ -2173,46 +3080,68 @@ const ListaVotosEscuelas = ({ escuelas, promedioCapitalPct }) => {
 // OBRAS (obras_capital.json) — panel reusable, ver lib/obrasCercanas.js
 // ============================================
 
-const ESTADOS_OBRA_ORDEN = ['Finalizado — Inaugurable', 'En ejecución', 'Relevado', 'Finalizado', 'Por relevar'];
+// Badge de "requiere_auditoria" — mismo look que el badge "⚠ Pendiente de revisión" que
+// ya usa Pauta para requiere_auditoria (ver FilaPauta más arriba), pero con texto propio
+// de obras (el flag acá es "el lat/lon no cae en el polígono declarado", no una revisión
+// editorial). Título = observaciones_geo, la explicación puntual del desvío.
+const BadgeAuditoriaObra = ({ obra }) => (
+  <span title={obra.observaciones_geo || undefined} style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309', whiteSpace: 'nowrap' }}>
+    ⚠ Requiere auditoría
+  </span>
+);
+
+// Nota de ubicación no exacta — cubre los 4 tipo_ubicacion que no son 'exacta'. Antes
+// esto se resolvía con obra.fuente_barrio === 'cercano_aproximado' (campo que ya no
+// existe en el esquema nuevo); tipo_ubicacion es el equivalente actual.
+const NOTA_TIPO_UBICACION = {
+  centroide_barrio: 'Ubicación aproximada (centroide del barrio, no la dirección exacta)',
+  centroide_circuito: 'Ubicación aproximada (centroide del circuito, no la dirección exacta)',
+  geometria_externa: 'Sin coordenada en el mapa — geometría cargada aparte (ver memoria descriptiva)',
+  sin_geometria: 'Sin geometría disponible',
+};
 
 const FilaObra = ({ obra, onSelectObra }) => {
-  const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
-  const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+  const avance = normalizarAvanceObra(obra.porcentaje_avance);
+  const colorAvance = colorAvanceObra(avance);
+  const notaUbicacion = NOTA_TIPO_UBICACION[obra.tipo_ubicacion];
   return (
     <div
       onClick={onSelectObra ? () => onSelectObra(obra) : undefined}
       style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px', cursor: onSelectObra ? 'pointer' : 'default' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre}</div>
-        <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorEstado}22`, color: colorEstado, whiteSpace: 'nowrap', flexShrink: 0 }}>{obra.estado || 'Sin dato'}</span>
+        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          {obra.requiere_auditoria && <BadgeAuditoriaObra obra={obra} />}
+          <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorAvance}22`, color: colorAvance, whiteSpace: 'nowrap' }}>{avance != null ? `${(avance * 100).toFixed(0)}%` : 'Sin dato'}</span>
+        </div>
       </div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{obra.tipo_obra || '—'}</div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
         {obra.barrio || 'Sin barrio asignado'}{obra._circuitoNombre ? ` · ${obra._circuitoNombre}` : ' · Sin circuito derivado'}
       </div>
-      {aproximado && (
-        <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>
-          barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
-        </div>
+      {notaUbicacion && (
+        <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>{notaUbicacion}</div>
       )}
       {obra.prioridad && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Prioridad: {obra.prioridad}</div>}
-      {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
+      {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponible_inaugurar) && (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
           {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
           {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
-          {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponibilidad_inaugurar)}</div>}
+          {obra.fecha_disponible_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponible_inaugurar)}</div>}
         </div>
       )}
-      {obra.observaciones && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+      {obra.observaciones_obra && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones_obra}</div>}
     </div>
   );
 };
 
 const ListaObras = ({ obras, vacio, onSelectObra }) => {
-  const [filtroEstado, setFiltroEstado] = useState('');
-  const estadosPresentes = ESTADOS_OBRA_ORDEN.filter(e => obras.some(o => o.estado === e));
-  const filtradas = filtroEstado ? obras.filter(o => o.estado === filtroEstado) : obras;
+  const [filtroAvance, setFiltroAvance] = useState('');
+  const rangosPresentes = RANGOS_AVANCE_OBRA.filter(r => obras.some(o => r.test((normalizarAvanceObra(o.porcentaje_avance) ?? 0) * 100)));
+  const filtradas = filtroAvance
+    ? obras.filter(o => RANGOS_AVANCE_OBRA.find(r => r.key === filtroAvance)?.test((normalizarAvanceObra(o.porcentaje_avance) ?? 0) * 100))
+    : obras;
 
   if (!obras || obras.length === 0) {
     return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{vacio}</div>;
@@ -2220,15 +3149,15 @@ const ListaObras = ({ obras, vacio, onSelectObra }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      {estadosPresentes.length > 1 && (
-        <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-          <option value="">Todos los estados ({obras.length})</option>
-          {estadosPresentes.map(e => <option key={e} value={e}>{e} ({obras.filter(o => o.estado === e).length})</option>)}
+      {rangosPresentes.length > 1 && (
+        <select value={filtroAvance} onChange={(e) => setFiltroAvance(e.target.value)} style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+          <option value="">Todos los avances ({obras.length})</option>
+          {rangosPresentes.map(r => <option key={r.key} value={r.key}>{r.label} ({obras.filter(o => r.test((normalizarAvanceObra(o.porcentaje_avance) ?? 0) * 100)).length})</option>)}
         </select>
       )}
       {filtradas.length === 0 ? (
-        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Ninguna obra con ese estado.</div>
-      ) : filtradas.map((o, i) => <FilaObra key={`${o.id}-${i}`} obra={o} onSelectObra={onSelectObra} />)}
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Ninguna obra en ese rango de avance.</div>
+      ) : filtradas.map((o, i) => <FilaObra key={`${o.id_registro}-${i}`} obra={o} onSelectObra={onSelectObra} />)}
     </div>
   );
 };
@@ -2249,11 +3178,13 @@ const ObrasPanel = ({ tipo, datosCircuito, nombreBarrio, obrasEnriquecidas, barr
   }, [tipo, datosCircuito, nombreBarrio, obrasEnriquecidas]);
 
   const obrasCercanas = useMemo(() => {
-    const idsPropias = new Set(obrasPropias.map(o => o.id));
+    // id_registro, no id (no existe en el esquema nuevo) — con `id` este Set quedaba
+    // {undefined} y filtraba TODAS las cercanas apenas obrasPropias no estaba vacío.
+    const idsPropias = new Set(obrasPropias.map(o => o.id_registro));
     let resultado = [];
     if (tipo === 'circuito' && datosCircuito) resultado = obrasCercanasACircuito(datosCircuito.Mapkey, circuitosGeoJsonData, obrasEnriquecidas);
     else if (tipo === 'barrio' && nombreBarrio) resultado = obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasEnriquecidas);
-    return resultado.filter(o => !idsPropias.has(o.id));
+    return resultado.filter(o => !idsPropias.has(o.id_registro));
   }, [tipo, datosCircuito, nombreBarrio, obrasEnriquecidas, circuitosGeoJsonData, barriosGeoData, obrasPropias]);
 
   const tituloPropio = tipo === 'circuito' ? 'Obras en este circuito' : 'Obras en este barrio';
@@ -2289,40 +3220,43 @@ const BadgeObrasCercanas = ({ cantidad, onClick }) => (
 // (overlay + card flotante). Las filas de "Obras cercanas a esta obra" son clickeables
 // y vuelven a llamar a onSelectObra, para poder navegar de obra en obra sin cerrar.
 const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
+  const overlayRef = useFocusTrap(!!obra);
   if (!obra) return null;
-  const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
-  const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+  const avance = normalizarAvanceObra(obra.porcentaje_avance);
+  const colorAvance = colorAvanceObra(avance);
+  const notaUbicacion = NOTA_TIPO_UBICACION[obra.tipo_ubicacion];
   const tieneCoordenadas = obra.lat != null && obra.lon != null;
   const cercanas = tieneCoordenadas ? obrasCercanasAObra(obra, obrasEnriquecidas, 1.5) : [];
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{obra.nombre}</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666', flexShrink: 0 }}>×</button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{obra.reparticion || '—'} · {obra.tipo_obra || '—'}</div>
-          <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorEstado}22`, color: colorEstado }}>{obra.estado || 'Sin dato'}</span>
+          <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{(obra.reparticion || '').trim() || '—'} · {obra.tipo_obra || '—'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorAvance}22`, color: colorAvance }}>{avance != null ? `${(avance * 100).toFixed(0)}% de avance` : 'Sin dato de avance'}</span>
+            {obra.requiere_auditoria && <BadgeAuditoriaObra obra={obra} />}
+          </div>
           <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
             {obra.barrio || 'Sin barrio asignado'}{obra._circuitoNombre ? ` · ${obra._circuitoNombre}` : ' · Sin circuito derivado'}
           </div>
-          {aproximado && (
-            <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600 }}>
-              barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
-            </div>
+          {notaUbicacion && (
+            <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600 }}>{notaUbicacion}</div>
           )}
           {obra.prioridad && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Prioridad: {obra.prioridad}</div>}
-          {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
+          {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponible_inaugurar) && (
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
               {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
-              {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponibilidad_inaugurar)}</div>}
+              {obra.fecha_disponible_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponible_inaugurar)}</div>}
             </div>
           )}
-          {obra.observaciones && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+          {obra.observaciones_obra && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones_obra}</div>}
         </div>
 
         <div>
@@ -2334,16 +3268,17 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {cercanas.map((o, i) => {
-                const colorOtra = COLOR_OBRA_ESTADO[o.estado] || COLOR_OBRA_DEFAULT;
+                const avanceOtra = normalizarAvanceObra(o.porcentaje_avance);
+                const colorOtra = colorAvanceObra(avanceOtra);
                 return (
                   <div
-                    key={`${o.id}-${i}`}
+                    key={`${o.id_registro}-${i}`}
                     onClick={() => onSelectObra(o)}
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', cursor: 'pointer' }}
                   >
-                    <div style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{o.nombre}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{o.nombre_obra || '(sin nombre)'}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: `${colorOtra}22`, color: colorOtra }}>{o.estado || 'Sin dato'}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: `${colorOtra}22`, color: colorOtra }}>{avanceOtra != null ? `${(avanceOtra * 100).toFixed(0)}%` : 'Sin dato'}</span>
                       <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{o.distanciaKm.toFixed(2)} km</span>
                     </div>
                   </div>
@@ -2364,6 +3299,7 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
 // tabla "Barrios del circuito" de la solapa Territorio, ordenados por población (no
 // por orden_importancia) y con el principal premarcado.
 const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBarrio, onSetModoEncuestas, onToggleRonda, onExportar, onCancelar }) => {
+  const overlayRef = useFocusTrap(!!dialog);
   if (!dialog) return null;
   const { barrios, seleccionados, principalNorm, modoEncuestas, rondasSeleccionadas } = dialog;
   const cantidadBarrios = seleccionados.size;
@@ -2375,7 +3311,7 @@ const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBa
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '20px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
         <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Opciones de exportación — Circuito {datosCircuito.CircuitoKey}</h2>
         <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '18px' }}>El circuito se incluye siempre en el PDF. Además, podés sumar la ficha completa de barrios específicos.</p>
 
@@ -2482,7 +3418,7 @@ const TIPO_VISITA_COLOR = {
   'NO HAY DATOS certeros': { bg: 'var(--bg-secondary)', text: 'var(--text-tertiary)' },
 };
 
-const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosCircuito, cruceData, onSelectCircuito, onVerFichaBarrio, onVerFichaCircuito, poblacionTotalPorBarrio }) => {
+const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosCircuito, cruceData, onSelectCircuito, onVerFichaBarrio, onVerFichaCircuito, poblacionTotalPorBarrio, obrasEnriquecidas }) => {
   if (!nombreBarrio) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un barrio del mapa para ver su info.</div>;
   }
@@ -2497,7 +3433,12 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosC
   const otrosCircuitos = (listaCircuitos || [])
     .filter(c => c.circuito !== claveSel)
     .sort((a, b) => a.orden_importancia - b.orden_importancia);
-  const obras = props.obras || [];
+  // barrio es la fuente de verdad: la lista de obras de este barrio se deriva acá en
+  // runtime filtrando obras_capital.json (obrasEnriquecidas), NUNCA de una copia
+  // estática — barrios_geo.json ya no trae `obras`/`cantidad_obras` embebidos (esa
+  // copia había quedado desincronizada del pipeline nuevo). Mismo criterio de
+  // normalización y de no deduplicar por id_obra que ya usa ObrasPanel para tipo="barrio".
+  const obrasBarrio = (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -2544,17 +3485,27 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosC
         ))}
       />
 
-      {props.cantidad_obras > 0 && (
+      {obrasBarrio.length > 0 && (
         <div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Obras ({props.cantidad_obras})</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Obras ({obrasBarrio.length})</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {obras.map((o, i) => (
-              <div key={i} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{o.programa || '—'}</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{o.descripcion || '—'}</div>
-                <div style={{ fontSize: '11px', color: '#5C6BC0', fontWeight: 600, marginTop: '3px' }}>{o.estado || 'Sin dato'}</div>
-              </div>
-            ))}
+            {/* Vista compacta (sidebar angosto): nombre + repartición + avance alcanza,
+                el detalle completo (fechas, prioridad, auditoría, cercanas) vive en la
+                solapa Obras de la ficha completa del barrio (SolapaObrasBarrio → ObrasPanel,
+                a un click en "Ver ficha completa" de arriba). */}
+            {obrasBarrio.map((o, i) => {
+              const avance = normalizarAvanceObra(o.porcentaje_avance);
+              const colorAvance = colorAvanceObra(avance);
+              return (
+                <div key={`${o.id_registro}-${i}`} style={{ padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>{o.nombre_obra || '(sin nombre)'}</div>
+                    <span style={{ fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: `${colorAvance}22`, color: colorAvance, whiteSpace: 'nowrap', flexShrink: 0 }}>{avance != null ? `${(avance * 100).toFixed(0)}%` : 'Sin dato'}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{(o.reparticion || '').trim() || '—'}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -2571,7 +3522,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
         ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} />
-        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} onVerFichaBarrio={onVerFichaBarrio} onVerFichaCircuito={onVerFichaCircuito} poblacionTotalPorBarrio={poblacionTotalPorBarrio} />}
+        : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} onVerFichaBarrio={onVerFichaBarrio} onVerFichaCircuito={onVerFichaCircuito} poblacionTotalPorBarrio={poblacionTotalPorBarrio} obrasEnriquecidas={obrasEnriquecidas} />}
     </div>
   </div>
 );
@@ -2973,9 +3924,11 @@ function htmlPautaCircuitoPDF(pautas) {
 }
 function htmlObrasPDF(obras) {
   if (!obras || obras.length === 0) return `<p style="color:#999;font-size:12px">Sin obras identificadas.</p>`;
-  return `<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Estado</th><th>Barrio / Circuito</th></tr></thead><tbody>${obras.map(o => {
-    const color = COLOR_OBRA_ESTADO[o.estado] || COLOR_OBRA_DEFAULT;
-    return `<tr><td>${o.nombre}</td><td>${o.tipo_obra || '—'}</td><td><span class="badge" style="background:${color}22;color:${color}">${o.estado || 'Sin dato'}</span></td><td>${o.barrio || 'Sin barrio asignado'}${o._circuitoNombre ? ' · ' + o._circuitoNombre : ''}</td></tr>`;
+  return `<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Avance</th><th>Barrio / Circuito</th></tr></thead><tbody>${obras.map(o => {
+    const avance = normalizarAvanceObra(o.porcentaje_avance);
+    const color = colorAvanceObra(avance);
+    const pctLabel = avance != null ? `${Math.round(avance * 100)}%` : 'Sin dato';
+    return `<tr><td>${o.nombre_obra || '(sin nombre)'}</td><td>${o.tipo_obra || '—'}</td><td><span class="badge" style="background:${color}22;color:${color}">${pctLabel}</span></td><td>${o.barrio || 'Sin barrio asignado'}${o._circuitoNombre ? ' · ' + o._circuitoNombre : ''}</td></tr>`;
   }).join('')}</tbody></table>`;
 }
 
@@ -3617,13 +4570,37 @@ export default function Home() {
   const [mostrarInfo, setMostrarInfo] = useState(false);
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
-  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital'
+  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital' | 'obras'
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
   const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
+  // FichaObra (Vista Obras, Etapa 2): id_obra a mostrar, o null. Filtros/orden/pestaña
+  // de Vista Obras lifted acá (no locales al componente) para que sobrevivan a
+  // desmontar VistaObras al navegar a un barrio/circuito desde la ficha y volver —
+  // mismo motivo que filtroCategoria para VistaCapital.
+  const [fichaObraIdSeleccionada, setFichaObraIdSeleccionada] = useState(null);
+  const [vistaObrasTab, setVistaObrasTab] = useState('estado_general');
+  // Buscador de texto libre (Etapa 4) — independiente por pestaña a propósito (no
+  // comparten el texto buscado al cambiar de pestaña, ver prompt de Etapa 4 Paso 2).
+  const [vistaObrasBusqueda, setVistaObrasBusqueda] = useState('');
+  const [vistaObrasFiltroCircuito, setVistaObrasFiltroCircuito] = useState('');
+  const [vistaObrasFiltroBarrio, setVistaObrasFiltroBarrio] = useState('');
+  const [vistaObrasFiltroReparticion, setVistaObrasFiltroReparticion] = useState('');
+  const [vistaObrasFiltroAvance, setVistaObrasFiltroAvance] = useState('');
+  const [vistaObrasOrdenColumna, setVistaObrasOrdenColumna] = useState('nombreObra');
+  const [vistaObrasOrdenAsc, setVistaObrasOrdenAsc] = useState(true);
+  // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que el
+  // resto del estado de Vista Obras (ver comentario junto a VistaObras).
+  const [vistaObrasComBusqueda, setVistaObrasComBusqueda] = useState('');
+  const [vistaObrasComFiltroAptoDifusion, setVistaObrasComFiltroAptoDifusion] = useState('');
+  const [vistaObrasComFiltroEstadoRelevamiento, setVistaObrasComFiltroEstadoRelevamiento] = useState('');
+  const [vistaObrasComFiltroPrioridad, setVistaObrasComFiltroPrioridad] = useState('');
+  const [vistaObrasComModo, setVistaObrasComModo] = useState('tabla'); // 'tabla' | 'calendario'
+  const [vistaObrasComAnio, setVistaObrasComAnio] = useState(() => new Date().getFullYear());
+  const [vistaObrasComMes, setVistaObrasComMes] = useState(() => new Date().getMonth());
   const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre>, principalNorm, modoEncuestas, rondasSeleccionadas: Set<idx> } | null — diálogo de opciones de exportación de la ficha de un circuito
   const [solapaActivaBarrio, setSolapaActivaBarrio] = useState('resumen'); // estado de tabs separado del de circuito (evita choques de clave, ej. 'resumen'/'escuelas'/'obras' existen en los dos)
 
@@ -3677,15 +4654,21 @@ export default function Home() {
     }
   }, [geoData]);
 
-  // Índice barrio -> circuitos (circuito_barrios_cruce.json), precalculado una sola
-  // vez para derivar el circuito de cada obra sin lat/lon propia (ver lib/obrasCercanas.js).
+  // Índice barrio -> circuitos (circuito_barrios_cruce.json), fallback de
+  // enriquecerObrasConCircuito para obras sin `circuito` propio (ver lib/obrasCercanas.js).
   const indiceBarrioCircuito = useMemo(() => construirIndiceBarrioCircuito(cruceData), [cruceData]);
+  // Índice Mapkey -> nombre completo de circuito, para resolver el `circuito` crudo de
+  // cada obra (fuente principal desde el fix de esquema, ver lib/obrasCercanas.js).
+  const indiceMapkeyNombre = useMemo(() => construirIndiceMapkeyNombre(cruceData), [cruceData]);
 
-  // Única fuente de obras que debería circular de acá en más (mapa, paneles, modal):
+  // Única fuente de obras que circula por el resto de la app (mapa, ObrasPanel, ModalObra):
   // cada obra ya trae _circuitoMapkey/_circuitoNombre resuelto, para que "toda obra en
   // cualquier lista muestra su circuito" quede garantizado acá, no repetido en cada
-  // componente. Todavía no conectada a ningún componente (eso es la próxima etapa).
-  const obrasEnriquecidas = useMemo(() => enriquecerObrasConCircuito(obrasData, indiceBarrioCircuito), [obrasData, indiceBarrioCircuito]);
+  // componente.
+  const obrasEnriquecidas = useMemo(
+    () => enriquecerObrasConCircuito(obrasData, indiceBarrioCircuito, indiceMapkeyNombre),
+    [obrasData, indiceBarrioCircuito, indiceMapkeyNombre]
+  );
 
   // Si cambiamos de circuito estando en la solapa Encuestas y el nuevo no tiene datos, volvemos a Resumen.
   useEffect(() => {
@@ -3860,6 +4843,18 @@ export default function Home() {
     setVistaFicha('barrio');
   };
 
+  // Click en un chip de circuito de FichaObra (Vista Obras, Etapa 2 — navegación
+  // cruzada): recibe el Mapkey (ej. "007D"), no el CircuitoKey que espera
+  // handleSelectCircuito. Se resuelve buscando el registro de `datos` con ese Mapkey y
+  // usando SU PROPIO CircuitoKey — necesario porque CircuitoKey es number para los
+  // circuitos puramente numéricos (13, 12, ...) y string para los alfanuméricos
+  // (10C, 4A, ...), mientras que el `circuito` crudo de una obra siempre es string:
+  // comparar por Mapkey evita ese mismatch de tipos en vez de pasar el string crudo.
+  const irACircuitoDesdeObra = (mapkey) => {
+    const match = datos.find((d) => d.Mapkey === mapkey);
+    if (match) { handleSelectCircuito(match.CircuitoKey); setVistaFicha('circuito'); }
+  };
+
   // Click en "Ver en solapa Pauta" del popup de estrella de pauta (MapaCircuitos):
   // mismo patrón que irABarrioDesdeTerritorio (selección no geográfica de barrio +
   // apertura de ficha completa), pidiendo la solapa 'pauta' en vez del default 'resumen'.
@@ -3993,6 +4988,18 @@ export default function Home() {
       
       <InfoModal isOpen={mostrarInfo} onClose={() => setMostrarInfo(false)} />
       <ModalObra obra={obraSeleccionada} onClose={() => setObraSeleccionada(null)} onSelectObra={setObraSeleccionada} obrasEnriquecidas={obrasEnriquecidas} />
+      {/* Gateada también por vistaFicha === 'obras': si el usuario sale de Vista Obras
+          por cualquier otro camino (☰ Menú, etc.) mientras la ficha está abierta, se
+          oculta sola en vez de quedar flotando sobre una vista distinta. */}
+      {vistaFicha === 'obras' && fichaObraIdSeleccionada && (
+        <FichaObra
+          idObra={fichaObraIdSeleccionada}
+          obrasEnriquecidas={obrasEnriquecidas}
+          onClose={() => setFichaObraIdSeleccionada(null)}
+          onIrABarrio={irABarrioDesdeTerritorio}
+          onIrACircuito={irACircuitoDesdeObra}
+        />
+      )}
       {datosCircuito && (
         <DialogExportFicha
           datosCircuito={datosCircuito}
@@ -4021,6 +5028,7 @@ export default function Home() {
                   <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '6px', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '10px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 1999, minWidth: '210px', overflow: 'hidden' }}>
                     <button onClick={() => { setMostrarInfo(true); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>ℹ️ Info</button>
                     <button onClick={() => { setVistaFicha('capital'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📊 Estadísticas de Capital</button>
+                    <button onClick={() => { setVistaFicha('obras'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>🏗️ Obras</button>
                     <button
                       onClick={() => { setMostrarListadoEncuestas(true); setMostrarMenu(false); }}
                       style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}
@@ -4081,10 +5089,35 @@ export default function Home() {
         <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onClickVisita={irACircuitoDesdeGrilla} onClickMedicion={irACircuitoDesdeGrillaMedicion} onClickPauta={irABarrioDesdeMapaPauta} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
-          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio') ? (
+          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio' || vistaFicha === 'obras') ? (
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
-                {vistaFicha === 'barrio' ? (
+                {vistaFicha === 'obras' ? (
+                  <>
+                    <div style={{ marginBottom: '16px' }}>
+                      <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
+                    </div>
+                    <VistaObras
+                      obrasData={obrasData}
+                      tabActiva={vistaObrasTab} setTabActiva={setVistaObrasTab}
+                      busqueda={vistaObrasBusqueda} setBusqueda={setVistaObrasBusqueda}
+                      filtroCircuito={vistaObrasFiltroCircuito} setFiltroCircuito={setVistaObrasFiltroCircuito}
+                      filtroBarrio={vistaObrasFiltroBarrio} setFiltroBarrio={setVistaObrasFiltroBarrio}
+                      filtroReparticion={vistaObrasFiltroReparticion} setFiltroReparticion={setVistaObrasFiltroReparticion}
+                      filtroAvance={vistaObrasFiltroAvance} setFiltroAvance={setVistaObrasFiltroAvance}
+                      ordenColumna={vistaObrasOrdenColumna} setOrdenColumna={setVistaObrasOrdenColumna}
+                      ordenAsc={vistaObrasOrdenAsc} setOrdenAsc={setVistaObrasOrdenAsc}
+                      onSelectObra={setFichaObraIdSeleccionada}
+                      comBusqueda={vistaObrasComBusqueda} setComBusqueda={setVistaObrasComBusqueda}
+                      comFiltroAptoDifusion={vistaObrasComFiltroAptoDifusion} setComFiltroAptoDifusion={setVistaObrasComFiltroAptoDifusion}
+                      comFiltroEstadoRelevamiento={vistaObrasComFiltroEstadoRelevamiento} setComFiltroEstadoRelevamiento={setVistaObrasComFiltroEstadoRelevamiento}
+                      comFiltroPrioridad={vistaObrasComFiltroPrioridad} setComFiltroPrioridad={setVistaObrasComFiltroPrioridad}
+                      comModo={vistaObrasComModo} setComModo={setVistaObrasComModo}
+                      comAnio={vistaObrasComAnio} setComAnio={setVistaObrasComAnio}
+                      comMes={vistaObrasComMes} setComMes={setVistaObrasComMes}
+                    />
+                  </>
+                ) : vistaFicha === 'barrio' ? (
                   barrioSeleccionado && barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)] ? (
                     <>
                       <div style={{ padding: '16px 20px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
