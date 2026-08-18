@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
-import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
+import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 import { formatearFecha } from '../lib/formatearFecha';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
@@ -56,8 +56,13 @@ const COLORES_ML = {
   'ML.6': { bg: '#78909C', text: '#37474F', label: 'ADVERSO' },
 };
 
-// Mismos colores por estado de obra que ya usa la capa Obras en components/MapaCircuitos.js
-// (duplicado a propósito, mismo criterio que normalizarNombreBarrio entre archivos).
+// Esquema viejo de obras_capital.json (campo `estado`, texto) — el JSON actual ya no
+// trae ese campo (ver colorAvanceObra/COLOR_AVANCE_OBRA más abajo, que reemplazó a
+// esto en todo lo que se ve en pantalla: FilaObra, ModalObra, capa del mapa). Estas dos
+// constantes quedan SOLO por htmlObrasPDF (ficha PDF de circuito/barrio, más abajo),
+// que todavía no se actualizó al esquema nuevo — fuera de alcance de ese fix (no tocar
+// el PDF existente); hasta que se actualice, la tabla de obras del PDF sigue mostrando
+// "Sin dato" en la columna Estado.
 const COLOR_OBRA_ESTADO = {
   'Por relevar': '#9E9E9E',
   'Relevado': '#26A69A',
@@ -2444,46 +2449,68 @@ const ListaVotosEscuelas = ({ escuelas, promedioCapitalPct }) => {
 // OBRAS (obras_capital.json) — panel reusable, ver lib/obrasCercanas.js
 // ============================================
 
-const ESTADOS_OBRA_ORDEN = ['Finalizado — Inaugurable', 'En ejecución', 'Relevado', 'Finalizado', 'Por relevar'];
+// Badge de "requiere_auditoria" — mismo look que el badge "⚠ Pendiente de revisión" que
+// ya usa Pauta para requiere_auditoria (ver FilaPauta más arriba), pero con texto propio
+// de obras (el flag acá es "el lat/lon no cae en el polígono declarado", no una revisión
+// editorial). Título = observaciones_geo, la explicación puntual del desvío.
+const BadgeAuditoriaObra = ({ obra }) => (
+  <span title={obra.observaciones_geo || undefined} style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: '#FBBF2422', color: '#B45309', whiteSpace: 'nowrap' }}>
+    ⚠ Requiere auditoría
+  </span>
+);
+
+// Nota de ubicación no exacta — cubre los 4 tipo_ubicacion que no son 'exacta'. Antes
+// esto se resolvía con obra.fuente_barrio === 'cercano_aproximado' (campo que ya no
+// existe en el esquema nuevo); tipo_ubicacion es el equivalente actual.
+const NOTA_TIPO_UBICACION = {
+  centroide_barrio: 'Ubicación aproximada (centroide del barrio, no la dirección exacta)',
+  centroide_circuito: 'Ubicación aproximada (centroide del circuito, no la dirección exacta)',
+  geometria_externa: 'Sin coordenada en el mapa — geometría cargada aparte (ver memoria descriptiva)',
+  sin_geometria: 'Sin geometría disponible',
+};
 
 const FilaObra = ({ obra, onSelectObra }) => {
-  const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
-  const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+  const avance = normalizarAvanceObra(obra.porcentaje_avance);
+  const colorAvance = colorAvanceObra(avance);
+  const notaUbicacion = NOTA_TIPO_UBICACION[obra.tipo_ubicacion];
   return (
     <div
       onClick={onSelectObra ? () => onSelectObra(obra) : undefined}
       style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px', cursor: onSelectObra ? 'pointer' : 'default' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre}</div>
-        <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorEstado}22`, color: colorEstado, whiteSpace: 'nowrap', flexShrink: 0 }}>{obra.estado || 'Sin dato'}</span>
+        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          {obra.requiere_auditoria && <BadgeAuditoriaObra obra={obra} />}
+          <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorAvance}22`, color: colorAvance, whiteSpace: 'nowrap' }}>{avance != null ? `${(avance * 100).toFixed(0)}%` : 'Sin dato'}</span>
+        </div>
       </div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{obra.tipo_obra || '—'}</div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
         {obra.barrio || 'Sin barrio asignado'}{obra._circuitoNombre ? ` · ${obra._circuitoNombre}` : ' · Sin circuito derivado'}
       </div>
-      {aproximado && (
-        <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>
-          barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
-        </div>
+      {notaUbicacion && (
+        <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>{notaUbicacion}</div>
       )}
       {obra.prioridad && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Prioridad: {obra.prioridad}</div>}
-      {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
+      {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponible_inaugurar) && (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
           {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
           {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
-          {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponibilidad_inaugurar)}</div>}
+          {obra.fecha_disponible_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponible_inaugurar)}</div>}
         </div>
       )}
-      {obra.observaciones && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+      {obra.observaciones_obra && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones_obra}</div>}
     </div>
   );
 };
 
 const ListaObras = ({ obras, vacio, onSelectObra }) => {
-  const [filtroEstado, setFiltroEstado] = useState('');
-  const estadosPresentes = ESTADOS_OBRA_ORDEN.filter(e => obras.some(o => o.estado === e));
-  const filtradas = filtroEstado ? obras.filter(o => o.estado === filtroEstado) : obras;
+  const [filtroAvance, setFiltroAvance] = useState('');
+  const rangosPresentes = RANGOS_AVANCE_OBRA.filter(r => obras.some(o => r.test((normalizarAvanceObra(o.porcentaje_avance) ?? 0) * 100)));
+  const filtradas = filtroAvance
+    ? obras.filter(o => RANGOS_AVANCE_OBRA.find(r => r.key === filtroAvance)?.test((normalizarAvanceObra(o.porcentaje_avance) ?? 0) * 100))
+    : obras;
 
   if (!obras || obras.length === 0) {
     return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{vacio}</div>;
@@ -2491,15 +2518,15 @@ const ListaObras = ({ obras, vacio, onSelectObra }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      {estadosPresentes.length > 1 && (
-        <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-          <option value="">Todos los estados ({obras.length})</option>
-          {estadosPresentes.map(e => <option key={e} value={e}>{e} ({obras.filter(o => o.estado === e).length})</option>)}
+      {rangosPresentes.length > 1 && (
+        <select value={filtroAvance} onChange={(e) => setFiltroAvance(e.target.value)} style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '11px', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+          <option value="">Todos los avances ({obras.length})</option>
+          {rangosPresentes.map(r => <option key={r.key} value={r.key}>{r.label} ({obras.filter(o => r.test((normalizarAvanceObra(o.porcentaje_avance) ?? 0) * 100)).length})</option>)}
         </select>
       )}
       {filtradas.length === 0 ? (
-        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Ninguna obra con ese estado.</div>
-      ) : filtradas.map((o, i) => <FilaObra key={`${o.id}-${i}`} obra={o} onSelectObra={onSelectObra} />)}
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Ninguna obra en ese rango de avance.</div>
+      ) : filtradas.map((o, i) => <FilaObra key={`${o.id_registro}-${i}`} obra={o} onSelectObra={onSelectObra} />)}
     </div>
   );
 };
@@ -2520,11 +2547,13 @@ const ObrasPanel = ({ tipo, datosCircuito, nombreBarrio, obrasEnriquecidas, barr
   }, [tipo, datosCircuito, nombreBarrio, obrasEnriquecidas]);
 
   const obrasCercanas = useMemo(() => {
-    const idsPropias = new Set(obrasPropias.map(o => o.id));
+    // id_registro, no id (no existe en el esquema nuevo) — con `id` este Set quedaba
+    // {undefined} y filtraba TODAS las cercanas apenas obrasPropias no estaba vacío.
+    const idsPropias = new Set(obrasPropias.map(o => o.id_registro));
     let resultado = [];
     if (tipo === 'circuito' && datosCircuito) resultado = obrasCercanasACircuito(datosCircuito.Mapkey, circuitosGeoJsonData, obrasEnriquecidas);
     else if (tipo === 'barrio' && nombreBarrio) resultado = obrasCercanasABarrio(nombreBarrio, barriosGeoData, obrasEnriquecidas);
-    return resultado.filter(o => !idsPropias.has(o.id));
+    return resultado.filter(o => !idsPropias.has(o.id_registro));
   }, [tipo, datosCircuito, nombreBarrio, obrasEnriquecidas, circuitosGeoJsonData, barriosGeoData, obrasPropias]);
 
   const tituloPropio = tipo === 'circuito' ? 'Obras en este circuito' : 'Obras en este barrio';
@@ -2561,8 +2590,9 @@ const BadgeObrasCercanas = ({ cantidad, onClick }) => (
 // y vuelven a llamar a onSelectObra, para poder navegar de obra en obra sin cerrar.
 const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
   if (!obra) return null;
-  const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
-  const aproximado = obra.fuente_barrio === 'cercano_aproximado';
+  const avance = normalizarAvanceObra(obra.porcentaje_avance);
+  const colorAvance = colorAvanceObra(avance);
+  const notaUbicacion = NOTA_TIPO_UBICACION[obra.tipo_ubicacion];
   const tieneCoordenadas = obra.lat != null && obra.lon != null;
   const cercanas = tieneCoordenadas ? obrasCercanasAObra(obra, obrasEnriquecidas, 1.5) : [];
 
@@ -2570,30 +2600,31 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onClose}>
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '28px', maxWidth: '480px', width: '100%', maxHeight: '80vh', overflowY: 'auto', margin: '20px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{obra.nombre}</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '19px', cursor: 'pointer', color: '#666', flexShrink: 0 }}>×</button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{obra.reparticion || '—'} · {obra.tipo_obra || '—'}</div>
-          <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorEstado}22`, color: colorEstado }}>{obra.estado || 'Sin dato'}</span>
+          <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{(obra.reparticion || '').trim() || '—'} · {obra.tipo_obra || '—'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorAvance}22`, color: colorAvance }}>{avance != null ? `${(avance * 100).toFixed(0)}% de avance` : 'Sin dato de avance'}</span>
+            {obra.requiere_auditoria && <BadgeAuditoriaObra obra={obra} />}
+          </div>
           <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
             {obra.barrio || 'Sin barrio asignado'}{obra._circuitoNombre ? ` · ${obra._circuitoNombre}` : ' · Sin circuito derivado'}
           </div>
-          {aproximado && (
-            <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600 }}>
-              barrio aproximado (a {obra.distancia_barrio_km != null ? obra.distancia_barrio_km.toFixed(1) : '?'} km)
-            </div>
+          {notaUbicacion && (
+            <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600 }}>{notaUbicacion}</div>
           )}
           {obra.prioridad && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Prioridad: {obra.prioridad}</div>}
-          {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponibilidad_inaugurar) && (
+          {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponible_inaugurar) && (
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
               {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
-              {obra.fecha_disponibilidad_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponibilidad_inaugurar)}</div>}
+              {obra.fecha_disponible_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponible_inaugurar)}</div>}
             </div>
           )}
-          {obra.observaciones && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones}</div>}
+          {obra.observaciones_obra && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones_obra}</div>}
         </div>
 
         <div>
@@ -2605,16 +2636,17 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {cercanas.map((o, i) => {
-                const colorOtra = COLOR_OBRA_ESTADO[o.estado] || COLOR_OBRA_DEFAULT;
+                const avanceOtra = normalizarAvanceObra(o.porcentaje_avance);
+                const colorOtra = colorAvanceObra(avanceOtra);
                 return (
                   <div
-                    key={`${o.id}-${i}`}
+                    key={`${o.id_registro}-${i}`}
                     onClick={() => onSelectObra(o)}
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 10px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', cursor: 'pointer' }}
                   >
-                    <div style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{o.nombre}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{o.nombre_obra || '(sin nombre)'}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: `${colorOtra}22`, color: colorOtra }}>{o.estado || 'Sin dato'}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: `${colorOtra}22`, color: colorOtra }}>{avanceOtra != null ? `${(avanceOtra * 100).toFixed(0)}%` : 'Sin dato'}</span>
                       <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{o.distanciaKm.toFixed(2)} km</span>
                     </div>
                   </div>
@@ -3948,15 +3980,21 @@ export default function Home() {
     }
   }, [geoData]);
 
-  // Índice barrio -> circuitos (circuito_barrios_cruce.json), precalculado una sola
-  // vez para derivar el circuito de cada obra sin lat/lon propia (ver lib/obrasCercanas.js).
+  // Índice barrio -> circuitos (circuito_barrios_cruce.json), fallback de
+  // enriquecerObrasConCircuito para obras sin `circuito` propio (ver lib/obrasCercanas.js).
   const indiceBarrioCircuito = useMemo(() => construirIndiceBarrioCircuito(cruceData), [cruceData]);
+  // Índice Mapkey -> nombre completo de circuito, para resolver el `circuito` crudo de
+  // cada obra (fuente principal desde el fix de esquema, ver lib/obrasCercanas.js).
+  const indiceMapkeyNombre = useMemo(() => construirIndiceMapkeyNombre(cruceData), [cruceData]);
 
-  // Única fuente de obras que debería circular de acá en más (mapa, paneles, modal):
+  // Única fuente de obras que circula por el resto de la app (mapa, ObrasPanel, ModalObra):
   // cada obra ya trae _circuitoMapkey/_circuitoNombre resuelto, para que "toda obra en
   // cualquier lista muestra su circuito" quede garantizado acá, no repetido en cada
-  // componente. Todavía no conectada a ningún componente (eso es la próxima etapa).
-  const obrasEnriquecidas = useMemo(() => enriquecerObrasConCircuito(obrasData, indiceBarrioCircuito), [obrasData, indiceBarrioCircuito]);
+  // componente.
+  const obrasEnriquecidas = useMemo(
+    () => enriquecerObrasConCircuito(obrasData, indiceBarrioCircuito, indiceMapkeyNombre),
+    [obrasData, indiceBarrioCircuito, indiceMapkeyNombre]
+  );
 
   // Si cambiamos de circuito estando en la solapa Encuestas y el nuevo no tiene datos, volvemos a Resumen.
   useEffect(() => {

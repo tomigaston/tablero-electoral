@@ -16,18 +16,26 @@ const COLORES_CATEGORIA = {
   'C': '#EF5350',    // Territorio hostil
 };
 
-// Color por estado de obra (obras_capital.json) — "Finalizado — Inaugurable" se
-// destaca en verde porque es el estado más accionable para el tablero (obra lista
-// para un acto de inauguración), en línea con el resto del proyecto (cobertura,
-// recorridos, pauta), que ya prioriza actividad de campaña real.
-const COLOR_OBRA_ESTADO = {
-  'Por relevar': '#9E9E9E',
-  'Relevado': '#26A69A',
-  'En ejecución': '#FFA726',
-  'Finalizado': '#5C6BC0',
-  'Finalizado — Inaugurable': '#2E7D32',
-};
-const COLOR_OBRA_DEFAULT = '#9E9E9E'; // estado no reconocido / ausente
+// Color por rango de avance de obra (obras_capital.json) — obras_capital.json ya no
+// trae un campo `estado` de texto (esquema viejo: Por relevar/Relevado/En
+// ejecución/Finalizado/Finalizado — Inaugurable); el dato vivo es porcentaje_avance
+// (0–1), así que el color se deriva de rangos fijos sobre ese valor, mismo criterio que
+// ya usa Vista Obras en pages/index.js (colorAvanceObra/COLOR_AVANCE_OBRA, duplicado
+// acá a propósito — mismo motivo que el resto de los helpers de color de este archivo).
+const COLOR_AVANCE_OBRA = { bajo: '#EF5350', medio: '#FFA726', alto: '#66BB6A' };
+const RANGOS_AVANCE_OBRA = [
+  { key: '0-30', label: '0% – 30%', color: COLOR_AVANCE_OBRA.bajo, test: (pct) => pct >= 0 && pct < 30 },
+  { key: '30-70', label: '30% – 70%', color: COLOR_AVANCE_OBRA.medio, test: (pct) => pct >= 30 && pct < 70 },
+  { key: '70-100', label: '70% – 100%', color: COLOR_AVANCE_OBRA.alto, test: (pct) => pct >= 70 && pct <= 100 },
+];
+// null cuenta como 0% (mismo criterio que "Sin iniciar" en Vista Obras) — no un dato
+// ausente a tratar aparte, así que cae en el rango 0–30 (rojo) igual que un 0% explícito.
+// >1 se acota a 1 (mismo caso de error de carga que ya documenta Vista Obras: OBRA-0280).
+function colorAvanceObra(porcentajeAvance) {
+  const avance = porcentajeAvance == null ? 0 : Math.min(porcentajeAvance, 1);
+  const pct = avance * 100;
+  return (RANGOS_AVANCE_OBRA.find(r => r.test(pct)) || RANGOS_AVANCE_OBRA[0]).color;
+}
 const COLOR_ESCUELA_CENTRO_VOTACION = '#1976D2';
 const COLOR_ESCUELA_SIN_VOTACION = '#9E9E9E';
 const COLOR_BORDE_PENDIENTE_REVISION = '#F57F17';
@@ -250,14 +258,14 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
   // A diferencia de filtroCategoria (lifted a pages/index.js porque VistaCapital también
   // lo consume, y se limpia al navegar a un circuito/barrio puntual porque es un filtro
   // de panorama de Capital), este filtro no tiene una segunda vista que sincronizar y
-  // sigue teniendo sentido con un circuito/barrio enfocado (ej. ver solo obras
-  // "Finalizado — Inaugurable" mientras se está parado en una ficha) — por eso vive local
-  // y no se resetea en navegación.
-  const [filtroEstadoObra, setFiltroEstadoObra] = useState(null);
-  // Mismo criterio que filtroEstadoObra: filtro local (no lifted), sigue teniendo
+  // sigue teniendo sentido con un circuito/barrio enfocado (ej. ver solo obras con poco
+  // avance mientras se está parado en una ficha) — por eso vive local y no se resetea
+  // en navegación. Valor: key de RANGOS_AVANCE_OBRA ('0-30'/'30-70'/'70-100') o null.
+  const [filtroRangoAvanceObra, setFiltroRangoAvanceObra] = useState(null);
+  // Mismo criterio que filtroRangoAvanceObra: filtro local (no lifted), sigue teniendo
   // sentido con un circuito/barrio enfocado y no se resetea en navegación.
   const [filtroTipoEscuela, setFiltroTipoEscuela] = useState(null);
-  // Mismo criterio que filtroEstadoObra/filtroTipoEscuela: filtro local (no lifted),
+  // Mismo criterio que filtroRangoAvanceObra/filtroTipoEscuela: filtro local (no lifted),
   // sigue teniendo sentido con un circuito/barrio enfocado y no se resetea en navegación.
   const [filtroTipoPauta, setFiltroTipoPauta] = useState(null);
 
@@ -273,9 +281,11 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
     }
   }, [geoData]);
 
-  // obras_capital.json: cada obra ya trae su propia lat/lon (a diferencia del viejo
-  // obras_largo.json, que se geocodificaba por centroide de barrio) — las 38 sin
-  // lat/lon (17 "manual" + 21 "descartado") no se grafican, tal como se espera.
+  // Cada obra con tipo_ubicacion 'exacta'/'centroide_barrio'/'centroide_circuito' trae
+  // lat/lon propia. Las 'sin_geometria' (38) y 'geometria_externa' (18, geometría
+  // cargada aparte, no hay punto real) vienen con lat/lon null en el archivo — este
+  // filtro ya las excluye sin lógica aparte por tipo_ubicacion; no hay que agregar nada
+  // para que "no rompan el mapa": simplemente no generan marker.
   const obrasParaMostrar = useMemo(() => {
     return (obrasEnriquecidas || []).filter(o => o.lat != null && o.lon != null);
   }, [obrasEnriquecidas]);
@@ -544,20 +554,20 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
       {capasActivas.obras && (
         <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
-          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Obras (click para filtrar)</div>
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Obras · % avance (click para filtrar)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {Object.entries(COLOR_OBRA_ESTADO).map(([estado, color]) => (
+            {RANGOS_AVANCE_OBRA.map(({ key, label, color }) => (
               <div
-                key={estado}
-                onClick={() => setFiltroEstadoObra(filtroEstadoObra === estado ? null : estado)}
-                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: filtroEstadoObra === estado ? `${color}20` : 'transparent', border: filtroEstadoObra === estado ? `1px solid ${color}` : '1px solid transparent' }}
+                key={key}
+                onClick={() => setFiltroRangoAvanceObra(filtroRangoAvanceObra === key ? null : key)}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: filtroRangoAvanceObra === key ? `${color}20` : 'transparent', border: filtroRangoAvanceObra === key ? `1px solid ${color}` : '1px solid transparent' }}
               >
                 <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: color, border: '1px solid #fff', boxShadow: `0 0 0 1px ${color}`, flexShrink: 0 }} />
-                <span style={{ fontSize: '9px', color: '#546E7A' }}>{estado}</span>
+                <span style={{ fontSize: '9px', color: '#546E7A' }}>{label}</span>
               </div>
             ))}
           </div>
-          {filtroEstadoObra && <button onClick={() => setFiltroEstadoObra(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
+          {filtroRangoAvanceObra && <button onClick={() => setFiltroRangoAvanceObra(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
         </div>
       )}
 
@@ -590,23 +600,30 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
         <Pane name={PANE_PUNTOS} style={{ zIndex: 450 }}>
           {capasActivas.obras && obrasParaMostrar.map((obra, i) => {
-            const colorEstado = COLOR_OBRA_ESTADO[obra.estado] || COLOR_OBRA_DEFAULT;
+            // Se agrupa/dibuja por id_registro (no por id_obra): cada barrio de una obra
+            // multi-barrio trae su propio registro con su propio lat/lon y eso está bien
+            // acá — a diferencia de Vista Obras (pages/index.js), que sí deduplica por
+            // id_obra para contar obras únicas, este mapa no deduplica, cada punto real
+            // es un marker propio.
+            const colorMarker = colorAvanceObra(obra.porcentaje_avance);
+            const pctObra = (obra.porcentaje_avance == null ? 0 : Math.min(obra.porcentaje_avance, 1)) * 100;
             // Mismo criterio de aislar/restaurar que getStyle() usa para los polígonos de
             // circuito con filtroCategoria (fillOpacity 0.15 / opacity 0.3 para lo que no
             // matchea el filtro activo).
-            const isFiltered = filtroEstadoObra && obra.estado !== filtroEstadoObra;
+            const rangoActivo = filtroRangoAvanceObra && RANGOS_AVANCE_OBRA.find(r => r.key === filtroRangoAvanceObra);
+            const isFiltered = rangoActivo && !rangoActivo.test(pctObra);
             return (
               <CircleMarker
-                key={`obra-${obra.id}-${i}`}
+                key={`obra-${obra.id_registro}-${i}`}
                 center={[obra.lat, obra.lon]}
                 radius={6}
-                pathOptions={{ color: '#fff', weight: 2, fillColor: colorEstado, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
+                pathOptions={{ color: '#fff', weight: 2, fillColor: colorMarker, fillOpacity: isFiltered ? 0.15 : 0.9, opacity: isFiltered ? 0.3 : 1 }}
                 eventHandlers={{ click: () => onSelectObra && onSelectObra(obra) }}
               />
             );
           })}
           {capasActivas.pauta && pautaBarrioMarkers.map((m) => {
-            // Mismo criterio de aislar/restaurar que filtroEstadoObra/filtroTipoEscuela:
+            // Mismo criterio de aislar/restaurar que filtroRangoAvanceObra/filtroTipoEscuela:
             // se atenúa (no se oculta) lo que no matchea el filtro activo.
             const isFiltered = filtroTipoPauta && (filtroTipoPauta === 'activa') !== m.tieneActiva;
             return (
@@ -651,7 +668,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
           {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
             const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
             const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
-            // Mismo criterio de aislar/restaurar que filtroEstadoObra usa para Obras
+            // Mismo criterio de aislar/restaurar que filtroRangoAvanceObra usa para Obras
             // (fillOpacity 0.15 / opacity 0.3 para lo que no matchea el filtro activo).
             const isFiltered = filtroTipoEscuela && tipoEscuela(esc) !== filtroTipoEscuela;
             return (
