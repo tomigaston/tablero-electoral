@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
 import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 import { formatearFecha } from '../lib/formatearFecha';
+import { pautaEstaVigente, estadoMostradoPauta } from '../lib/estadoPauta';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -370,32 +371,21 @@ function obtenerPautasCircuitoSinBarrio(pautasBarriosData, circuitoKey) {
 }
 
 // pautas_barrios.json trae la vigencia como inicio/fin en "YYYY-MM-DD" (esquema
-// campañas 2026). Mismo criterio de vigencia que ya implementa
-// components/MapaCircuitos.js para los markers de la capa Pauta — duplicado acá a
-// propósito, mismo patrón ya aceptado en el proyecto para normalizarNombreBarrio entre
-// archivos (evita acoplar el mapa a este archivo por una función mínima).
-function parsearFechaISOPauta(fechaStr) {
-  if (!fechaStr || typeof fechaStr !== 'string') return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
-  if (!match) return null;
-  const [, y, m, d] = match;
-  const fecha = new Date(Number(y), Number(m) - 1, Number(d));
-  return Number.isNaN(fecha.getTime()) ? null : fecha;
-}
-// 'activa' si tiene al menos una pauta con fin >= hoy, 'finalizada' si tiene pautas
-// pero todas vencidas, 'sin_pauta' si no hay ninguna registrada. Nota: esto es
-// independiente del campo `estado` (ACTIVO/INACTIVO) de cada pauta individual —
-// calcularCoberturaBarrio usa este resumen por vigencia de fecha, mismo criterio que
-// ya tenía antes del cambio de esquema.
+// campañas 2026). El parseo de fecha y el cálculo de vigencia (fin >= hoy) viven ahora en
+// lib/estadoPauta.js (parsearFechaISOPauta / pautaEstaVigente) — antes duplicados acá y en
+// components/MapaCircuitos.js, centralizado para poder aplicar ahí el override temporal
+// de la reunión (ver comentario al tope de ese archivo).
+// 'activa' si tiene al menos una pauta vigente, 'finalizada' si tiene pautas pero
+// ninguna vigente, 'sin_pauta' si no hay ninguna registrada. Nota: esto es independiente
+// del campo `estado` (ACTIVO/INACTIVO) de cada pauta individual — calcularCoberturaBarrio
+// usa este resumen por vigencia de fecha, mismo criterio que ya tenía antes del cambio de
+// esquema.
 function estadoPautaBarrio(nombreBarrio, pautasBarriosData) {
   const pautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
   if (pautas.length === 0) return 'sin_pauta';
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-  const tieneActiva = pautas.some(p => {
-    const f = parsearFechaISOPauta(p.fin);
-    return f ? f >= hoy : false;
-  });
+  const tieneActiva = pautas.some(p => pautaEstaVigente(p, hoy));
   return tieneActiva ? 'activa' : 'finalizada';
 }
 
@@ -1167,7 +1157,7 @@ const MaterialPautaLinks = ({ material }) => {
 const FilaPauta = ({ pauta, mostrarBarrio }) => {
   const etiquetas = etiquetasMetricasPauta(pauta.plataforma);
   const m = pauta.metricas_ejecutadas || {};
-  const inactiva = pauta.estado === 'INACTIVO';
+  const inactiva = estadoMostradoPauta(pauta) === 'INACTIVO';
   return (
     <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px', opacity: inactiva ? 0.65 : 1 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
@@ -3659,7 +3649,7 @@ const DetalleEventoCobertura = ({ evento }) => {
   // observaciones NO se muestra acá (uso interno de auditoría, esquema campañas 2026).
   const etiquetas = etiquetasMetricasPauta(evento.detalle.plataforma);
   const m = evento.detalle.metricas_ejecutadas || {};
-  const inactiva = evento.detalle.estado === 'INACTIVO';
+  const inactiva = estadoMostradoPauta(evento.detalle) === 'INACTIVO';
   return (
     <>
       <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>
@@ -3988,10 +3978,11 @@ function htmlPautaPDF(pautas) {
   return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">Frecuencia</th><th class="text-right">CPM/CPV</th><th class="text-right">Inversión</th><th>Material</th></tr></thead><tbody>${pautas.map(p => {
     const et = etiquetasMetricasPauta(p.plataforma);
     const m = p.metricas_ejecutadas || {};
-    return `<tr${p.estado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
+    const estadoMostrado = estadoMostradoPauta(p);
+    return `<tr${estadoMostrado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
       <td><strong>${p.titulo_pieza || '—'}</strong><br><span style="font-size:10px;color:#999">${p.campania || '—'} · ${p.plataforma || '—'} · ${p.objetivo_campana || '—'} · ${p.tipo_pauta || '—'}</span></td>
       <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
-      <td class="text-center">${pdfBadgeEstadoPautaItem(p.estado)}</td>
+      <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
       <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
       <td class="text-right">${m.frecuencia != null ? m.frecuencia.toFixed(2) : 's/d'}</td>
       <td class="text-right">${htmlMetricaPauta(m.costo_unitario, '$')}</td>
@@ -4046,10 +4037,11 @@ function htmlPautaCircuitoPDF(pautas) {
   return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">CPM/CPV</th><th>Material</th><th>Barrio</th></tr></thead><tbody>${pautas.map(p => {
     const et = etiquetasMetricasPauta(p.plataforma);
     const m = p.metricas_ejecutadas || {};
-    return `<tr${p.estado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
+    const estadoMostrado = estadoMostradoPauta(p);
+    return `<tr${estadoMostrado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
       <td><strong>${p.titulo_pieza || '—'}</strong><br><span style="font-size:10px;color:#999">${p.campania || '—'} · ${p.plataforma || '—'} · ${p.tipo_pauta || '—'}</span></td>
       <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
-      <td class="text-center">${pdfBadgeEstadoPautaItem(p.estado)}</td>
+      <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
       <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
       <td class="text-right">${htmlMetricaPauta(m.costo_unitario, '$')}</td>
       <td>${htmlMaterialPauta(p.material)}</td>

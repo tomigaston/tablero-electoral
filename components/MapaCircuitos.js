@@ -4,6 +4,7 @@ import * as topojson from 'topojson-client';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import 'leaflet/dist/leaflet.css';
 import { formatearFecha } from '../lib/formatearFecha';
+import { parsearFechaISOPauta, pautaEstaVigente } from '../lib/estadoPauta';
 
 // Colores por categoría v4 - INCLUYE "D" para EN DISPUTA
 const COLORES_CATEGORIA = {
@@ -87,16 +88,10 @@ function crearIconoPautaEstrella(activa) {
 
 // pautas_barrios.json (esquema campañas 2026) trae la vigencia como inicio / fin en
 // formato "YYYY-MM-DD" — NO fecha_creacion/fecha_finalizacion (esquema Meta Ads viejo,
-// ya no existe). Se compara a nivel de día contra "hoy" del cliente. Fecha ausente o no
-// parseable -> null, tratado por el llamador como finalizada (no activa).
-function parsearFechaISO(fechaStr) {
-  if (!fechaStr || typeof fechaStr !== 'string') return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
-  if (!match) return null;
-  const [, y, m, d] = match;
-  const fecha = new Date(Number(y), Number(m) - 1, Number(d));
-  return Number.isNaN(fecha.getTime()) ? null : fecha;
-}
+// ya no existe). El parseo de fecha y el cálculo de vigencia (fin >= hoy) viven ahora en
+// lib/estadoPauta.js (parsearFechaISOPauta / pautaEstaVigente) — antes duplicados acá,
+// centralizado para poder aplicar ahí el override temporal de la reunión (ver comentario
+// al tope de ese archivo).
 
 // Normaliza nombres de barrio para cruzar recorridos_barrios.json con barrios_geo.json
 // (nombre_barrio): mismo texto pero con diferencias de espacios dobles, tildes y el
@@ -320,12 +315,11 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
     // Orden por inicio (arranque de vigencia) descendente — la pauta más reciente
     // primero. Sin inicio parseable -> se manda al final (no rompe el orden del resto).
     const anotarPautas = (pautasRaw) => (pautasRaw || []).map(p => {
-      const fechaFin = parsearFechaISO(p.fin);
-      if (!fechaFin) sinFechaValidaCount += 1;
-      return { ...p, _activa: fechaFin ? fechaFin >= hoy : false };
+      if (parsearFechaISOPauta(p.fin) == null) sinFechaValidaCount += 1;
+      return { ...p, _activa: pautaEstaVigente(p, hoy) };
     }).sort((a, b) => {
-      const fa = parsearFechaISO(a.inicio);
-      const fb = parsearFechaISO(b.inicio);
+      const fa = parsearFechaISOPauta(a.inicio);
+      const fb = parsearFechaISOPauta(b.inicio);
       if (!fa && !fb) return 0;
       if (!fa) return 1;
       if (!fb) return -1;
