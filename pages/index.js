@@ -440,7 +440,13 @@ const compararMapkey = (a, b) => {
   return String(a).localeCompare(String(b));
 };
 
-const esFechaValida = (f) => typeof f === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(f) && !isNaN(new Date(f).getTime());
+// Match de PREFIJO (sin '$' final), no de string completa: tolera un sufijo de
+// hora/timestamp ("2026-07-31 00:00:00"), mismo criterio que ya usan
+// parsearFechaISOPauta (lib/estadoPauta.js) y formatearFecha (lib/formatearFecha.js)
+// para el resto de las fechas de pauta del tablero. Antes exigía match exacto y
+// descartaba en silencio cualquier fecha con sufijo — pasó con el 93% de las piezas
+// en la carga 28/08 (bug de origen en el maestro, ya corregido en el dato).
+const esFechaValida = (f) => typeof f === 'string' && /^\d{4}-\d{2}-\d{2}/.test(f) && !isNaN(new Date(f).getTime());
 
 const TIPOS_EVENTO_COBERTURA = {
   medicion: { label: 'Medicion', color: '#2E7D32', bg: '#4CAF5022' },
