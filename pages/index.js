@@ -364,24 +364,10 @@ function obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio) {
   return claveOriginal ? (bucket[claveOriginal].pautas || []) : [];
 }
 // Pautas asignadas directo a un circuito (circuitos_sin_barrio) — indexado por
-// CircuitoKey (ej. "10A"), no por Mapkey. Desde la carga 2026-08-28 conviven dos formas
-// de clave en el mismo bucket: subcircuito puntual ("10A", con letra) y circuito madre
-// completo ("10", sin letra) — esta última aparece cuando la audiencia de una campaña
-// (ej. "Cordobeses en Alerta") apunta al circuito entero en vez de a uno de sus
-// subcircuitos. Un subcircuito puntual (5G) es territorio DEL circuito madre (5), así
-// que además de sus propias pautas hereda las del madre (una pauta que cubre "todo el
-// circuito 5" también llega a San Vicente/5G). No es simétrico: el circuito madre NO
-// hereda las pautas de sus subcircuitos (una pauta de 5G no dice nada sobre 5A-5I), así
-// que consultar la clave madre solo trae lo cargado directo ahí.
+// CircuitoKey (ej. "10A"), no por Mapkey.
 function obtenerPautasCircuitoSinBarrio(pautasBarriosData, circuitoKey) {
   if (!circuitoKey) return [];
-  const bucket = pautasBarriosData?.circuitos_sin_barrio;
-  if (!bucket) return [];
-  const claveStr = String(circuitoKey);
-  const pautas = [...(bucket[claveStr]?.pautas || [])];
-  const claveMadre = claveStr.match(/^(\d+)[A-Za-z]+$/)?.[1];
-  if (claveMadre) pautas.push(...(bucket[claveMadre]?.pautas || []));
-  return pautas;
+  return pautasBarriosData?.circuitos_sin_barrio?.[String(circuitoKey)]?.pautas || [];
 }
 
 // pautas_barrios.json trae la vigencia como inicio/fin en "YYYY-MM-DD" (esquema
