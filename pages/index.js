@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
 import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 import { formatearFecha } from '../lib/formatearFecha';
-import { pautaEstaVigente, estadoMostradoPauta } from '../lib/estadoPauta';
+import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta } from '../lib/estadoPauta';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -2238,6 +2238,30 @@ const idObraDeRegistro = (idRegistro) => (idRegistro || '').replace(/-[a-z]$/, '
 // archivo fuente (fuera de alcance de esta etapa).
 const normalizarAvanceObra = (v) => (v == null ? null : Math.min(v, 1));
 
+// Estado derivado de avance + fecha_disponible_inaugurar para las fichas de circuito y
+// barrio (FilaObra/ModalObra) — reemplaza el "Avance: X%" plano, que no distinguía "obra
+// terminada pero sin fecha de inauguración confirmada" de "ya disponible para inaugurar".
+// Devuelve null si el avance es dato sucio/ausente (normalizarAvanceObra ya lo resolvió a
+// null) — en ese caso el caller mantiene el comportamiento actual (no inventar estado).
+// Reusa parsearFechaISOPauta (lib/estadoPauta.js) para fecha_disponible_inaugurar: mismo
+// parser que ya tolera "-"/""/null -> null sin intentar `new Date("-")` (hay un registro
+// real con "-" literal en obras_capital.json).
+// Misma paleta que ya usa el resto de la ficha para estados (Activo/Inactivo de pauta,
+// notaUbicacion): gris = en obra, ámbar = terminada sin fecha, verde = lista/disponible.
+const COLOR_ESTADO_OBRA = { enObra: '#757575', terminadaSinFecha: '#F57F17', disponible: '#2E7D32' };
+function estadoDerivadoObra(avance, fechaDisponibleInaugurar) {
+  if (avance == null) return null;
+  const pct = Math.round(avance * 100);
+  if (pct < 100) return { label: `En obra — ${pct}%`, color: COLOR_ESTADO_OBRA.enObra };
+  const fecha = parsearFechaISOPauta(fechaDisponibleInaugurar);
+  if (!fecha) return { label: 'Terminada — sin fecha de inauguración confirmada', color: COLOR_ESTADO_OBRA.terminadaSinFecha };
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const fechaLabel = formatearFecha(fechaDisponibleInaugurar);
+  if (fecha <= hoy) return { label: `Lista para inaugurar (desde ${fechaLabel})`, color: COLOR_ESTADO_OBRA.disponible };
+  return { label: `Disponible desde ${fechaLabel}`, color: COLOR_ESTADO_OBRA.disponible };
+}
+
 const RANGOS_AVANCE_OBRA = [
   { key: '0-30', label: '0% – 30%', test: (pct) => pct >= 0 && pct < 30 },
   { key: '30-70', label: '30% – 70%', test: (pct) => pct >= 30 && pct < 70 },
@@ -3206,7 +3230,8 @@ const NOTA_TIPO_UBICACION = {
 
 const FilaObra = ({ obra, onSelectObra }) => {
   const avance = normalizarAvanceObra(obra.porcentaje_avance);
-  const colorAvance = colorAvanceObra(avance);
+  const estadoObra = estadoDerivadoObra(avance, obra.fecha_disponible_inaugurar);
+  const colorEstado = estadoObra ? estadoObra.color : colorAvanceObra(avance);
   const notaUbicacion = NOTA_TIPO_UBICACION[obra.tipo_ubicacion];
   return (
     <div
@@ -3217,7 +3242,7 @@ const FilaObra = ({ obra, onSelectObra }) => {
         <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           {obra.requiere_auditoria && <BadgeAuditoriaObra obra={obra} />}
-          <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorAvance}22`, color: colorAvance, whiteSpace: 'nowrap' }}>{avance != null ? `${(avance * 100).toFixed(0)}%` : 'Sin dato'}</span>
+          <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '5px', backgroundColor: `${colorEstado}22`, color: colorEstado, whiteSpace: 'nowrap' }}>{estadoObra ? estadoObra.label : 'Sin dato'}</span>
         </div>
       </div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{obra.tipo_obra || '—'}</div>
@@ -3228,11 +3253,10 @@ const FilaObra = ({ obra, onSelectObra }) => {
         <div style={{ fontSize: '11px', color: '#F57F17', fontWeight: 600 }}>{notaUbicacion}</div>
       )}
       {obra.prioridad && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Prioridad: {obra.prioridad}</div>}
-      {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponible_inaugurar) && (
+      {(obra.fecha_inicio || obra.fecha_finalizacion) && (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
           {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
           {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
-          {obra.fecha_disponible_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponible_inaugurar)}</div>}
         </div>
       )}
       {obra.observaciones_obra && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{obra.observaciones_obra}</div>}
@@ -3327,7 +3351,8 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
   const overlayRef = useFocusTrap(!!obra);
   if (!obra) return null;
   const avance = normalizarAvanceObra(obra.porcentaje_avance);
-  const colorAvance = colorAvanceObra(avance);
+  const estadoObra = estadoDerivadoObra(avance, obra.fecha_disponible_inaugurar);
+  const colorEstado = estadoObra ? estadoObra.color : colorAvanceObra(avance);
   const notaUbicacion = NOTA_TIPO_UBICACION[obra.tipo_ubicacion];
   const tieneCoordenadas = obra.lat != null && obra.lon != null;
   const cercanas = tieneCoordenadas ? obrasCercanasAObra(obra, obrasEnriquecidas, 1.5) : [];
@@ -3343,7 +3368,7 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
           <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{(obra.reparticion || '').trim() || '—'} · {obra.tipo_obra || '—'}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorAvance}22`, color: colorAvance }}>{avance != null ? `${(avance * 100).toFixed(0)}% de avance` : 'Sin dato de avance'}</span>
+            <span style={{ display: 'inline-flex', alignSelf: 'flex-start', fontSize: '11px', fontWeight: 600, padding: '3px 10px', borderRadius: '999px', backgroundColor: `${colorEstado}22`, color: colorEstado }}>{estadoObra ? estadoObra.label : 'Sin dato de avance'}</span>
             {obra.requiere_auditoria && <BadgeAuditoriaObra obra={obra} />}
           </div>
           <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
@@ -3353,11 +3378,10 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
             <div style={{ fontSize: '12px', color: '#F57F17', fontWeight: 600 }}>{notaUbicacion}</div>
           )}
           {obra.prioridad && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Prioridad: {obra.prioridad}</div>}
-          {(obra.fecha_inicio || obra.fecha_finalizacion || obra.fecha_disponible_inaugurar) && (
+          {(obra.fecha_inicio || obra.fecha_finalizacion) && (
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               {obra.fecha_inicio && <div>Inicio: {formatearFecha(obra.fecha_inicio)}</div>}
               {obra.fecha_finalizacion && <div>Finalización: {formatearFecha(obra.fecha_finalizacion)}</div>}
-              {obra.fecha_disponible_inaugurar && <div>Disponible para inaugurar: {formatearFecha(obra.fecha_disponible_inaugurar)}</div>}
             </div>
           )}
           {obra.observaciones_obra && <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{obra.observaciones_obra}</div>}
@@ -4012,12 +4036,46 @@ function pdfBadgeEstadoPautaItem(estado) {
   if (estado === 'INACTIVO') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#9E9E9E22;color:#757575;white-space:nowrap">Inactivo</span>`;
   return `<span style="color:#ccc">—</span>`;
 }
+// Filtro + orden de piezas de pauta para las tablas de PDF de ficha (circuito y barrio,
+// htmlPautaPDF/htmlPautaCircuitoPDF) — evita listas larguísimas dominadas por piezas
+// inactivas cuando hay poca actividad, sin ponerle techo a circuitos/barrios con mucha
+// pauta activa (ej. campañas toda_capital que impactan a todos). Basado en la cantidad de
+// piezas ACTIVAS (estadoMostradoPauta — dato sucio fuera de ACTIVO/INACTIVO cuenta como
+// inactiva, no se descarta):
+//   0 activas   -> últimas 6 inactivas
+//   1-5 activas -> todas las activas + inactivas hasta completar 6 filas
+//   6+ activas  -> todas las activas, ninguna inactiva (sin límite superior)
+// Orden: activas agrupadas primero, después inactivas agrupadas (nunca intercaladas);
+// dentro de cada grupo, por fecha de fin de vigencia descendente (para activas: vence más
+// tarde primero; para inactivas: dejó de estar vigente más recientemente primero). Sin
+// `fin` parseable -> al final de su grupo, sin romper el sort.
+function ordenarPautasPorFinDescendente(pautas) {
+  return [...pautas].sort((a, b) => {
+    const finA = parsearFechaISOPauta(a.fin);
+    const finB = parsearFechaISOPauta(b.fin);
+    if (finA && finB) return finB - finA;
+    if (finA) return -1;
+    if (finB) return 1;
+    return 0;
+  });
+}
+function filtrarYOrdenarPautasPDF(pautas) {
+  const activas = ordenarPautasPorFinDescendente((pautas || []).filter(p => estadoMostradoPauta(p) === 'ACTIVO'));
+  const inactivas = ordenarPautasPorFinDescendente((pautas || []).filter(p => estadoMostradoPauta(p) !== 'ACTIVO'));
+  if (activas.length === 0) return inactivas.slice(0, 6);
+  if (activas.length < 6) return [...activas, ...inactivas.slice(0, 6 - activas.length)];
+  return activas;
+}
+
 // Esquema campañas 2026: Pieza agrupa campaña/plataforma/objetivo/tipo (por espacio,
 // mismo criterio que ya usaba este archivo para compactar columnas secundarias en una
-// sola celda). observaciones NO se incluye (uso interno de auditoría).
-function htmlPautaPDF(pautas) {
+// sola celda). observaciones NO se incluye (uso interno de auditoría). Sin columna
+// CPM/CPV (ver Parte 1c del prompt de ficha: Pauta+Obras) — costo_unitario se sigue
+// calculando y guardando en el dato, solo no se pinta acá.
+function htmlPautaPDF(pautasSinFiltrar) {
+  const pautas = filtrarYOrdenarPautasPDF(pautasSinFiltrar);
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada.</p>`;
-  return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">Frecuencia</th><th class="text-right">CPM/CPV</th><th class="text-right">Inversión</th><th>Material</th></tr></thead><tbody>${pautas.map(p => {
+  return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">Frecuencia</th><th class="text-right">Inversión</th><th>Material</th></tr></thead><tbody>${pautas.map(p => {
     const et = etiquetasMetricasPauta(p.plataforma);
     const m = p.metricas_ejecutadas || {};
     const estadoMostrado = estadoMostradoPauta(p);
@@ -4027,7 +4085,6 @@ function htmlPautaPDF(pautas) {
       <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
       <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
       <td class="text-right">${m.frecuencia != null ? m.frecuencia.toFixed(2) : 's/d'}</td>
-      <td class="text-right">${htmlMetricaPauta(m.costo_unitario, '$')}</td>
       <td class="text-right">${htmlMetricaPauta(m.inversion, '$')}</td>
       <td>${htmlMaterialPauta(p.material)}</td>
     </tr>`;
@@ -4073,10 +4130,13 @@ function pautaCircuitoPDF(datosCircuito, cruceData, pautasBarriosData, barriosGe
   obtenerPautasCircuitoSinBarrio(pautasBarriosData, datosCircuito.CircuitoKey).forEach(p => pautas.push({ ...p, _barrio: null }));
   return pautas;
 }
-function htmlPautaCircuitoPDF(pautas) {
+// Sin columna CPM/CPV (ver Parte 1c del prompt de ficha: Pauta+Obras) — costo_unitario
+// se sigue calculando y guardando en el dato, solo no se pinta acá.
+function htmlPautaCircuitoPDF(pautasSinFiltrar) {
+  const pautas = filtrarYOrdenarPautasPDF(pautasSinFiltrar);
   if (!pautas || pautas.length === 0) return `<p style="color:#999;font-size:12px">Sin pauta registrada en los barrios de este circuito.</p>`;
   const badgeSinBarrio = `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#9E9E9E22;color:#757575;white-space:nowrap">Sin barrio asignado</span>`;
-  return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th class="text-right">CPM/CPV</th><th>Material</th><th>Barrio</th></tr></thead><tbody>${pautas.map(p => {
+  return `<table><thead><tr><th>Pieza</th><th>Vigencia</th><th class="text-center">Estado</th><th class="text-right">Alcance/Visualiz.</th><th>Material</th><th>Barrio</th></tr></thead><tbody>${pautas.map(p => {
     const et = etiquetasMetricasPauta(p.plataforma);
     const m = p.metricas_ejecutadas || {};
     const estadoMostrado = estadoMostradoPauta(p);
@@ -4085,7 +4145,6 @@ function htmlPautaCircuitoPDF(pautas) {
       <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
       <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
       <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
-      <td class="text-right">${htmlMetricaPauta(m.costo_unitario, '$')}</td>
       <td>${htmlMaterialPauta(p.material)}</td>
       <td>${p._barrio || badgeSinBarrio}</td>
     </tr>`;
