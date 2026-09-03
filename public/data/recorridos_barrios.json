@@ -1,6 +1,6 @@
 {
   "AEROPUERTO": {
-    "total_visitas": 6,
+    "total_visitas": 8,
     "visitas": [
       {
         "id": 226,
@@ -49,11 +49,27 @@
         "contacto_vecinos": "NO",
         "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-de-la-inauguracion-de-la-sede-de-la-camara-de-comercio-exterior-de-cordoba/",
         "info": "Inauguracion sede Camara Comercio Exterior"
+      },
+      {
+        "id": 697,
+        "fecha": "2026-07-29",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-asistio-al-desembarco-de-byma-en-cordoba/",
+        "info": "Llaryora asistió al desembarco de BYMA en Córdoba"
+      },
+      {
+        "id": 749,
+        "fecha": "2026-09-02",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/no-home/llaryora-anuncio-ingresos-brutos-cero-para-mas-pymes-que-facturan-hasta-4-500-millones/",
+        "info": "celebración por el Día de la Industria - Llaryora anunció Ingresos Brutos Cero para más PyMEs"
       }
     ]
   },
   "ALBERDI": {
-    "total_visitas": 7,
+    "total_visitas": 9,
     "visitas": [
       {
         "id": 166,
@@ -110,6 +126,22 @@
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/gobernador/paicor-se-amplia-en-la-escuela-carbo-150-alumnos-de-primaria-comienzan-a-recibir-asistencia-alimentaria/",
         "info": "Visita colegio Carbó "
+      },
+      {
+        "id": 700,
+        "fecha": "2026-07-30",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/no-home/cordoba-reune-a-inversores-empresarios-y-emprendedores-tecnologicos-de-america-latina/",
+        "info": "Apertura del Foro de Inversiones Córdoba 2026 en el Salón Lugones del Hotel Quinto Centenario."
+      },
+      {
+        "id": 702,
+        "fecha": "2026-07-31",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/informacion-general/el-foro-de-inversiones-cordoba-consolido-un-espacio-clave-para-el-financiamiento-y-la-innovacion/",
+        "info": "Foro de Inversiones Córdoba en el hotel Quinto Centenario"
       }
     ]
   },
@@ -260,7 +292,7 @@
     ]
   },
   "CENTRO": {
-    "total_visitas": 27,
+    "total_visitas": 28,
     "visitas": [
       {
         "id": 116,
@@ -477,11 +509,19 @@
         "contacto_vecinos": "NO",
         "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-un-encuentro-con-la-camara-de-comercio-de-cordoba/",
         "info": "Llaryora participó de un encuentro con la Cámara de Comercio de Córdoba"
+      },
+      {
+        "id": 694,
+        "fecha": "2026-07-27",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/gobernador/cordoba-lidero-las-pruebas-aprender-2025-y-llaryora-reconocio-a-los-docentes-por-los-resultados/",
+        "info": "Acto Educacion Resultados Pruebas Aprender - Teatro San Martín"
       }
     ]
   },
   "CHATEAU CARRERAS": {
-    "total_visitas": 24,
+    "total_visitas": 26,
     "visitas": [
       {
         "id": 122,
@@ -674,6 +714,35 @@
         "contacto_vecinos": "NO",
         "link": "https://prensa.cba.gov.ar/gobernador/llaryora-acompano-a-los-pumas-en-el-ultimo-entrenamiento-de-cara-al-partido-con-escocia/",
         "info": "Llaryora acompañó a Los Pumas en el último entrenamiento de cara al partido con Escocia"
+      },
+      {
+        "id": 699,
+        "fecha": "2026-07-30",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/gobernador/con-las-nuevas-playas-de-estacionamiento-la-provincia-fortalece-al-kempes-como-un-polo-de-grandes-eventos/",
+        "info": "El gobernador Martín Llaryora inauguró las nuevas playas de estacionamiento estadio Mario Alberto Kempes"
+      },
+      {
+        "id": 712,
+        "fecha": "2026-08-07",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/informacion-general/mes-del-vecinalismo-llaryora-destaco-el-compromiso-de-los-centros-vecinales-en-la-construccion-de-comunidad/",
+        "info": "Mes del Vecinalismo - el gobernador encabezó el encuentro “Somos Barrio – Vecinalismo que transforma” - Centro de Convenciones Juan Bautista Bustos"
+      }
+    ]
+  },
+  "COLINAS DEL CERRO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 750,
+        "fecha": "2026-09-02",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-recorrio-la-puesta-en-valor-de-dos-plazas-en-barrios-de-la-ciudad/",
+        "info": "Llaryora recorrió la puesta en valor de dos plazas en barrios de la ciudad"
       }
     ]
   },
@@ -752,6 +821,19 @@
         "contacto_vecinos": "NO",
         "link": "https://prensa.cba.gov.ar/gobernador/llaryora-recorrio-el-nuevo-centro-de-control-de-alumbrado-publico-inteligente-de-epec/",
         "info": "Llaryora recorrió el nuevo Centro de Control de Alumbrado Público Inteligente de EPEC"
+      }
+    ]
+  },
+  "EL CABILDO": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 711,
+        "fecha": "2026-08-07",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/ciudad-ampliacion-cabildo-llaryora-inauguro-espacios-comunitarios-para-infancias-y-personas-mayores/",
+        "info": "El gobernador inauguró el Centro de Cuidado Infantil (CCI) y del Centro Integral para Personas Mayores (CIPEM) de barrio Ciudad Ampliación Cabildo"
       }
     ]
   },
@@ -866,7 +948,7 @@
     ]
   },
   "GENERAL PAZ": {
-    "total_visitas": 1,
+    "total_visitas": 2,
     "visitas": [
       {
         "id": 543,
@@ -875,11 +957,19 @@
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/no-home/comenzo-la-recuperacion-del-parque-jose-maria-paz-llaryora-y-passerini-recorrieron-la-obra/",
         "info": "Visita Plaza Gral. Paz (Frente Reina Fabiola)"
+      },
+      {
+        "id": 723,
+        "fecha": "2026-08-13",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/gobernador/bomberos-voluntarios-la-provincia-destino-1-170-millones-para-fortalecer-65-cuarteles/",
+        "info": "Entrega de aportes provinciales en la Federación de Bomberos Voluntarios de Córdoba"
       }
     ]
   },
   "GENERAL PUEYRREDON": {
-    "total_visitas": 1,
+    "total_visitas": 2,
     "visitas": [
       {
         "id": 346,
@@ -888,6 +978,14 @@
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-capital-provincia-y-municipio-construiran-un-desague-en-la-zona-sur/",
         "info": "Desagüe calles madre sacramento- adoratrices "
+      },
+      {
+        "id": 698,
+        "fecha": "2026-07-29",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/gobernador/llaryora-participo-de-la-entrega-de-los-premios-perfil-cordoba-2026/",
+        "info": "entrega de los Premios Perfil Córdoba 2026 en el Concejo Deliberante"
       }
     ]
   },
@@ -965,7 +1063,7 @@
     ]
   },
   "JARDIN ESPINOSA": {
-    "total_visitas": 1,
+    "total_visitas": 2,
     "visitas": [
       {
         "id": 364,
@@ -974,6 +1072,14 @@
         "contacto_vecinos": "A determinar",
         "link": null,
         "info": "Comedores Córdoba Capital- Laura jure (Quality)"
+      },
+      {
+        "id": 701,
+        "fecha": "2026-07-31",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/deporte/llaryora-acompano-el-ultimo-entrenamiento-de-los-cordobeses-que-disputaran-el-mundial-de-hockey-id-para-personas-con-discapacidad-intelectual/",
+        "info": "Llaryora acompañó  a los cordobeses que disputarán el Mundial de Hockey ID para Personas con Discapacidad Intelectual"
       }
     ]
   },
@@ -1043,7 +1149,7 @@
     ]
   },
   "LAS HUERTILLAS": {
-    "total_visitas": 3,
+    "total_visitas": 4,
     "visitas": [
       {
         "id": 248,
@@ -1068,6 +1174,14 @@
         "contacto_vecinos": "NO",
         "link": "https://prensa.cba.gov.ar/no-home/altonivel-velez-sarsfield-llaryora-presencio-la-colocacion-de-la-primera-viga-del-viaducto-en-horario-nocturno/",
         "info": "Altonivel Vélez Sarsfield: Llaryora presenció la colocación de la primera viga del viaducto en horario nocturno"
+      },
+      {
+        "id": 714,
+        "fecha": "2026-08-11",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/gobernador/altonivel-velez-sarsfield-el-hormigonado-del-viaducto-entra-en-su-etapa-final/",
+        "info": "El gobernador recorrió la obra del altonivel sobre la avenida Vélez Sarsfield, entre la calle Posadas y el anillo de Circunvalación"
       }
     ]
   },
@@ -1192,7 +1306,7 @@
     ]
   },
   "NUEVA CORDOBA": {
-    "total_visitas": 8,
+    "total_visitas": 9,
     "visitas": [
       {
         "id": 175,
@@ -1257,6 +1371,14 @@
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-superviso-el-avance-de-la-renovacion-integral-del-parque-de-las-tejas/",
         "info": "Llaryora supervisó el avance de la renovación integral del Parque de las Tejas"
+      },
+      {
+        "id": 703,
+        "fecha": "2026-08-03",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/informacion-general/cordoba-se-convierte-en-el-epicentro-de-la-industria-audiovisual/",
+        "info": "Focus Córdoba 2026 en Centro Cultural Córdoba"
       }
     ]
   },
@@ -1333,6 +1455,19 @@
         "contacto_vecinos": "SI",
         "link": "https://www.instagram.com/reel/DJ5J0SWNzT8/",
         "info": "Polideportivo social"
+      }
+    ]
+  },
+  "PARQUE LICEO 3A SECCION": {
+    "total_visitas": 1,
+    "visitas": [
+      {
+        "id": 751,
+        "fecha": "2026-09-02",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/gobernador/capital-llaryora-recorrio-la-puesta-en-valor-de-dos-plazas-en-barrios-de-la-ciudad/",
+        "info": "Llaryora recorrió la puesta en valor de dos plazas en barrios de la ciudad"
       }
     ]
   },
@@ -1483,7 +1618,7 @@
     ]
   },
   "SAN VICENTE": {
-    "total_visitas": 2,
+    "total_visitas": 3,
     "visitas": [
       {
         "id": 473,
@@ -1500,6 +1635,14 @@
         "contacto_vecinos": "NO",
         "link": "https://prensa.cba.gov.ar/gobernador/llaryora-superviso-la-etapa-final-de-obra-de-la-nueva-sede-de-la-escuela-de-suboficiales/",
         "info": "Llaryora supervisó la etapa final de obra de la nueva sede de la Escuela de Suboficiales"
+      },
+      {
+        "id": 722,
+        "fecha": "2026-08-13",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/no-home/llaryora-acompano-a-los-estudiantes-semifinalistas-de-la-copa-robotica-educabot-2026/",
+        "info": "Copa Robótica Educabot 2026, en el Salón Auditorio del Instituto Superior de Estudios Pedagógicos (ISEP)."
       }
     ]
   },
