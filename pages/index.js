@@ -389,6 +389,32 @@ function estadoPautaBarrio(nombreBarrio, pautasBarriosData) {
   return tieneActiva ? 'activa' : 'finalizada';
 }
 
+// Pauta "Mesa de Capital" (obras_capital.json) — una obra cuenta como tal cuando tiene
+// entrega_material_pauta_nico (link) Y fecha_pauta ambos no-nulos. A diferencia de las
+// pautas de pautas_barrios.json, acá no hay noción de vigencia por fecha: fecha_pauta no
+// siempre es una fecha ISO parseable (hay valores tipo "26-08 al 15-09" en el archivo
+// real), así que "activa" es simplemente "tiene los dos campos cargados", sin comparar
+// contra hoy.
+function esObraPautaMesaCapital(obra) {
+  return !!(obra?.entrega_material_pauta_nico && obra?.fecha_pauta);
+}
+
+// Todas las obras de Mesa de Capital de un barrio — mismo criterio de match por barrio
+// normalizado que el resto del proyecto (obrasEnriquecidas ya viene con barrio como
+// texto directo, ver comentario de obras_capital.json en lib/data-manifest.js).
+function obrasPautaMesaCapitalDeBarrio(obrasEnriquecidas, nombreBarrio) {
+  const key = normalizarNombreBarrio(nombreBarrio);
+  return (obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === key && esObraPautaMesaCapital(o));
+}
+
+// Badge del header/resumen de barrio (Parte 2): se enciende si el barrio tiene pauta
+// activa por CUALQUIERA de las dos fuentes — la de siempre (pautas_barrios.json, vía
+// estadoPautaBarrio) O al menos una pauta activa de Mesa de Capital.
+function tienePautaActivaBarrio(nombreBarrio, pautasBarriosData, obrasEnriquecidas) {
+  if (estadoPautaBarrio(nombreBarrio, pautasBarriosData) === 'activa') return true;
+  return obrasPautaMesaCapitalDeBarrio(obrasEnriquecidas, nombreBarrio).length > 0;
+}
+
 // Cobertura territorial de un barrio (Visitas/Pauta/Obras/Escuelas) — mismos lookups
 // por nombre normalizado que ya usan las solapas de la ficha de barrio (recorridosLookup,
 // pautasBarriosData, obrasEnriquecidas, votosEscuelasBarrioLookup), reutilizado por la
@@ -1192,7 +1218,7 @@ const FilaPauta = ({ pauta, mostrarBarrio }) => {
       <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Vigencia: {formatearFecha(pauta.inicio)} → {formatearFecha(pauta.fin)}</div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
         {etiquetas.alcance}: {m.alcance_o_visualizaciones != null ? m.alcance_o_visualizaciones.toLocaleString() : 's/d'}
-        {m.frecuencia != null && ` · Frecuencia: ${m.frecuencia.toFixed(2)}`}
+        {m.frecuencia != null && ` · Frecuencia: ${typeof m.frecuencia === 'number' ? m.frecuencia.toFixed(2) : m.frecuencia}`}
       </div>
       <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
         {etiquetas.costoUnitario}: {formatearMetricaPauta(m.costo_unitario, '$')} · Inversión: {formatearMetricaPauta(m.inversion, '$')}
@@ -1201,6 +1227,28 @@ const FilaPauta = ({ pauta, mostrarBarrio }) => {
     </div>
   );
 };
+
+// Fila de pauta "Mesa de Capital" (Parte 3) — mismo layout de tarjeta que FilaPauta,
+// pero con los campos de una obra (nombre_obra/entrega_material_pauta_nico/fecha_pauta)
+// en vez de un registro de pautas_barrios.json, y un distintivo visual propio (naranja,
+// no choca con el verde/gris de Activo/Inactivo de FilaPauta) para que se note que es
+// una fuente distinta. fecha_pauta se muestra tal cual la trae el archivo (formatearFecha
+// devuelve el string sin tocar si no matchea el prefijo YYYY-MM-DD, ver lib/formatearFecha.js
+// — hay valores tipo "26-08 al 15-09" en el archivo real, no siempre ISO).
+const FilaPautaMesaCapital = ({ obra }) => (
+  <div style={{ padding: '10px 12px', backgroundColor: '#FFF3E0', border: '1px solid #FFB74D55', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{obra.nombre_obra || '(sin nombre)'}</div>
+      <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '5px', backgroundColor: '#EF6C0022', color: '#E65100', whiteSpace: 'nowrap' }}>Mesa de Capital</span>
+    </div>
+    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Fecha de pauta: {formatearFecha(obra.fecha_pauta)}</div>
+    <div style={{ fontSize: '11px' }}>
+      {esURLValida(obra.entrega_material_pauta_nico)
+        ? <a href={obra.entrega_material_pauta_nico} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver material →</a>
+        : <span style={{ color: 'var(--text-secondary)' }}>{obra.entrega_material_pauta_nico}</span>}
+    </div>
+  </div>
+);
 
 // Bucket `toda_capital` de pautas_barrios.json (esquema campañas 2026): campañas
 // genéricas de alcance Capital-completa (ej. "Córdoba Capital"/"Provincia de Córdoba"),
@@ -1235,15 +1283,33 @@ const BloqueAlcanceCapital = ({ pautasBarriosData }) => {
 
 // Mismo cruce normalizado que ya usa buscarPautaCircuito, pero directo por barrio (sin
 // pasar por circuito_principal).
-const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData }) => {
+const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData, obrasEnriquecidas }) => {
   const pautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
+  // Parte 3: las obras de Mesa de Capital de este barrio van SIEMPRE primero, antes de
+  // cualquier pauta de pautas_barrios.json (activa o inactiva) — y entre ellas, si hay
+  // más de una, ordenadas por fecha_pauta descendente. fecha_pauta no siempre es ISO
+  // parseable (ver esObraPautaMesaCapital) — las no parseables quedan al final del grupo
+  // Mesa de Capital, en el orden en que vinieron, en vez de reventar el sort.
+  const obrasMesaCapital = useMemo(() => {
+    const arr = obrasPautaMesaCapitalDeBarrio(obrasEnriquecidas, nombreBarrio);
+    return [...arr].sort((a, b) => {
+      const fa = parsearFechaISOPauta(a.fecha_pauta);
+      const fb = parsearFechaISOPauta(b.fecha_pauta);
+      if (fa && fb) return fb - fa;
+      if (fa) return -1;
+      if (fb) return 1;
+      return 0;
+    });
+  }, [obrasEnriquecidas, nombreBarrio]);
+
   return (
     <div>
       <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Pauta publicitaria</h4>
-      {pautas.length === 0 ? (
+      {pautas.length === 0 && obrasMesaCapital.length === 0 ? (
         <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin pauta registrada para este barrio.</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {obrasMesaCapital.map((o, i) => <FilaPautaMesaCapital key={o.id_registro ?? i} obra={o} />)}
           {pautas.map((p, i) => <FilaPauta key={p.fila_origen ?? i} pauta={p} />)}
         </div>
       )}
@@ -2311,6 +2377,7 @@ const VistaObras = ({
   // Planificación de comunicación (Etapa 3) — mismo criterio de "lifted a Home" que
   // el resto de los filtros/orden de Vista Obras (ver comentario arriba del componente).
   comBusqueda, setComBusqueda, comFiltroAptoDifusion, setComFiltroAptoDifusion, comFiltroEstadoRelevamiento, setComFiltroEstadoRelevamiento, comFiltroPrioridad, setComFiltroPrioridad,
+  comFiltroEnvioComunicacion, setComFiltroEnvioComunicacion,
   comModo, setComModo, comAnio, setComAnio, comMes, setComMes,
 }) => {
   // Una fila por id_obra único, no por id_registro (ver comentario de idObraDeRegistro).
@@ -2343,8 +2410,20 @@ const VistaObras = ({
         fechaDisponibleInaugurar: principal.fecha_disponible_inaugurar || null,
         fechaRodaje: principal.fecha_rodaje || null,
         fechaRelevamiento: principal.fecha_relevamiento || null,
-        entregaMaterialPautaLink: principal.entrega_material_pauta_link || null,
         fechaPauta: principal.fecha_pauta || null,
+        // Campos nuevos de obras_capital.json (actualización con envio_comunicacion_
+        // relevamiento/comentarios_relevamiento_territorial/estado_produccion_piezas/
+        // entrega_material_pauta_nico) — mismo criterio "una fila por id_obra" de acá
+        // arriba. Reseña usa `descripcion` (el prompt la pedía como breve_resena, pero
+        // el campo real en el archivo sigue siendo descripcion — mismo que ya consume
+        // ModalObra). "Estado relevamiento" como filtro ya existía (estadoRelevamiento,
+        // arriba) — el archivo no trae un campo `relevamiento` separado.
+        tipoObra: principal.tipo_obra || null,
+        resenaObra: principal.descripcion || null,
+        comentariosRelevamientoTerritorial: principal.comentarios_relevamiento_territorial || null,
+        estadoProduccionPiezas: principal.estado_produccion_piezas || null,
+        entregaMaterialPautaNico: principal.entrega_material_pauta_nico || null,
+        envioComunicacionRelevamiento: principal.envio_comunicacion_relevamiento || null,
       };
     });
   }, [obrasData]);
@@ -2524,6 +2603,7 @@ const VistaObras = ({
           filtroAptoDifusion={comFiltroAptoDifusion} setFiltroAptoDifusion={setComFiltroAptoDifusion}
           filtroEstadoRelevamiento={comFiltroEstadoRelevamiento} setFiltroEstadoRelevamiento={setComFiltroEstadoRelevamiento}
           filtroPrioridad={comFiltroPrioridad} setFiltroPrioridad={setComFiltroPrioridad}
+          filtroEnvioComunicacion={comFiltroEnvioComunicacion} setFiltroEnvioComunicacion={setComFiltroEnvioComunicacion}
           modo={comModo} setModo={setComModo}
           anio={comAnio} setAnio={setComAnio}
           mes={comMes} setMes={setComMes}
@@ -2726,20 +2806,23 @@ const FichaObra = ({ idObra, obrasEnriquecidas, onClose, onIrABarrio, onIrACircu
           </SeccionFicha>
         )}
 
-        {(principal.estado_relevamiento || principal.fecha_relevamiento || principal.observaciones_relevamiento || principal.fecha_rodaje || principal.apto_difusion || principal.entrega_material_pauta_link || principal.fecha_pauta) && (
+        {(principal.estado_relevamiento || principal.fecha_relevamiento || principal.observaciones_relevamiento || principal.fecha_rodaje || principal.apto_difusion || principal.entrega_material_pauta_nico || principal.fecha_pauta || principal.comentarios_relevamiento_territorial || principal.estado_produccion_piezas || principal.envio_comunicacion_relevamiento) && (
           <SeccionFicha titulo="Comunicación">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <FilaDetalleObra label="Estado de relevamiento" valor={principal.estado_relevamiento?.trim()} />
               <FilaDetalleObra label="Fecha de relevamiento" valor={principal.fecha_relevamiento ? formatearFecha(principal.fecha_relevamiento) : null} />
               <FilaDetalleObra label="Observaciones de relevamiento" valor={principal.observaciones_relevamiento} />
+              <FilaDetalleObra label="Comentarios s/relevamiento territorial" valor={principal.comentarios_relevamiento_territorial} />
+              <FilaDetalleObra label="Envío a Comunicación p/relevamiento" valor={principal.envio_comunicacion_relevamiento} />
               <FilaDetalleObra label="Fecha de rodaje" valor={principal.fecha_rodaje ? formatearFecha(principal.fecha_rodaje) : null} />
               <FilaDetalleObra label="Apto para difusión" valor={principal.apto_difusion} />
+              <FilaDetalleObra label="Estado producción de piezas" valor={principal.estado_produccion_piezas} />
               <FilaDetalleObra
                 label="Material de pauta"
-                valor={principal.entrega_material_pauta_link
-                  ? (esURLValida(principal.entrega_material_pauta_link)
-                    ? <a href={principal.entrega_material_pauta_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver material →</a>
-                    : principal.entrega_material_pauta_link)
+                valor={principal.entrega_material_pauta_nico
+                  ? (esURLValida(principal.entrega_material_pauta_nico)
+                    ? <a href={principal.entrega_material_pauta_nico} target="_blank" rel="noopener noreferrer" style={{ color: '#1976D2' }}>Ver material →</a>
+                    : principal.entrega_material_pauta_nico)
                   : null}
               />
               <FilaDetalleObra label="Fecha de pauta" valor={principal.fecha_pauta ? formatearFecha(principal.fecha_pauta) : null} />
@@ -2841,11 +2924,15 @@ const BadgeComunicacionObra = ({ texto, color }) => (
 const SolapaComunicacionObras = ({
   obrasUnicas, onSelectObra, busqueda, setBusqueda,
   filtroAptoDifusion, setFiltroAptoDifusion, filtroEstadoRelevamiento, setFiltroEstadoRelevamiento, filtroPrioridad, setFiltroPrioridad,
+  filtroEnvioComunicacion, setFiltroEnvioComunicacion,
   modo, setModo, anio, setAnio, mes, setMes,
 }) => {
   const opcionesAptoDifusion = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.aptoDifusion).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
   const opcionesEstadoRelevamiento = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.estadoRelevamiento).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
   const opcionesPrioridad = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.prioridad).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
+  // Filtro nuevo (Envío a Comunicación p/relevamiento) — mismo criterio que el resto:
+  // opciones derivadas de los datos reales, no hardcodeadas.
+  const opcionesEnvioComunicacion = useMemo(() => Array.from(new Set(obrasUnicas.map((g) => g.envioComunicacionRelevamiento).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es')), [obrasUnicas]);
 
   // Mismos filtros para tabla y calendario: si una obra queda afuera acá, no aparece
   // en ninguno de los dos modos (Etapa 3 del prompt, Paso 2) — el buscador de texto
@@ -2858,12 +2945,13 @@ const SolapaComunicacionObras = ({
       if (filtroAptoDifusion && g.aptoDifusion !== filtroAptoDifusion) return false;
       if (filtroEstadoRelevamiento && g.estadoRelevamiento !== filtroEstadoRelevamiento) return false;
       if (filtroPrioridad && g.prioridad !== filtroPrioridad) return false;
+      if (filtroEnvioComunicacion && g.envioComunicacionRelevamiento !== filtroEnvioComunicacion) return false;
       return true;
     });
-  }, [obrasUnicas, busqueda, filtroAptoDifusion, filtroEstadoRelevamiento, filtroPrioridad]);
+  }, [obrasUnicas, busqueda, filtroAptoDifusion, filtroEstadoRelevamiento, filtroPrioridad, filtroEnvioComunicacion]);
 
-  const hayFiltros = !!(busqueda || filtroAptoDifusion || filtroEstadoRelevamiento || filtroPrioridad);
-  const limpiarFiltros = () => { setBusqueda(''); setFiltroAptoDifusion(''); setFiltroEstadoRelevamiento(''); setFiltroPrioridad(''); };
+  const hayFiltros = !!(busqueda || filtroAptoDifusion || filtroEstadoRelevamiento || filtroPrioridad || filtroEnvioComunicacion);
+  const limpiarFiltros = () => { setBusqueda(''); setFiltroAptoDifusion(''); setFiltroEstadoRelevamiento(''); setFiltroPrioridad(''); setFiltroEnvioComunicacion(''); };
 
   // Orden por defecto (Etapa 3, Paso 3): apto_difusion === 'Sí' primero, después por
   // fecha_disponible_inaugurar ascendente (más próximas arriba); sin esa fecha, al final.
@@ -2954,6 +3042,10 @@ const SolapaComunicacionObras = ({
             <option value="">Prioridad (todas)</option>
             {opcionesPrioridad.map((v) => <option key={v} value={v}>{v}</option>)}
           </select>
+          <select value={filtroEnvioComunicacion} onChange={(e) => setFiltroEnvioComunicacion(e.target.value)} style={estiloSelect}>
+            <option value="">Envío a Comunicación p/relevamiento (todos)</option>
+            {opcionesEnvioComunicacion.map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
         </div>
       </div>
 
@@ -2962,16 +3054,24 @@ const SolapaComunicacionObras = ({
           {/* overflowX: 8 columnas desbordan en tablet — scroll horizontal acá adentro
               en vez de romper el layout de la página. */}
           <div style={{ maxHeight: '500px', overflow: 'auto' }}>
-            <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '12px' }}>
+            {/* 12 columnas ahora (eran 8) — sigue siendo un scroll horizontal dentro de
+                este contenedor, mismo criterio de "en vez de romper el layout de la
+                página" del comentario original; minWidth subido a la par de las
+                columnas nuevas. */}
+            <table style={{ width: '100%', minWidth: '1500px', borderCollapse: 'collapse', fontSize: '12px' }}>
               <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg-secondary)' }}>
                 <tr>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Obra</th>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Barrio</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Tipo de obra</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', minWidth: '220px' }}>Reseña</th>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Apto difusión</th>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Estado de relevamiento</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)', minWidth: '200px' }}>Comentarios s/relevamiento territorial</th>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Disp. inaugurar</th>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Rodaje</th>
-                  <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Pauta</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Estado producción piezas</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 500, color: 'var(--text-tertiary)' }}>Entrega material pauta Nico</th>
                   <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, color: 'var(--text-tertiary)' }}>Fecha pauta</th>
                 </tr>
               </thead>
@@ -2986,22 +3086,26 @@ const SolapaComunicacionObras = ({
                   >
                     <td style={{ padding: '10px 14px' }}>{g.nombreObra}</td>
                     <td style={{ padding: '10px 14px' }}><CeldaBarrioCircuitoObra grupo={g} /></td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.tipoObra || '—'}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.resenaObra || '—'}</td>
                     <td style={{ padding: '10px 14px' }}>{g.aptoDifusion ? <BadgeComunicacionObra texto={g.aptoDifusion} color={COLOR_APTO_DIFUSION_OBRA[g.aptoDifusion] || '#78909C'} /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
                     <td style={{ padding: '10px 14px' }}>{g.estadoRelevamiento ? <BadgeComunicacionObra texto={g.estadoRelevamiento} color={COLOR_ESTADO_RELEVAMIENTO_OBRA[g.estadoRelevamiento] || '#78909C'} /> : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.comentariosRelevamientoTerritorial || '—'}</td>
                     <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaDisponibleInaugurar ? formatearFecha(g.fechaDisponibleInaugurar) : '—'}</td>
                     <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaRodaje ? formatearFecha(g.fechaRodaje) : '—'}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.estadoProduccionPiezas || '—'}</td>
                     <td style={{ padding: '10px 14px', textAlign: 'center' }}>
-                      {g.entregaMaterialPautaLink ? (
-                        esURLValida(g.entregaMaterialPautaLink)
-                          ? <a href={g.entregaMaterialPautaLink} target="_blank" rel="noopener noreferrer" title="Ver material de pauta" onClick={(e) => e.stopPropagation()} style={{ fontSize: '14px', textDecoration: 'none' }}>🔗</a>
-                          : <span title={g.entregaMaterialPautaLink} style={{ color: 'var(--text-tertiary)' }}>🔗</span>
+                      {g.entregaMaterialPautaNico ? (
+                        esURLValida(g.entregaMaterialPautaNico)
+                          ? <a href={g.entregaMaterialPautaNico} target="_blank" rel="noopener noreferrer" title="Ver material de pauta" onClick={(e) => e.stopPropagation()} style={{ fontSize: '14px', textDecoration: 'none' }}>🔗</a>
+                          : <span title={g.entregaMaterialPautaNico} style={{ color: 'var(--text-tertiary)' }}>🔗</span>
                       ) : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}
                     </td>
                     <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{g.fechaPauta ? formatearFecha(g.fechaPauta) : '—'}</td>
                   </tr>
                 ))}
                 {obrasOrdenadas.length === 0 && (
-                  <tr><td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>{busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}</td></tr>
+                  <tr><td colSpan={12} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>{busqueda ? `Sin resultados para "${busqueda}".` : 'Ninguna obra coincide con los filtros elegidos.'}</td></tr>
                 )}
               </tbody>
             </table>
@@ -3726,7 +3830,7 @@ const DetalleEventoCobertura = ({ evento }) => {
       <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.inicio)} → {formatearFecha(evento.detalle.fin)}</div>
       <div style={{ color: 'var(--text-secondary)' }}>
         {etiquetas.alcance}: {m.alcance_o_visualizaciones != null ? m.alcance_o_visualizaciones.toLocaleString() : 's/d'}
-        {m.frecuencia != null && ` · Frecuencia: ${m.frecuencia.toFixed(2)}`}
+        {m.frecuencia != null && ` · Frecuencia: ${typeof m.frecuencia === 'number' ? m.frecuencia.toFixed(2) : m.frecuencia}`}
       </div>
     </>
   );
@@ -4084,7 +4188,7 @@ function htmlPautaPDF(pautasSinFiltrar) {
       <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
       <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
       <td class="text-right">${et.alcance}: ${htmlMetricaPauta(m.alcance_o_visualizaciones)}</td>
-      <td class="text-right">${m.frecuencia != null ? m.frecuencia.toFixed(2) : 's/d'}</td>
+      <td class="text-right">${m.frecuencia != null ? (typeof m.frecuencia === 'number' ? m.frecuencia.toFixed(2) : m.frecuencia) : 's/d'}</td>
       <td class="text-right">${htmlMetricaPauta(m.inversion, '$')}</td>
       <td>${htmlMaterialPauta(p.material)}</td>
     </tr>`;
@@ -4833,6 +4937,7 @@ export default function Home() {
   const [vistaObrasComFiltroAptoDifusion, setVistaObrasComFiltroAptoDifusion] = useState('');
   const [vistaObrasComFiltroEstadoRelevamiento, setVistaObrasComFiltroEstadoRelevamiento] = useState('');
   const [vistaObrasComFiltroPrioridad, setVistaObrasComFiltroPrioridad] = useState('');
+  const [vistaObrasComFiltroEnvioComunicacion, setVistaObrasComFiltroEnvioComunicacion] = useState('');
   const [vistaObrasComModo, setVistaObrasComModo] = useState('tabla'); // 'tabla' | 'calendario'
   const [vistaObrasComAnio, setVistaObrasComAnio] = useState(() => new Date().getFullYear());
   const [vistaObrasComMes, setVistaObrasComMes] = useState(() => new Date().getMonth());
@@ -5347,6 +5452,7 @@ export default function Home() {
                       comFiltroAptoDifusion={vistaObrasComFiltroAptoDifusion} setComFiltroAptoDifusion={setVistaObrasComFiltroAptoDifusion}
                       comFiltroEstadoRelevamiento={vistaObrasComFiltroEstadoRelevamiento} setComFiltroEstadoRelevamiento={setVistaObrasComFiltroEstadoRelevamiento}
                       comFiltroPrioridad={vistaObrasComFiltroPrioridad} setComFiltroPrioridad={setVistaObrasComFiltroPrioridad}
+                      comFiltroEnvioComunicacion={vistaObrasComFiltroEnvioComunicacion} setComFiltroEnvioComunicacion={setVistaObrasComFiltroEnvioComunicacion}
                       comModo={vistaObrasComModo} setComModo={setVistaObrasComModo}
                       comAnio={vistaObrasComAnio} setComAnio={setVistaObrasComAnio}
                       comMes={vistaObrasComMes} setComMes={setVistaObrasComMes}
@@ -5366,6 +5472,16 @@ export default function Home() {
                             {barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)].tipo_barrio === 'BarrioOficial' ? 'Barrio oficial' : 'Barrio no oficial'}
                           </p>
                         </div>
+                        {/* Parte 2: badge "PAUTA ACTIVA" + acceso directo a la solapa Pauta — mismo
+                            criterio de vigencia que estadoPautaBarrio/pautaEstaVigente (map/badges),
+                            combinado en Mesa de Capital vía tienePautaActivaBarrio. Clickeable (mismo
+                            patrón que el chip "📊 Tiene encuesta" del header de circuito, más abajo):
+                            hace de badge Y de "Ir a Pauta" a la vez, en vez de dos controles separados. */}
+                        {tienePautaActivaBarrio(barrioSeleccionado, pautasBarriosData, obrasEnriquecidas) && (
+                          <span onClick={() => setSolapaActivaBarrio('pauta')} title="Ir a la solapa Pauta" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', backgroundColor: '#2E7D3218', color: '#2E7D32', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            ● PAUTA ACTIVA
+                          </span>
+                        )}
                       </div>
                       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
                         {solapasBarrio.map(s => <button key={s.key} onClick={() => setSolapaActivaBarrio(s.key)} style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', backgroundColor: solapaActivaBarrio === s.key ? '#1976D2' : 'transparent', color: solapaActivaBarrio === s.key ? '#fff' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>{s.label}</button>)}
@@ -5390,7 +5506,7 @@ export default function Home() {
                         )}
                         {solapaActivaBarrio === 'territorio' && <SolapaTerritorioBarrio nombreBarrio={barrioSeleccionado} barriosGeoData={barriosGeoData} onSelectBarrioFicha={irABarrioDesdeTerritorio} />}
                         {solapaActivaBarrio === 'visitas' && <SolapaVisitasBarrio nombreBarrio={barrioSeleccionado} recorridosLookup={recorridosLookup} />}
-                        {solapaActivaBarrio === 'pauta' && <SolapaPautaBarrio nombreBarrio={barrioSeleccionado} pautasBarriosData={pautasBarriosData} />}
+                        {solapaActivaBarrio === 'pauta' && <SolapaPautaBarrio nombreBarrio={barrioSeleccionado} pautasBarriosData={pautasBarriosData} obrasEnriquecidas={obrasEnriquecidas} />}
                         {solapaActivaBarrio === 'escuelas' && <SolapaEscuelasBarrio nombreBarrio={barrioSeleccionado} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPct={votosEscuelasBarrioData?.promedio_capital_pct} />}
                         {solapaActivaBarrio === 'obras' && <SolapaObrasBarrio nombreBarrio={barrioSeleccionado} obrasEnriquecidas={obrasEnriquecidas} barriosGeoData={barriosGeoData} onSelectObra={setObraSeleccionada} />}
                       </div>
