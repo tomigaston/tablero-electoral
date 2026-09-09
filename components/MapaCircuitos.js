@@ -229,14 +229,12 @@ function BotonVerBarrioEnPauta({ nombreBarrio, onVerBarrioEnPauta }) {
   );
 }
 
-// Botón equivalente a BotonVerBarrioEnPauta, para el popup de las estrellas de Alcance
-// Capital (pautaCapitalMarkers, ancladas por circuito, no por barrio — ver comentario de
-// esa capa). Antes este popup no tenía ningún botón (en ningún estado, activo o no —
-// ver diagnóstico del punto 1 del prompt: la percepción de "solo aparece en inactiva" era
-// en realidad "nunca aparece en Alcance Capital", coincidencia de qué estrellas se
-// clickearon). Navega a la ficha del circuito, solapa Territorio — ahí es donde vive
-// BloqueAlcanceCapital (mismas piezas, ver SolapaTerritorio en pages/index.js), no hay
-// solapa Pauta propia a nivel circuito.
+// Botón "Ver en solapa Territorio" del popup de estrella de Alcance Capital: mismo
+// patrón que BotonVerBarrioEnPauta (cierra el popup antes de navegar), pero apunta a la
+// ficha de CIRCUITO — a diferencia del marker de pauta por barrio, acá no hay solapa
+// Pauta propia de circuito (vive fusionada dentro de Territorio, ver BloqueAlcanceCapital
+// en pages/index.js), así que el label dice "Territorio" en vez de "Pauta" para no
+// prometer una solapa que no existe.
 function BotonVerCircuitoEnPauta({ circuitoKey, onVerCircuitoEnPauta }) {
   const map = useMap();
   if (!onVerCircuitoEnPauta) return null;
@@ -252,7 +250,7 @@ function BotonVerCircuitoEnPauta({ circuitoKey, onVerCircuitoEnPauta }) {
         fontSize: '11px', fontWeight: 600, cursor: 'pointer',
       }}
     >
-      Ver en ficha del circuito
+      Ver en solapa Territorio
     </button>
   );
 }

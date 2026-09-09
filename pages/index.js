@@ -766,7 +766,7 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
 const SolapaTerritorio = ({
   circuito, datos, barrios, todosLosDatos, onSelectCircuito,
   barriosGeoLookup, recorridosLookup, pautasBarriosData, obrasEnriquecidas, votosEscuelasBarrioLookup,
-  onSelectBarrioFicha,
+  onSelectBarrioFicha, onSelectBarrioFichaPauta,
   circuitosGeoJsonData, obrasFoco, onSelectObra, votosEscuelasCircuitoData,
 }) => {
   const mapkey = datos?.Mapkey;
@@ -865,6 +865,18 @@ const SolapaTerritorio = ({
           <BloqueAlcanceCapital pautasBarriosData={pautasBarriosData} />
         </div>
       </div>
+
+      {/* Cobertura de pauta ESPECÍFICA de barrio (pautas_barrios.json.barrios u obras Mesa
+          de Capital), a diferencia de BloqueAlcanceCapital arriba (pauta genérica
+          toda_capital) — bloque separado a propósito, no se mezclan (ver comentario de
+          BloqueCoberturaPautaBarrios). Usa barriosVisibles, no barriosCircuito crudo:
+          mismo universo que ya filtra la tabla de arriba. */}
+      <BloqueCoberturaPautaBarrios
+        barrios={barriosVisibles}
+        pautasBarriosData={pautasBarriosData}
+        obrasEnriquecidas={obrasEnriquecidas}
+        onSelectBarrioFicha={onSelectBarrioFichaPauta}
+      />
 
       <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Obras</h4>
@@ -1274,9 +1286,61 @@ const BloqueAlcanceCapital = ({ pautasBarriosData }) => {
   );
 };
 
+// Cobertura de pauta ESPECÍFICA de barrio, agregada a nivel circuito (solapa Territorio,
+// SolapaTerritorio) — a diferencia de BloqueAlcanceCapital (pauta genérica toda_capital,
+// la misma lista para todos), éste resume, barrio por barrio, si tiene pauta propia
+// activa: pautas_barrios.json.barrios O al menos una obra Mesa de Capital activa (mismo
+// criterio que tienePautaActivaBarrio, ya usado para el badge de Resumen de barrio y para
+// BadgeEstadoPauta en la tabla "Barrios del circuito" de más arriba — no se reinventa el
+// cálculo). Colapsado por default, mismo patrón visual/interacción que BloqueAlcanceCapital
+// (acordeón con header + flecha) para consistencia, pero con su propio contador X/Y en el
+// header en vez de un simple "(N)": X = barrios con pauta activa, Y = total de barrios
+// listados (recibe `barrios` ya filtrado por el caller — SolapaTerritorio pasa
+// barriosVisibles, mismo universo que la tabla de arriba, no barriosCircuito crudo).
+const BloqueCoberturaPautaBarrios = ({ barrios, pautasBarriosData, obrasEnriquecidas, onSelectBarrioFicha }) => {
+  const [abierto, setAbierto] = useState(false);
+  if (!barrios || barrios.length === 0) return null;
+  const filas = barrios.map(b => {
+    const nombreBarrio = b.nombre || b;
+    return { nombreBarrio, activa: tienePautaActivaBarrio(nombreBarrio, pautasBarriosData, obrasEnriquecidas) };
+  });
+  const conPauta = filas.filter(f => f.activa).length;
+  return (
+    <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
+      <button
+        onClick={() => setAbierto(a => !a)}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', backgroundColor: 'var(--bg-primary)', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
+      >
+        <span>Cobertura de pauta por barrio: {conPauta}/{filas.length}</span>
+        <span style={{ fontSize: '10px', transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▾</span>
+      </button>
+      {abierto && (
+        <div style={{ padding: '4px 14px 10px', borderTop: '1px solid var(--border)', backgroundColor: 'var(--bg-primary)' }}>
+          {/* Cuenta pauta de Mesa de Capital además de pautas_barrios.json — por eso un
+              barrio puede aparecer con pauta acá aunque la columna "Pauta" de la tabla de
+              arriba (calcularCoberturaBarrio, solo pautas_barrios.json) muestre "—". */}
+          <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '2px 0 8px' }}>Incluye pauta de barrio propia y de Mesa de Capital (no la de Alcance Capital, ver bloque de arriba).</p>
+          {filas.map((f, i) => (
+            <div
+              key={i}
+              onClick={() => onSelectBarrioFicha && onSelectBarrioFicha(f.nombreBarrio)}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 4px', cursor: onSelectBarrioFicha ? 'pointer' : 'default', borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0, backgroundColor: f.activa ? '#2E7D32' : '#BDBDBD' }} />
+              <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{f.nombreBarrio}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Mismo cruce normalizado que ya usa buscarPautaCircuito, pero directo por barrio (sin
 // pasar por circuito_principal).
-const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData, obrasEnriquecidas }) => {
+const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData, obrasEnriquecidas, origenCircuito, onVolverACircuito }) => {
   const pautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
   // Parte 3: las obras de Mesa de Capital de este barrio van SIEMPRE primero, antes de
   // cualquier pauta de pautas_barrios.json (activa o inactiva) — y entre ellas, si hay
@@ -1297,6 +1361,20 @@ const SolapaPautaBarrio = ({ nombreBarrio, pautasBarriosData, obrasEnriquecidas 
 
   return (
     <div>
+      {/* Punto 4: solo aparece si se llegó acá desde "Cobertura de pauta por barrio"
+          (BloqueCoberturaPautaBarrios, solapa Territorio del circuito de origen) — ver
+          origenCoberturaPautaCircuito en pages/index.js. No hay patrón de "volver"
+          reusable en el tablero (investigado antes de agregar esto): el resto de los
+          botones "← Volver" son genéricos, a la vista de mapa. Éste es el único
+          contextual, así que vive acotado a este flujo puntual en vez de generalizarse. */}
+      {origenCircuito && (
+        <button
+          onClick={() => onVolverACircuito && onVolverACircuito(origenCircuito.CircuitoKey)}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: 0, marginBottom: '14px', border: 'none', background: 'none', fontSize: '12px', color: '#1976D2', fontWeight: 500, cursor: 'pointer' }}
+        >
+          ← Volver a barrios de {origenCircuito.CircuitoKey} - {origenCircuito.cirn_nom}
+        </button>
+      )}
       <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Pauta publicitaria</h4>
       {pautas.length === 0 && obrasMesaCapital.length === 0 ? (
         <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin pauta registrada para este barrio.</div>
@@ -4795,6 +4873,17 @@ export default function Home() {
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
   const [panelTab, setPanelTab] = useState('circuito');
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
+  // CircuitoKey de origen cuando se llega a la solapa Pauta de un barrio desde el bloque
+  // "Cobertura de pauta por barrio" (SolapaTerritorio de un circuito) — null en cualquier
+  // otro camino. No se reusa circuitoSeleccionado como "origen" porque ese estado se pisa
+  // en flujos no relacionados (ej. handleSelectBarrioDesdeBusqueda le asigna el circuito
+  // PRINCIPAL del barrio buscado, no el circuito real de partida), así que no sirve como
+  // breadcrumb confiable — investigado antes de construir esto (ver prompt del punto 4).
+  // Se limpia en cualquier otra vía de navegación (handleSelectCircuito, handleSelectBarrio,
+  // handleSelectBarrioDesdeBusqueda, handleMapClick) y se fija recién DESPUÉS de esas
+  // llamadas en irABarrioDesdeCoberturaPauta, mismo truco de orden que ya usa el archivo
+  // para pisar solapaActiva (ver irACircuitoDesdeGrillaMedicion).
+  const [origenCoberturaPautaCircuito, setOrigenCoberturaPautaCircuito] = useState(null);
   const [obraSeleccionada, setObraSeleccionada] = useState(null); // obra (enriquecida) para ModalObra, o null
   // FichaObra (Vista Obras, Etapa 2): id_obra a mostrar, o null. Filtros/orden/pestaña
   // de Vista Obras lifted acá (no locales al componente) para que sobrevivan a
@@ -4982,6 +5071,7 @@ export default function Home() {
     setSolapaActiva('resumen');
     setSolapaActivaBarrio('resumen');
     setRondaFechaSolicitada(null); // idem: solo irACircuitoDesdeGrillaMedicion pide una ronda puntual, y la pisa después de llamar acá
+    setOrigenCoberturaPautaCircuito(null); // idem: solo irABarrioDesdeCoberturaPauta lo fija, y lo hace después de llamar acá
     const d = datos.find(x => x.CircuitoKey === c);
     const clave = d ? `${d.Mapkey} - ${d.cirn_nom}` : null;
     const lista = clave ? cruceData?.circuito_to_barrios?.[clave] : null;
@@ -4999,7 +5089,7 @@ export default function Home() {
   // "solapa" es opcional (default 'resumen', mismo criterio que onVerFicha para circuito
   // en la línea de abajo) — permite pedir que la ficha de barrio aterrice en una solapa
   // puntual (ver irABarrioDesdeMapaPauta) sin romper los callers existentes.
-  const handleSelectBarrio = (nombre, solapa) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio(solapa || 'resumen'); };
+  const handleSelectBarrio = (nombre, solapa) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio(solapa || 'resumen'); setOrigenCoberturaPautaCircuito(null); };
 
   // Selección de barrio desde el buscador: a diferencia de "Otros barrios en este circuito"
   // (que mantiene el circuito activo sin tocarlo), acá no hay circuito activo relevante que
@@ -5011,6 +5101,7 @@ export default function Home() {
     setPanelTab('barrio');
     setFiltroCategoria(null);
     setSolapaActivaBarrio('resumen');
+    setOrigenCoberturaPautaCircuito(null); // idem handleSelectBarrio: no pasa por ahí, mismo reset
 
     const circuitoRecord = resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, datos);
     setCircuitoSeleccionado(circuitoRecord ? circuitoRecord.CircuitoKey : null);
@@ -5026,6 +5117,7 @@ export default function Home() {
     setSolapaActiva('resumen');
     setSolapaActivaBarrio('resumen');
     setRondaFechaSolicitada(null); // no pasa por handleSelectCircuito — mismo reset, evita arrastrar una ronda pedida para el circuito anterior
+    setOrigenCoberturaPautaCircuito(null); // idem: no pasa por handleSelectCircuito/handleSelectBarrio, mismo reset
   };
 
   // Click en una celda de la grilla de cobertura: selecciona el circuito y vuelve
@@ -5062,6 +5154,22 @@ export default function Home() {
     setVistaFicha('barrio');
   };
 
+  // Click en una fila de "Cobertura de pauta por barrio" (BloqueCoberturaPautaBarrios,
+  // solapa Territorio de la ficha de circuito): mismo patrón que irABarrioDesdeTerritorio
+  // (selección no geográfica de barrio + apertura de ficha completa), pero pidiendo
+  // directo la solapa Pauta en vez del default Resumen — mismo criterio que
+  // irABarrioDesdeMapaPauta (MapaCircuitos), acá disparado desde el bloque nuevo en vez
+  // del popup del mapa. Guarda el circuito de origen (capturado ANTES de llamar a
+  // handleSelectBarrio, que lo limpia) para el link "← Volver a barrios de [circuito]" de
+  // SolapaPautaBarrio — se fija DESPUÉS de handleSelectBarrio, mismo orden que ya usa el
+  // archivo para pisar solapaActiva (ver irACircuitoDesdeGrillaMedicion).
+  const irABarrioDesdeCoberturaPauta = (nombreBarrio) => {
+    const circuitoOrigen = circuitoSeleccionado;
+    handleSelectBarrio(nombreBarrio, 'pauta');
+    setVistaFicha('barrio');
+    setOrigenCoberturaPautaCircuito(circuitoOrigen);
+  };
+
   // Click en un chip de circuito de FichaObra (Vista Obras, Etapa 2 — navegación
   // cruzada): recibe el Mapkey (ej. "007D"), no el CircuitoKey que espera
   // handleSelectCircuito. Se resuelve buscando el registro de `datos` con ese Mapkey y
@@ -5082,15 +5190,17 @@ export default function Home() {
     setVistaFicha('barrio');
   };
 
-  // Click en "Ver en ficha del circuito" del popup de estrella de Alcance Capital
-  // (MapaCircuitos, pautaCapitalMarkers) — no hay solapa Pauta a nivel circuito (esa
-  // capa aplica por igual a los 119, sin barrio puntual), así que en vez de abrir una
-  // solapa Pauta que no existe, va a Territorio, donde vive BloqueAlcanceCapital (mismas
-  // piezas, ver SolapaTerritorio).
+  // Click en "Ver en solapa Territorio" del popup de estrella de Alcance Capital
+  // (MapaCircuitos): mismo patrón que irACircuitoDesdeListadoEncuestas (ficha completa +
+  // pisar solapaActiva), pero a Territorio en vez de Encuestas — ahí es donde vive
+  // BloqueAlcanceCapital, no hay solapa Pauta propia de circuito. setObrasFoco('propio')
+  // por el mismo motivo que el click directo en la solapa Territorio (línea del array
+  // `solapas` más abajo): aterrizar siempre en la sección de obras propias del circuito.
   const irACircuitoDesdeMapaPauta = (circuitoKey) => {
     handleSelectCircuito(circuitoKey);
     setVistaFicha('circuito');
     setSolapaActiva('territorio');
+    setObrasFoco('propio');
   };
 
   // Click en un evento de tipo Medición (tabla de cobertura, BarraCobertura): mismo
@@ -5394,7 +5504,15 @@ export default function Home() {
                         )}
                         {solapaActivaBarrio === 'territorio' && <SolapaTerritorioBarrio nombreBarrio={barrioSeleccionado} barriosGeoData={barriosGeoData} onSelectBarrioFicha={irABarrioDesdeTerritorio} />}
                         {solapaActivaBarrio === 'visitas' && <SolapaVisitasBarrio nombreBarrio={barrioSeleccionado} recorridosLookup={recorridosLookup} />}
-                        {solapaActivaBarrio === 'pauta' && <SolapaPautaBarrio nombreBarrio={barrioSeleccionado} pautasBarriosData={pautasBarriosData} obrasEnriquecidas={obrasEnriquecidas} />}
+                        {solapaActivaBarrio === 'pauta' && (
+                          <SolapaPautaBarrio
+                            nombreBarrio={barrioSeleccionado}
+                            pautasBarriosData={pautasBarriosData}
+                            obrasEnriquecidas={obrasEnriquecidas}
+                            origenCircuito={origenCoberturaPautaCircuito != null ? datos.find(d => d.CircuitoKey === origenCoberturaPautaCircuito) : null}
+                            onVolverACircuito={irACircuitoDesdeMapaPauta}
+                          />
+                        )}
                         {solapaActivaBarrio === 'escuelas' && <SolapaEscuelasBarrio nombreBarrio={barrioSeleccionado} votosEscuelasBarrioLookup={votosEscuelasBarrioLookup} promedioCapitalPct={votosEscuelasBarrioData?.promedio_capital_pct} />}
                         {solapaActivaBarrio === 'obras' && <SolapaObrasBarrio nombreBarrio={barrioSeleccionado} obrasEnriquecidas={obrasEnriquecidas} barriosGeoData={barriosGeoData} onSelectObra={setObraSeleccionada} />}
                       </div>
@@ -5448,6 +5566,7 @@ export default function Home() {
                           obrasEnriquecidas={obrasEnriquecidas}
                           votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
                           onSelectBarrioFicha={irABarrioDesdeTerritorio}
+                          onSelectBarrioFichaPauta={irABarrioDesdeCoberturaPauta}
                           circuitosGeoJsonData={circuitosGeoJsonData}
                           obrasFoco={obrasFoco}
                           onSelectObra={setObraSeleccionada}
