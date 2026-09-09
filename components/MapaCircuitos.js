@@ -220,6 +220,32 @@ function BotonVerBarrioEnPauta({ nombreBarrio, onVerBarrioEnPauta }) {
   );
 }
 
+// Botón "Ver en solapa Territorio" del popup de estrella de Alcance Capital: mismo
+// patrón que BotonVerBarrioEnPauta (cierra el popup antes de navegar), pero apunta a la
+// ficha de CIRCUITO — a diferencia del marker de pauta por barrio, acá no hay solapa
+// Pauta propia de circuito (vive fusionada dentro de Territorio, ver BloqueAlcanceCapital
+// en pages/index.js), así que el label dice "Territorio" en vez de "Pauta" para no
+// prometer una solapa que no existe.
+function BotonVerCircuitoEnPauta({ circuitoKey, onVerCircuitoEnPauta }) {
+  const map = useMap();
+  if (!onVerCircuitoEnPauta) return null;
+  return (
+    <button
+      onClick={() => {
+        map.closePopup();
+        onVerCircuitoEnPauta(circuitoKey);
+      }}
+      style={{
+        marginTop: '10px', width: '100%', padding: '6px 10px', borderRadius: '6px',
+        border: 'none', backgroundColor: COLOR_PAUTA, color: '#fff',
+        fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+      }}
+    >
+      Ver en solapa Territorio
+    </button>
+  );
+}
+
 // Detecta con turf, en un único click de mapa, qué circuito y qué barrio contienen
 // el punto clickeado (booleanPointInPolygon), sin importar cuál capa esté arriba
 // visualmente ni cuál esté tildada en el panel de Capas.
@@ -249,7 +275,7 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, cruceData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, cruceData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta, onVerCircuitoEnPauta }) {
   const geoJsonRef = useRef(null);
 
   const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, pauta: false, escuelas: false });
@@ -769,6 +795,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                   {m.pautas.length > 2 && (
                     <div style={{ fontSize: '10px', color: '#999', marginTop: '6px' }}>+{m.pautas.length - 2} más</div>
                   )}
+                  <BotonVerCircuitoEnPauta circuitoKey={m.circuitoKey} onVerCircuitoEnPauta={onVerCircuitoEnPauta} />
                 </div>
               </Popup>
             </Marker>

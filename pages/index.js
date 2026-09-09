@@ -773,7 +773,7 @@ const SolapaPartidos = ({ circuito, datos, partidos }) => {
 const SolapaTerritorio = ({
   circuito, datos, barrios, todosLosDatos, onSelectCircuito,
   barriosGeoLookup, recorridosLookup, pautasBarriosData, obrasEnriquecidas, votosEscuelasBarrioLookup,
-  onSelectBarrioFicha,
+  onSelectBarrioFicha, onSelectBarrioFichaPauta,
   circuitosGeoJsonData, obrasFoco, onSelectObra, votosEscuelasCircuitoData,
 }) => {
   const mapkey = datos?.Mapkey;
@@ -872,6 +872,18 @@ const SolapaTerritorio = ({
           <BloqueAlcanceCapital pautasBarriosData={pautasBarriosData} />
         </div>
       </div>
+
+      {/* Cobertura de pauta ESPECÍFICA de barrio (pautas_barrios.json.barrios u obras Mesa
+          de Capital), a diferencia de BloqueAlcanceCapital arriba (pauta genérica
+          toda_capital) — bloque separado a propósito, no se mezclan (ver comentario de
+          BloqueCoberturaPautaBarrios). Usa barriosVisibles, no barriosCircuito crudo:
+          mismo universo que ya filtra la tabla de arriba. */}
+      <BloqueCoberturaPautaBarrios
+        barrios={barriosVisibles}
+        pautasBarriosData={pautasBarriosData}
+        obrasEnriquecidas={obrasEnriquecidas}
+        onSelectBarrioFicha={onSelectBarrioFichaPauta}
+      />
 
       <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Obras</h4>
@@ -1275,6 +1287,58 @@ const BloqueAlcanceCapital = ({ pautasBarriosData }) => {
         <div style={{ padding: '12px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 4px' }}>Campañas de alcance Capital-completa (sin barrio ni circuito puntual) — aplican por igual en toda la ciudad.</p>
           {pautas.map((p, i) => <FilaPauta key={p.fila_origen ?? i} pauta={p} />)}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Cobertura de pauta ESPECÍFICA de barrio, agregada a nivel circuito (solapa Territorio,
+// SolapaTerritorio) — a diferencia de BloqueAlcanceCapital (pauta genérica toda_capital,
+// la misma lista para todos), éste resume, barrio por barrio, si tiene pauta propia
+// activa: pautas_barrios.json.barrios O al menos una obra Mesa de Capital activa (mismo
+// criterio que tienePautaActivaBarrio, ya usado para el badge de Resumen de barrio y para
+// BadgeEstadoPauta en la tabla "Barrios del circuito" de más arriba — no se reinventa el
+// cálculo). Colapsado por default, mismo patrón visual/interacción que BloqueAlcanceCapital
+// (acordeón con header + flecha) para consistencia, pero con su propio contador X/Y en el
+// header en vez de un simple "(N)": X = barrios con pauta activa, Y = total de barrios
+// listados (recibe `barrios` ya filtrado por el caller — SolapaTerritorio pasa
+// barriosVisibles, mismo universo que la tabla de arriba, no barriosCircuito crudo).
+const BloqueCoberturaPautaBarrios = ({ barrios, pautasBarriosData, obrasEnriquecidas, onSelectBarrioFicha }) => {
+  const [abierto, setAbierto] = useState(false);
+  if (!barrios || barrios.length === 0) return null;
+  const filas = barrios.map(b => {
+    const nombreBarrio = b.nombre || b;
+    return { nombreBarrio, activa: tienePautaActivaBarrio(nombreBarrio, pautasBarriosData, obrasEnriquecidas) };
+  });
+  const conPauta = filas.filter(f => f.activa).length;
+  return (
+    <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
+      <button
+        onClick={() => setAbierto(a => !a)}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', backgroundColor: 'var(--bg-primary)', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
+      >
+        <span>Cobertura de pauta por barrio: {conPauta}/{filas.length}</span>
+        <span style={{ fontSize: '10px', transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▾</span>
+      </button>
+      {abierto && (
+        <div style={{ padding: '4px 14px 10px', borderTop: '1px solid var(--border)', backgroundColor: 'var(--bg-primary)' }}>
+          {/* Cuenta pauta de Mesa de Capital además de pautas_barrios.json — por eso un
+              barrio puede aparecer con pauta acá aunque la columna "Pauta" de la tabla de
+              arriba (calcularCoberturaBarrio, solo pautas_barrios.json) muestre "—". */}
+          <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '2px 0 8px' }}>Incluye pauta de barrio propia y de Mesa de Capital (no la de Alcance Capital, ver bloque de arriba).</p>
+          {filas.map((f, i) => (
+            <div
+              key={i}
+              onClick={() => onSelectBarrioFicha && onSelectBarrioFicha(f.nombreBarrio)}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 4px', cursor: onSelectBarrioFicha ? 'pointer' : 'default', borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0, backgroundColor: f.activa ? '#2E7D32' : '#BDBDBD' }} />
+              <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{f.nombreBarrio}</span>
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -5183,6 +5247,17 @@ export default function Home() {
     setVistaFicha('barrio');
   };
 
+  // Click en una fila de "Cobertura de pauta por barrio" (BloqueCoberturaPautaBarrios,
+  // solapa Territorio de la ficha de circuito): mismo patrón que irABarrioDesdeTerritorio
+  // (selección no geográfica de barrio + apertura de ficha completa), pero pidiendo
+  // directo la solapa Pauta en vez del default Resumen — mismo criterio que
+  // irABarrioDesdeMapaPauta (MapaCircuitos), acá disparado desde el bloque nuevo en vez
+  // del popup del mapa.
+  const irABarrioDesdeCoberturaPauta = (nombreBarrio) => {
+    handleSelectBarrio(nombreBarrio, 'pauta');
+    setVistaFicha('barrio');
+  };
+
   // Click en un chip de circuito de FichaObra (Vista Obras, Etapa 2 — navegación
   // cruzada): recibe el Mapkey (ej. "007D"), no el CircuitoKey que espera
   // handleSelectCircuito. Se resuelve buscando el registro de `datos` con ese Mapkey y
@@ -5201,6 +5276,19 @@ export default function Home() {
   const irABarrioDesdeMapaPauta = (nombreBarrio) => {
     handleSelectBarrio(nombreBarrio, 'pauta');
     setVistaFicha('barrio');
+  };
+
+  // Click en "Ver en solapa Territorio" del popup de estrella de Alcance Capital
+  // (MapaCircuitos): mismo patrón que irACircuitoDesdeListadoEncuestas (ficha completa +
+  // pisar solapaActiva), pero a Territorio en vez de Encuestas — ahí es donde vive
+  // BloqueAlcanceCapital, no hay solapa Pauta propia de circuito. setObrasFoco('propio')
+  // por el mismo motivo que el click directo en la solapa Territorio (línea del array
+  // `solapas` más abajo): aterrizar siempre en la sección de obras propias del circuito.
+  const irACircuitoDesdeMapaPauta = (circuitoKey) => {
+    handleSelectCircuito(circuitoKey);
+    setVistaFicha('circuito');
+    setSolapaActiva('territorio');
+    setObrasFoco('propio');
   };
 
   // Click en un evento de tipo Medición (tabla de cobertura, BarraCobertura): mismo
@@ -5560,6 +5648,7 @@ export default function Home() {
                           obrasEnriquecidas={obrasEnriquecidas}
                           votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}
                           onSelectBarrioFicha={irABarrioDesdeTerritorio}
+                          onSelectBarrioFichaPauta={irABarrioDesdeCoberturaPauta}
                           circuitosGeoJsonData={circuitosGeoJsonData}
                           obrasFoco={obrasFoco}
                           onSelectObra={setObraSeleccionada}
@@ -5589,7 +5678,7 @@ export default function Home() {
 
               <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} onVerCircuitoEnPauta={irACircuitoDesdeMapaPauta} />
                 </div>
               </div>
             </>
@@ -5597,7 +5686,7 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} onVerCircuitoEnPauta={irACircuitoDesdeMapaPauta} />
                 </div>
               </div>
 
