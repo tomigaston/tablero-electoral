@@ -696,7 +696,7 @@
   },
   "10H": {
     "nombre_circuito": "10H",
-    "cantidad_rondas": 2,
+    "cantidad_rondas": 3,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -794,26 +794,29 @@
             "Otro": 19
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 26.2,
+            "Muy buena": 11.9,
+            "Buena": 14.3,
             "Regular": 7.1,
-            "Negativa": 26.2,
-            "Ns/Nc": 40.5
+            "Mala": 26.2,
+            "No se": 40.5
           },
           "Funcionamiento CPC": {
-            "Positiva": 38.1,
+            "Muy buena": 11.9,
+            "Buena": 26.2,
             "Regular": 23.8,
-            "Negativa": 19,
-            "Ns/Nc": 19
+            "Mala": 19,
+            "No se": 19
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 64.3,
             "No": 35.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 21.4,
+            "Muy buena": 11.9,
+            "Buena": 9.5,
             "Regular": 7.1,
-            "Negativa": 19,
-            "Ns/Nc": 52.4
+            "Mala": 19,
+            "No se": 52.4
           },
           "Mejoras en bacheos": {
             "Si, mucho": 11.9,
@@ -836,22 +839,25 @@
             "No": 40.5
           },
           "Gestión del Intendente": {
-            "Positiva": 26.2,
+            "Muy buena": 14.3,
+            "Buena": 11.9,
             "Regular": 38.1,
-            "Negativa": 26.2,
-            "Ns/Nc": 9.5
+            "Mala": 26.2,
+            "No se": 9.5
           },
           "Gestión del Gobernador": {
-            "Positiva": 45.5,
+            "Muy buena": 19.3,
+            "Buena": 26.2,
             "Regular": 19,
-            "Negativa": 33.1,
-            "Ns/Nc": 2.4
+            "Mala": 33.1,
+            "No se": 2.4
           },
           "Gestión del Presidente": {
-            "Positiva": 23.8,
+            "Muy buena": 7.1,
+            "Buena": 16.7,
             "Regular": 9.5,
-            "Negativa": 66.7,
-            "Ns/Nc": 0
+            "Mala": 66.7,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 45.2,
@@ -872,6 +878,142 @@
           "Reelección Milei": {
             "Si": 28.6,
             "No": 71.4
+          }
+        }
+      },
+      {
+        "fecha": "2026-09-02",
+        "casos": 42,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 11.9,
+            "Estado de las calles": 19,
+            "Iluminación de las calles": 23.8,
+            "Iluminación de espacios públicos": 0,
+            "Falta de pavimento": 4.8,
+            "Falta de cloacas": 19,
+            "Falta de agua potable": 0,
+            "Seguridad": 59.5,
+            "Transporte urbano": 9.5,
+            "Otro": 23.8
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 30.9,
+            "Regular": 21.4,
+            "Negativa": 14.3,
+            "Ns/Nc": 33.3
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 40.5,
+            "Regular": 21.4,
+            "Negativa": 16.7,
+            "Ns/Nc": 21.4
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 59.5,
+            "No": 40.5
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 30.9,
+            "Regular": 14.3,
+            "Negativa": 9.5,
+            "Ns/Nc": 45.2
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 2.4,
+            "Si, algo": 40.5,
+            "No": 57.1
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 9.5,
+            "Si, algo": 57.1,
+            "No": 33.3
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 7.1,
+            "Si, algo": 40.5,
+            "No": 52.4
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 42.9,
+            "Si, algo": 33.3,
+            "No": 23.8
+          },
+          "Gestión del Intendente": {
+            "Positiva": 26.2,
+            "Regular": 33.3,
+            "Negativa": 38.1,
+            "Ns/Nc": 2.4
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 26.4,
+            "Regular": 31,
+            "Negativa": 42.6,
+            "Ns/Nc": 0
+          },
+          "Gestión del Presidente": {
+            "Positiva": 23.8,
+            "Regular": 31,
+            "Negativa": 45.2,
+            "Ns/Nc": 0
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 47.6,
+            "Desapruebo": 52.4
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 40.7,
+            "Desapruebo": 59.3
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 26.2,
+            "Desapruebo": 73.8
+          },
+          "Reelección Llaryora": {
+            "Si": 36,
+            "No": 64
+          },
+          "Reelección Milei": {
+            "Si": 66.7,
+            "No": 33.3
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 21.7,
+            "Luis Juez": 11.9,
+            "Gabriel Bornoroni": 2.4,
+            "Rodrigo De Loredo": 28.6,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 11.9,
+            "Otro": 23.6
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 21.7,
+            "Gabriel Bornoroni": 16.7,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 11.9,
+            "Otro": 49.7
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 24,
+            "Luis Juez": 23.8,
+            "Agustin Spaccesi": 2.4,
+            "Liliana Olivero": 9.5,
+            "Otro": 40.3
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 19.3,
+            "Rodrigo De Loredo": 33.3,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 9.5,
+            "Otro": 37.9
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 19,
+            "Luis Juez": 14.3,
+            "Gabriel Bornoroni": 9.5,
+            "Rodrigo De Loredo": 28.6,
+            "Agustin Spaccesi": 4.8,
+            "Liliana Olivero": 23.8
           }
         }
       }
@@ -1232,7 +1374,7 @@
   },
   "10L": {
     "nombre_circuito": "10L",
-    "cantidad_rondas": 3,
+    "cantidad_rondas": 2,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -1314,216 +1456,138 @@
         }
       },
       {
-        "fecha": "2026-07-15",
-        "casos": null,
+        "fecha": "2026-09-02",
+        "casos": 55,
         "preguntas": {
           "Problemas principales": {
-            "Recolección de residuos": 9.8,
-            "Estado de las calles": 70.7,
-            "Iluminación de las calles": 22,
+            "Recolección de residuos": 10.9,
+            "Estado de las calles": 67.3,
+            "Iluminación de las calles": 23.6,
             "Iluminación de espacios públicos": 0,
-            "Falta de pavimento": 9.8,
+            "Falta de pavimento": 18.2,
             "Falta de cloacas": 7.3,
-            "Falta de agua potable": 2.4,
-            "Seguridad": 36.6,
-            "Transporte urbano": 9.8,
-            "Otro": 12.2
-          },
-          "Funcionamiento Centro Vecinal": {
-            "Positiva": 14.7,
-            "Regular": 31.7,
-            "Negativa": 26.8,
-            "Ns/Nc": 26.8
-          },
-          "Funcionamiento CPC": {
-            "Positiva": 24.4,
-            "Regular": 34.1,
-            "Negativa": 26.8,
-            "Ns/Nc": 14.6
-          },
-          "Cordobeses en Alerta (existencia)": {
-            "Si": 14.6,
-            "No": 85.4
-          },
-          "Calificación Cordobeses en Alerta": {
-            "Positiva": 7.3,
-            "Regular": 14.6,
-            "Negativa": 12.2,
-            "Ns/Nc": 65.9
-          },
-          "Gestión del Intendente": {
-            "Positiva": 2.4,
-            "Regular": 39,
-            "Negativa": 53.7,
-            "Ns/Nc": 4.9
-          },
-          "Gestión del Gobernador": {
-            "Positiva": 14.8,
-            "Regular": 41.5,
-            "Negativa": 38.9,
-            "Ns/Nc": 4.9
-          },
-          "Gestión del Presidente": {
-            "Positiva": 34.2,
-            "Regular": 22,
-            "Negativa": 41.5,
-            "Ns/Nc": 2.4
-          },
-          "Aprobación Intendente": {
-            "Apruebo": 22,
-            "Desapruebo": 78
-          },
-          "Aprobación Gobernador": {
-            "Apruebo": 29.4,
-            "Desapruebo": 70.6
-          },
-          "Aprobación Presidente": {
-            "Apruebo": 46.3,
-            "Desapruebo": 53.7
-          },
-          "Reelección Llaryora": {
-            "Si": 27,
-            "No": 73
-          },
-          "Reelección Milei": {
-            "Si": 43.9,
-            "No": 56.1
-          }
-        }
-      },
-      {
-        "fecha": "2026-08-12",
-        "casos": 60,
-        "preguntas": {
-          "Problemas principales": {
-            "Recolección de residuos": 15,
-            "Estado de las calles": 55,
-            "Iluminación de las calles": 21.7,
-            "Iluminación de espacios públicos": 1.7,
-            "Falta de pavimento": 18.3,
-            "Falta de cloacas": 8.3,
             "Falta de agua potable": 0,
-            "Seguridad": 43.3,
-            "Transporte urbano": 5,
-            "Otro": 15
+            "Seguridad": 47.3,
+            "Transporte urbano": 7.3,
+            "Otro": 12.7
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 23.3,
-            "Regular": 18.3,
-            "Negativa": 31.7,
-            "Ns/Nc": 26.7
+            "Positiva": 29.1,
+            "Regular": 21.8,
+            "Negativa": 27.3,
+            "Ns/Nc": 21.8
           },
           "Funcionamiento CPC": {
-            "Positiva": 35,
-            "Regular": 25,
-            "Negativa": 23.3,
-            "Ns/Nc": 16.7
+            "Positiva": 30.9,
+            "Regular": 34.5,
+            "Negativa": 23.6,
+            "Ns/Nc": 10.9
           },
           "Cordobeses en Alerta (existencia)": {
-            "Si": 11.7,
-            "No": 88.3
+            "Si": 16.4,
+            "No": 83.6
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 11.7,
-            "Regular": 11.7,
-            "Negativa": 11.7,
-            "Ns/Nc": 65
+            "Positiva": 10.9,
+            "Regular": 9.1,
+            "Negativa": 18.2,
+            "Ns/Nc": 61.8
           },
           "Mejoras en bacheos": {
-            "Si, mucho": 15,
-            "Si, algo": 18.3,
-            "No": 66.7
+            "Si, mucho": 10.9,
+            "Si, algo": 16.4,
+            "No": 72.7
           },
           "Mejoras en alumbrado público": {
-            "Si, mucho": 20,
-            "Si, algo": 36.7,
-            "No": 43.3
+            "Si, mucho": 9.1,
+            "Si, algo": 43.6,
+            "No": 47.3
           },
           "Mejoras en espacios públicos": {
-            "Si, mucho": 13.3,
-            "Si, algo": 46.7,
-            "No": 40
+            "Si, mucho": 5.5,
+            "Si, algo": 43.6,
+            "No": 50.9
           },
           "Mejoras en ordenamiento naranjitas y limpiavidrios": {
-            "Si, mucho": 31.7,
-            "Si, algo": 18.3,
-            "No": 50
+            "Si, mucho": 21.8,
+            "Si, algo": 30.9,
+            "No": 47.3
           },
           "Gestión del Intendente": {
-            "Positiva": 21.7,
-            "Regular": 20,
-            "Negativa": 50,
-            "Ns/Nc": 8.3
+            "Positiva": 18.2,
+            "Regular": 27.3,
+            "Negativa": 54.5,
+            "Ns/Nc": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 30,
-            "Regular": 16.7,
-            "Negativa": 48.3,
-            "Ns/Nc": 5
+            "Positiva": 26.8,
+            "Regular": 27.3,
+            "Negativa": 45.9,
+            "Ns/Nc": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 48.3,
-            "Regular": 11.7,
-            "Negativa": 36.7,
-            "Ns/Nc": 3.3
+            "Positiva": 34.5,
+            "Regular": 23.6,
+            "Negativa": 41.8,
+            "Ns/Nc": 0
           },
           "Aprobación Intendente": {
-            "Apruebo": 28.3,
-            "Desapruebo": 71.7
+            "Apruebo": 30.9,
+            "Desapruebo": 69.1
           },
           "Aprobación Gobernador": {
-            "Apruebo": 35,
-            "Desapruebo": 65
+            "Apruebo": 39.5,
+            "Desapruebo": 60.5
           },
           "Aprobación Presidente": {
-            "Apruebo": 53.3,
-            "Desapruebo": 46.7
+            "Apruebo": 43.6,
+            "Desapruebo": 56.4
           },
           "Reelección Llaryora": {
-            "Si": 33.3,
-            "No": 66.7
+            "Si": 32.3,
+            "No": 67.7
           },
           "Reelección Milei": {
-            "Si": 53.3,
-            "No": 46.7
+            "Si": 52.7,
+            "No": 47.3
           },
           "Intención voto Gobernador - Todos los candidatos": {
-            "Martín Llaryora": 25,
-            "Luis Juez": 11.7,
-            "Gabriel Bornoroni": 5,
-            "Rodrigo De Loredo": 16.7,
-            "Agustin Spaccesi": 1.7,
-            "Liliana Olivero": 3.3,
-            "Otro": 36.6
+            "Martín Llaryora": 19.6,
+            "Luis Juez": 10.9,
+            "Gabriel Bornoroni": 3.6,
+            "Rodrigo De Loredo": 16.4,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 3.6,
+            "Otro": 45.9
           },
           "Intención voto Gobernador - Llaryora vs Bornoroni": {
-            "Martín Llaryora": 28.3,
-            "Gabriel Bornoroni": 8.3,
-            "Agustin Spaccesi": 3.3,
-            "Liliana Olivero": 3.3,
-            "Otro": 56.8
+            "Martín Llaryora": 23.2,
+            "Gabriel Bornoroni": 10.9,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 3.6,
+            "Otro": 62.3
           },
           "Intención voto Gobernador - Llaryora vs Juez": {
-            "Martín Llaryora": 30.1,
-            "Luis Juez": 18.3,
-            "Agustin Spaccesi": 3.3,
-            "Liliana Olivero": 3.3,
-            "Otro": 45
+            "Martín Llaryora": 21.4,
+            "Luis Juez": 18.2,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 3.6,
+            "Otro": 56.8
           },
           "Intención voto Gobernador - Llaryora vs De Loredo": {
-            "Martín Llaryora": 30,
-            "Rodrigo De Loredo": 13.3,
-            "Agustin Spaccesi": 6.7,
-            "Liliana Olivero": 3.3,
-            "Otro": 46.7
+            "Martín Llaryora": 21.4,
+            "Rodrigo De Loredo": 18.2,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 3.6,
+            "Otro": 56.8
           },
           "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
-            "Martín Llaryora": 25,
-            "Luis Juez": 16.7,
-            "Gabriel Bornoroni": 10,
-            "Rodrigo De Loredo": 21.7,
-            "Agustin Spaccesi": 3.3,
-            "Liliana Olivero": 23.3
+            "Martín Llaryora": 25.5,
+            "Luis Juez": 20,
+            "Gabriel Bornoroni": 5.5,
+            "Rodrigo De Loredo": 29.1,
+            "Agustin Spaccesi": 7.3,
+            "Liliana Olivero": 12.7
           }
         }
       }
@@ -1714,26 +1778,29 @@
             "Otro": 7.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 35.7,
+            "Muy buena": 28.6,
+            "Buena": 7.1,
             "Regular": 21.4,
-            "Negativa": 42.9,
-            "Ns/Nc": 0
+            "Mala": 42.9,
+            "No se": 0
           },
           "Funcionamiento CPC": {
-            "Positiva": 28.5,
+            "Muy buena": 7.1,
+            "Buena": 21.4,
             "Regular": 35.7,
-            "Negativa": 28.6,
-            "Ns/Nc": 7.1
+            "Mala": 28.6,
+            "No se": 7.1
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 14.3,
             "No": 85.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 14.2,
+            "Muy buena": 7.1,
+            "Buena": 7.1,
             "Regular": 7.1,
-            "Negativa": 21.4,
-            "Ns/Nc": 57.1
+            "Mala": 21.4,
+            "No se": 57.1
           },
           "Mejoras en bacheos": {
             "Si, mucho": 14.3,
@@ -1756,22 +1823,25 @@
             "No": 50
           },
           "Gestión del Intendente": {
-            "Positiva": 35.7,
+            "Muy buena": 21.4,
+            "Buena": 14.3,
             "Regular": 14.3,
-            "Negativa": 50,
-            "Ns/Nc": 0
+            "Mala": 50,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 40.7,
+            "Muy buena": 26.4,
+            "Buena": 14.3,
             "Regular": 21.4,
-            "Negativa": 37.9,
-            "Ns/Nc": 0
+            "Mala": 37.9,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 50,
+            "Muy buena": 7.1,
+            "Buena": 42.9,
             "Regular": 42.9,
-            "Negativa": 7.1,
-            "Ns/Nc": 0
+            "Mala": 7.1,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 35.7,
@@ -1989,8 +2059,8 @@
   },
   "11C": {
     "nombre_circuito": "11C",
-    "cantidad_rondas": 2,
-    "tiene_comparativo": true,
+    "cantidad_rondas": 1,
+    "tiene_comparativo": false,
     "rondas": [
       {
         "fecha": "2026-04-21",
@@ -2069,149 +2139,13 @@
             "No": 46.7
           }
         }
-      },
-      {
-        "fecha": "2026-08-12",
-        "casos": 53,
-        "preguntas": {
-          "Problemas principales": {
-            "Recolección de residuos": 5.7,
-            "Estado de las calles": 28.3,
-            "Iluminación de las calles": 15.1,
-            "Iluminación de espacios públicos": 13.2,
-            "Falta de pavimento": 5.7,
-            "Falta de cloacas": 45.3,
-            "Falta de agua potable": 0,
-            "Seguridad": 49.1,
-            "Transporte urbano": 0,
-            "Otro": 11.3
-          },
-          "Funcionamiento Centro Vecinal": {
-            "Positiva": 33.9,
-            "Regular": 15.1,
-            "Negativa": 18.9,
-            "Ns/Nc": 32.1
-          },
-          "Funcionamiento CPC": {
-            "Positiva": 49.1,
-            "Regular": 24.5,
-            "Negativa": 5.7,
-            "Ns/Nc": 20.8
-          },
-          "Cordobeses en Alerta (existencia)": {
-            "Si": 71.7,
-            "No": 28.3
-          },
-          "Calificación Cordobeses en Alerta": {
-            "Positiva": 45.3,
-            "Regular": 17,
-            "Negativa": 7.5,
-            "Ns/Nc": 30.2
-          },
-          "Mejoras en bacheos": {
-            "Si, mucho": 7.5,
-            "Si, algo": 35.8,
-            "No": 56.6
-          },
-          "Mejoras en alumbrado público": {
-            "Si, mucho": 26.4,
-            "Si, algo": 43.4,
-            "No": 30.2
-          },
-          "Mejoras en espacios públicos": {
-            "Si, mucho": 20.8,
-            "Si, algo": 50.9,
-            "No": 28.3
-          },
-          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
-            "Si, mucho": 34,
-            "Si, algo": 26.4,
-            "No": 39.6
-          },
-          "Gestión del Intendente": {
-            "Positiva": 39.6,
-            "Regular": 22.6,
-            "Negativa": 35.8,
-            "Ns/Nc": 1.9
-          },
-          "Gestión del Gobernador": {
-            "Positiva": 46.5,
-            "Regular": 22.6,
-            "Negativa": 29,
-            "Ns/Nc": 1.9
-          },
-          "Gestión del Presidente": {
-            "Positiva": 35.8,
-            "Regular": 30.2,
-            "Negativa": 32.1,
-            "Ns/Nc": 1.9
-          },
-          "Aprobación Intendente": {
-            "Apruebo": 50.9,
-            "Desapruebo": 49.1
-          },
-          "Aprobación Gobernador": {
-            "Apruebo": 57.8,
-            "Desapruebo": 42.2
-          },
-          "Aprobación Presidente": {
-            "Apruebo": 52.8,
-            "Desapruebo": 47.2
-          },
-          "Reelección Llaryora": {
-            "Si": 48.4,
-            "No": 51.6
-          },
-          "Reelección Milei": {
-            "Si": 41.5,
-            "No": 58.5
-          },
-          "Intención voto Gobernador - Todos los candidatos": {
-            "Martín Llaryora": 46.5,
-            "Luis Juez": 5.7,
-            "Gabriel Bornoroni": 1.9,
-            "Rodrigo De Loredo": 13.2,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 1.9,
-            "Otro": 30.8
-          },
-          "Intención voto Gobernador - Llaryora vs Bornoroni": {
-            "Martín Llaryora": 44.6,
-            "Gabriel Bornoroni": 7.5,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 5.7,
-            "Otro": 42.2
-          },
-          "Intención voto Gobernador - Llaryora vs Juez": {
-            "Martín Llaryora": 44.6,
-            "Luis Juez": 15.1,
-            "Agustin Spaccesi": 1.9,
-            "Liliana Olivero": 5.7,
-            "Otro": 32.7
-          },
-          "Intención voto Gobernador - Llaryora vs De Loredo": {
-            "Martín Llaryora": 44.6,
-            "Rodrigo De Loredo": 17,
-            "Agustin Spaccesi": 1.9,
-            "Liliana Olivero": 3.8,
-            "Otro": 32.7
-          },
-          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
-            "Martín Llaryora": 47.2,
-            "Luis Juez": 20.8,
-            "Gabriel Bornoroni": 5.7,
-            "Rodrigo De Loredo": 17,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 9.4
-          }
-        }
       }
     ]
   },
   "11D": {
     "nombre_circuito": "11D",
-    "cantidad_rondas": 2,
-    "tiene_comparativo": true,
+    "cantidad_rondas": 1,
+    "tiene_comparativo": false,
     "rondas": [
       {
         "fecha": "2026-07-19",
@@ -2310,148 +2244,12 @@
             "No": 44.2
           }
         }
-      },
-      {
-        "fecha": "2026-08-12",
-        "casos": 32,
-        "preguntas": {
-          "Problemas principales": {
-            "Recolección de residuos": 6.3,
-            "Estado de las calles": 31.3,
-            "Iluminación de las calles": 43.8,
-            "Iluminación de espacios públicos": 3.1,
-            "Falta de pavimento": 12.5,
-            "Falta de cloacas": 6.3,
-            "Falta de agua potable": 0,
-            "Seguridad": 56.3,
-            "Transporte urbano": 6.3,
-            "Otro": 9.4
-          },
-          "Funcionamiento Centro Vecinal": {
-            "Positiva": 25,
-            "Regular": 12.5,
-            "Negativa": 28.1,
-            "Ns/Nc": 34.4
-          },
-          "Funcionamiento CPC": {
-            "Positiva": 31.2,
-            "Regular": 34.4,
-            "Negativa": 15.6,
-            "Ns/Nc": 18.8
-          },
-          "Cordobeses en Alerta (existencia)": {
-            "Si": 65.6,
-            "No": 34.4
-          },
-          "Calificación Cordobeses en Alerta": {
-            "Positiva": 34.4,
-            "Regular": 9.4,
-            "Negativa": 15.6,
-            "Ns/Nc": 40.6
-          },
-          "Mejoras en bacheos": {
-            "Si, mucho": 3.1,
-            "Si, algo": 18.8,
-            "No": 78.1
-          },
-          "Mejoras en alumbrado público": {
-            "Si, mucho": 6.3,
-            "Si, algo": 37.5,
-            "No": 56.3
-          },
-          "Mejoras en espacios públicos": {
-            "Si, mucho": 9.4,
-            "Si, algo": 53.1,
-            "No": 37.5
-          },
-          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
-            "Si, mucho": 31.3,
-            "Si, algo": 21.9,
-            "No": 46.9
-          },
-          "Gestión del Intendente": {
-            "Positiva": 15.7,
-            "Regular": 28.1,
-            "Negativa": 56.3,
-            "Ns/Nc": 0
-          },
-          "Gestión del Gobernador": {
-            "Positiva": 30,
-            "Regular": 25,
-            "Negativa": 45,
-            "Ns/Nc": 0
-          },
-          "Gestión del Presidente": {
-            "Positiva": 40.6,
-            "Regular": 15.6,
-            "Negativa": 43.8,
-            "Ns/Nc": 0
-          },
-          "Aprobación Intendente": {
-            "Apruebo": 31.3,
-            "Desapruebo": 68.8
-          },
-          "Aprobación Gobernador": {
-            "Apruebo": 42.5,
-            "Desapruebo": 57.5
-          },
-          "Aprobación Presidente": {
-            "Apruebo": 46.9,
-            "Desapruebo": 53.1
-          },
-          "Reelección Llaryora": {
-            "Si": 36.3,
-            "No": 63.7
-          },
-          "Reelección Milei": {
-            "Si": 46.9,
-            "No": 53.1
-          },
-          "Intención voto Gobernador - Todos los candidatos": {
-            "Martín Llaryora": 23.8,
-            "Luis Juez": 6.3,
-            "Gabriel Bornoroni": 18.8,
-            "Rodrigo De Loredo": 18.8,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 32.3
-          },
-          "Intención voto Gobernador - Llaryora vs Bornoroni": {
-            "Martín Llaryora": 23.8,
-            "Gabriel Bornoroni": 25,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 51.2
-          },
-          "Intención voto Gobernador - Llaryora vs Juez": {
-            "Martín Llaryora": 30,
-            "Luis Juez": 18.8,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 51.2
-          },
-          "Intención voto Gobernador - Llaryora vs De Loredo": {
-            "Martín Llaryora": 30,
-            "Rodrigo De Loredo": 34.4,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 35.6
-          },
-          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
-            "Martín Llaryora": 25,
-            "Luis Juez": 12.5,
-            "Gabriel Bornoroni": 25,
-            "Rodrigo De Loredo": 31.3,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 6.3
-          }
-        }
       }
     ]
   },
   "11E": {
     "nombre_circuito": "11E",
-    "cantidad_rondas": 3,
+    "cantidad_rondas": 2,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -2609,142 +2407,6 @@
             "Ns/Nc": 0
           }
         }
-      },
-      {
-        "fecha": "2026-08-12",
-        "casos": 63,
-        "preguntas": {
-          "Problemas principales": {
-            "Recolección de residuos": 4.8,
-            "Estado de las calles": 33.3,
-            "Iluminación de las calles": 11.1,
-            "Iluminación de espacios públicos": 0,
-            "Falta de pavimento": 17.5,
-            "Falta de cloacas": 34.9,
-            "Falta de agua potable": 1.6,
-            "Seguridad": 68.3,
-            "Transporte urbano": 1.6,
-            "Otro": 11.1
-          },
-          "Funcionamiento Centro Vecinal": {
-            "Positiva": 27,
-            "Regular": 12.7,
-            "Negativa": 49.2,
-            "Ns/Nc": 11.1
-          },
-          "Funcionamiento CPC": {
-            "Positiva": 26.9,
-            "Regular": 34.9,
-            "Negativa": 23.8,
-            "Ns/Nc": 14.3
-          },
-          "Cordobeses en Alerta (existencia)": {
-            "Si": 41.3,
-            "No": 58.7
-          },
-          "Calificación Cordobeses en Alerta": {
-            "Positiva": 15.9,
-            "Regular": 14.3,
-            "Negativa": 15.9,
-            "Ns/Nc": 54
-          },
-          "Mejoras en bacheos": {
-            "Si, mucho": 1.6,
-            "Si, algo": 38.1,
-            "No": 60.3
-          },
-          "Mejoras en alumbrado público": {
-            "Si, mucho": 11.1,
-            "Si, algo": 49.2,
-            "No": 39.7
-          },
-          "Mejoras en espacios públicos": {
-            "Si, mucho": 6.3,
-            "Si, algo": 54,
-            "No": 39.7
-          },
-          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
-            "Si, mucho": 17.5,
-            "Si, algo": 39.7,
-            "No": 42.9
-          },
-          "Gestión del Intendente": {
-            "Positiva": 23.8,
-            "Regular": 23.8,
-            "Negativa": 49.2,
-            "Ns/Nc": 3.2
-          },
-          "Gestión del Gobernador": {
-            "Positiva": 35.1,
-            "Regular": 31.7,
-            "Negativa": 31.6,
-            "Ns/Nc": 1.6
-          },
-          "Gestión del Presidente": {
-            "Positiva": 39.7,
-            "Regular": 25.4,
-            "Negativa": 34.9,
-            "Ns/Nc": 0
-          },
-          "Aprobación Intendente": {
-            "Apruebo": 25.4,
-            "Desapruebo": 74.6
-          },
-          "Aprobación Gobernador": {
-            "Apruebo": 36.7,
-            "Desapruebo": 63.3
-          },
-          "Aprobación Presidente": {
-            "Apruebo": 52.4,
-            "Desapruebo": 47.6
-          },
-          "Reelección Llaryora": {
-            "Si": 38.3,
-            "No": 61.7
-          },
-          "Reelección Milei": {
-            "Si": 52.4,
-            "No": 47.6
-          },
-          "Intención voto Gobernador - Todos los candidatos": {
-            "Martín Llaryora": 22.4,
-            "Luis Juez": 12.7,
-            "Gabriel Bornoroni": 4.8,
-            "Rodrigo De Loredo": 20.6,
-            "Agustin Spaccesi": 1.6,
-            "Liliana Olivero": 4.8,
-            "Otro": 33.1
-          },
-          "Intención voto Gobernador - Llaryora vs Bornoroni": {
-            "Martín Llaryora": 28.8,
-            "Gabriel Bornoroni": 14.3,
-            "Agustin Spaccesi": 4.8,
-            "Liliana Olivero": 4.8,
-            "Otro": 47.3
-          },
-          "Intención voto Gobernador - Llaryora vs Juez": {
-            "Martín Llaryora": 24,
-            "Luis Juez": 22.2,
-            "Agustin Spaccesi": 4.8,
-            "Liliana Olivero": 3.2,
-            "Otro": 45.8
-          },
-          "Intención voto Gobernador - Llaryora vs De Loredo": {
-            "Martín Llaryora": 27.2,
-            "Rodrigo De Loredo": 27,
-            "Agustin Spaccesi": 3.2,
-            "Liliana Olivero": 3.2,
-            "Otro": 39.4
-          },
-          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
-            "Martín Llaryora": 23.8,
-            "Luis Juez": 20.6,
-            "Gabriel Bornoroni": 4.8,
-            "Rodrigo De Loredo": 33.3,
-            "Agustin Spaccesi": 3.2,
-            "Liliana Olivero": 14.3
-          }
-        }
       }
     ]
   },
@@ -2855,7 +2517,7 @@
   },
   "11G": {
     "nombre_circuito": "11G",
-    "cantidad_rondas": 3,
+    "cantidad_rondas": 2,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -3011,142 +2673,6 @@
             "Regular": 22.5,
             "Negativa": 42.5,
             "Ns/Nc": 2.5
-          }
-        }
-      },
-      {
-        "fecha": "2026-08-12",
-        "casos": 24,
-        "preguntas": {
-          "Problemas principales": {
-            "Recolección de residuos": 4.2,
-            "Estado de las calles": 50,
-            "Iluminación de las calles": 25,
-            "Iluminación de espacios públicos": 8.3,
-            "Falta de pavimento": 16.7,
-            "Falta de cloacas": 20.8,
-            "Falta de agua potable": 0,
-            "Seguridad": 45.8,
-            "Transporte urbano": 4.2,
-            "Otro": 8.3
-          },
-          "Funcionamiento Centro Vecinal": {
-            "Positiva": 20.9,
-            "Regular": 12.5,
-            "Negativa": 54.2,
-            "Ns/Nc": 12.5
-          },
-          "Funcionamiento CPC": {
-            "Positiva": 25,
-            "Regular": 41.7,
-            "Negativa": 8.3,
-            "Ns/Nc": 25
-          },
-          "Cordobeses en Alerta (existencia)": {
-            "Si": 25,
-            "No": 75
-          },
-          "Calificación Cordobeses en Alerta": {
-            "Positiva": 12.5,
-            "Regular": 25,
-            "Negativa": 12.5,
-            "Ns/Nc": 50
-          },
-          "Mejoras en bacheos": {
-            "Si, mucho": 12.5,
-            "Si, algo": 12.5,
-            "No": 75
-          },
-          "Mejoras en alumbrado público": {
-            "Si, mucho": 16.7,
-            "Si, algo": 33.3,
-            "No": 50
-          },
-          "Mejoras en espacios públicos": {
-            "Si, mucho": 16.7,
-            "Si, algo": 50,
-            "No": 33.3
-          },
-          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
-            "Si, mucho": 20.8,
-            "Si, algo": 20.8,
-            "No": 58.3
-          },
-          "Gestión del Intendente": {
-            "Positiva": 12.5,
-            "Regular": 33.3,
-            "Negativa": 50,
-            "Ns/Nc": 4.2
-          },
-          "Gestión del Gobernador": {
-            "Positiva": 21.6,
-            "Regular": 41.7,
-            "Negativa": 36.7,
-            "Ns/Nc": 0
-          },
-          "Gestión del Presidente": {
-            "Positiva": 45.9,
-            "Regular": 25,
-            "Negativa": 29.2,
-            "Ns/Nc": 0
-          },
-          "Aprobación Intendente": {
-            "Apruebo": 33.3,
-            "Desapruebo": 66.7
-          },
-          "Aprobación Gobernador": {
-            "Apruebo": 46.7,
-            "Desapruebo": 53.3
-          },
-          "Aprobación Presidente": {
-            "Apruebo": 62.5,
-            "Desapruebo": 37.5
-          },
-          "Reelección Llaryora": {
-            "Si": 42.5,
-            "No": 57.5
-          },
-          "Reelección Milei": {
-            "Si": 58.3,
-            "No": 41.7
-          },
-          "Intención voto Gobernador - Todos los candidatos": {
-            "Martín Llaryora": 21.7,
-            "Luis Juez": 8.3,
-            "Gabriel Bornoroni": 12.5,
-            "Rodrigo De Loredo": 16.7,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 40.8
-          },
-          "Intención voto Gobernador - Llaryora vs Bornoroni": {
-            "Martín Llaryora": 30,
-            "Gabriel Bornoroni": 16.7,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 53.3
-          },
-          "Intención voto Gobernador - Llaryora vs Juez": {
-            "Martín Llaryora": 30,
-            "Luis Juez": 20.8,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 49.2
-          },
-          "Intención voto Gobernador - Llaryora vs De Loredo": {
-            "Martín Llaryora": 30,
-            "Rodrigo De Loredo": 16.7,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 0,
-            "Otro": 53.3
-          },
-          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
-            "Martín Llaryora": 29.2,
-            "Luis Juez": 8.3,
-            "Gabriel Bornoroni": 29.2,
-            "Rodrigo De Loredo": 16.7,
-            "Agustin Spaccesi": 0,
-            "Liliana Olivero": 16.7
           }
         }
       }
@@ -4158,26 +3684,29 @@
             "Otro": 20
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 35,
+            "Muy buena": 10,
+            "Buena": 25,
             "Regular": 15,
-            "Negativa": 40,
-            "Ns/Nc": 10
+            "Mala": 40,
+            "No se": 10
           },
           "Funcionamiento CPC": {
-            "Positiva": 20,
+            "Muy buena": 10,
+            "Buena": 10,
             "Regular": 30,
-            "Negativa": 40,
-            "Ns/Nc": 10
+            "Mala": 40,
+            "No se": 10
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 15,
             "No": 85
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 10,
+            "Muy buena": 10,
+            "Buena": 0,
             "Regular": 0,
-            "Negativa": 20,
-            "Ns/Nc": 70
+            "Mala": 20,
+            "No se": 70
           },
           "Mejoras en bacheos": {
             "Si, mucho": 25,
@@ -4200,22 +3729,25 @@
             "No": 70
           },
           "Gestión del Intendente": {
-            "Positiva": 15,
+            "Muy buena": 10,
+            "Buena": 5,
             "Regular": 30,
-            "Negativa": 55,
-            "Ns/Nc": 0
+            "Mala": 55,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 20,
+            "Muy buena": 15,
+            "Buena": 5,
             "Regular": 25,
-            "Negativa": 55,
-            "Ns/Nc": 0
+            "Mala": 55,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 30,
+            "Muy buena": 0,
+            "Buena": 30,
             "Regular": 10,
-            "Negativa": 60,
-            "Ns/Nc": 0
+            "Mala": 60,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 30,
@@ -4518,26 +4050,29 @@
             "Otro": 33.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 41.7,
+            "Muy buena": 0,
+            "Buena": 41.7,
             "Regular": 33.3,
-            "Negativa": 16.7,
-            "Ns/Nc": 8.3
+            "Mala": 16.7,
+            "No se": 8.3
           },
           "Funcionamiento CPC": {
-            "Positiva": 58.3,
+            "Muy buena": 0,
+            "Buena": 58.3,
             "Regular": 25,
-            "Negativa": 8.3,
-            "Ns/Nc": 8.3
+            "Mala": 8.3,
+            "No se": 8.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 16.7,
             "No": 83.3
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 33.4,
+            "Muy buena": 16.7,
+            "Buena": 16.7,
             "Regular": 8.3,
-            "Negativa": 8.3,
-            "Ns/Nc": 50
+            "Mala": 8.3,
+            "No se": 50
           },
           "Mejoras en bacheos": {
             "Si, mucho": 16.7,
@@ -4560,22 +4095,25 @@
             "No": 50
           },
           "Gestión del Intendente": {
-            "Positiva": 50,
+            "Muy buena": 8.3,
+            "Buena": 41.7,
             "Regular": 50,
-            "Negativa": 0,
-            "Ns/Nc": 0
+            "Mala": 0,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 46.7,
+            "Muy buena": 21.7,
+            "Buena": 25,
             "Regular": 50,
-            "Negativa": 3.3,
-            "Ns/Nc": 0
+            "Mala": 3.3,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 33.3,
+            "Muy buena": 33.3,
+            "Buena": 0,
             "Regular": 8.3,
-            "Negativa": 50,
-            "Ns/Nc": 8.3
+            "Mala": 50,
+            "No se": 8.3
           },
           "Aprobación Intendente": {
             "Apruebo": 58.3,
@@ -4878,26 +4416,29 @@
             "Otro": 6.9
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 41.3,
+            "Muy buena": 10.3,
+            "Buena": 31,
             "Regular": 37.9,
-            "Negativa": 17.2,
-            "Ns/Nc": 3.4
+            "Mala": 17.2,
+            "No se": 3.4
           },
           "Funcionamiento CPC": {
-            "Positiva": 24.1,
+            "Muy buena": 3.4,
+            "Buena": 20.7,
             "Regular": 34.5,
-            "Negativa": 10.3,
-            "Ns/Nc": 31
+            "Mala": 10.3,
+            "No se": 31
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 6.9,
             "No": 93.1
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 6.9,
+            "Muy buena": 0,
+            "Buena": 6.9,
             "Regular": 10.3,
-            "Negativa": 24.1,
-            "Ns/Nc": 58.6
+            "Mala": 24.1,
+            "No se": 58.6
           },
           "Mejoras en bacheos": {
             "Si, mucho": 13.8,
@@ -4920,22 +4461,25 @@
             "No": 82.8
           },
           "Gestión del Intendente": {
-            "Positiva": 10.3,
+            "Muy buena": 0,
+            "Buena": 10.3,
             "Regular": 37.9,
-            "Negativa": 48.3,
-            "Ns/Nc": 3.4
+            "Mala": 48.3,
+            "No se": 3.4
           },
           "Gestión del Gobernador": {
-            "Positiva": 25.7,
+            "Muy buena": 5,
+            "Buena": 20.7,
             "Regular": 27.6,
-            "Negativa": 43.3,
-            "Ns/Nc": 3.4
+            "Mala": 43.3,
+            "No se": 3.4
           },
           "Gestión del Presidente": {
-            "Positiva": 31,
+            "Muy buena": 13.8,
+            "Buena": 17.2,
             "Regular": 24.1,
-            "Negativa": 37.9,
-            "Ns/Nc": 6.9
+            "Mala": 37.9,
+            "No se": 6.9
           },
           "Aprobación Intendente": {
             "Apruebo": 24.1,
@@ -5153,26 +4697,29 @@
             "Otro": 33.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 20.8,
+            "Muy buena": 8.3,
+            "Buena": 12.5,
             "Regular": 33.3,
-            "Negativa": 4.2,
-            "Ns/Nc": 41.7
+            "Mala": 4.2,
+            "No se": 41.7
           },
           "Funcionamiento CPC": {
-            "Positiva": 58.3,
+            "Muy buena": 12.5,
+            "Buena": 45.8,
             "Regular": 29.2,
-            "Negativa": 4.2,
-            "Ns/Nc": 8.3
+            "Mala": 4.2,
+            "No se": 8.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 25,
             "No": 75
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 20.8,
+            "Muy buena": 0,
+            "Buena": 20.8,
             "Regular": 8.3,
-            "Negativa": 16.7,
-            "Ns/Nc": 54.2
+            "Mala": 16.7,
+            "No se": 54.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 4.2,
@@ -5195,22 +4742,25 @@
             "No": 58.3
           },
           "Gestión del Intendente": {
-            "Positiva": 25,
+            "Muy buena": 4.2,
+            "Buena": 20.8,
             "Regular": 16.7,
-            "Negativa": 37.5,
-            "Ns/Nc": 20.8
+            "Mala": 37.5,
+            "No se": 20.8
           },
           "Gestión del Gobernador": {
-            "Positiva": 30.1,
+            "Muy buena": 13.4,
+            "Buena": 16.7,
             "Regular": 20.8,
-            "Negativa": 40.8,
-            "Ns/Nc": 8.3
+            "Mala": 40.8,
+            "No se": 8.3
           },
           "Gestión del Presidente": {
-            "Positiva": 45.8,
+            "Muy buena": 20.8,
+            "Buena": 25,
             "Regular": 12.5,
-            "Negativa": 41.7,
-            "Ns/Nc": 0
+            "Mala": 41.7,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 41.7,
@@ -5343,26 +4893,29 @@
             "Otro": 18.9
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 27,
+            "Muy buena": 2.7,
+            "Buena": 24.3,
             "Regular": 24.3,
-            "Negativa": 29.7,
-            "Ns/Nc": 18.9
+            "Mala": 29.7,
+            "No se": 18.9
           },
           "Funcionamiento CPC": {
-            "Positiva": 32.4,
+            "Muy buena": 8.1,
+            "Buena": 24.3,
             "Regular": 32.4,
-            "Negativa": 13.5,
-            "Ns/Nc": 21.6
+            "Mala": 13.5,
+            "No se": 21.6
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 91.9,
             "No": 8.1
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 29.7,
+            "Muy buena": 8.1,
+            "Buena": 21.6,
             "Regular": 43.2,
-            "Negativa": 10.8,
-            "Ns/Nc": 16.2
+            "Mala": 10.8,
+            "No se": 16.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 13.5,
@@ -5385,22 +4938,25 @@
             "No": 67.6
           },
           "Gestión del Intendente": {
-            "Positiva": 8.1,
+            "Muy buena": 5.4,
+            "Buena": 2.7,
             "Regular": 29.7,
-            "Negativa": 56.8,
-            "Ns/Nc": 5.4
+            "Mala": 56.8,
+            "No se": 5.4
           },
           "Gestión del Gobernador": {
-            "Positiva": 18.5,
+            "Muy buena": 13.1,
+            "Buena": 5.4,
             "Regular": 18.9,
-            "Negativa": 57.2,
-            "Ns/Nc": 5.4
+            "Mala": 57.2,
+            "No se": 5.4
           },
           "Gestión del Presidente": {
-            "Positiva": 43.2,
+            "Muy buena": 13.5,
+            "Buena": 29.7,
             "Regular": 18.9,
-            "Negativa": 37.8,
-            "Ns/Nc": 0
+            "Mala": 37.8,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 27,
@@ -5533,26 +5089,29 @@
             "Otro": 11.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 33.3,
+            "Muy buena": 22.2,
+            "Buena": 11.1,
             "Regular": 18.5,
-            "Negativa": 18.5,
-            "Ns/Nc": 29.6
+            "Mala": 18.5,
+            "No se": 29.6
           },
           "Funcionamiento CPC": {
-            "Positiva": 37,
+            "Muy buena": 11.1,
+            "Buena": 25.9,
             "Regular": 40.7,
-            "Negativa": 14.8,
-            "Ns/Nc": 7.4
+            "Mala": 14.8,
+            "No se": 7.4
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 22.2,
             "No": 77.8
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 0,
+            "Muy buena": 0,
+            "Buena": 0,
             "Regular": 14.8,
-            "Negativa": 18.5,
-            "Ns/Nc": 66.7
+            "Mala": 18.5,
+            "No se": 66.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 3.7,
@@ -5575,22 +5134,25 @@
             "No": 55.6
           },
           "Gestión del Intendente": {
-            "Positiva": 14.8,
+            "Muy buena": 3.7,
+            "Buena": 11.1,
             "Regular": 18.5,
-            "Negativa": 66.7,
-            "Ns/Nc": 0
+            "Mala": 66.7,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 27.2,
+            "Muy buena": 12.4,
+            "Buena": 14.8,
             "Regular": 22.2,
-            "Negativa": 46.9,
-            "Ns/Nc": 3.7
+            "Mala": 46.9,
+            "No se": 3.7
           },
           "Gestión del Presidente": {
-            "Positiva": 40.7,
+            "Muy buena": 14.8,
+            "Buena": 25.9,
             "Regular": 33.3,
-            "Negativa": 25.9,
-            "Ns/Nc": 0
+            "Mala": 25.9,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 22.2,
@@ -5723,26 +5285,29 @@
             "Otro": 12.9
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 16.1,
+            "Muy buena": 0,
+            "Buena": 16.1,
             "Regular": 22.6,
-            "Negativa": 32.3,
-            "Ns/Nc": 29
+            "Mala": 32.3,
+            "No se": 29
           },
           "Funcionamiento CPC": {
-            "Positiva": 51.7,
+            "Muy buena": 19.4,
+            "Buena": 32.3,
             "Regular": 16.1,
-            "Negativa": 19.4,
-            "Ns/Nc": 12.9
+            "Mala": 19.4,
+            "No se": 12.9
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 16.1,
             "No": 83.9
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 6.4,
+            "Muy buena": 3.2,
+            "Buena": 3.2,
             "Regular": 9.7,
-            "Negativa": 22.6,
-            "Ns/Nc": 61.3
+            "Mala": 22.6,
+            "No se": 61.3
           },
           "Mejoras en bacheos": {
             "Si, mucho": 16.1,
@@ -5765,22 +5330,25 @@
             "No": 54.8
           },
           "Gestión del Intendente": {
-            "Positiva": 19.4,
+            "Muy buena": 9.7,
+            "Buena": 9.7,
             "Regular": 32.3,
-            "Negativa": 45.2,
-            "Ns/Nc": 3.2
+            "Mala": 45.2,
+            "No se": 3.2
           },
           "Gestión del Gobernador": {
-            "Positiva": 11.4,
+            "Muy buena": 8.2,
+            "Buena": 3.2,
             "Regular": 54.8,
-            "Negativa": 27.3,
-            "Ns/Nc": 6.5
+            "Mala": 27.3,
+            "No se": 6.5
           },
           "Gestión del Presidente": {
-            "Positiva": 29,
+            "Muy buena": 16.1,
+            "Buena": 12.9,
             "Regular": 45.2,
-            "Negativa": 25.8,
-            "Ns/Nc": 0
+            "Mala": 25.8,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 32.3,
@@ -5828,26 +5396,29 @@
             "Otro": 12.5
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 5,
+            "Muy buena": 0,
+            "Buena": 5,
             "Regular": 22.5,
-            "Negativa": 37.5,
-            "Ns/Nc": 35
+            "Mala": 37.5,
+            "No se": 35
           },
           "Funcionamiento CPC": {
-            "Positiva": 25,
+            "Muy buena": 0,
+            "Buena": 25,
             "Regular": 37.5,
-            "Negativa": 35,
-            "Ns/Nc": 2.5
+            "Mala": 35,
+            "No se": 2.5
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 62.5,
             "No": 37.5
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 25,
+            "Muy buena": 7.5,
+            "Buena": 17.5,
             "Regular": 22.5,
-            "Negativa": 30,
-            "Ns/Nc": 22.5
+            "Mala": 30,
+            "No se": 22.5
           },
           "Mejoras en bacheos": {
             "Si, mucho": 5,
@@ -5870,22 +5441,25 @@
             "No": 62.5
           },
           "Gestión del Intendente": {
-            "Positiva": 7.5,
+            "Muy buena": 0,
+            "Buena": 7.5,
             "Regular": 27.5,
-            "Negativa": 65,
-            "Ns/Nc": 0
+            "Mala": 65,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 12.5,
+            "Muy buena": 5,
+            "Buena": 7.5,
             "Regular": 25,
-            "Negativa": 60,
-            "Ns/Nc": 2.5
+            "Mala": 60,
+            "No se": 2.5
           },
           "Gestión del Presidente": {
-            "Positiva": 40,
+            "Muy buena": 17.5,
+            "Buena": 22.5,
             "Regular": 22.5,
-            "Negativa": 37.5,
-            "Ns/Nc": 0
+            "Mala": 37.5,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 22.5,
@@ -6014,26 +5588,29 @@
             "Otro": 3.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 7.6,
+            "Muy buena": 3.8,
+            "Buena": 3.8,
             "Regular": 26.9,
-            "Negativa": 30.8,
-            "Ns/Nc": 34.6
+            "Mala": 30.8,
+            "No se": 34.6
           },
           "Funcionamiento CPC": {
-            "Positiva": 32.7,
+            "Muy buena": 9.6,
+            "Buena": 23.1,
             "Regular": 21.2,
-            "Negativa": 28.8,
-            "Ns/Nc": 17.3
+            "Mala": 28.8,
+            "No se": 17.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 11.5,
             "No": 88.5
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 5.7,
+            "Muy buena": 1.9,
+            "Buena": 3.8,
             "Regular": 3.8,
-            "Negativa": 19.2,
-            "Ns/Nc": 71.2
+            "Mala": 19.2,
+            "No se": 71.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 17.3,
@@ -6056,22 +5633,25 @@
             "No": 71.2
           },
           "Gestión del Intendente": {
-            "Positiva": 9.6,
+            "Muy buena": 3.8,
+            "Buena": 5.8,
             "Regular": 17.3,
-            "Negativa": 67.3,
-            "Ns/Nc": 5.8
+            "Mala": 67.3,
+            "No se": 5.8
           },
           "Gestión del Gobernador": {
-            "Positiva": 20.4,
+            "Muy buena": 8.9,
+            "Buena": 11.5,
             "Regular": 17.3,
-            "Negativa": 60.4,
-            "Ns/Nc": 1.9
+            "Mala": 60.4,
+            "No se": 1.9
           },
           "Gestión del Presidente": {
-            "Positiva": 42.3,
+            "Muy buena": 26.9,
+            "Buena": 15.4,
             "Regular": 25,
-            "Negativa": 32.7,
-            "Ns/Nc": 0
+            "Mala": 32.7,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 19.2,
@@ -6204,26 +5784,29 @@
             "Otro": 27.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 9.1,
+            "Muy buena": 6.1,
+            "Buena": 3,
             "Regular": 15.2,
-            "Negativa": 45.5,
-            "Ns/Nc": 30.3
+            "Mala": 45.5,
+            "No se": 30.3
           },
           "Funcionamiento CPC": {
-            "Positiva": 36.4,
+            "Muy buena": 18.2,
+            "Buena": 18.2,
             "Regular": 21.2,
-            "Negativa": 21.2,
-            "Ns/Nc": 21.2
+            "Mala": 21.2,
+            "No se": 21.2
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 21.2,
             "No": 78.8
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 3,
+            "Muy buena": 3,
+            "Buena": 0,
             "Regular": 3,
-            "Negativa": 27.3,
-            "Ns/Nc": 66.7
+            "Mala": 27.3,
+            "No se": 66.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 27.3,
@@ -6246,22 +5829,25 @@
             "No": 48.5
           },
           "Gestión del Intendente": {
-            "Positiva": 18.2,
+            "Muy buena": 15.2,
+            "Buena": 3,
             "Regular": 27.3,
-            "Negativa": 54.5,
-            "Ns/Nc": 0
+            "Mala": 54.5,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 32.3,
+            "Muy buena": 23.2,
+            "Buena": 9.1,
             "Regular": 24.2,
-            "Negativa": 43.5,
-            "Ns/Nc": 0
+            "Mala": 43.5,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 24.3,
+            "Muy buena": 15.2,
+            "Buena": 9.1,
             "Regular": 30.3,
-            "Negativa": 42.4,
-            "Ns/Nc": 3
+            "Mala": 42.4,
+            "No se": 3
           },
           "Aprobación Intendente": {
             "Apruebo": 30.3,
@@ -6374,8 +5960,8 @@
   },
   "14M": {
     "nombre_circuito": "14M",
-    "cantidad_rondas": 1,
-    "tiene_comparativo": false,
+    "cantidad_rondas": 2,
+    "tiene_comparativo": true,
     "rondas": [
       {
         "fecha": "2026-04-09",
@@ -6454,13 +6040,149 @@
             "No": 51.2
           }
         }
+      },
+      {
+        "fecha": "2026-09-02",
+        "casos": 48,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 6.2,
+            "Estado de las calles": 37.5,
+            "Iluminación de las calles": 27.1,
+            "Iluminación de espacios públicos": 2.1,
+            "Falta de pavimento": 2.1,
+            "Falta de cloacas": 39.6,
+            "Falta de agua potable": 0,
+            "Seguridad": 45.8,
+            "Transporte urbano": 4.2,
+            "Otro": 10.4
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 18.7,
+            "Regular": 6.2,
+            "Negativa": 27.1,
+            "Ns/Nc": 47.9
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 22.9,
+            "Regular": 27.1,
+            "Negativa": 16.7,
+            "Ns/Nc": 33.3
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 75,
+            "No": 25
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 45.9,
+            "Regular": 10.4,
+            "Negativa": 18.8,
+            "Ns/Nc": 25
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 6.2,
+            "Si, algo": 20.8,
+            "No": 72.9
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 12.5,
+            "Si, algo": 35.4,
+            "No": 52.1
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 4.2,
+            "Si, algo": 37.5,
+            "No": 58.3
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 16.7,
+            "Si, algo": 35.4,
+            "No": 47.9
+          },
+          "Gestión del Intendente": {
+            "Positiva": 16.6,
+            "Regular": 27.1,
+            "Negativa": 54.2,
+            "Ns/Nc": 2.1
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 17.5,
+            "Regular": 29.2,
+            "Negativa": 51.2,
+            "Ns/Nc": 2.1
+          },
+          "Gestión del Presidente": {
+            "Positiva": 45.9,
+            "Regular": 20.8,
+            "Negativa": 31.2,
+            "Ns/Nc": 2.1
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 25,
+            "Desapruebo": 75
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 21.7,
+            "Desapruebo": 78.3
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 60.4,
+            "Desapruebo": 39.6
+          },
+          "Reelección Llaryora": {
+            "Si": 15.4,
+            "No": 84.6
+          },
+          "Reelección Milei": {
+            "Si": 54.2,
+            "No": 45.8
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 15.4,
+            "Luis Juez": 6.2,
+            "Gabriel Bornoroni": 18.8,
+            "Rodrigo De Loredo": 18.8,
+            "Agustin Spaccesi": 2.1,
+            "Liliana Olivero": 4.2,
+            "Otro": 34.6
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 15.4,
+            "Gabriel Bornoroni": 22.9,
+            "Agustin Spaccesi": 2.1,
+            "Liliana Olivero": 4.2,
+            "Otro": 55.4
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 15.4,
+            "Luis Juez": 16.7,
+            "Agustin Spaccesi": 4.2,
+            "Liliana Olivero": 4.2,
+            "Otro": 59.5
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 15.4,
+            "Rodrigo De Loredo": 25,
+            "Agustin Spaccesi": 4.2,
+            "Liliana Olivero": 4.2,
+            "Otro": 51.2
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 10.4,
+            "Luis Juez": 12.5,
+            "Gabriel Bornoroni": 25,
+            "Rodrigo De Loredo": 25,
+            "Agustin Spaccesi": 4.2,
+            "Liliana Olivero": 22.9
+          }
+        }
       }
     ]
   },
   "14P": {
     "nombre_circuito": "14P",
-    "cantidad_rondas": 1,
-    "tiene_comparativo": false,
+    "cantidad_rondas": 2,
+    "tiene_comparativo": true,
     "rondas": [
       {
         "fecha": "2026-07-22",
@@ -6479,26 +6201,29 @@
             "Otro": 15.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 15.8,
+            "Muy buena": 5.3,
+            "Buena": 10.5,
             "Regular": 10.5,
-            "Negativa": 21.1,
-            "Ns/Nc": 52.6
+            "Mala": 21.1,
+            "No se": 52.6
           },
           "Funcionamiento CPC": {
-            "Positiva": 21.1,
+            "Muy buena": 5.3,
+            "Buena": 15.8,
             "Regular": 26.3,
-            "Negativa": 26.3,
-            "Ns/Nc": 26.3
+            "Mala": 26.3,
+            "No se": 26.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 21.1,
             "No": 78.9
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 15.8,
+            "Muy buena": 5.3,
+            "Buena": 10.5,
             "Regular": 0,
-            "Negativa": 15.8,
-            "Ns/Nc": 68.4
+            "Mala": 15.8,
+            "No se": 68.4
           },
           "Mejoras en bacheos": {
             "Si, mucho": 0,
@@ -6521,22 +6246,25 @@
             "No": 73.7
           },
           "Gestión del Intendente": {
-            "Positiva": 5.3,
+            "Muy buena": 0,
+            "Buena": 5.3,
             "Regular": 21.1,
-            "Negativa": 63.2,
-            "Ns/Nc": 10.5
+            "Mala": 63.2,
+            "No se": 10.5
           },
           "Gestión del Gobernador": {
-            "Positiva": 10.3,
+            "Muy buena": 5,
+            "Buena": 5.3,
             "Regular": 21.1,
-            "Negativa": 58.1,
-            "Ns/Nc": 10.5
+            "Mala": 58.1,
+            "No se": 10.5
           },
           "Gestión del Presidente": {
-            "Positiva": 15.8,
+            "Muy buena": 5.3,
+            "Buena": 10.5,
             "Regular": 36.8,
-            "Negativa": 42.1,
-            "Ns/Nc": 5.3
+            "Mala": 42.1,
+            "No se": 5.3
           },
           "Aprobación Intendente": {
             "Apruebo": 21.1,
@@ -6557,6 +6285,142 @@
           "Reelección Milei": {
             "Si": 52.6,
             "No": 47.4
+          }
+        }
+      },
+      {
+        "fecha": "2026-09-02",
+        "casos": 20,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 5,
+            "Estado de las calles": 20,
+            "Iluminación de las calles": 20,
+            "Iluminación de espacios públicos": 0,
+            "Falta de pavimento": 25,
+            "Falta de cloacas": 40,
+            "Falta de agua potable": 0,
+            "Seguridad": 60,
+            "Transporte urbano": 5,
+            "Otro": 10
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 30,
+            "Regular": 25,
+            "Negativa": 20,
+            "Ns/Nc": 25
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 30,
+            "Regular": 40,
+            "Negativa": 20,
+            "Ns/Nc": 10
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 90,
+            "No": 10
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 35,
+            "Regular": 15,
+            "Negativa": 15,
+            "Ns/Nc": 35
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 15,
+            "Si, algo": 30,
+            "No": 55
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 20,
+            "Si, algo": 45,
+            "No": 35
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 20,
+            "Si, algo": 30,
+            "No": 50
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 5,
+            "Si, algo": 30,
+            "No": 65
+          },
+          "Gestión del Intendente": {
+            "Positiva": 25,
+            "Regular": 25,
+            "Negativa": 50,
+            "Ns/Nc": 0
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 25,
+            "Regular": 35,
+            "Negativa": 40,
+            "Ns/Nc": 0
+          },
+          "Gestión del Presidente": {
+            "Positiva": 45,
+            "Regular": 20,
+            "Negativa": 35,
+            "Ns/Nc": 0
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 35,
+            "Desapruebo": 65
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 35,
+            "Desapruebo": 65
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 55,
+            "Desapruebo": 45
+          },
+          "Reelección Llaryora": {
+            "Si": 25,
+            "No": 75
+          },
+          "Reelección Milei": {
+            "Si": 55,
+            "No": 45
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 15,
+            "Luis Juez": 5,
+            "Gabriel Bornoroni": 15,
+            "Rodrigo De Loredo": 25,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 10,
+            "Otro": 30
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 15,
+            "Gabriel Bornoroni": 20,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 15,
+            "Otro": 50
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 15,
+            "Luis Juez": 15,
+            "Agustin Spaccesi": 5,
+            "Liliana Olivero": 15,
+            "Otro": 50
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 15,
+            "Rodrigo De Loredo": 30,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 5,
+            "Otro": 50
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 25,
+            "Luis Juez": 10,
+            "Gabriel Bornoroni": 15,
+            "Rodrigo De Loredo": 35,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 15
           }
         }
       }
@@ -6584,26 +6448,29 @@
             "Otro": 25
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 8.3,
+            "Muy buena": 0,
+            "Buena": 8.3,
             "Regular": 25,
-            "Negativa": 50,
-            "Ns/Nc": 16.7
+            "Mala": 50,
+            "No se": 16.7
           },
           "Funcionamiento CPC": {
-            "Positiva": 16.7,
+            "Muy buena": 0,
+            "Buena": 16.7,
             "Regular": 16.7,
-            "Negativa": 58.3,
-            "Ns/Nc": 8.3
+            "Mala": 58.3,
+            "No se": 8.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 25,
             "No": 75
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 8.3,
+            "Muy buena": 0,
+            "Buena": 8.3,
             "Regular": 16.7,
-            "Negativa": 33.3,
-            "Ns/Nc": 41.7
+            "Mala": 33.3,
+            "No se": 41.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 8.3,
@@ -6626,22 +6493,25 @@
             "No": 75
           },
           "Gestión del Intendente": {
-            "Positiva": 0,
+            "Muy buena": 0,
+            "Buena": 0,
             "Regular": 33.3,
-            "Negativa": 66.7,
-            "Ns/Nc": 0
+            "Mala": 66.7,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 13.3,
+            "Muy buena": 5,
+            "Buena": 8.3,
             "Regular": 16.7,
-            "Negativa": 70,
-            "Ns/Nc": 0
+            "Mala": 70,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 66.6,
+            "Muy buena": 8.3,
+            "Buena": 58.3,
             "Regular": 8.3,
-            "Negativa": 25,
-            "Ns/Nc": 0
+            "Mala": 25,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 16.7,
@@ -6767,26 +6637,29 @@
             "Otro": 28.1
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 3.1,
+            "Muy buena": 3.1,
+            "Buena": 0,
             "Regular": 21.9,
-            "Negativa": 40.6,
-            "Ns/Nc": 34.4
+            "Mala": 40.6,
+            "No se": 34.4
           },
           "Funcionamiento CPC": {
-            "Positiva": 6.2,
+            "Muy buena": 3.1,
+            "Buena": 3.1,
             "Regular": 12.5,
-            "Negativa": 37.5,
-            "Ns/Nc": 43.8
+            "Mala": 37.5,
+            "No se": 43.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 62.5,
             "No": 37.5
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 9.4,
+            "Muy buena": 3.1,
+            "Buena": 6.3,
             "Regular": 18.8,
-            "Negativa": 37.5,
-            "Ns/Nc": 34.4
+            "Mala": 37.5,
+            "No se": 34.4
           },
           "Mejoras en bacheos": {
             "Si, mucho": 6.3,
@@ -6809,22 +6682,25 @@
             "No": 40.6
           },
           "Gestión del Intendente": {
-            "Positiva": 3.1,
+            "Muy buena": 0,
+            "Buena": 3.1,
             "Regular": 18.8,
-            "Negativa": 78.1,
-            "Ns/Nc": 0
+            "Mala": 78.1,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 20.6,
+            "Muy buena": 8.1,
+            "Buena": 12.5,
             "Regular": 28.1,
-            "Negativa": 48.2,
-            "Ns/Nc": 3.1
+            "Mala": 48.2,
+            "No se": 3.1
           },
           "Gestión del Presidente": {
-            "Positiva": 43.8,
+            "Muy buena": 12.5,
+            "Buena": 31.3,
             "Regular": 15.6,
-            "Negativa": 40.6,
-            "Ns/Nc": 0
+            "Mala": 40.6,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 15.6,
@@ -6852,7 +6728,7 @@
   },
   "4A": {
     "nombre_circuito": "4A",
-    "cantidad_rondas": 2,
+    "cantidad_rondas": 3,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -7004,13 +6880,149 @@
             "Ns/Nc": 1.5
           }
         }
+      },
+      {
+        "fecha": "2026-09-01",
+        "casos": 34,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 8.8,
+            "Estado de las calles": 26.5,
+            "Iluminación de las calles": 8.8,
+            "Iluminación de espacios públicos": 2.9,
+            "Falta de pavimento": 20.6,
+            "Falta de cloacas": 47.1,
+            "Falta de agua potable": 0,
+            "Seguridad": 32.4,
+            "Transporte urbano": 5.9,
+            "Otro": 14.7
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 2.9,
+            "Regular": 5.9,
+            "Negativa": 47.1,
+            "Ns/Nc": 44.1
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 26.4,
+            "Regular": 17.6,
+            "Negativa": 17.6,
+            "Ns/Nc": 38.2
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 73.5,
+            "No": 26.5
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 32.3,
+            "Regular": 20.6,
+            "Negativa": 14.7,
+            "Ns/Nc": 32.4
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 8.8,
+            "Si, algo": 17.6,
+            "No": 73.5
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 20.6,
+            "Si, algo": 47.1,
+            "No": 32.4
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 5.9,
+            "Si, algo": 44.1,
+            "No": 50
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 20.6,
+            "Si, algo": 35.3,
+            "No": 44.1
+          },
+          "Gestión del Intendente": {
+            "Positiva": 8.8,
+            "Regular": 23.5,
+            "Negativa": 64.7,
+            "Ns/Nc": 2.9
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 22.6,
+            "Regular": 20.6,
+            "Negativa": 53.8,
+            "Ns/Nc": 2.9
+          },
+          "Gestión del Presidente": {
+            "Positiva": 50,
+            "Regular": 11.8,
+            "Negativa": 35.3,
+            "Ns/Nc": 2.9
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 14.7,
+            "Desapruebo": 85.3
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 25.6,
+            "Desapruebo": 74.4
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 61.8,
+            "Desapruebo": 38.2
+          },
+          "Reelección Llaryora": {
+            "Si": 22.6,
+            "No": 77.4
+          },
+          "Reelección Milei": {
+            "Si": 52.9,
+            "No": 47.1
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 19.7,
+            "Luis Juez": 8.8,
+            "Gabriel Bornoroni": 8.8,
+            "Rodrigo De Loredo": 26.5,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 2.9,
+            "Otro": 33.2
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 19.7,
+            "Gabriel Bornoroni": 20.6,
+            "Agustin Spaccesi": 2.9,
+            "Liliana Olivero": 2.9,
+            "Otro": 53.8
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 19.7,
+            "Luis Juez": 23.5,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 5.9,
+            "Otro": 50.9
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 19.6,
+            "Rodrigo De Loredo": 38.2,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 5.9,
+            "Otro": 33.2
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 23.5,
+            "Luis Juez": 14.7,
+            "Gabriel Bornoroni": 11.8,
+            "Rodrigo De Loredo": 32.4,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 17.6
+          }
+        }
       }
     ]
   },
   "4B": {
     "nombre_circuito": "4B",
-    "cantidad_rondas": 1,
-    "tiene_comparativo": false,
+    "cantidad_rondas": 2,
+    "tiene_comparativo": true,
     "rondas": [
       {
         "fecha": "2026-07-14",
@@ -7109,13 +7121,149 @@
             "Ns/Nc": 1.5
           }
         }
+      },
+      {
+        "fecha": "2026-09-01",
+        "casos": 54,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 12.7,
+            "Estado de las calles": 21.8,
+            "Iluminación de las calles": 23.6,
+            "Iluminación de espacios públicos": 5.5,
+            "Falta de pavimento": 7.3,
+            "Falta de cloacas": 43.6,
+            "Falta de agua potable": 0,
+            "Seguridad": 52.7,
+            "Transporte urbano": 5.5,
+            "Otro": 16.4
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 18.2,
+            "Regular": 16.4,
+            "Negativa": 21.8,
+            "Ns/Nc": 43.6
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 47.3,
+            "Regular": 25.5,
+            "Negativa": 10.9,
+            "Ns/Nc": 16.4
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 74.5,
+            "No": 25.5
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 38.2,
+            "Regular": 18.2,
+            "Negativa": 21.8,
+            "Ns/Nc": 21.8
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 0,
+            "Si, algo": 29.1,
+            "No": 70.9
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 10.9,
+            "Si, algo": 38.2,
+            "No": 50.9
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 7.3,
+            "Si, algo": 38.2,
+            "No": 54.5
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 38.2,
+            "Si, algo": 32.7,
+            "No": 29.1
+          },
+          "Gestión del Intendente": {
+            "Positiva": 9.1,
+            "Regular": 23.6,
+            "Negativa": 65.5,
+            "Ns/Nc": 1.8
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 14.1,
+            "Regular": 29.1,
+            "Negativa": 55,
+            "Ns/Nc": 1.8
+          },
+          "Gestión del Presidente": {
+            "Positiva": 45.5,
+            "Regular": 21.8,
+            "Negativa": 32.7,
+            "Ns/Nc": 0
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 18.2,
+            "Desapruebo": 81.8
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 19.5,
+            "Desapruebo": 80.5
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 54.5,
+            "Desapruebo": 45.5
+          },
+          "Reelección Llaryora": {
+            "Si": 15.9,
+            "No": 84.1
+          },
+          "Reelección Milei": {
+            "Si": 52.7,
+            "No": 47.3
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 14.1,
+            "Luis Juez": 1.8,
+            "Gabriel Bornoroni": 23.6,
+            "Rodrigo De Loredo": 23.6,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 5.5,
+            "Otro": 31.4
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 14.1,
+            "Gabriel Bornoroni": 36.4,
+            "Agustin Spaccesi": 1.8,
+            "Liliana Olivero": 7.3,
+            "Otro": 40.5
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 12.3,
+            "Luis Juez": 16.4,
+            "Agustin Spaccesi": 9.1,
+            "Liliana Olivero": 7.3,
+            "Otro": 55
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 14.1,
+            "Rodrigo De Loredo": 35,
+            "Agustin Spaccesi": 3.6,
+            "Liliana Olivero": 7.3,
+            "Otro": 35
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 10.9,
+            "Luis Juez": 5.5,
+            "Gabriel Bornoroni": 25.5,
+            "Rodrigo De Loredo": 34.5,
+            "Agustin Spaccesi": 5.5,
+            "Liliana Olivero": 18.2
+          }
+        }
       }
     ]
   },
   "4C": {
     "nombre_circuito": "4C",
-    "cantidad_rondas": 1,
-    "tiene_comparativo": false,
+    "cantidad_rondas": 2,
+    "tiene_comparativo": true,
     "rondas": [
       {
         "fecha": "2026-07-14",
@@ -7212,6 +7360,142 @@
             "Regular": 21.9,
             "Negativa": 43.8,
             "Ns/Nc": 3.1
+          }
+        }
+      },
+      {
+        "fecha": "2026-09-01",
+        "casos": 15,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 6.7,
+            "Estado de las calles": 6.7,
+            "Iluminación de las calles": 26.7,
+            "Iluminación de espacios públicos": 0,
+            "Falta de pavimento": 20,
+            "Falta de cloacas": 13.3,
+            "Falta de agua potable": 0,
+            "Seguridad": 40,
+            "Transporte urbano": 26.7,
+            "Otro": 26.7
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 53.4,
+            "Regular": 6.7,
+            "Negativa": 26.7,
+            "Ns/Nc": 13.3
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 40,
+            "Regular": 13.3,
+            "Negativa": 26.7,
+            "Ns/Nc": 20
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 86.7,
+            "No": 13.3
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 66.7,
+            "Regular": 6.7,
+            "Negativa": 13.3,
+            "Ns/Nc": 13.3
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 6.7,
+            "Si, algo": 33.3,
+            "No": 60
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 40,
+            "Si, algo": 26.7,
+            "No": 33.3
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 26.7,
+            "Si, algo": 20,
+            "No": 53.3
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 40,
+            "Si, algo": 26.7,
+            "No": 33.3
+          },
+          "Gestión del Intendente": {
+            "Positiva": 20,
+            "Regular": 26.7,
+            "Negativa": 53.3,
+            "Ns/Nc": 0
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 45,
+            "Regular": 13.3,
+            "Negativa": 41.7,
+            "Ns/Nc": 0
+          },
+          "Gestión del Presidente": {
+            "Positiva": 53.4,
+            "Regular": 6.7,
+            "Negativa": 40,
+            "Ns/Nc": 0
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 33.3,
+            "Desapruebo": 66.7
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 45,
+            "Desapruebo": 55
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 66.7,
+            "Desapruebo": 33.3
+          },
+          "Reelección Llaryora": {
+            "Si": 29.7,
+            "No": 68.3
+          },
+          "Reelección Milei": {
+            "Si": 60,
+            "No": 40
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 25,
+            "Luis Juez": 6.7,
+            "Gabriel Bornoroni": 13.3,
+            "Rodrigo De Loredo": 33.3,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 0,
+            "Otro": 21.7
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 25,
+            "Gabriel Bornoroni": 20,
+            "Agustin Spaccesi": 13.3,
+            "Liliana Olivero": 6.7,
+            "Otro": 35
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 25,
+            "Luis Juez": 33.3,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 0,
+            "Otro": 41.7
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 25,
+            "Rodrigo De Loredo": 46.7,
+            "Agustin Spaccesi": 6.7,
+            "Liliana Olivero": 0,
+            "Otro": 21.7
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 26.7,
+            "Luis Juez": 6.7,
+            "Gabriel Bornoroni": 13.3,
+            "Rodrigo De Loredo": 40,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 13.3
           }
         }
       }
@@ -8353,26 +8637,29 @@
             "Otro": 31.3
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 10.9,
+            "Muy buena": 3.1,
+            "Buena": 7.8,
             "Regular": 17.2,
-            "Negativa": 23.4,
-            "Ns/Nc": 48.4
+            "Mala": 23.4,
+            "No se": 48.4
           },
           "Funcionamiento CPC": {
-            "Positiva": 31.3,
+            "Muy buena": 9.4,
+            "Buena": 21.9,
             "Regular": 21.9,
-            "Negativa": 15.6,
-            "Ns/Nc": 31.3
+            "Mala": 15.6,
+            "No se": 31.3
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 70.3,
             "No": 29.7
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 26.6,
+            "Muy buena": 4.7,
+            "Buena": 21.9,
             "Regular": 23.4,
-            "Negativa": 17.2,
-            "Ns/Nc": 32.8
+            "Mala": 17.2,
+            "No se": 32.8
           },
           "Mejoras en bacheos": {
             "Si, mucho": 6.3,
@@ -8395,22 +8682,25 @@
             "No": 43.8
           },
           "Gestión del Intendente": {
-            "Positiva": 14.1,
+            "Muy buena": 1.6,
+            "Buena": 12.5,
             "Regular": 23.4,
-            "Negativa": 59.4,
-            "Ns/Nc": 3.1
+            "Mala": 59.4,
+            "No se": 3.1
           },
           "Gestión del Gobernador": {
-            "Positiva": 15.9,
+            "Muy buena": 8.1,
+            "Buena": 7.8,
             "Regular": 21.9,
-            "Negativa": 59.1,
-            "Ns/Nc": 3.1
+            "Mala": 59.1,
+            "No se": 3.1
           },
           "Gestión del Presidente": {
-            "Positiva": 26.6,
+            "Muy buena": 7.8,
+            "Buena": 18.8,
             "Regular": 23.4,
-            "Negativa": 50,
-            "Ns/Nc": 0
+            "Mala": 50,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 18.8,
@@ -8458,26 +8748,29 @@
             "Otro": 20.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 20.8,
+            "Muy buena": 0,
+            "Buena": 20.8,
             "Regular": 29.2,
-            "Negativa": 12.5,
-            "Ns/Nc": 37.5
+            "Mala": 12.5,
+            "No se": 37.5
           },
           "Funcionamiento CPC": {
-            "Positiva": 29.1,
+            "Muy buena": 8.3,
+            "Buena": 20.8,
             "Regular": 25,
-            "Negativa": 0,
-            "Ns/Nc": 45.8
+            "Mala": 0,
+            "No se": 45.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 91.7,
             "No": 8.3
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 33.3,
+            "Muy buena": 12.5,
+            "Buena": 20.8,
             "Regular": 37.5,
-            "Negativa": 4.2,
-            "Ns/Nc": 25
+            "Mala": 4.2,
+            "No se": 25
           },
           "Mejoras en bacheos": {
             "Si, mucho": 0,
@@ -8500,22 +8793,25 @@
             "No": 41.7
           },
           "Gestión del Intendente": {
-            "Positiva": 12.5,
+            "Muy buena": 0,
+            "Buena": 12.5,
             "Regular": 29.2,
-            "Negativa": 50,
-            "Ns/Nc": 8.3
+            "Mala": 50,
+            "No se": 8.3
           },
           "Gestión del Gobernador": {
-            "Positiva": 17.5,
+            "Muy buena": 5,
+            "Buena": 12.5,
             "Regular": 16.7,
-            "Negativa": 57.5,
-            "Ns/Nc": 8.3
+            "Mala": 57.5,
+            "No se": 8.3
           },
           "Gestión del Presidente": {
-            "Positiva": 37.5,
+            "Muy buena": 4.2,
+            "Buena": 33.3,
             "Regular": 41.7,
-            "Negativa": 20.8,
-            "Ns/Nc": 0
+            "Mala": 20.8,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 20.8,
@@ -8963,26 +9259,29 @@
             "Otro": 26.5
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 22.4,
+            "Muy buena": 6.1,
+            "Buena": 16.3,
             "Regular": 4.1,
-            "Negativa": 12.2,
-            "Ns/Nc": 61.2
+            "Mala": 12.2,
+            "No se": 61.2
           },
           "Funcionamiento CPC": {
-            "Positiva": 24.5,
+            "Muy buena": 8.2,
+            "Buena": 16.3,
             "Regular": 16.3,
-            "Negativa": 8.2,
-            "Ns/Nc": 51
+            "Mala": 8.2,
+            "No se": 51
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 77.6,
             "No": 22.4
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 22.5,
+            "Muy buena": 4.1,
+            "Buena": 18.4,
             "Regular": 26.5,
-            "Negativa": 18.4,
-            "Ns/Nc": 32.7
+            "Mala": 18.4,
+            "No se": 32.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 4.1,
@@ -9005,22 +9304,25 @@
             "No": 36.7
           },
           "Gestión del Intendente": {
-            "Positiva": 10.2,
+            "Muy buena": 4.1,
+            "Buena": 6.1,
             "Regular": 34.7,
-            "Negativa": 55.1,
-            "Ns/Nc": 0
+            "Mala": 55.1,
+            "No se": 0
           },
           "Gestión del Gobernador": {
-            "Positiva": 19.3,
+            "Muy buena": 11.1,
+            "Buena": 8.2,
             "Regular": 28.6,
-            "Negativa": 52.1,
-            "Ns/Nc": 0
+            "Mala": 52.1,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 30.6,
+            "Muy buena": 18.4,
+            "Buena": 12.2,
             "Regular": 18.4,
-            "Negativa": 51,
-            "Ns/Nc": 0
+            "Mala": 51,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 18.4,
@@ -9048,7 +9350,7 @@
   },
   "7E": {
     "nombre_circuito": "7E",
-    "cantidad_rondas": 3,
+    "cantidad_rondas": 4,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -9224,26 +9526,29 @@
             "Otro": 7.4
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 23.4,
+            "Muy buena": 4.3,
+            "Buena": 19.1,
             "Regular": 19.1,
-            "Negativa": 26.6,
-            "Ns/Nc": 30.9
+            "Mala": 26.6,
+            "No se": 30.9
           },
           "Funcionamiento CPC": {
-            "Positiva": 52.1,
+            "Muy buena": 11.7,
+            "Buena": 40.4,
             "Regular": 26.6,
-            "Negativa": 14.9,
-            "Ns/Nc": 6.4
+            "Mala": 14.9,
+            "No se": 6.4
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 63.8,
             "No": 36.2
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 22.4,
+            "Muy buena": 9.6,
+            "Buena": 12.8,
             "Regular": 16,
-            "Negativa": 16,
-            "Ns/Nc": 45.7
+            "Mala": 16,
+            "No se": 45.7
           },
           "Mejoras en bacheos": {
             "Si, mucho": 10.6,
@@ -9266,22 +9571,25 @@
             "No": 45.7
           },
           "Gestión del Intendente": {
-            "Positiva": 12.7,
+            "Muy buena": 2.1,
+            "Buena": 10.6,
             "Regular": 29.8,
-            "Negativa": 55.3,
-            "Ns/Nc": 2.1
+            "Mala": 55.3,
+            "No se": 2.1
           },
           "Gestión del Gobernador": {
-            "Positiva": 24.2,
+            "Muy buena": 9.3,
+            "Buena": 14.9,
             "Regular": 26.6,
-            "Negativa": 47.1,
-            "Ns/Nc": 2.1
+            "Mala": 47.1,
+            "No se": 2.1
           },
           "Gestión del Presidente": {
-            "Positiva": 36.2,
+            "Muy buena": 11.7,
+            "Buena": 24.5,
             "Regular": 27.7,
-            "Negativa": 34,
-            "Ns/Nc": 2.1
+            "Mala": 34,
+            "No se": 2.1
           },
           "Aprobación Intendente": {
             "Apruebo": 27.7,
@@ -9304,12 +9612,148 @@
             "No": 56.4
           }
         }
+      },
+      {
+        "fecha": "2026-09-02",
+        "casos": 57,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 10.5,
+            "Estado de las calles": 35.1,
+            "Iluminación de las calles": 12.3,
+            "Iluminación de espacios públicos": 3.5,
+            "Falta de pavimento": 3.5,
+            "Falta de cloacas": 29.8,
+            "Falta de agua potable": 0,
+            "Seguridad": 40.4,
+            "Transporte urbano": 15.8,
+            "Otro": 26.3
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 26.3,
+            "Regular": 24.6,
+            "Negativa": 29.8,
+            "Ns/Nc": 19.3
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 43.9,
+            "Regular": 26.3,
+            "Negativa": 15.8,
+            "Ns/Nc": 14
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 70.2,
+            "No": 29.8
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 29.8,
+            "Regular": 21.1,
+            "Negativa": 19.3,
+            "Ns/Nc": 29.8
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 10.5,
+            "Si, algo": 50.9,
+            "No": 38.6
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 22.8,
+            "Si, algo": 43.9,
+            "No": 33.3
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 24.6,
+            "Si, algo": 40.4,
+            "No": 35.1
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 24.6,
+            "Si, algo": 31.6,
+            "No": 43.9
+          },
+          "Gestión del Intendente": {
+            "Positiva": 21.1,
+            "Regular": 31.6,
+            "Negativa": 47.4,
+            "Ns/Nc": 0
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 31.3,
+            "Regular": 19.3,
+            "Negativa": 49.4,
+            "Ns/Nc": 0
+          },
+          "Gestión del Presidente": {
+            "Positiva": 29.8,
+            "Regular": 21.1,
+            "Negativa": 49.1,
+            "Ns/Nc": 0
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 28.1,
+            "Desapruebo": 71.9
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 36.6,
+            "Desapruebo": 63.4
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 43.9,
+            "Desapruebo": 56.1
+          },
+          "Reelección Llaryora": {
+            "Si": 36.6,
+            "No": 63.4
+          },
+          "Reelección Milei": {
+            "Si": 57.9,
+            "No": 42.1
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 29.6,
+            "Luis Juez": 3.5,
+            "Gabriel Bornoroni": 14,
+            "Rodrigo De Loredo": 19.3,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 7,
+            "Otro": 26.6
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 31.3,
+            "Gabriel Bornoroni": 19.3,
+            "Agustin Spaccesi": 1.8,
+            "Liliana Olivero": 8.8,
+            "Otro": 38.8
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 31.3,
+            "Luis Juez": 12.3,
+            "Agustin Spaccesi": 3.5,
+            "Liliana Olivero": 10.5,
+            "Otro": 42.4
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 29.6,
+            "Rodrigo De Loredo": 24.6,
+            "Agustin Spaccesi": 3.5,
+            "Liliana Olivero": 7,
+            "Otro": 35.3
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 24.6,
+            "Luis Juez": 1.8,
+            "Gabriel Bornoroni": 24.6,
+            "Rodrigo De Loredo": 24.6,
+            "Agustin Spaccesi": 1.8,
+            "Liliana Olivero": 22.8
+          }
+        }
       }
     ]
   },
   "7F": {
     "nombre_circuito": "7F",
-    "cantidad_rondas": 2,
+    "cantidad_rondas": 3,
     "tiene_comparativo": true,
     "rondas": [
       {
@@ -9407,26 +9851,29 @@
             "Otro": 11.8
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 47,
+            "Muy buena": 17.6,
+            "Buena": 29.4,
             "Regular": 20.6,
-            "Negativa": 20.6,
-            "Ns/Nc": 11.8
+            "Mala": 20.6,
+            "No se": 11.8
           },
           "Funcionamiento CPC": {
-            "Positiva": 38.2,
+            "Muy buena": 8.8,
+            "Buena": 29.4,
             "Regular": 38.2,
-            "Negativa": 11.8,
-            "Ns/Nc": 11.8
+            "Mala": 11.8,
+            "No se": 11.8
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 58.8,
             "No": 41.2
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 23.5,
+            "Muy buena": 8.8,
+            "Buena": 14.7,
             "Regular": 20.6,
-            "Negativa": 11.8,
-            "Ns/Nc": 44.1
+            "Mala": 11.8,
+            "No se": 44.1
           },
           "Mejoras en bacheos": {
             "Si, mucho": 2.9,
@@ -9449,22 +9896,25 @@
             "No": 61.8
           },
           "Gestión del Intendente": {
-            "Positiva": 32.3,
+            "Muy buena": 8.8,
+            "Buena": 23.5,
             "Regular": 23.5,
-            "Negativa": 38.2,
-            "Ns/Nc": 5.9
+            "Mala": 38.2,
+            "No se": 5.9
           },
           "Gestión del Gobernador": {
-            "Positiva": 37.4,
+            "Muy buena": 19.8,
+            "Buena": 17.6,
             "Regular": 20.6,
-            "Negativa": 39.1,
-            "Ns/Nc": 2.9
+            "Mala": 39.1,
+            "No se": 2.9
           },
           "Gestión del Presidente": {
-            "Positiva": 32.4,
+            "Muy buena": 11.8,
+            "Buena": 20.6,
             "Regular": 38.2,
-            "Negativa": 29.4,
-            "Ns/Nc": 0
+            "Mala": 29.4,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 32.4,
@@ -9485,6 +9935,142 @@
           "Reelección Milei": {
             "Si": 41.2,
             "No": 58.8
+          }
+        }
+      },
+      {
+        "fecha": "2026-09-02",
+        "casos": 19,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 0,
+            "Estado de las calles": 57.9,
+            "Iluminación de las calles": 31.6,
+            "Iluminación de espacios públicos": 0,
+            "Falta de pavimento": 15.8,
+            "Falta de cloacas": 10.5,
+            "Falta de agua potable": 5.3,
+            "Seguridad": 42.1,
+            "Transporte urbano": 10.5,
+            "Otro": 10.5
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 21,
+            "Regular": 21.1,
+            "Negativa": 36.8,
+            "Ns/Nc": 21.1
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 36.8,
+            "Regular": 15.8,
+            "Negativa": 42.1,
+            "Ns/Nc": 5.3
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 47.4,
+            "No": 52.6
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 21.1,
+            "Regular": 15.8,
+            "Negativa": 15.8,
+            "Ns/Nc": 47.4
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 0,
+            "Si, algo": 10.5,
+            "No": 89.5
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 15.8,
+            "Si, algo": 42.1,
+            "No": 42.1
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 15.8,
+            "Si, algo": 36.8,
+            "No": 47.4
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 10.5,
+            "Si, algo": 31.6,
+            "No": 57.9
+          },
+          "Gestión del Intendente": {
+            "Positiva": 15.8,
+            "Regular": 26.3,
+            "Negativa": 52.6,
+            "Ns/Nc": 5.3
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 31.3,
+            "Regular": 21.1,
+            "Negativa": 42.4,
+            "Ns/Nc": 5.3
+          },
+          "Gestión del Presidente": {
+            "Positiva": 31.6,
+            "Regular": 36.8,
+            "Negativa": 26.3,
+            "Ns/Nc": 5.3
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 31.6,
+            "Desapruebo": 68.4
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 31.3,
+            "Desapruebo": 68.7
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 47.4,
+            "Desapruebo": 52.6
+          },
+          "Reelección Llaryora": {
+            "Si": 31.3,
+            "No": 68.7
+          },
+          "Reelección Milei": {
+            "Si": 52.6,
+            "No": 47.4
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 31.3,
+            "Luis Juez": 5.3,
+            "Gabriel Bornoroni": 10.5,
+            "Rodrigo De Loredo": 10.5,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 0,
+            "Otro": 42.4
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 31.3,
+            "Gabriel Bornoroni": 21.1,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 0,
+            "Otro": 47.6
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 31.3,
+            "Luis Juez": 26.3,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 0,
+            "Otro": 42.4
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 31.3,
+            "Rodrigo De Loredo": 15.8,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 0,
+            "Otro": 52.9
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 26.3,
+            "Luis Juez": 26.3,
+            "Gabriel Bornoroni": 26.3,
+            "Rodrigo De Loredo": 10.5,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 10.5
           }
         }
       }
@@ -10292,26 +10878,29 @@
             "Otro": 23.7
           },
           "Funcionamiento Centro Vecinal": {
-            "Positiva": 23.7,
+            "Muy buena": 7.9,
+            "Buena": 15.8,
             "Regular": 21.1,
-            "Negativa": 15.8,
-            "Ns/Nc": 39.5
+            "Mala": 15.8,
+            "No se": 39.5
           },
           "Funcionamiento CPC": {
-            "Positiva": 36.8,
+            "Muy buena": 7.9,
+            "Buena": 28.9,
             "Regular": 10.5,
-            "Negativa": 7.9,
-            "Ns/Nc": 44.7
+            "Mala": 7.9,
+            "No se": 44.7
           },
           "Cordobeses en Alerta (existencia)": {
             "Si": 68.4,
             "No": 31.6
           },
           "Calificación Cordobeses en Alerta": {
-            "Positiva": 50,
+            "Muy buena": 10.5,
+            "Buena": 39.5,
             "Regular": 13.2,
-            "Negativa": 2.6,
-            "Ns/Nc": 34.2
+            "Mala": 2.6,
+            "No se": 34.2
           },
           "Mejoras en bacheos": {
             "Si, mucho": 15.8,
@@ -10334,22 +10923,25 @@
             "No": 47.4
           },
           "Gestión del Intendente": {
-            "Positiva": 23.7,
+            "Muy buena": 7.9,
+            "Buena": 15.8,
             "Regular": 34.2,
-            "Negativa": 39.5,
-            "Ns/Nc": 2.6
+            "Mala": 39.5,
+            "No se": 2.6
           },
           "Gestión del Gobernador": {
-            "Positiva": 28.7,
+            "Muy buena": 15.5,
+            "Buena": 13.2,
             "Regular": 31.6,
-            "Negativa": 39.7,
-            "Ns/Nc": 0
+            "Mala": 39.7,
+            "No se": 0
           },
           "Gestión del Presidente": {
-            "Positiva": 18.4,
+            "Muy buena": 7.9,
+            "Buena": 10.5,
             "Regular": 10.5,
-            "Negativa": 71.1,
-            "Ns/Nc": 0
+            "Mala": 71.1,
+            "No se": 0
           },
           "Aprobación Intendente": {
             "Apruebo": 39.5,
@@ -10665,6 +11257,292 @@
           "Reelección Milei": {
             "Si": 41.7,
             "No": 58.3
+          }
+        }
+      }
+    ]
+  },
+  "1": {
+    "nombre_circuito": "1",
+    "cantidad_rondas": 1,
+    "tiene_comparativo": false,
+    "rondas": [
+      {
+        "fecha": "2026-09-01",
+        "casos": 25,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 32,
+            "Estado de las calles": 32,
+            "Iluminación de las calles": 12,
+            "Iluminación de espacios públicos": 4,
+            "Falta de pavimento": 4,
+            "Falta de cloacas": 20,
+            "Falta de agua potable": 4,
+            "Seguridad": 44,
+            "Transporte urbano": 4,
+            "Otro": 28
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 12,
+            "Regular": 20,
+            "Negativa": 28,
+            "Ns/Nc": 40
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 12,
+            "Regular": 36,
+            "Negativa": 0,
+            "Ns/Nc": 52
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 40,
+            "No": 60
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 12,
+            "Regular": 16,
+            "Negativa": 12,
+            "Ns/Nc": 60
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 18,
+            "Si, algo": 28,
+            "No": 64
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 16,
+            "Si, algo": 28,
+            "No": 56
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 4,
+            "Si, algo": 40,
+            "No": 56
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 32,
+            "Si, algo": 28,
+            "No": 40
+          },
+          "Gestión del Intendente": {
+            "Positiva": 16,
+            "Regular": 44,
+            "Negativa": 36,
+            "Ns/Nc": 4
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 29,
+            "Regular": 40,
+            "Negativa": 27,
+            "Ns/Nc": 4
+          },
+          "Gestión del Presidente": {
+            "Positiva": 48,
+            "Regular": 16,
+            "Negativa": 28,
+            "Ns/Nc": 8
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 40,
+            "Desapruebo": 60
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 53,
+            "Desapruebo": 47
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 64,
+            "Desapruebo": 36
+          },
+          "Reelección Llaryora": {
+            "Si": 41,
+            "No": 59
+          },
+          "Reelección Milei": {
+            "Si": 64,
+            "No": 36
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 25,
+            "Luis Juez": 4,
+            "Gabriel Bornoroni": 12,
+            "Rodrigo De Loredo": 12,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 8,
+            "Otro": 39
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 25,
+            "Gabriel Bornoroni": 12,
+            "Agustin Spaccesi": 4,
+            "Liliana Olivero": 12,
+            "Otro": 47
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 25,
+            "Luis Juez": 8,
+            "Agustin Spaccesi": 4,
+            "Liliana Olivero": 16,
+            "Otro": 47
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 25,
+            "Rodrigo De Loredo": 12,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 16,
+            "Otro": 47
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 36,
+            "Luis Juez": 12,
+            "Gabriel Bornoroni": 12,
+            "Rodrigo De Loredo": 20,
+            "Agustin Spaccesi": 8,
+            "Liliana Olivero": 12
+          }
+        }
+      }
+    ]
+  },
+  "3": {
+    "nombre_circuito": "3",
+    "cantidad_rondas": 1,
+    "tiene_comparativo": false,
+    "rondas": [
+      {
+        "fecha": "2026-09-01",
+        "casos": 31,
+        "preguntas": {
+          "Problemas principales": {
+            "Recolección de residuos": 29,
+            "Estado de las calles": 51.6,
+            "Iluminación de las calles": 12.9,
+            "Iluminación de espacios públicos": 0,
+            "Falta de pavimento": 3.2,
+            "Falta de cloacas": 6.5,
+            "Falta de agua potable": 0,
+            "Seguridad": 54.8,
+            "Transporte urbano": 3.2,
+            "Otro": 19.4
+          },
+          "Funcionamiento Centro Vecinal": {
+            "Positiva": 22.6,
+            "Regular": 9.7,
+            "Negativa": 19.4,
+            "Ns/Nc": 48.4
+          },
+          "Funcionamiento CPC": {
+            "Positiva": 22.6,
+            "Regular": 12.9,
+            "Negativa": 19.4,
+            "Ns/Nc": 45.2
+          },
+          "Cordobeses en Alerta (existencia)": {
+            "Si": 51.6,
+            "No": 48.4
+          },
+          "Calificación Cordobeses en Alerta": {
+            "Positiva": 22.6,
+            "Regular": 16.1,
+            "Negativa": 16.1,
+            "Ns/Nc": 45.2
+          },
+          "Mejoras en bacheos": {
+            "Si, mucho": 6.5,
+            "Si, algo": 22.6,
+            "No": 71
+          },
+          "Mejoras en alumbrado público": {
+            "Si, mucho": 6.5,
+            "Si, algo": 54.8,
+            "No": 38.7
+          },
+          "Mejoras en espacios públicos": {
+            "Si, mucho": 9.7,
+            "Si, algo": 45.2,
+            "No": 45.2
+          },
+          "Mejoras en ordenamiento naranjitas y limpiavidrios": {
+            "Si, mucho": 19.4,
+            "Si, algo": 35.5,
+            "No": 45.2
+          },
+          "Gestión del Intendente": {
+            "Positiva": 25.9,
+            "Regular": 25.8,
+            "Negativa": 45.2,
+            "Ns/Nc": 3.2
+          },
+          "Gestión del Gobernador": {
+            "Positiva": 30.9,
+            "Regular": 22.6,
+            "Negativa": 40.2,
+            "Ns/Nc": 6.5
+          },
+          "Gestión del Presidente": {
+            "Positiva": 38.7,
+            "Regular": 9.7,
+            "Negativa": 51.6,
+            "Ns/Nc": 0
+          },
+          "Aprobación Intendente": {
+            "Apruebo": 35.5,
+            "Desapruebo": 64.5
+          },
+          "Aprobación Gobernador": {
+            "Apruebo": 43.7,
+            "Desapruebo": 56.3
+          },
+          "Aprobación Presidente": {
+            "Apruebo": 41.9,
+            "Desapruebo": 58.1
+          },
+          "Reelección Llaryora": {
+            "Si": 46.9,
+            "No": 53.1
+          },
+          "Reelección Milei": {
+            "Si": 45.2,
+            "No": 54.8
+          },
+          "Intención voto Gobernador - Todos los candidatos": {
+            "Martín Llaryora": 34,
+            "Luis Juez": 6.5,
+            "Gabriel Bornoroni": 3.2,
+            "Rodrigo De Loredo": 19.4,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 9.7,
+            "Otro": 27.3
+          },
+          "Intención voto Gobernador - Llaryora vs Bornoroni": {
+            "Martín Llaryora": 34,
+            "Gabriel Bornoroni": 22.6,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 12.9,
+            "Otro": 30.5
+          },
+          "Intención voto Gobernador - Llaryora vs Juez": {
+            "Martín Llaryora": 37.3,
+            "Luis Juez": 16.1,
+            "Agustin Spaccesi": 3.2,
+            "Liliana Olivero": 9.7,
+            "Otro": 33.7
+          },
+          "Intención voto Gobernador - Llaryora vs De Loredo": {
+            "Martín Llaryora": 37.3,
+            "Rodrigo De Loredo": 22.6,
+            "Agustin Spaccesi": 0,
+            "Liliana Olivero": 9.7,
+            "Otro": 30.5
+          },
+          "Intención voto Gobernador - Llaryora, Juez, Bornoroni y De Loredo": {
+            "Martín Llaryora": 32.3,
+            "Luis Juez": 9.7,
+            "Gabriel Bornoroni": 3.2,
+            "Rodrigo De Loredo": 25.8,
+            "Agustin Spaccesi": 3.2,
+            "Liliana Olivero": 25.8
           }
         }
       }
