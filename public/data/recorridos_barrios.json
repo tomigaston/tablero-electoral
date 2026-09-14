@@ -146,7 +146,7 @@
     ]
   },
   "ALTA CORDOBA": {
-    "total_visitas": 2,
+    "total_visitas": 3,
     "visitas": [
       {
         "id": 338,
@@ -163,6 +163,14 @@
         "contacto_vecinos": "A determinar",
         "link": null,
         "info": "Cordobeses en alerta"
+      },
+      {
+        "id": 756,
+        "fecha": "2026-09-08",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/no-home/con-multiples-frentes-avanzan-las-obras-viales-en-la-ciudad-de-cordoba/",
+        "info": "trabajos de rehabilitación integral de pavimento que se ejecutan sobre las calles Antonio del Viso, en barrio Alta Córdoba"
       }
     ]
   },
@@ -521,7 +529,7 @@
     ]
   },
   "CHATEAU CARRERAS": {
-    "total_visitas": 26,
+    "total_visitas": 27,
     "visitas": [
       {
         "id": 122,
@@ -730,6 +738,14 @@
         "contacto_vecinos": "A determinar",
         "link": "https://prensa.cba.gov.ar/informacion-general/mes-del-vecinalismo-llaryora-destaco-el-compromiso-de-los-centros-vecinales-en-la-construccion-de-comunidad/",
         "info": "Mes del Vecinalismo - el gobernador encabezó el encuentro “Somos Barrio – Vecinalismo que transforma” - Centro de Convenciones Juan Bautista Bustos"
+      },
+      {
+        "id": 752,
+        "fecha": "2026-09-03",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-presento-con-vos-una-iniciativa-que-busca-prevenir-la-desvinculacion-escolar/",
+        "info": "Llaryora presentó “Con Vos”, una iniciativa que busca prevenir la desvinculación escolar"
       }
     ]
   },
@@ -773,7 +789,7 @@
     ]
   },
   "CRISOL NORTE": {
-    "total_visitas": 1,
+    "total_visitas": 2,
     "visitas": [
       {
         "id": 102,
@@ -782,6 +798,14 @@
         "contacto_vecinos": "NO",
         "link": "https://www.instagram.com/reel/C7ASSF5RxpI/?utm_source=ig_web_copy_link",
         "info": "Encuentro de Jóvenes Concejales PJ CBA"
+      },
+      {
+        "id": 755,
+        "fecha": "2026-09-05",
+        "tipo_visita": "A determinar",
+        "contacto_vecinos": "A determinar",
+        "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-participo-de-la-apertura-oficial-de-la-semana-social-2026/",
+        "info": "Semana Social 2026"
       }
     ]
   },
@@ -1511,7 +1535,7 @@
     ]
   },
   "POLICIAL": {
-    "total_visitas": 2,
+    "total_visitas": 3,
     "visitas": [
       {
         "id": 39,
@@ -1528,6 +1552,14 @@
         "contacto_vecinos": "SI",
         "link": "https://prensa.cba.gov.ar/informacion-general/llaryora-visito-la-obra-del-nuevo-hospital-del-noroeste-acompanado-por-vecinos-del-sector/",
         "info": "obra del nuevo Hospital del Noroeste"
+      },
+      {
+        "id": 753,
+        "fecha": "2026-09-03",
+        "tipo_visita": "TERRITORIAL",
+        "contacto_vecinos": "SI",
+        "link": "https://prensa.cba.gov.ar/informacion-general/barrio-policial-16-de-noviembre-avanza-la-pavimentacion-de-72-cuadras-y-completan-una-red-cloacal-con-1-143-conexiones/",
+        "info": "El gobernador recorrió las obras de infraestructura que se ejecutan en barrio Policial – 16 de Noviembre"
       }
     ]
   },
