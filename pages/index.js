@@ -1259,27 +1259,43 @@ const FilaPautaMesaCapital = ({ obra }) => (
 // genéricas de alcance Capital-completa (ej. "Córdoba Capital"/"Provincia de Córdoba"),
 // sin barrio ni circuito puntual — aplican por igual a CUALQUIER barrio y CUALQUIER
 // circuito, sin filtrado alguno (es la MISMA lista para todos). Por eso se muestra en
-// bloque aparte y colapsado ("Alcance Capital (N)") en vez de mezclarse con la lista de
+// bloque aparte ("Alcance Capital — toda la ciudad") en vez de mezclarse con la lista de
 // pautas propias del barrio/circuito, que sí son específicas de ese territorio.
 // Reutilizado tanto por SolapaPautaBarrio (ficha de barrio) como por SolapaTerritorio
 // (ficha de circuito, que no tiene solapa Pauta propia — vive dentro de Territorio).
+//
+// Filtra a VIGENTES (pautaEstaVigente, fin >= hoy) — mismo criterio que ya usa la
+// estrella del mapa (pautaCapitalMarkers/tieneActiva en components/MapaCircuitos.js) para
+// decidir si pintar la estrella de alcance Capital en un circuito. Antes este bloque
+// mostraba TODAS las piezas de toda_capital (vigentes y finalizadas mezcladas, con un
+// badge "Activo"/"Inactivo" basado en el campo `estado` de la plataforma, un criterio
+// DISTINTO al de vigencia por fecha) — eso podía dejar la estrella prendida en un
+// circuito sin que esta sección tuviera ninguna pieza que lo justificara con claridad, o
+// mostrar piezas ya finalizadas por fecha como si fueran las que sostienen la estrella.
+// Con el filtro acá, si la estrella está prendida por toda_capital, este bloque SIEMPRE
+// tiene al menos una fila (y viceversa: si está vacío, la estrella de alcance Capital no
+// debería estar prendida en ningún circuito).
 const BloqueAlcanceCapital = ({ pautasBarriosData }) => {
   const [abierto, setAbierto] = useState(false);
-  const pautas = pautasBarriosData?.toda_capital?.pautas || [];
-  if (pautas.length === 0) return null;
+  const pautasVigentes = useMemo(() => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return (pautasBarriosData?.toda_capital?.pautas || []).filter(p => pautaEstaVigente(p, hoy));
+  }, [pautasBarriosData]);
+  if (pautasVigentes.length === 0) return null;
   return (
     <div style={{ marginTop: '14px', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
       <button
         onClick={() => setAbierto(a => !a)}
         style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', backgroundColor: 'var(--bg-primary)', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)' }}
       >
-        <span>Alcance Capital ({pautas.length})</span>
+        <span>📍 Alcance Capital — toda la ciudad ({pautasVigentes.length})</span>
         <span style={{ fontSize: '10px', transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▾</span>
       </button>
       {abierto && (
         <div style={{ padding: '12px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 4px' }}>Campañas de alcance Capital-completa (sin barrio ni circuito puntual) — aplican por igual en toda la ciudad.</p>
-          {pautas.map((p, i) => <FilaPauta key={p.fila_origen ?? i} pauta={p} />)}
+          <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 4px' }}>Campañas vigentes de alcance Capital-completa (sin barrio ni circuito puntual) — aplican por igual en toda la ciudad, no son propias de este circuito/barrio.</p>
+          {pautasVigentes.map((p, i) => <FilaPauta key={p.fila_origen ?? i} pauta={p} />)}
         </div>
       )}
     </div>
@@ -2503,8 +2519,13 @@ const VistaObras = ({
     });
   }, [obrasData]);
 
+  // .map(String): obras_capital.json trae circuito como número en 69/771 registros
+  // (error de carga, ej. 3 en vez de "3A") — sin esto, esos valores pasan el
+  // .filter(Boolean) (son truthy) y el .sort de abajo explota porque los números no
+  // tienen .localeCompare. Mismo criterio defensivo que ya usa circuitoMapkeyDeObra
+  // en lib/obrasCercanas.js (obra.circuito.toString()) para el mismo campo.
   const opcionesCircuito = useMemo(() => (
-    Array.from(new Set((obrasData || []).map((o) => o.circuito).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es', { numeric: true }))
+    Array.from(new Set((obrasData || []).map((o) => o.circuito).filter(Boolean).map(String))).sort((a, b) => a.localeCompare(b, 'es', { numeric: true }))
   ), [obrasData]);
   const opcionesBarrio = useMemo(() => (
     Array.from(new Set((obrasData || []).map((o) => o.barrio).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'es'))
@@ -2529,7 +2550,7 @@ const VistaObras = ({
     const q = busqueda.trim() ? normalizarNombreBarrio(busqueda) : '';
     return obrasUnicas.filter((g) => {
       if (q && !normalizarNombreBarrio(g.nombreObra).includes(q)) return false;
-      if (filtroCircuito && !g.registros.some((r) => r.circuito === filtroCircuito)) return false;
+      if (filtroCircuito && !g.registros.some((r) => String(r.circuito) === filtroCircuito)) return false;
       if (filtroBarrio && !g.registros.some((r) => r.barrio === filtroBarrio)) return false;
       if (filtroReparticion && g.reparticion !== filtroReparticion) return false;
       if (filtroAvance) {
@@ -3186,9 +3207,22 @@ const ResumenCircuitoMini = ({ datos, padronTotal, encuestasData }) => {
   );
 };
 
-const FilaCruce = ({ label, sublabel, onClick }) => (
-  <div onClick={onClick} style={{ padding: '6px 8px', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', cursor: 'pointer', fontSize: '11px' }}>
-    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{label}</div>
+// `actual`: resalta la fila del barrio actualmente seleccionado (barrioSeleccionado) en
+// vez de excluirla de la lista — así el usuario ve dónde está parado sin que ese barrio
+// desaparezca del listado (ver comentario en PanelMiniCircuito).
+const FilaCruce = ({ label, sublabel, onClick, actual }) => (
+  <div
+    onClick={onClick}
+    style={{
+      padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px',
+      backgroundColor: actual ? '#1976D218' : 'var(--bg-secondary)',
+      border: actual ? '1px solid #1976D2' : '1px solid transparent',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{label}</div>
+      {actual && <span style={{ fontSize: '9px', fontWeight: 600, color: '#1976D2', backgroundColor: '#1976D222', padding: '1px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>BARRIO ACTUAL</span>}
+    </div>
     {sublabel && <div style={{ color: 'var(--text-tertiary)', marginTop: '1px' }}>{sublabel}</div>}
   </div>
 );
@@ -3573,9 +3607,19 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
   }
   const clave = `${datos.Mapkey} - ${datos.cirn_nom}`;
   const claveSel = barrioSeleccionado ? normalizarNombreBarrio(barrioSeleccionado) : null;
-  const otrosBarrios = (cruceData?.circuito_to_barrios?.[clave] || [])
-    .filter(b => normalizarNombreBarrio(b.barrio_normalizado) !== claveSel)
-    .sort((a, b) => a.orden_importancia - b.orden_importancia);
+  // Lista COMPLETA de circuito_to_barrios[clave], sin excluir a barrioSeleccionado — antes
+  // se lo sacaba de acá para no "repetirlo", pero barrioSeleccionado puede llegar por dos
+  // caminos que no tienen relación entre sí (buscador → barrio con más población en este
+  // circuito; click en el mapa → barrio geométrico bajo el punto clickeado), así que
+  // excluirlo hacía desaparecer barrios reales de la lista según por dónde hubieras
+  // entrado (ver [[tablero-electoral-barrioseleccionado-bug]]). Ahora se marca inline
+  // (FilaCruce `actual`) en vez de ocultarse. Orden por `poblacion` (población que ese
+  // barrio le aporta a ESTE circuito) en vez de `orden_importancia` — ese campo es el
+  // ranking del barrio sobre sus PROPIOS circuitos, no un ranking dentro de este circuito
+  // (mismo motivo que el fix de handleSelectCircuito, ver comentario ahí).
+  const barriosDelCircuito = (cruceData?.circuito_to_barrios?.[clave] || [])
+    .slice()
+    .sort((a, b) => (b.poblacion || 0) - (a.poblacion || 0));
   const obrasCercanasCount = obrasEnriquecidas ? obrasCercanasACircuito(datos.Mapkey, circuitosGeoJsonData, obrasEnriquecidas).length : 0;
 
   return (
@@ -3584,12 +3628,13 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
       <button onClick={() => onVerFicha()} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
       {obrasEnriquecidas && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('territorio', 'cercanas')} />}
       <ListaCruceColapsable
-        titulo="Otros barrios en este circuito"
-        items={otrosBarrios.map((b, i) => (
+        titulo="Barrios en este circuito"
+        items={barriosDelCircuito.map((b, i) => (
           <FilaCruce
             key={i}
             label={b.barrio}
             sublabel={`${b.pct_poblacion_en_circuito?.toFixed(1)}% de ese barrio, en este circuito`}
+            actual={claveSel != null && normalizarNombreBarrio(b.barrio_normalizado) === claveSel}
             onClick={() => {
               const key = normalizarNombreBarrio(b.barrio_normalizado);
               const feature = barriosGeoLookup[key];
@@ -4872,6 +4917,12 @@ export default function Home() {
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
   const [panelTab, setPanelTab] = useState('circuito');
+  // Levantado desde MapaCircuitos (antes vivía ahí como estado local): pages/index.js
+  // renderiza <MapaCircuitos> en dos bloques JSX distintos según vistaFicha (ver más
+  // abajo), y cambiar de bloque desmonta/remonta el componente — si capasActivas vivía
+  // adentro, cada vuelta al mapa perdía las capas activadas (ej. Pauta). Viviendo acá
+  // arriba, sobrevive el remonte.
+  const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, pauta: false, escuelas: false });
   const [obrasFoco, setObrasFoco] = useState('propio'); // 'propio' | 'cercanas' — qué sección de ObrasPanel viene destacada en la solapa Obras
   // CircuitoKey de origen cuando se llega a la solapa Pauta de un barrio desde el bloque
   // "Cobertura de pauta por barrio" (SolapaTerritorio de un circuito) — null en cualquier
@@ -5056,7 +5107,17 @@ export default function Home() {
   }, [encuestasData, datos]);
 
   // Selección de circuito por vías no geográficas (buscador, tabla, "zona", links del panel):
-  // no hay un punto clickeado, así que el barrio se deriva del principal según el cruce (orden_importancia: 1).
+  // no hay un punto clickeado, así que el barrio se deriva del que más población le aporta
+  // a ESTE circuito. orden_importancia NO sirve para esto (es el ranking del barrio sobre
+  // SUS PROPIOS circuitos, dirección barrio->circuito — un circuito grande puede tener
+  // varios barrios con orden_importancia:1 en simultáneo, ver comentario de
+  // circuito_barrios_cruce.json en lib/data-manifest.js). El campo `poblacion` de cada
+  // entrada de circuito_to_barrios YA es la población absoluta que ese barrio aporta a
+  // ESTE circuito puntual (población total del barrio × su pct en este circuito, ya
+  // calculado en el dato de origen) — no hace falta recalcularlo cruzando con
+  // barrios_geo.json. Se excluye la fila sintética "Sin Barrio - Circuito ..." (mismo
+  // descarte que ya usa pautaCapitalMarkers en components/MapaCircuitos.js), no es un
+  // barrio real seleccionable.
   const handleSelectCircuito = (c) => {
     setCircuitoSeleccionado(c);
     setFiltroCategoria(null);
@@ -5074,8 +5135,8 @@ export default function Home() {
     setOrigenCoberturaPautaCircuito(null); // idem: solo irABarrioDesdeCoberturaPauta lo fija, y lo hace después de llamar acá
     const d = datos.find(x => x.CircuitoKey === c);
     const clave = d ? `${d.Mapkey} - ${d.cirn_nom}` : null;
-    const lista = clave ? cruceData?.circuito_to_barrios?.[clave] : null;
-    const principal = lista?.find(b => b.orden_importancia === 1);
+    const lista = (clave ? cruceData?.circuito_to_barrios?.[clave] : null)?.filter(b => b.barrio && !b.barrio.startsWith('Sin Barrio')) || [];
+    const principal = lista.reduce((max, b) => ((b.poblacion || 0) > (max?.poblacion || 0) ? b : max), null);
     if (principal) {
       const key = normalizarNombreBarrio(principal.barrio_normalizado);
       const feature = barriosGeoLookup[key];
@@ -5596,7 +5657,7 @@ export default function Home() {
 
               <div style={{ width: '320px', flexShrink: 0, padding: '18px', paddingLeft: '0', position: 'relative', zIndex: 1 }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} onVerCircuitoEnPauta={irACircuitoDesdeMapaPauta} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} onVerCircuitoEnPauta={irACircuitoDesdeMapaPauta} capasActivas={capasActivas} setCapasActivas={setCapasActivas} />
                 </div>
               </div>
             </>
@@ -5604,7 +5665,7 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} onVerCircuitoEnPauta={irACircuitoDesdeMapaPauta} />
+                  <MapaCircuitos datos={datos} geoData={geoData} barriosGeoData={barriosGeoData} obrasEnriquecidas={obrasEnriquecidas} escuelasData={escuelasData} pautasBarriosData={pautasBarriosData} cruceData={cruceData} circuitoSeleccionado={circuitoSeleccionado} onMapClick={handleMapClick} barrioSeleccionado={barrioSeleccionado} filtroCategoria={filtroCategoria} setFiltroCategoria={setFiltroCategoria} coloresCategoria={COLORES_CATEGORIA} zoomBarrioSolicitado={zoomBarrioSolicitado} onSelectObra={setObraSeleccionada} onVerBarrioEnPauta={irABarrioDesdeMapaPauta} onVerCircuitoEnPauta={irACircuitoDesdeMapaPauta} capasActivas={capasActivas} setCapasActivas={setCapasActivas} />
                 </div>
               </div>
 

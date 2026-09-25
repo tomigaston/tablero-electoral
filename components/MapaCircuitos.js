@@ -284,10 +284,15 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, cruceData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta, onVerCircuitoEnPauta }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, cruceData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta, onVerCircuitoEnPauta, capasActivas, setCapasActivas }) {
   const geoJsonRef = useRef(null);
 
-  const [capasActivas, setCapasActivas] = useState({ circuitos: true, barrios: false, obras: true, pauta: false, escuelas: false });
+  // capasActivas/setCapasActivas vienen del padre (Home, pages/index.js), no son estado
+  // local acá — pages/index.js renderiza <MapaCircuitos> en dos bloques JSX distintos
+  // según vistaFicha (ver comentario ahí), y cambiar de bloque desmonta/remonta este
+  // componente. Si capasActivas viviera acá adentro, cada vuelta al mapa perdía las capas
+  // activadas (ej. Pauta) — bug reportado y confirmado, ver
+  // [[tablero-electoral-repo-layout]] / memoria de sesión.
   const toggleCapa = (capa) => setCapasActivas(prev => ({ ...prev, [capa]: !prev[capa] }));
 
   // Cuenta como "capa de puntos" para la atenuación del relleno de Circuitos (punto 1):
