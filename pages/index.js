@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import * as topojson from 'topojson-client';
 import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 import { formatearFecha } from '../lib/formatearFecha';
+import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
@@ -3887,6 +3888,7 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onClickVisita, onCli
   const [rangoSeleccionado, setRangoSeleccionado] = useState(null);
   const [orden, setOrden] = useState('id');
   const [busquedaCircuito, setBusquedaCircuito] = useState('');
+  const [descargando, setDescargando] = useState(false);
 
   const toggleTipo = (tipo) => setTiposActivos(prev => ({ ...prev, [tipo]: !prev[tipo] }));
 
@@ -3937,6 +3939,18 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onClickVisita, onCli
   // agruparEventosPorFechaYTipo) — menos columnas que antes cuando hay agrupamientos.
   const maxColumnas = Math.max(1, ...filas.map(f => f.eventos.length));
 
+  const descargarExcel = async () => {
+    setDescargando(true);
+    try {
+      await descargarExcelEventos({ filas: filasOrdenadas, tiposEvento: TIPOS_EVENTO_COBERTURA });
+    } catch (err) {
+      console.error('Error generando Excel de eventos', err);
+      alert('No se pudo generar el Excel.');
+    } finally {
+      setDescargando(false);
+    }
+  };
+
   const manejarClickEvento = (evento, circuito) => {
     if (evento.tipo === 'visita') onClickVisita(circuito.CircuitoKey);
     else if (evento.tipo === 'medicion') onClickMedicion(circuito.CircuitoKey, evento.fecha);
@@ -3981,6 +3995,9 @@ const TablaEventosCobertura = ({ datos, eventosPorCircuito, onClickVisita, onCli
             <option value="id">Orden: ID circuito</option>
             <option value="reciente">Orden: más reciente</option>
           </select>
+          <button onClick={descargarExcel} disabled={descargando} style={{ padding: '5px 11px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: '#fff', fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', cursor: descargando ? 'wait' : 'pointer', whiteSpace: 'nowrap' }}>
+            {descargando ? 'Generando…' : '⬇ Descargar Excel'}
+          </button>
         </div>
       </div>
 
