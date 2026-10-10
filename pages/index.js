@@ -769,7 +769,12 @@ const SolapaTerritorio = ({
   barriosGeoLookup, recorridosLookup, pautasBarriosData, obrasEnriquecidas, votosEscuelasBarrioLookup,
   onSelectBarrioFicha, onSelectBarrioFichaPauta,
   circuitosGeoJsonData, obrasFoco, onSelectObra, votosEscuelasCircuitoData,
+  // bloques (opcional): ids de los bloques a mostrar — 'barrios' | 'alcance' |
+  // 'coberturaPauta' | 'obras' | 'escuelas' | 'zona'. Sin definir se muestran todos (la
+  // UI de siempre); el reporte imprimible lo usa para sacar cada bloque como sección propia.
+  bloques = null,
 }) => {
+  const ver = (id) => !bloques || bloques.includes(id);
   const mapkey = datos?.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
   const barriosVisibles = barriosCircuito.filter(b => (b.poblacion || 0) >= UMBRAL_POBLACION_BARRIO);
@@ -785,7 +790,7 @@ const SolapaTerritorio = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div>
+      {ver('barrios') && <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Barrios del circuito ({barriosCircuito.length})</h4>
         <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
           {barriosCircuito.length > 0 ? (
@@ -863,23 +868,23 @@ const SolapaTerritorio = ({
           {/* Pautas de alcance Capital-completa (bucket toda_capital): NO son propias de
               este circuito (aplican por igual a los 119), así que van en su propio
               acordeón colapsado, separadas de la tabla de barrios de arriba. */}
-          <BloqueAlcanceCapital pautasBarriosData={pautasBarriosData} />
+          {ver('alcance') && <BloqueAlcanceCapital pautasBarriosData={pautasBarriosData} />}
         </div>
-      </div>
+      </div>}
 
       {/* Cobertura de pauta ESPECÍFICA de barrio (pautas_barrios.json.barrios u obras Mesa
           de Capital), a diferencia de BloqueAlcanceCapital arriba (pauta genérica
           toda_capital) — bloque separado a propósito, no se mezclan (ver comentario de
           BloqueCoberturaPautaBarrios). Usa barriosVisibles, no barriosCircuito crudo:
           mismo universo que ya filtra la tabla de arriba. */}
-      <BloqueCoberturaPautaBarrios
+      {ver('coberturaPauta') && <BloqueCoberturaPautaBarrios
         barrios={barriosVisibles}
         pautasBarriosData={pautasBarriosData}
         obrasEnriquecidas={obrasEnriquecidas}
         onSelectBarrioFicha={onSelectBarrioFichaPauta}
-      />
+      />}
 
-      <div>
+      {ver('obras') && <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Obras</h4>
         <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>Obras públicas en este circuito y en circuitos cercanos.</p>
         <ObrasPanel
@@ -890,9 +895,9 @@ const SolapaTerritorio = ({
           focoInicial={obrasFoco}
           onSelectObra={onSelectObra}
         />
-      </div>
+      </div>}
 
-      <div>
+      {ver('escuelas') && <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>Escuelas</h4>
         <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '14px' }}>% de votos a Peronismo sobre votos válidos, por escuela con centro de votación en este circuito.</p>
         {votosEscuelasCircuitoData?.circuitos?.[mapkey] ? (
@@ -900,9 +905,9 @@ const SolapaTerritorio = ({
         ) : (
           <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin centros de votación identificados en este circuito.</div>
         )}
-      </div>
+      </div>}
 
-      <div>
+      {ver('zona') && <div>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 500 }}>Circuitos de la zona ({vecinos.length} relacionados)</h4>
         <div style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
@@ -919,7 +924,7 @@ const SolapaTerritorio = ({
             </tbody>
           </table>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };
@@ -2319,6 +2324,34 @@ const ListadoEncuestasCircuitos = ({ datos, encuestasData, onSelectCircuito }) =
 // ============================================
 // VISTA CAPITAL
 // ============================================
+// Cabecera y resultados históricos de Capital — compartidos entre VistaCapital (pantalla)
+// y el reporte imprimible (components/reporte).
+const CabeceraCapital = ({ totalPadron, cantidadCircuitos }) => (
+      <div style={{ padding: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>CÓRDOBA CAPITAL</h2>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>{cantidadCircuitos} circuitos │ {totalPadron.toLocaleString()} electores</div>
+      </div>
+);
+
+const ResultadosCapital = () => (
+      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>Resultados Capital - % Votos Peronismo</div>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {[{ label: 'Gob. 2023', value: 0.458 }, { label: 'Gob. 2019', value: 0.515 }, { label: 'Dip. 2025', value: 0.255 }, { label: 'Dip. 2021', value: 0.222 }, { label: 'Int. 2019', value: 0.402 }].map(e => (
+            <div key={e.label} style={{ flex: '1 1 140px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>{e.label}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: e.value >= 0.45 ? '#2E7D32' : e.value >= 0.25 ? '#FF8F00' : '#C62828' }}>{formatPct(e.value)}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '12px' }}>
+          <div><span style={{ color: 'var(--text-secondary)' }}>Tendencia Gob (19→23): </span><span style={{ color: '#C62828', fontWeight: 500 }}>-5.7 pp</span></div>
+          <div><span style={{ color: 'var(--text-secondary)' }}>Tendencia Dip (21→25): </span><span style={{ color: '#2E7D32', fontWeight: 500 }}>+3.3 pp</span></div>
+          <div><span style={{ color: 'var(--text-secondary)' }}>Efecto ML (Int19→G23): </span><span style={{ color: '#2E7D32', fontWeight: 500 }}>+5.6 pp</span></div>
+        </div>
+      </div>
+);
+
 const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCategoria }) => {
   const [ordenColumna, setOrdenColumna] = useState('Share_G23');
   const [ordenAsc, setOrdenAsc] = useState(false);
@@ -2342,27 +2375,8 @@ const VistaCapital = ({ datos, onSelectCircuito, filtroCategoria, setFiltroCateg
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ padding: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '14px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>CÓRDOBA CAPITAL</h2>
-        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '10px' }}>119 circuitos │ {totalPadron.toLocaleString()} electores</div>
-      </div>
-      
-      <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
-        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>Resultados Capital - % Votos Peronismo</div>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {[{ label: 'Gob. 2023', value: 0.458 }, { label: 'Gob. 2019', value: 0.515 }, { label: 'Dip. 2025', value: 0.255 }, { label: 'Dip. 2021', value: 0.222 }, { label: 'Int. 2019', value: 0.402 }].map(e => (
-            <div key={e.label} style={{ flex: '1 1 140px', padding: '14px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>{e.label}</div>
-              <div style={{ fontSize: '18px', fontWeight: 600, color: e.value >= 0.45 ? '#2E7D32' : e.value >= 0.25 ? '#FF8F00' : '#C62828' }}>{formatPct(e.value)}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '12px' }}>
-          <div><span style={{ color: 'var(--text-secondary)' }}>Tendencia Gob (19→23): </span><span style={{ color: '#C62828', fontWeight: 500 }}>-5.7 pp</span></div>
-          <div><span style={{ color: 'var(--text-secondary)' }}>Tendencia Dip (21→25): </span><span style={{ color: '#2E7D32', fontWeight: 500 }}>+3.3 pp</span></div>
-          <div><span style={{ color: 'var(--text-secondary)' }}>Efecto ML (Int19→G23): </span><span style={{ color: '#2E7D32', fontWeight: 500 }}>+5.6 pp</span></div>
-        </div>
-      </div>
+      <CabeceraCapital totalPadron={totalPadron} cantidadCircuitos={datos.length} />
+      <ResultadosCapital />
       
       <div style={{ padding: '14px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
         <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
