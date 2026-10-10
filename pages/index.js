@@ -7,7 +7,8 @@ import { formatearFecha } from '../lib/formatearFecha';
 import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { crearRegistroSecciones, infoEncuestasContexto } from '../components/reporte/registro';
-import { generarReporteHTML } from '../components/reporte/generar';
+import { generarReporte as armarReporte } from '../components/reporte/generar';
+import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
 import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
 
@@ -5407,9 +5408,9 @@ export default function Home() {
     : contextoReporte.tipo === 'circuito' ? `Circuito ${contextoReporte.datosCircuito.CircuitoKey} — ${contextoReporte.datosCircuito.cirn_nom || ''}` : 'Córdoba Capital';
   const rondasReporte = useMemo(() => infoEncuestasContexto(contextoReporte, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio), [contextoReporte]);
   const generarReporte = async (seleccion) => {
-    const html = await generarReporteHTML({ ctx: contextoReporte, seleccion, registro: REGISTRO_REPORTE, tituloContexto: tituloContextoReporte, formatearFecha, estilos: estilosReporte });
-    abrirVentanaImpresion(html);
+    const partes = await armarReporte({ ctx: contextoReporte, seleccion, registro: REGISTRO_REPORTE, tituloContexto: tituloContextoReporte, formatearFecha, estilos: estilosReporte });
     setModalReporteAbierto(false);
+    imprimirReporte(partes);
   };
 
   // En la ficha de un barrio (vistaFicha === 'barrio') exporta SOLO ese barrio —

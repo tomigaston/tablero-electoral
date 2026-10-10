@@ -1,20 +1,22 @@
-// CSS del documento de impresión del reporte. El documento es una página HTML aparte
-// (se abre con window.open + print), así que no hereda los estilos del tablero: acá se
-// redefinen los tokens CSS que usan los componentes de la UI (var(--text-primary), etc.)
+// CSS del reporte imprimible. Se inyecta en la propia página del tablero y rige SOLO al
+// imprimir (@media print): el resto del tablero se oculta y queda únicamente el reporte.
+// Se redefinen los tokens CSS que usan los componentes de la UI (var(--text-primary), etc.)
 // para que se rendericen igual, y se anulan los comportamientos interactivos (scroll
 // interno, sticky, botones, selects) que no tienen sentido en papel.
 
 const escCss = (t) => String(t).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ');
 
+// Devuelve { pagina, reglas }: @page no puede ir dentro de @media, por eso va aparte.
 export function estilosReporte({ territorio, fechaGenerado }) {
   const pie = escCss(`Diagnóstico Territorial – ${territorio} · Generado el ${fechaGenerado}`);
-  return `
-:root{--bg-primary:#fff;--bg-secondary:#f3f4f6;--text-primary:#1a1a1a;--text-secondary:#555;--text-tertiary:#777;--border:#d9d9d9}
+  const pagina = `
 @page{
   size:A4 portrait;margin:14mm 13mm 16mm 13mm;
   @bottom-left{content:"${pie}";font:8pt/1 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#777;vertical-align:top;padding-top:4mm}
   @bottom-right{content:"Página " counter(page) " de " counter(pages);font:8pt/1 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#777;vertical-align:top;padding-top:4mm}
-}
+}`;
+  const reglas = `
+:root{--bg-primary:#fff;--bg-secondary:#f3f4f6;--text-primary:#1a1a1a;--text-secondary:#555;--text-tertiary:#777;--border:#d9d9d9}
 *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 html,body{margin:0;padding:0;background:#fff;color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:11.5px;line-height:1.35}
 
@@ -82,4 +84,5 @@ table.rp-tabla{font-size:10.5px}
 .rp-tabla .detalle{width:auto}
 .rp-tabla .vig{white-space:nowrap}
 `;
+  return { pagina, reglas };
 }
