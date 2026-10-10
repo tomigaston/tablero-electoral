@@ -113,7 +113,7 @@ export const TitularVoto = ({ ronda, meta, fechaActual = null, anterior = null }
   const esc1Ant = anterior?.escenarios?.find(e => e.id === esc1.id);
   const tAnt = esc1Ant ? titularEscenario(esc1Ant.valores, meta) : null;
   return (
-    <div data-titular-voto style={{ border: '1px solid var(--border)', borderLeft: '4px solid #0D47A1', borderRadius: '10px', padding: '10px 14px', margin: '0 0 12px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid' }}>
+    <div data-titular-voto style={{ border: '1px solid var(--border)', borderLeft: '4px solid #0D47A1', borderRadius: '10px', padding: '10px 14px', margin: '0 0 12px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid', breakAfter: 'avoid' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px', marginBottom: '4px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
         <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>Escenario 1 · {esc1.nombre}</span>
         <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={ronda.fecha === fechaActual} />

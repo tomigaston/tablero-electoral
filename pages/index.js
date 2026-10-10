@@ -1646,7 +1646,7 @@ const BarraHorizontalPct = ({ pct, color = '#1976D2' }) => {
       <span style={{
         position: 'absolute', top: '2px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
         ...(cabeAdentro ? { left: '8px', color: '#fff' } : { left: `calc(${anchoPct}% + 6px)`, color: 'var(--text-primary)' }),
-      }}>{pct}%</span>
+      }}>{Number(pct).toFixed(1)}%</span>
     </div>
   );
 };
@@ -2052,7 +2052,7 @@ function htmlMiniPendienteGestion(funcionario, rondas, umbral, fechaActual = fec
 function htmlMiniPendientesGestion(rondas, umbral) {
   const fechaActual = fechaRondaActual(rondas);
   const nota = (rondas || []).length >= 2
-    ? `<div style="font-size:11px;color:var(--text-tertiary,#777);margin-bottom:10px">Cada barra es una ronda, de la más antigua (arriba) a la actual (abajo). Los cambios en pp se comparan con la barra de arriba.</div>` : '';
+    ? `<div style="font-size:11px;color:var(--text-tertiary,#777);margin-bottom:10px;break-after:avoid;page-break-after:avoid">Cada barra es una ronda, de la más antigua (arriba) a la actual (abajo). Los cambios en pp se comparan con la barra de arriba.</div>` : '';
   return nota + ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral, fechaActual)).join('');
 }
 
@@ -2177,7 +2177,7 @@ const GridIndicadoresComparativo = ({ rondas, umbral, metadata, fechaActual }) =
   return (
     <div>
       {hayArrastre && (
-        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
+        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px', breakAfter: 'avoid' }}>
           Las tarjetas grises con borde punteado no se midieron en la ronda actual ({formatearFecha(fechaActual)}): muestran el último dato disponible, que es más viejo.
         </div>
       )}
@@ -2230,7 +2230,7 @@ const BloqueProblemas = ({ rondas, umbral, fechaActual, sinComparacion = false }
         <span>
           {sinComparacion ? 'valores de esa medición, sin comparación' : b.previa
             ? `comparación ${formatearFecha(b.previa.fecha)} → ${formatearFecha(b.ultima.fecha)} · variación en puntos porcentuales (pp)`
-            : 'medida una sola vez: sin dato anterior para comparar'}
+            : 'sin otra medición en las rondas elegidas para comparar'}
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

@@ -136,11 +136,11 @@ export function crearRegistroSecciones(D) {
   function pieDatosEncuestas(ctx, o) {
     const rondas = rondasDe(ctx);
     if (!rondas.length) return null;
-    const s = seleccionEncuestas(rondas, o?.encuestas || {});
-    const mostradas = [...s.rondasComparadas, ...(s.hacerRonda ? [rondas[s.iR]] : [])];
+    const sel = seleccionEncuestas(rondas, o?.encuestas || {});
+    const mostradas = [...sel.rondasComparadas, ...(sel.hacerRonda ? [rondas[sel.iR]] : [])];
     const actual = fechaRondaActual(mostradas);
-    const viejos = bloquesNoMedidos(mostradas.length > 1 ? [...new Set(mostradas)] : rondas.filter(r => r.fecha <= actual), actual);
-    return `Ronda actual: ${formatearFecha(actual)}.${viejos.length ? ` Con último dato anterior: ${viejos.map(b => `${b.nombre} (${formatearFecha(b.ultimaFecha)})`).join('; ')}.` : ''}`;
+    const hayViejos = bloquesNoMedidos(mostradas.length > 1 ? [...new Set(mostradas)] : rondas.filter(r => r.fecha <= actual), actual).length > 0;
+    return `Ronda actual: ${formatearFecha(actual)}.${hayViejos ? ' Los bloques atenuados son de una ronda anterior (su fecha figura en cada uno).' : ''}`;
   }
 
   // "La ronda actual (01-10-2026) no relevó: A, B. Para esos bloques se muestra el último dato disponible (más
@@ -249,7 +249,7 @@ export function crearRegistroSecciones(D) {
       const A = rondas[ia], B = rondas[ib];
       partes.push(avisoMuestraIV([A, B]));
       partes.push(T.md(<TitularVoto ronda={B} meta={meta} fechaActual={fechaActualEnc} anterior={A} />));
-      partes.push(`<p class="rp-nota">${esc(ACLARACION_ESCENARIOS)}</p>`);
+      partes.push(`<p class="rp-nota" style="break-after:avoid;page-break-after:avoid">${esc(ACLARACION_ESCENARIOS)}</p>`);
       if (B.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(B.fecha)}.</p>`);
       const enB = B.escenarios.filter(e => !elegidos || elegidos.has(e.id));
       const comunes = enB.filter(e => A.escenarios.some(x => x.id === e.id));
@@ -266,13 +266,13 @@ export function crearRegistroSecciones(D) {
       const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
       partes.push(avisoMuestraIV([R]));
       partes.push(T.md(<TitularVoto ronda={R} meta={meta} fechaActual={fechaActualEnc} />));
-      partes.push(`<p class="rp-nota">${esc(ACLARACION_ESCENARIOS)}</p>`);
+      partes.push(`<p class="rp-nota" style="break-after:avoid;page-break-after:avoid">${esc(ACLARACION_ESCENARIOS)}</p>`);
       if (R.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(R.fecha)}.</p>`);
       // Dos escenarios por fila y modo compacto: entran 4 escenarios por hoja (6 escenarios = 2 hojas).
 const nn = notaNumeracion([R.fecha], meta, formatearFecha);
       if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
       const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
-        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo compacto fechaActual={fechaActualEnc} sufijo={`Ronda ${formatearFecha(R.fecha)}`} />)}</div>`);
+        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo compacto fechaActual={fechaActualEnc} />)}</div>`);
       partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px 16px;align-items:start;margin-top:10px">${celdas.join('')}</div>`);
     }
     return partes.join('');
