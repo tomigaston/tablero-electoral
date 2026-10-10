@@ -8,6 +8,8 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
+import { calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
+import { ChipRonda, FilaChipsRondas, htmlChipRonda, estiloChipRonda, AVISO_N_CHICO } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
@@ -1821,25 +1823,8 @@ function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 
   return `<div style="display:flex;margin-bottom:3px">${labels}</div>${barra}`;
 }
 
-// Arma {actual, fechaActual, actualCasos, anterior, delta, estado} para un indicador a
-// partir de [{fecha, valor, casos}] ya sin nulls, en orden cronológico. Compartida por
-// pantalla (ComparativoEncuesta, JSX) y PDF (htmlComparativoEncuestaBody, HTML-string) —
-// es pura lógica de datos, sin JSX ni HTML, así que no hay nada que duplicar entre las
-// dos. "anterior" es el penúltimo elemento CON DATO de esta lista ya filtrada — si la
-// pregunta no está presente en la ronda anteúltima global pero sí en una previa, se
-// compara contra esa (mismo criterio de "omitir el hueco puntual sin romper el resto"
-// que ya aplicaba con la convención vieja). estado: 'sube' | 'baja' | 'estable'
-// (|delta| < umbral) según anterior vs. actual, o null con < 2 rondas con dato (nada
-// que comparar todavía).
-function calcularVariacionIndicador(datos, umbral) {
-  if (!datos || datos.length === 0) return null;
-  const actual = datos[datos.length - 1];
-  if (datos.length < 2) return { actual: actual.valor, fechaActual: actual.fecha, actualCasos: actual.casos, anterior: null, delta: null, estado: null };
-  const anterior = datos[datos.length - 2];
-  const delta = actual.valor - anterior.valor;
-  const estado = Math.abs(delta) < umbral ? 'estable' : (delta > 0 ? 'sube' : 'baja');
-  return { actual: actual.valor, fechaActual: actual.fecha, actualCasos: actual.casos, anterior: anterior.valor, delta, estado };
-}
+// calcularVariacionIndicador / resolverIndicador viven en lib/lecturaRondas.js (lógica pura compartida
+// entre pantalla y reporte; ahora devuelven también la fecha y el n del extremo anterior).
 
 // positivoEsSubir: polaridad del indicador, no del delta — true para Aprobación/
 // Reelección (subir es buena noticia en las 5 cards, ver
@@ -2242,6 +2227,7 @@ const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
   const rondas = encuesta.rondas;
   return (
     <div>
+      <FilaChipsRondas rondas={rondas} fechaActual={fechaRondaActual(rondas)} />
       <ResumenVariacionesComparativo rondas={rondas} umbral={umbral} />
       <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
@@ -2281,7 +2267,9 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
-          {vista === 'resumen' ? `Encuesta · ${formatearFechaRonda(ronda.fecha, ronda.casos)}` : 'Comparativo entre rondas'}
+          {vista === 'resumen'
+            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>Encuesta <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={rondaIdx === encuesta.rondas.length - 1} /></span>
+            : 'Comparativo entre rondas'}
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {vista === 'resumen' && encuesta.rondas.length > 1 && (

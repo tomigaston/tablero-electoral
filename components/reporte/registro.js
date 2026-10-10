@@ -14,6 +14,8 @@
 
 import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion } from '../../lib/intencionVoto';
 import { EscenarioRonda, EscenarioComparativo } from '../IntencionVotoGobernador';
+import { ChipRonda } from '../ChipRonda';
+import { fechaRondaActual } from '../../lib/lecturaRondas';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
 
@@ -160,7 +162,7 @@ export function crearRegistroSecciones(D) {
         const comp = complementosRonda(r);
         if (comp) partes.push(`<div class="rp-h3">Datos complementarios · Ronda del ${etiquetaRonda(r)}</div>${comp}`);
       } else {
-        partes.push(`<div class="rp-h3"${hacerComparativo ? '' : ' style="margin-top:0"'}>Encuestas · Ronda del ${etiquetaRonda(r)}</div>${T.md(<ResumenEncuesta preguntas={r.preguntas} />)}${complementosRonda(r)}`);
+        partes.push(`<div class="rp-h3"${hacerComparativo ? '' : ' style="margin-top:0"'}>Encuestas · Ronda ${T.md(<ChipRonda fecha={r.fecha} casos={r.casos} actual={r.fecha === fechaRondaActual(rondas)} />)}</div>${T.md(<ResumenEncuesta preguntas={r.preguntas} />)}${complementosRonda(r)}`);
       }
     }
     return partes.join('');
