@@ -1679,7 +1679,7 @@ const BarraGestion = ({ label, data, arrastre = null }) => {
     <div style={arrastre ? { marginBottom: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '8px', padding: '8px 10px' } : { marginBottom: '10px' }}>
       <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
       {arrastre && <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '5px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}><span>{arrastre.sinDato} · último:</span><ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} /></div>}
-      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { atenuada: !!arrastre }) }} />
+      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { atenuada: !!arrastre, carril: true }) }} />
     </div>
   );
 };
@@ -1823,27 +1823,31 @@ const ResumenEncuesta = ({ preguntas, contexto = null }) => {
 const fmtPctSeg = (v) => `${Number(v).toFixed(1)}%`;
 const COLOR_TEXTO_SEGMENTO = { 'Positiva': '#fff', 'Negativa': '#fff', 'Regular': '#1a1a1a', 'Ns/Nc': '#1a1a1a' };
 const ALTO_FILA_ETIQUETA = 13;
+const TOP_ETIQUETA = 4; // separación entre la barra y la etiqueta externa
+const ALTO_CARRIL_ETIQUETA = TOP_ETIQUETA + ALTO_FILA_ETIQUETA; // una sola fila
 // Geometría única de las barras apiladas: mismo alto y mismo radio en toda ronda, bloque y estado (actual, anterior,
 // arrastre). Lo que distingue una barra de otra es el color/opacidad y el chip, nunca el tamaño.
 const ALTO_BARRA_GESTION = 24;
 const RADIO_BARRA_GESTION = 5;
-function htmlBarraSegmentosPDF(data, { height = ALTO_BARRA_GESTION, atenuada = false } = {}) {
+function htmlBarraSegmentosPDF(data, { height = ALTO_BARRA_GESTION, atenuada = false, carril = false } = {}) {
   if (!data) return `<div data-barra-gestion style="height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;background:#eee"></div>`;
-  const { segs, filas } = layoutSegmentos(data, categoriasGestion(data));
+  const { segs } = layoutSegmentos(data, categoriasGestion(data));
   const segmentos = segs.map(sg => {
     const texto = sg.dentro ? `<span style="font-size:10px;font-weight:600;color:${COLOR_TEXTO_SEGMENTO[sg.cat] || '#fff'}">${fmtPctSeg(sg.v)}</span>` : '';
     return `<div title="${sg.cat}: ${fmtPctSeg(sg.v)}" style="flex:${sg.ancho} 1 0%;background:${colorCategoriaGestion(sg.cat)};display:flex;align-items:center;justify-content:center;min-width:2px">${texto}</div>`;
   }).join('');
   const barra = `<div data-barra-gestion style="display:flex;height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;overflow:hidden;background:#eee;${atenuada ? 'opacity:.72' : ''}">${segmentos}</div>`;
   const fuera = segs.filter(sg => !sg.dentro);
-  const callouts = fuera.length === 0 ? '' : `<div style="position:relative;height:${4 + filas * ALTO_FILA_ETIQUETA + 2}px">${fuera.map(sg => {
-    const top = 4 + sg.fila * ALTO_FILA_ETIQUETA;
-    const izq = Math.min(Math.max(sg.centro, 3), 97);
-    return `<div style="position:absolute;left:${sg.centro}%;top:0;width:1px;height:${top + 2}px;background:#9aa0a6"></div><div style="position:absolute;left:${izq}%;top:${top}px;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:600;line-height:${ALTO_FILA_ETIQUETA - 1}px;color:var(--text-secondary,#555)"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${colorCategoriaGestion(sg.cat)};margin-right:3px"></span>${fmtPctSeg(sg.v)}</div>`;
-  }).join('')}</div>`;
   const ceros = ['Positiva', 'Regular', 'Negativa'].filter(c => data[c] === 0);
-  const notaCeros = ceros.length ? `<div style="font-size:10px;color:var(--text-tertiary,#777);margin-top:2px">${ceros.map(c => `${c} 0%`).join(' · ')}</div>` : '';
-  return `${barra}${callouts}${notaCeros}`;
+  // El aviso de 0% va del lado del carril que no ocupa una etiqueta externa (izquierda por defecto).
+  const ladoLibre = fuera.length && Math.min(...fuera.map(sg => sg.pos)) < 30 ? 'right' : 'left';
+  const notaCeros = ceros.length ? `<span style="position:absolute;${ladoLibre}:0;top:${TOP_ETIQUETA}px;font-size:10px;line-height:${ALTO_FILA_ETIQUETA - 1}px;color:var(--text-tertiary,#777)">${ceros.map(c => `${c} 0%`).join(' · ')}</span>` : '';
+  const etiquetas = fuera.map(sg => `<div style="position:absolute;left:${sg.centro}%;top:0;width:1px;height:${TOP_ETIQUETA + 2}px;background:#9aa0a6"></div><div style="position:absolute;left:${sg.pos}%;top:${TOP_ETIQUETA}px;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:600;line-height:${ALTO_FILA_ETIQUETA - 1}px;color:var(--text-secondary,#555)"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${colorCategoriaGestion(sg.cat)};margin-right:3px"></span>${fmtPctSeg(sg.v)}</div>`).join('');
+  // Carril bajo la barra: en las barras de Calificación de gestión (carril: true) siempre ocupa el mismo alto, tenga o no
+  // etiquetas externas o aviso de 0%, para que los deltas y los bloques queden a la misma distancia en todas.
+  const alto = carril || fuera.length || ceros.length ? ALTO_CARRIL_ETIQUETA : 0;
+  const lane = alto ? `<div style="position:relative;height:${alto}px">${etiquetas}${notaCeros}</div>` : '';
+  return `${barra}${lane}`;
 }
 
 // calcularVariacionIndicador / resolverIndicador viven en lib/lecturaRondas.js (lógica pura compartida
@@ -1930,7 +1934,7 @@ function htmlMiniPendienteGestion(funcionario, rondas, umbral, ref = crearRefRon
     const deltas = i > 0 ? htmlDeltasGestion(filas[i - 1].data, f.data, filas[i - 1].fecha, umbral, atenuada) : '';
     return `<div style="margin-bottom:10px;break-inside:avoid">
       <div style="margin-bottom:3px">${htmlChipRonda(f.fecha, { casos: f.casos, actual: esActual })}</div>
-      ${htmlBarraSegmentosPDF(f.data, { atenuada })}
+      ${htmlBarraSegmentosPDF(f.data, { atenuada, carril: true })}
       ${deltas}
     </div>`;
   }).join('');
