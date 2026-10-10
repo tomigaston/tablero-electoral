@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { formatearFecha } from '../lib/formatearFecha';
 import { estadoMostradoPauta } from '../lib/estadoPauta';
+import ResumenPautaGlobal from './ResumenPauta';
 import {
-  derivarPautaPorCircuito, filtrarPiezas, particionarPorVigencia, coincideCircuito, metricasParaMostrar, esUrlHttp,
+  filtrarPiezas, particionarPorVigencia, coincideCircuito, metricasParaMostrar, esUrlHttp,
 } from '../lib/pautaPorCircuito';
 
 // Vista "Pauta por circuito" (vistaFicha === 'pautaCircuito'). El estado de filtros y
@@ -13,6 +14,7 @@ export const ESTADO_INICIAL_VISTA_PAUTA = {
   plataforma: 'todas', // 'todas' | 'META' | 'GOOGLE'
   textoCircuito: '',
   textoPieza: '',
+  circuitoExacto: null, // clave de circuito fijada desde la mini-tarjeta de pauta del panel
   abiertos: [], // claves de circuito expandidas
   capitalAbierto: true,
   verSinPauta: false,
@@ -304,7 +306,7 @@ const CampoBusqueda = ({ etiqueta, placeholder, valor, onCambio, ancho }) => (
 // título en un solo input vuelve inmanejables las coincidencias cruzadas.
 const BarraFiltros = ({ estado, set }) => (
   <div style={{ position: 'sticky', top: '-18px', zIndex: 5, backgroundColor: '#fff', padding: '10px 0 12px', margin: '0 0 12px', borderBottom: '1px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '12px 16px', alignItems: 'flex-end' }}>
-    <CampoBusqueda etiqueta="Circuito (código o nombre)" placeholder="Ej: 10I o Bella Vista" valor={estado.textoCircuito} onCambio={(v) => set({ textoCircuito: v })} ancho={220} />
+    <CampoBusqueda etiqueta="Circuito (código o nombre)" placeholder="Ej: 10I o Bella Vista" valor={estado.textoCircuito} onCambio={(v) => set({ textoCircuito: v, circuitoExacto: null })} ancho={220} />
     <CampoBusqueda etiqueta="Pieza (campaña o título)" placeholder="Ej: Cordobeses en Alerta" valor={estado.textoPieza} onCambio={(v) => set({ textoPieza: v })} ancho={260} />
     <Segmentado etiqueta="Estado" valor={estado.estado} onCambio={(v) => set({ estado: v })} opciones={[{ valor: 'activa', etiqueta: 'Activa' }, { valor: 'inactiva', etiqueta: 'Inactiva' }, { valor: 'todas', etiqueta: 'Todas' }]} />
     <Segmentado etiqueta="Plataforma" valor={estado.plataforma} onCambio={(v) => set({ plataforma: v })} opciones={[{ valor: 'todas', etiqueta: 'Todas' }, { valor: 'META', etiqueta: 'META' }, { valor: 'GOOGLE', etiqueta: 'GOOGLE' }]} />
@@ -313,14 +315,8 @@ const BarraFiltros = ({ estado, set }) => (
 
 // ---- Vista ------------------------------------------------------------------------
 
-export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGeoData, cruceData, estado, setEstado, onVolver, onIrABarrio }) {
+export default function VistaPautaCircuito({ derivado, resumen, estado, setEstado, onVolver, onIrABarrio }) {
   const set = (patch) => setEstado((e) => ({ ...e, ...patch }));
-  const hoy = useMemo(() => { const h = new Date(); h.setHours(0, 0, 0, 0); return h; }, []);
-  const derivado = useMemo(
-    () => derivarPautaPorCircuito({ pautasBarriosData, datos, barriosGeoData, cruceData, hoy }),
-    [pautasBarriosData, datos, barriosGeoData, cruceData, hoy],
-  );
-
   const filtros = { plataforma: estado.plataforma, textoPieza: estado.textoPieza };
 
   const items = useMemo(() => {
@@ -349,10 +345,10 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
     return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', padding: '20px' }}>Cargando pauta…</div>;
   }
 
-  const itemsCircuito = items.filter((i) => coincideCircuito(i.circuito, estado.textoCircuito));
+  const itemsCircuito = items.filter((i) => estado.circuitoExacto ? i.circuito.key === estado.circuitoExacto : coincideCircuito(i.circuito, estado.textoCircuito));
   const conActividad = itemsCircuito.filter((i) => i.visibles > 0);
   const resto = itemsCircuito.filter((i) => i.visibles === 0);
-  const buscandoCircuito = estado.textoCircuito.trim() !== '';
+  const buscandoCircuito = estado.textoCircuito.trim() !== '' || !!estado.circuitoExacto;
   const buscandoPieza = estado.textoPieza.trim() !== '';
   // Se abren solas las secciones que el usuario fue a buscar: un único circuito coincidente,
   // o (buscando una pieza) los pocos circuitos donde aparece.
@@ -376,7 +372,15 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
         {derivado.control.entradas.toLocaleString('es-AR')} registros en el dato → {(derivado.control.piezasEnCircuitos + derivado.control.piezasCapital + derivado.control.piezasSinResolver).toLocaleString('es-AR')} piezas distintas ({derivado.control.piezasEnCircuitos.toLocaleString('es-AR')} en circuitos · {derivado.control.piezasCapital} de alcance Capital · {derivado.control.piezasSinResolver} sin circuito resuelto)
       </p>
 
+      <div style={{ marginBottom: '14px' }}><ResumenPautaGlobal resumen={resumen} columnas={3} /></div>
+
       <BarraFiltros estado={estado} set={set} />
+      {estado.circuitoExacto && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 12px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+          Mostrando solo el circuito <strong>{estado.circuitoExacto}</strong>
+          <button onClick={() => set({ circuitoExacto: null })} style={botonChico}>✕ Ver todos los circuitos</button>
+        </div>
+      )}
 
       <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '18px' }}>
         <button

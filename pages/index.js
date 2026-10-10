@@ -17,6 +17,10 @@ import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
 import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
+import MetricCardMini from '../components/MetricCardMini';
+import ResumenPautaGlobal, { MiniTarjetaPautaCircuito } from '../components/ResumenPauta';
+import { derivarPautaPorCircuito, normalizarCircuitoKey } from '../lib/pautaPorCircuito';
+import { resumirPauta } from '../lib/pautaResumen';
 import VistaPautaCircuito, { ESTADO_INICIAL_VISTA_PAUTA } from '../components/VistaPautaCircuito';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
@@ -3126,16 +3130,6 @@ const BadgeComunicacionObra = ({ texto, color }) => (
 // ============================================
 // PANEL LATERAL (VISTA MAPA)
 // ============================================
-const MetricCardMini = ({ label, value, subtitle, trend, trendPositive }) => (
-  <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
-    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>{label}</div>
-    <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-      <span style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
-      {subtitle && <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{subtitle}</span>}
-    </div>
-    {trend && <div style={{ marginTop: '3px', fontSize: '11px', color: trendPositive ? '#2E7D32' : '#C62828', fontWeight: 500 }}>{trendPositive ? '▲' : '▼'} {trend}</div>}
-  </div>
-);
 
 const BadgeCobertura = ({ encuestado }) => (
   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '6px', backgroundColor: encuestado ? '#4CAF5022' : 'var(--bg-secondary)', color: encuestado ? '#2E7D32' : 'var(--text-tertiary)', fontSize: '11px', fontWeight: 600 }}>
@@ -3568,9 +3562,17 @@ const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBa
   );
 };
 
-const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => {
+const PanelMiniCircuito = ({ resumenPauta, onVerPautaCircuito, datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => {
   if (!datos) {
-    return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>Resumen de pauta</div>
+          <ResumenPautaGlobal resumen={resumenPauta} />
+        </div>
+        <div style={{ padding: '4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>
+      </div>
+    );
   }
   const clave = `${datos.Mapkey} - ${datos.cirn_nom}`;
   const claveSel = barrioSeleccionado ? normalizarNombreBarrio(barrioSeleccionado) : null;
@@ -3592,6 +3594,7 @@ const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosG
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <ResumenCircuitoMini datos={datos} padronTotal={padronTotal} encuestasData={encuestasData} />
+      <MiniTarjetaPautaCircuito cantidad={resumenPauta ? (resumenPauta.activasPorCircuito.get(normalizarCircuitoKey(datos.CircuitoKey)) ?? 0) : null} onVer={() => onVerPautaCircuito(datos.CircuitoKey)} />
       <button onClick={() => onVerFicha()} style={{ padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>Ver ficha completa →</button>
       {obrasEnriquecidas && <BadgeObrasCercanas cantidad={obrasCercanasCount} onClick={() => onVerFicha('territorio', 'cercanas')} />}
       <ListaCruceColapsable
@@ -3715,7 +3718,7 @@ const PanelMiniBarrio = ({ nombreBarrio, barriosGeoLookup, todosLosDatos, datosC
   );
 };
 
-const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, onVerFichaCircuito, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasEnriquecidas, circuitosGeoJsonData, poblacionTotalPorBarrio }) => (
+const PanelLateral = ({ resumenPauta, onVerPautaCircuito, panelTab, setPanelTab, datosCircuito, padronTotal, onVerFicha, onVerFichaBarrio, onVerFichaCircuito, barrioSeleccionado, barriosGeoLookup, todosLosDatos, cruceData, onSelectBarrio, onSelectCircuito, encuestasData, obrasEnriquecidas, circuitosGeoJsonData, poblacionTotalPorBarrio }) => (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
       <button onClick={() => setPanelTab('circuito')} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: panelTab === 'circuito' ? '#1976D2' : 'var(--bg-secondary)', color: panelTab === 'circuito' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Circuito</button>
@@ -3723,7 +3726,7 @@ const PanelLateral = ({ panelTab, setPanelTab, datosCircuito, padronTotal, onVer
     </div>
     <div style={{ flex: 1, overflowY: 'auto' }}>
       {panelTab === 'circuito'
-        ? <PanelMiniCircuito datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} />
+        ? <PanelMiniCircuito resumenPauta={resumenPauta} onVerPautaCircuito={onVerPautaCircuito} datos={datosCircuito} padronTotal={padronTotal} onVerFicha={onVerFicha} cruceData={cruceData} barriosGeoLookup={barriosGeoLookup} barrioSeleccionado={barrioSeleccionado} onSelectBarrio={onSelectBarrio} encuestasData={encuestasData} obrasEnriquecidas={obrasEnriquecidas} circuitosGeoJsonData={circuitosGeoJsonData} />
         : <PanelMiniBarrio nombreBarrio={barrioSeleccionado} barriosGeoLookup={barriosGeoLookup} todosLosDatos={todosLosDatos} datosCircuito={datosCircuito} cruceData={cruceData} onSelectCircuito={onSelectCircuito} onVerFichaBarrio={onVerFichaBarrio} onVerFichaCircuito={onVerFichaCircuito} poblacionTotalPorBarrio={poblacionTotalPorBarrio} obrasEnriquecidas={obrasEnriquecidas} />}
     </div>
   </div>
@@ -4938,6 +4941,14 @@ export default function Home() {
       .map((f, i) => ({ tipo: 'barrio', key: `b-${i}-${f.properties.nombre_barrio}`, nombreBarrio: f.properties.nombre_barrio }));
     return [...circuitos, ...barrios];
   }, [datos, barriosGeoData, busqueda]);
+  // Derivación única de pauta por circuito: la usan la pestaña "Pauta por circuito" y las
+  // tarjetas de resumen (mismo objeto -> mismos números).
+  const derivadoPauta = useMemo(() => {
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    return derivarPautaPorCircuito({ pautasBarriosData, datos, barriosGeoData, cruceData, hoy });
+  }, [pautasBarriosData, datos, barriosGeoData, cruceData]);
+  const resumenPauta = useMemo(() => resumirPauta(derivadoPauta, cruceData), [derivadoPauta, cruceData]);
+
   const padronTotal = useMemo(() => datos.reduce((sum, d) => sum + (d.Padron_G23 || 0), 0), [datos]);
 
   const barriosGeoLookup = useMemo(() => {
@@ -5164,6 +5175,14 @@ export default function Home() {
   // BloqueAlcanceCapital, no hay solapa Pauta propia de circuito. setObrasFoco('propio')
   // por el mismo motivo que el click directo en la solapa Territorio (línea del array
   // `solapas` más abajo): aterrizar siempre en la sección de obras propias del circuito.
+  // "ver" de la mini-tarjeta de pauta del circuito: abre "Pauta por circuito" filtrada a ese
+  // circuito (solo activas, sin otros filtros) y con su sección desplegada.
+  const irAPautaDeCircuito = (circuitoKey) => {
+    const key = normalizarCircuitoKey(circuitoKey);
+    setVistaPautaEstado((e) => ({ ...e, estado: 'activa', plataforma: 'todas', textoPieza: '', textoCircuito: '', circuitoExacto: key, abiertos: e.abiertos.includes(key) ? e.abiertos : [...e.abiertos, key] }));
+    setVistaFicha('pautaCircuito');
+  };
+
   const irACircuitoDesdeMapaPauta = (circuitoKey) => {
     handleSelectCircuito(circuitoKey);
     setVistaFicha('circuito');
@@ -5436,7 +5455,8 @@ export default function Home() {
                     pautasBarriosData={pautasBarriosData}
                     datos={datos}
                     barriosGeoData={barriosGeoData}
-                    cruceData={cruceData}
+                    derivado={derivadoPauta}
+                    resumen={resumenPauta}
                     estado={vistaPautaEstado}
                     setEstado={setVistaPautaEstado}
                     onVolver={() => setVistaFicha(null)}
@@ -5623,6 +5643,8 @@ export default function Home() {
               <div style={{ width: '300px', flexShrink: 0, padding: '18px', paddingLeft: '0' }}>
                 <div style={{ height: '100%', backgroundColor: '#fff', borderRadius: '12px', padding: '16px', overflowY: 'auto' }}>
                   <PanelLateral
+                    resumenPauta={resumenPauta}
+                    onVerPautaCircuito={irAPautaDeCircuito}
                     panelTab={panelTab}
                     setPanelTab={setPanelTab}
                     datosCircuito={datosCircuito}
