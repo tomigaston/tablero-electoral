@@ -159,7 +159,7 @@ const FilaPieza = React.memo(function FilaPieza({ pieza, onIrABarrio }) {
 
 // Activas primero (o inactivas si el filtro es "Inactiva"); la otra mitad detrás de un
 // botón. Paginado: un circuito puede tener ~200 piezas y no se renderizan de entrada.
-const ListaPiezas = ({ activas, inactivas, filtroEstado, limiteInicial = TAMANO_PAGINA, vacio, onIrABarrio }) => {
+const ListaPiezas = ({ activas, inactivas, filtroEstado, limiteInicial = TAMANO_PAGINA, ambito = '', onIrABarrio }) => {
   const [verInactivas, setVerInactivas] = useState(false);
   const [limitePrincipal, setLimitePrincipal] = useState(limiteInicial);
   const [limiteSecundario, setLimiteSecundario] = useState(limiteInicial);
@@ -176,7 +176,11 @@ const ListaPiezas = ({ activas, inactivas, filtroEstado, limiteInicial = TAMANO_
   );
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      {principal.length === 0 && <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', padding: '6px 2px' }}>{vacio}</div>}
+      {(filtroEstado === 'todas' ? activas.length + inactivas.length === 0 : principal.length === 0) && (
+        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', padding: '6px 2px' }}>
+          Sin piezas {filtroEstado === 'inactiva' ? 'inactivas' : filtroEstado === 'activa' ? 'activas' : ''}{ambito} con estos filtros.
+        </div>
+      )}
       {renderPaginado(principal, limitePrincipal, setLimitePrincipal)}
       {secundario.length > 0 && filtroEstado !== 'todas' && (
         <button onClick={() => setVerInactivas((v) => !v)} aria-expanded={verInactivas} style={{ ...botonChico, alignSelf: 'flex-start' }}>
@@ -229,10 +233,34 @@ const SeccionCircuito = ({ item, abierto, saltar, onToggle, filtroEstado, onIrAB
               activas={activas}
               inactivas={inactivas}
               filtroEstado={filtroEstado}
-              vacio={filtroEstado === 'inactiva' ? 'Sin piezas inactivas con estos filtros.' : 'Sin piezas activas con estos filtros.'}
               onIrABarrio={onIrABarrio}
             />
           )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ---- Sin circuito resuelto --------------------------------------------------------
+
+// Red de seguridad: una pieza cuyo barrio no resuelve a ningún circuito (nombre que no cruza,
+// circuito desconocido) NO se descarta; cae acá con su conteo a la vista.
+const BloqueSinCircuito = ({ bloque, partes, filtroEstado, onIrABarrio }) => {
+  const [abierto, setAbierto] = useState(true);
+  const resumenBarrios = bloque.barrios.map((b) => `${b.nombre} (${b.cantidad})`).join(' · ');
+  return (
+    <div style={{ border: '1px solid #E65100', borderRadius: '10px', overflow: 'hidden', marginBottom: '18px' }}>
+      <button onClick={() => setAbierto((a) => !a)} aria-expanded={abierto} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', border: 'none', backgroundColor: '#FF980018', cursor: 'pointer', textAlign: 'left' }}>
+        <span style={{ fontSize: '10px', color: 'var(--text-tertiary)', transform: abierto ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>▶</span>
+        <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>⚠ Sin circuito resuelto</span>
+        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', flex: 1 }}>{bloque.piezas.length} pieza{bloque.piezas.length === 1 ? '' : 's'} que no se pudieron asignar a un circuito</span>
+        <ResumenConteo activas={partes.activas.length} inactivas={partes.inactivas.length} />
+      </button>
+      {abierto && (
+        <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {resumenBarrios && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Barrios sin circuito: {resumenBarrios}</div>}
+          <ListaPiezas activas={partes.activas} inactivas={partes.inactivas} filtroEstado={filtroEstado} limiteInicial={8} ambito=" sin circuito" onIrABarrio={onIrABarrio} />
         </div>
       )}
     </div>
@@ -311,6 +339,12 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [derivado, estado.plataforma, estado.textoPieza]);
 
+  const sinResolver = useMemo(() => {
+    if (!derivado) return { activas: [], inactivas: [] };
+    return particionarPorVigencia(filtrarPiezas(derivado.sinCircuitoResuelto.piezas, filtros));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [derivado, estado.plataforma, estado.textoPieza]);
+
   if (!derivado) {
     return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', padding: '20px' }}>Cargando pauta…</div>;
   }
@@ -357,10 +391,14 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
         </button>
         {estado.capitalAbierto && (
           <div style={{ padding: '12px 14px' }}>
-            <ListaPiezas activas={capital.activas} inactivas={capital.inactivas} filtroEstado={estado.estado} limiteInicial={4} vacio={estado.estado === 'inactiva' ? 'Sin piezas inactivas de alcance Capital con estos filtros.' : 'Sin piezas activas de alcance Capital con estos filtros.'} onIrABarrio={onIrABarrio} />
+            <ListaPiezas activas={capital.activas} inactivas={capital.inactivas} filtroEstado={estado.estado} limiteInicial={4} ambito=" de alcance Capital" onIrABarrio={onIrABarrio} />
           </div>
         )}
       </div>
+
+      {derivado.sinCircuitoResuelto.piezas.length > 0 && (
+        <BloqueSinCircuito bloque={derivado.sinCircuitoResuelto} partes={sinResolver} filtroEstado={estado.estado} onIrABarrio={onIrABarrio} />
+      )}
 
       <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-tertiary)', margin: '0 0 8px' }}>
         {conActividad.length} circuito{conActividad.length === 1 ? '' : 's'} con {estado.estado === 'inactiva' ? 'pauta inactiva' : estado.estado === 'todas' ? 'pauta' : 'pauta activa'}
