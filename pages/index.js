@@ -1832,7 +1832,7 @@ function htmlBarraSegmentosPDF(data, { height = ALTO_BARRA_GESTION, atenuada = f
   const { segs, filas } = layoutSegmentos(data, categoriasGestion(data));
   const segmentos = segs.map(sg => {
     const texto = sg.dentro ? `<span style="font-size:10px;font-weight:600;color:${COLOR_TEXTO_SEGMENTO[sg.cat] || '#fff'}">${fmtPctSeg(sg.v)}</span>` : '';
-    return `<div title="${sg.cat}: ${fmtPctSeg(sg.v)}" style="width:${sg.v}%;background:${colorCategoriaGestion(sg.cat)};display:flex;align-items:center;justify-content:center;min-width:2px">${texto}</div>`;
+    return `<div title="${sg.cat}: ${fmtPctSeg(sg.v)}" style="flex:${sg.ancho} 1 0%;background:${colorCategoriaGestion(sg.cat)};display:flex;align-items:center;justify-content:center;min-width:2px">${texto}</div>`;
   }).join('');
   const barra = `<div data-barra-gestion style="display:flex;height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;overflow:hidden;background:#eee;${atenuada ? 'opacity:.72' : ''}">${segmentos}</div>`;
   const fuera = segs.filter(sg => !sg.dentro);
