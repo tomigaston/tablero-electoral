@@ -233,12 +233,12 @@ export function crearRegistroSecciones(D) {
     } else {
       const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
       partes.push(avisoMuestraIV([R]));
-      // Dos escenarios por fila (cada uno con su título, candidatos y tabla): 5-6 escenarios entran en 2 hojas.
+      // Dos escenarios por fila y modo compacto: entran 4 escenarios por hoja (6 escenarios = 2 hojas).
 const nn = notaNumeracion([R.fecha], meta, formatearFecha);
       if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
       const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
-        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo sufijo={`Ronda ${formatearFecha(R.fecha)}`} />)}</div>`);
-      partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px 16px;align-items:start;margin-top:12px">${celdas.join('')}</div>`);
+        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo compacto sufijo={`Ronda ${formatearFecha(R.fecha)}`} />)}</div>`);
+      partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px 16px;align-items:start;margin-top:10px">${celdas.join('')}</div>`);
     }
     return partes.join('');
   }
@@ -460,7 +460,7 @@ const nn = notaNumeracion([R.fecha], meta, formatearFecha);
         const d = datosIV(ctx); const i = o?.intencion || {};
         const r = d.rondas[Math.min(Math.max(i.rondaIdx ?? d.rondas.length - 1, 0), d.rondas.length - 1)];
         const n = i.escenarios?.length || r?.escenarios.length || 0;
-        return Math.max(0.5, i.modo === 'comparativo' ? n * 0.4 : Math.ceil(n / 2) * 0.4);
+        return Math.max(0.5, i.modo === 'comparativo' ? n * 0.4 : Math.ceil(n / 4) * 1);
       },
     },
   ];

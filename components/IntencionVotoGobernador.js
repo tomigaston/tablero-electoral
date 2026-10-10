@@ -31,9 +31,9 @@ const BarraFina = ({ valor, escalaMax, color }) => {
 };
 
 // Encabezado de cada tabla: la fecha es lo más visible; debajo, el n y el aviso de muestra reducida.
-const EncabezadoTabla = ({ fecha, casos }) => (
-  <div style={{ marginBottom: '8px' }}>
-    <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>{formatearFecha(fecha)}</div>
+const EncabezadoTabla = ({ fecha, casos, compacto }) => (
+  <div style={{ marginBottom: compacto ? '5px' : '8px' }}>
+    <div style={{ fontSize: compacto ? '14px' : '17px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>{formatearFecha(fecha)}</div>
     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
       {casos != null ? `n = ${casos} respuestas` : 'n no informado'}
       {casos != null && casos < UMBRAL_MUESTRA_REDUCIDA && <span style={{ color: '#8a5a00', fontWeight: 600 }}> · ⚠ muestra reducida</span>}
@@ -42,13 +42,14 @@ const EncabezadoTabla = ({ fecha, casos }) => (
 );
 
 // Una tabla: filas = candidatos. filas: [{ clave, valor, variacion? }]. conVariacion agrega la columna Δ pp.
-export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false, escalaMax, resaltar = true }) => {
+export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false, escalaMax, resaltar = true, compacto = false }) => {
+  const pad = compacto ? '3px 9px' : '7px 10px';
   const valores = Object.fromEntries(filas.filter(f => f.valor != null).map(f => [f.clave, f.valor]));
   const puntero = resaltar ? punteroYDiferencia(valores, meta) : null;
   const max = escalaMax || Math.max(...Object.values(valores), 1);
   return (
     <div style={{ minWidth: 0, breakInside: 'avoid' }}>
-      <EncabezadoTabla fecha={fecha} casos={casos} />
+      <EncabezadoTabla fecha={fecha} casos={casos} compacto={compacto} />
       <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'var(--bg-primary)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', tableLayout: 'fixed' }}>
           <colgroup>
@@ -70,13 +71,13 @@ export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false
               const color = tipo === 'candidato' ? '#1976D2' : '#9AA5B1';
               return (
                 <tr key={f.clave} style={{ borderTop: '1px solid var(--border)', backgroundColor: esPrimero ? '#1976D20F' : 'transparent' }}>
-                  <td style={{ padding: '7px 10px', verticalAlign: 'middle', color: tipo === 'candidato' ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: esPrimero ? 700 : 400, overflowWrap: 'anywhere' }}>
+                  <td style={{ padding: pad, verticalAlign: 'middle', color: tipo === 'candidato' ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: esPrimero ? 700 : 400, overflowWrap: 'anywhere' }}>
                     {nombreCandidato(f.clave, meta)}
                     {esPrimero && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: '#1565C0' }}>PRIMERO</span>}
-                    <div style={{ marginTop: '3px', opacity: f.valor == null ? 0 : 1 }}><BarraFina valor={f.valor} escalaMax={max} color={color} /></div>
+                    <div style={{ marginTop: compacto ? '1px' : '3px', opacity: f.valor == null ? 0 : 1 }}><BarraFina valor={f.valor} escalaMax={max} color={color} /></div>
                   </td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', verticalAlign: 'top', fontSize: '15px', fontWeight: esPrimero ? 800 : 600, color: f.valor == null ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{fmtPct(f.valor)}</td>
-                  {conVariacion && <td style={{ padding: '7px 10px', textAlign: 'right', verticalAlign: 'top', fontSize: '12px' }}><Variacion v={f.variacion} /></td>}
+                  <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: compacto ? '14px' : '15px', fontWeight: esPrimero ? 800 : 600, color: f.valor == null ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{fmtPct(f.valor)}</td>
+                  {conVariacion && <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: '12px' }}><Variacion v={f.variacion} /></td>}
                 </tr>
               );
             })}
@@ -84,7 +85,7 @@ export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false
         </table>
       </div>
       {puntero && puntero.segundo != null && (
-        <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+        <div style={{ marginTop: compacto ? '4px' : '6px', fontSize: compacto ? '11px' : '12px', color: 'var(--text-secondary)' }}>
           Diferencia entre el primero y el segundo: <strong style={{ color: 'var(--text-primary)' }}>{puntero.diferencia.toFixed(1)} pp</strong> ({nombreCandidato(puntero.primero, meta)} vs. {nombreCandidato(puntero.segundo, meta)}).
         </div>
       )}
@@ -102,27 +103,26 @@ const ChipsCandidatos = ({ claves, meta }) => (
   </div>
 );
 
-// Título del escenario: "Escenario N · nombre · sufijo" y, debajo, la lista completa de candidatos.
-export const TituloEscenario = ({ escenario, orden, sufijo, candidatos, meta }) => (
-  <div style={{ marginBottom: '8px', breakAfter: 'avoid' }}>
-    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
+// Título del escenario: "Escenario N · nombre · sufijo". Los candidatos ya están en la tabla.
+export const TituloEscenario = ({ escenario, orden, sufijo, compacto }) => (
+  <div style={{ marginBottom: compacto ? '5px' : '8px', breakAfter: 'avoid' }}>
+    <div style={{ fontSize: compacto ? '12.5px' : '14px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.25 }}>
       {orden != null ? `Escenario ${orden} · ` : ''}{escenario}{sufijo ? ` · ${sufijo}` : ''}
     </div>
-    {candidatos && <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '2px' }}>Candidatos: {candidatos.map(c => nombreCandidato(c, meta)).join(' · ')}</div>}
   </div>
 );
 
 // UNA ronda, UN escenario.
-export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true, sufijo }) => {
+export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true, sufijo, compacto = false }) => {
   const esc = ronda.escenarios.find(e => e.id === escenario);
   if (!esc) return null;
   const filas = ordenarFilas(esc.valores, meta).map(c => ({ clave: c, valor: esc.valores[c] }));
   return (
     <div style={{ breakInside: 'avoid' }}>
       {conTitulo
-        ? <TituloEscenario escenario={esc.nombre} orden={esc.orden} sufijo={sufijo} candidatos={filas.map(f => f.clave)} meta={meta} />
+        ? <TituloEscenario escenario={esc.nombre} orden={esc.orden} sufijo={sufijo} compacto={compacto} />
         : <ChipsCandidatos claves={filas.map(f => f.clave)} meta={meta} />}
-      <div style={{ maxWidth: '480px' }}><TablaEscenario fecha={ronda.fecha} casos={ronda.casos} filas={filas} meta={meta} /></div>
+      <div style={{ maxWidth: '480px' }}><TablaEscenario fecha={ronda.fecha} casos={ronda.casos} filas={filas} meta={meta} compacto={compacto} /></div>
     </div>
   );
 };
@@ -139,7 +139,7 @@ export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, 
   const solo = alineadas.some(f => f.a == null || f.b == null);
   return (
     <div style={{ breakInside: 'avoid' }}>
-      {conTitulo && <TituloEscenario escenario={b.nombre} orden={b.orden} sufijo={sufijo} candidatos={alineadas.map(f => f.clave)} meta={meta} />}
+      {conTitulo && <TituloEscenario escenario={b.nombre} orden={b.orden} sufijo={sufijo} />}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '16px', alignItems: 'start' }}>
         <TablaEscenario fecha={rondaA.fecha} casos={rondaA.casos} filas={filasA} meta={meta} escalaMax={escalaMax} />
         <TablaEscenario fecha={rondaB.fecha} casos={rondaB.casos} filas={filasB} meta={meta} escalaMax={escalaMax} conVariacion />
