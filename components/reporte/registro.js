@@ -187,7 +187,7 @@ export function crearRegistroSecciones(D) {
         const comp = complementosRonda(r);
         if (comp) partes.push(`<div class="rp-h3">Datos complementarios · Ronda del ${etiquetaRonda(r)}</div>${comp}`);
       } else {
-        partes.push(`<div class="rp-h3"${hacerComparativo ? '' : ' style="margin-top:0"'}>Encuestas · Ronda ${T.md(<ChipRonda fecha={r.fecha} casos={r.casos} actual={r.fecha === fechaRondaActual(rondas)} />)}</div>${T.md(<ResumenEncuesta preguntas={r.preguntas} />)}${complementosRonda(r)}`);
+        partes.push(`<div class="rp-h3"${hacerComparativo ? '' : ' style="margin-top:0"'}>Encuestas · Ronda ${T.md(<ChipRonda fecha={r.fecha} casos={r.casos} actual={r.fecha === fechaRondaActual(rondas)} />)}</div>${hacerComparativo ? '' : (() => { const n = notaBloquesNoMedidos(rondas.filter(x => x.fecha <= r.fecha)); return n ? `<p class="rp-nota">${n}</p>` : ''; })()}${T.md(<ResumenEncuesta preguntas={r.preguntas} contexto={{ rondas, fecha: r.fecha }} />)}${complementosRonda(r)}`);
       }
     }
     return partes.join('');

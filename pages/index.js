@@ -1669,22 +1669,23 @@ const BarraProblemas = ({ problemas }) => {
   );
 };
 
-const BarraGestion = ({ label, data }) => {
+const BarraGestion = ({ label, data, arrastre = null }) => {
   if (!data) return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
   // Mismo render que Calificación de gestión del comparativo (htmlBarraSegmentosPDF): ningún segmento no nulo
   // pierde su %; los finos llevan la etiqueta debajo con un conector.
   return (
-    <div style={{ marginBottom: '10px' }}>
-      <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
-      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { height: 26 }) }} />
+    <div style={arrastre ? { marginBottom: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '8px', padding: '8px 10px' } : { marginBottom: '10px' }}>
+      <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
+      {arrastre && <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '5px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}><span>Sin dato en la ronda actual · último:</span><ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} /></div>}
+      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { height: arrastre ? 18 : 26, atenuada: !!arrastre }) }} />
     </div>
   );
 };
 
-const SeccionGestionFuncionarios = ({ gestiones }) => (
+const SeccionGestionFuncionarios = ({ gestiones, arrastres = {} }) => (
   <div style={{ breakInside: 'avoid' }}>
     <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
-    {Object.entries(gestiones).map(([label, data]) => <BarraGestion key={label} label={`Calificación de gestión: ${label}`} data={data} />)}
+    {Object.entries(gestiones).map(([label, data]) => <BarraGestion key={label} label={`Calificación de gestión: ${label}`} data={data} arrastre={arrastres[label] || null} />)}
     <div style={{ display: 'flex', gap: '14px', marginTop: '6px' }}>
       {['Positiva', 'Regular', 'Negativa'].map(cat => (
         <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -1696,16 +1697,27 @@ const SeccionGestionFuncionarios = ({ gestiones }) => (
   </div>
 );
 
-const GaugeAprobacion = ({ label, data }) => {
+// Nota de ARRASTRE: la ronda actual no midió esta pregunta y se muestra el último valor disponible, atenuado.
+const NotaArrastre = ({ arrastre }) => (
+  <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2px 6px', marginTop: '4px' }}>
+    <span>Sin dato en la ronda actual · último:</span>
+    <ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} />
+  </div>
+);
+const estiloTarjetaMedidor = (arrastre) => (arrastre
+  ? { flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px' }
+  : { flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' });
+
+const GaugeAprobacion = ({ label, data, arrastre = null }) => {
   if (!data || data.Apruebo == null) {
     return <div style={{ flex: '1 1 140px', padding: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>Aprobación {label}: sin dato</div>;
   }
   const pct = data.Apruebo;
-  const color = pct >= 40 ? '#0DCE1D' : pct >= 25 ? '#D9B300' : '#D64550';
+  const color = arrastre ? '#B0BEC5' : pct >= 40 ? '#0DCE1D' : pct >= 25 ? '#D9B300' : '#D64550';
   const r = 40, mediaCircunferencia = Math.PI * r;
   const progreso = (Math.min(pct, 100) / 100) * mediaCircunferencia;
   return (
-    <div style={{ flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
+    <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={estiloTarjetaMedidor(arrastre)}>
       <svg viewBox="0 0 100 60" style={{ width: '100%', maxWidth: '160px' }}>
         <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--border)" strokeWidth="10" strokeLinecap="round" />
         <path
@@ -1714,14 +1726,15 @@ const GaugeAprobacion = ({ label, data }) => {
           strokeDasharray={`${mediaCircunferencia} ${mediaCircunferencia}`}
           strokeDashoffset={mediaCircunferencia - progreso}
         />
-        <text x="50" y="45" textAnchor="middle" fontSize="18" fontWeight="700" fill="var(--text-primary)">{pct}%</text>
+        <text x="50" y="45" textAnchor="middle" fontSize="18" fontWeight="700" fill={arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)'}>{pct}%</text>
       </svg>
-      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>Aprobación {label}</div>
+      <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-secondary)', marginTop: '2px' }}>Aprobación {label}</div>
+      {arrastre && <NotaArrastre arrastre={arrastre} />}
     </div>
   );
 };
 
-const DonutReeleccion = ({ label, data }) => {
+const DonutReeleccion = ({ label, data, arrastre = null }) => {
   if (!data || data.Si == null) {
     return <div style={{ flex: '1 1 140px', padding: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
   }
@@ -1729,47 +1742,64 @@ const DonutReeleccion = ({ label, data }) => {
   const r = 35, cx = 50, cy = 50, circunferencia = 2 * Math.PI * r;
   const siLen = (Math.min(si, 100) / 100) * circunferencia;
   return (
-    <div style={{ flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' }}>
+    <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={estiloTarjetaMedidor(arrastre)}>
       <svg viewBox="0 0 100 100" style={{ width: '100%', maxWidth: '140px' }}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#EF4444" strokeWidth="16" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={arrastre ? '#CFD8DC' : '#EF4444'} strokeWidth="16" />
         <circle
-          cx={cx} cy={cy} r={r} fill="none" stroke="#22C55E" strokeWidth="16"
+          cx={cx} cy={cy} r={r} fill="none" stroke={arrastre ? '#90A4AE' : '#22C55E'} strokeWidth="16"
           strokeDasharray={`${siLen} ${circunferencia}`}
           transform={`rotate(-90 ${cx} ${cy})`}
         />
-        <text x="50" y="55" textAnchor="middle" fontSize="16" fontWeight="700" fill="var(--text-primary)">{si}%</text>
+        <text x="50" y="55" textAnchor="middle" fontSize="16" fontWeight="700" fill={arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)'}>{si}%</text>
       </svg>
-      <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginTop: '4px' }}>{label}</div>
+      <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginTop: '4px' }}>{label}</div>
       <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sí</div>
+      {arrastre && <NotaArrastre arrastre={arrastre} />}
     </div>
   );
 };
 
-const ResumenEncuesta = ({ preguntas }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-    <BarraProblemas problemas={preguntas['Problemas principales']} />
-    <SeccionGestionFuncionarios gestiones={{
-      Intendente: preguntas['Gestión del Intendente'],
-      Gobernador: preguntas['Gestión del Gobernador'],
-      Presidente: preguntas['Gestión del Presidente'],
-    }} />
-    <div style={{ breakInside: 'avoid' }}>
-      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Aprobación de gestión</h4>
-      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-        <GaugeAprobacion label="Intendente" data={preguntas['Aprobación Intendente']} />
-        <GaugeAprobacion label="Gobernador" data={preguntas['Aprobación Gobernador']} />
-        <GaugeAprobacion label="Presidente" data={preguntas['Aprobación Presidente']} />
+// contexto (opcional): { rondas, fecha } — todas las rondas del circuito y la fecha de la ronda que se muestra.
+// Con contexto, las preguntas que ESA ronda no midió se completan con el último dato de una ronda anterior, marcado
+// como ARRASTRE (atenuado + "Sin dato en la ronda actual · último: <fecha> · n=<n>"). Sin contexto: solo esa ronda.
+const ResumenEncuesta = ({ preguntas, contexto = null }) => {
+  const dato = (key) => {
+    if (preguntas[key]) return { data: preguntas[key], arrastre: null, ronda: null };
+    if (!contexto) return { data: null, arrastre: null, ronda: null };
+    const r = ultimaRondaConDato(contexto.rondas, contexto.fecha, x => x.fecha < contexto.fecha && !!x.preguntas?.[key]);
+    return r ? { data: r.preguntas[key], arrastre: { fecha: r.fecha, casos: r.casos ?? null }, ronda: r } : { data: null, arrastre: null, ronda: null };
+  };
+  const prob = dato('Problemas principales');
+  const gest = { Intendente: dato('Gestión del Intendente'), Gobernador: dato('Gestión del Gobernador'), Presidente: dato('Gestión del Presidente') };
+  const apr = { Intendente: dato('Aprobación Intendente'), Gobernador: dato('Aprobación Gobernador'), Presidente: dato('Aprobación Presidente') };
+  const ree = { llar: dato('Reelección Llaryora'), milei: dato('Reelección Milei') };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {prob.arrastre
+        ? <BloqueProblemas rondas={[prob.ronda]} umbral={2.5} fechaActual={contexto.fecha} sinComparacion />
+        : <BarraProblemas problemas={prob.data} />}
+      <SeccionGestionFuncionarios
+        gestiones={{ Intendente: gest.Intendente.data, Gobernador: gest.Gobernador.data, Presidente: gest.Presidente.data }}
+        arrastres={{ Intendente: gest.Intendente.arrastre, Gobernador: gest.Gobernador.arrastre, Presidente: gest.Presidente.arrastre }}
+      />
+      <div style={{ breakInside: 'avoid' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Aprobación de gestión</h4>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <GaugeAprobacion label="Intendente" data={apr.Intendente.data} arrastre={apr.Intendente.arrastre} />
+          <GaugeAprobacion label="Gobernador" data={apr.Gobernador.data} arrastre={apr.Gobernador.arrastre} />
+          <GaugeAprobacion label="Presidente" data={apr.Presidente.data} arrastre={apr.Presidente.arrastre} />
+        </div>
+      </div>
+      <div style={{ breakInside: 'avoid' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Reelección</h4>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <DonutReeleccion label="Llaryora (Gobernador)" data={ree.llar.data} arrastre={ree.llar.arrastre} />
+          <DonutReeleccion label="Milei (Presidente)" data={ree.milei.data} arrastre={ree.milei.arrastre} />
+        </div>
       </div>
     </div>
-    <div style={{ breakInside: 'avoid' }}>
-      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Reelección</h4>
-      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-        <DonutReeleccion label="Llaryora (Gobernador)" data={preguntas['Reelección Llaryora']} />
-        <DonutReeleccion label="Milei (Presidente)" data={preguntas['Reelección Milei']} />
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 // ============================================
 // VISTA "COMPARATIVO" (solapa Encuestas) — lógica de datos compartida entre pantalla
@@ -2171,7 +2201,7 @@ const DeltaProblema = ({ f, atenuado }) => {
   );
 };
 
-const BloqueProblemas = ({ rondas, umbral, fechaActual }) => {
+const BloqueProblemas = ({ rondas, umbral, fechaActual, sinComparacion = false }) => {
   const b = calcularBloqueProblemas(rondas, umbral, fechaActual);
   const h4 = { fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 };
   if (!b) {
@@ -2191,7 +2221,7 @@ const BloqueProblemas = ({ rondas, umbral, fechaActual }) => {
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 12px', marginBottom: '10px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
         <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr} />
         <span>
-          {b.previa
+          {sinComparacion ? 'valores de esa medición, sin comparación' : b.previa
             ? `comparación ${formatearFecha(b.previa.fecha)} → ${formatearFecha(b.ultima.fecha)} · variación en puntos porcentuales (pp)`
             : 'medida una sola vez: sin dato anterior para comparar'}
         </span>
@@ -2202,7 +2232,7 @@ const BloqueProblemas = ({ rondas, umbral, fechaActual }) => {
             <div style={{ width: '170px', flexShrink: 0, fontSize: '12.5px', color: arr ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{etiquetaProblema(f.cat)}</div>
             <div style={{ flex: '1 1 120px', minWidth: '120px', display: 'flex' }}><BarraHorizontalPct pct={Number(f.valor.toFixed(1))} color={arr ? '#90A4AE' : '#1976D2'} /></div>
             <div style={{ fontSize: '13px', fontWeight: 700, minWidth: '46px', textAlign: 'right', color: arr ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{f.valor.toFixed(1)}%</div>
-            {b.previa && <div style={{ minWidth: '130px', textAlign: 'right' }}><DeltaProblema f={f} atenuado={arr} /></div>}
+            {b.previa && !sinComparacion && <div style={{ minWidth: '130px', textAlign: 'right' }}><DeltaProblema f={f} atenuado={arr} /></div>}
           </div>
         ))}
       </div>
@@ -2272,7 +2302,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
       </div>
 
       {vista === 'resumen'
-        ? <ResumenEncuesta preguntas={ronda.preguntas} />
+        ? <ResumenEncuesta preguntas={ronda.preguntas} contexto={{ rondas: encuesta.rondas, fecha: ronda.fecha }} />
         : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} metadata={metadata} />}
 
       {metadata?.escenarios_gobernador && (
