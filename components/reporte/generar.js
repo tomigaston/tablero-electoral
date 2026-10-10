@@ -14,7 +14,7 @@ export async function generarReporteHTML({ ctx, seleccion, registro, tituloConte
     const html = s.render(ctx, seleccion.opciones, herramientas);
     const dato = s.ultimoDato ? s.ultimoDato(ctx) : null;
     return `<section class="rp-sec${s.nuevaPagina ? ' rp-nueva-pagina' : ''}${s.unida ? ' rp-unida' : ''}" data-seccion="${s.id}">
-  <h2 class="rp-h2">${esc(s.label)}</h2>
+  <h2 class="rp-h2">${esc(s.tituloImpreso ? s.tituloImpreso(ctx) : s.label)}</h2>
   <div class="rp-body">${html}</div>
   ${dato ? `<p class="rp-datos">Datos al ${formatearFecha(dato)}</p>` : ''}
 </section>`;

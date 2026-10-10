@@ -131,7 +131,7 @@ export function crearRegistroSecciones(D) {
       }
     }
     const partes = [];
-    if (heredada) partes.push(`<p class="rp-nota">Las encuestas se relevan por circuito: se muestra la del circuito ${esc(circuito?.CircuitoKey)} ${esc(circuito?.cirn_nom || '')}, al que pertenece este barrio.</p>`);
+    if (heredada) partes.push(`<div class="rp-aviso" style="color:#0d47a1;background:#e8f1fb;border-color:#b6d0ee"><strong>Encuesta del circuito ${esc(circuito?.CircuitoKey)} — ${esc(circuito?.cirn_nom || '')}.</strong> Las encuestas se relevan por circuito, no por barrio: estos datos corresponden al circuito al que pertenece ${esc(ctx.nombreBarrio)}.</div>`);
     const involucradas = [...rondasComparadas, ...(hacerRonda ? [rondas[iR]] : [])];
     partes.push(avisoMuestra([...new Set(involucradas)]));
     // Las rondas más nuevas pueden no repetir todas las preguntas: se avisa cuáles faltan en la última
@@ -360,6 +360,12 @@ export function crearRegistroSecciones(D) {
     {
       id: 'encuestas', grupo: 'Opinión pública', label: 'Encuestas', descripcion: 'Una ronda, comparativo entre rondas o evolución',
       tieneOpciones: true,
+      // En un barrio la encuesta es la de su circuito principal: el título del PDF lo dice para que no se lea como dato del barrio.
+      tituloImpreso: (ctx) => {
+        if (ctx.tipo !== 'barrio') return 'Encuestas';
+        const c = encuestaDeContexto(ctx).circuito;
+        return c ? `Encuestas · Encuesta del circuito ${c.CircuitoKey} — ${c.cirn_nom || ''}` : 'Encuestas';
+      },
       disponible: (ctx) => {
         if (ctx.tipo === 'capital') return { ok: true };
         return rondasDe(ctx).length > 0 ? { ok: true } : { ok: false, motivo: ctx.tipo === 'barrio' ? 'El circuito de este barrio no tiene encuestas relevadas.' : 'Este circuito no tiene encuestas relevadas.' };
