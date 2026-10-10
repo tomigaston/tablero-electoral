@@ -1783,6 +1783,7 @@ const ResumenEncuesta = ({ preguntas }) => (
 // Cada label ocupa el mismo ancho % que su segmento para quedar centrado justo arriba
 // de él. umbral: mismo umbral_variacion_pp del resto — por debajo, el segmento se trata
 // como estable (ver htmlDeltaSegmentoBadge).
+const UMBRAL_SEGMENTO_CHICO = 12;
 function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 } = {}) {
   if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
   const categorias = categoriasGestion(data);
@@ -1790,11 +1791,14 @@ function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 
   const segmentos = presentes.map(cat => {
     const v = data[cat];
     const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
-    return `<div style="width:${v}%;background:${colorCategoriaGestion(cat)};display:flex;align-items:center;justify-content:center">${texto}</div>`;
+    return `<div title="${cat}: ${v}%" style="width:${v}%;background:${colorCategoriaGestion(cat)};display:flex;align-items:center;justify-content:center">${texto}</div>`;
   }).join('');
   const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
   if (!deltas) return barra;
-  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat], umbral, cat) : ''}</div>`).join('');
+  // Segmentos angostos (< UMBRAL_SEGMENTO_CHICO %) llevan el badge en versión compacta
+  // (solo flecha + número, sin "pp") y con overflow visible centrado, para que no se
+  // pise con el del vecino ni se corte; el valor completo queda en el tooltip del segmento.
+  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap;min-width:0">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat], umbral, cat, data[cat] < UMBRAL_SEGMENTO_CHICO) : ''}</div>`).join('');
   return `<div style="display:flex;margin-bottom:3px">${labels}</div>${barra}`;
 }
 
@@ -1988,9 +1992,9 @@ const POSITIVO_ES_SUBIR_GESTION = { 'Positiva': true, 'Regular': true, 'Negativa
 // por un cambio de redondeo. categoria: Positiva/Regular/Negativa/Ns-Nc — decide el
 // color vía POSITIVO_ES_SUBIR_GESTION; sin categoría (llamador legado) cae a "sube
 // siempre es bueno" como estaba antes.
-function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria) {
+function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria, compacto = false) {
   const redondeado = Math.round(delta * 10) / 10;
-  if (Math.abs(redondeado) < umbral) return `<span style="font-size:10px;font-weight:600;color:#999">· Estable</span>`;
+  if (Math.abs(redondeado) < umbral) return `<span style="font-size:10px;font-weight:600;color:#999">${compacto ? '·' : '· Estable'}</span>`;
   const sube = redondeado > 0;
   // categoria == null es el llamador legado documentado arriba (cae a "sube = bueno"
   // sin avisar); categoria definida pero ausente del mapa es el mismo tipo de nombre
@@ -2004,7 +2008,7 @@ function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria) {
   const color = esBueno ? '#2E7D32' : '#C62828';
   const arrow = sube ? '▲' : '▼';
   const signo = sube ? '+' : '';
-  return `<span style="font-size:10px;font-weight:600;color:${color}">${arrow} ${signo}${redondeado.toFixed(1)} pp</span>`;
+  return `<span style="font-size:${compacto ? 9 : 10}px;font-weight:600;color:${color}">${arrow} ${signo}${redondeado.toFixed(1)}${compacto ? '' : ' pp'}</span>`;
 }
 
 // Delta por categoría (Positiva/Regular/Negativa/Ns-Nc) entre dos filas CONSECUTIVAS
@@ -2033,12 +2037,13 @@ function htmlMiniPendienteGestion(funcionario, rondas, umbral) {
   const filasHtml = filas.map((f, i) => {
     const deltas = i > 0 ? calcularDeltasCategoriasGestion(filas[i - 1].data, f.data) : null;
     return `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <span style="width:175px;flex-shrink:0;font-size:11px;color:#999">${formatearFechaRonda(f.fecha, f.casos)}</span>
-      <div style="flex:1">${htmlBarraSegmentosPDF(f.data, { height: 22, deltas, umbral })}</div>
+    <div style="margin-bottom:10px;break-inside:avoid">
+      <div style="font-size:12px;font-weight:600;color:#1a1a1a">${formatearFecha(f.fecha)}</div>
+      <div style="font-size:10px;color:var(--text-tertiary,#999);margin-bottom:3px">${f.casos != null ? `n = ${f.casos} respuestas` : 'n no informado'}</div>
+      ${htmlBarraSegmentosPDF(f.data, { height: 22, deltas, umbral })}
     </div>`;
   }).join('');
-  return `<div style="margin-bottom:16px">
+  return `<div style="margin-bottom:16px;break-inside:avoid">
     <div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div>
     ${filasHtml}
   </div>`;
