@@ -248,7 +248,7 @@ const SeccionCircuito = ({ item, abierto, saltar, onToggle, filtroEstado, onIrAB
 // circuito desconocido) NO se descarta; cae acá con su conteo a la vista.
 const BloqueSinCircuito = ({ bloque, partes, filtroEstado, onIrABarrio }) => {
   const [abierto, setAbierto] = useState(true);
-  const resumenBarrios = bloque.barrios.map((b) => `${b.nombre} (${b.cantidad})`).join(' · ');
+  const resumenBarrios = bloque.barrios.map((b) => `${b.nombre} (${b.cantidad} registro${b.cantidad === 1 ? '' : 's'})`).join(' · ');
   return (
     <div style={{ border: '1px solid #E65100', borderRadius: '10px', overflow: 'hidden', marginBottom: '18px' }}>
       <button onClick={() => setAbierto((a) => !a)} aria-expanded={abierto} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', border: 'none', backgroundColor: '#FF980018', cursor: 'pointer', textAlign: 'left' }}>
