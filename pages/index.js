@@ -8,7 +8,7 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { crearRegistroSecciones, infoEncuestasContexto } from '../components/reporte/registro';
+import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
@@ -5426,6 +5426,7 @@ export default function Home() {
   const tituloContextoReporte = contextoReporte.tipo === 'barrio' ? `Barrio ${contextoReporte.nombreBarrio}`
     : contextoReporte.tipo === 'circuito' ? `Circuito ${contextoReporte.datosCircuito.CircuitoKey} — ${contextoReporte.datosCircuito.cirn_nom || ''}` : 'Córdoba Capital';
   const rondasReporte = useMemo(() => infoEncuestasContexto(contextoReporte, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio), [contextoReporte]);
+  const rondasIVReporte = useMemo(() => infoIntencionContexto(contextoReporte, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio), [contextoReporte]);
   const generarReporte = async (seleccion) => {
     const partes = await armarReporte({ ctx: contextoReporte, seleccion, registro: REGISTRO_REPORTE, tituloContexto: tituloContextoReporte, formatearFecha, estilos: estilosReporte });
     setModalReporteAbierto(false);
@@ -5544,7 +5545,7 @@ export default function Home() {
           onIrACircuito={irACircuitoDesdeObra}
         />
       )}
-      <ModalReporte isOpen={modalReporteAbierto} ctx={contextoReporte} registro={REGISTRO_REPORTE} tituloContexto={tituloContextoReporte} rondas={rondasReporte} formatearFecha={formatearFecha} useFocusTrap={useFocusTrap} onGenerar={generarReporte} onCancelar={() => setModalReporteAbierto(false)} />
+      <ModalReporte isOpen={modalReporteAbierto} ctx={contextoReporte} registro={REGISTRO_REPORTE} tituloContexto={tituloContextoReporte} rondas={rondasReporte} rondasIV={rondasIVReporte} formatearFecha={formatearFecha} useFocusTrap={useFocusTrap} onGenerar={generarReporte} onCancelar={() => setModalReporteAbierto(false)} />
       {datosCircuito && (
         <DialogExportFicha
           datosCircuito={datosCircuito}
