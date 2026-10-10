@@ -26,7 +26,7 @@ export default function ResumenPautaGlobal({ resumen, columnas = 1 }) {
       <MetricCardMini
         label="Barrios cubiertos"
         value={fmt(barrios.cubiertos)}
-        subtitle={`de ${fmt(barrios.total)}${hay ? '' : ' · sin pauta activa'}`}
+        subtitle={barrios.cubiertos > 0 ? (barrios.cubiertos === 1 ? 'barrio con pauta activa' : 'barrios con pauta activa') : 'Sin pauta activa'}
       />
     </div>
   );
