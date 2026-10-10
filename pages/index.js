@@ -10,6 +10,7 @@ import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
 import { crearRefRonda, etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, fechaRondaActual, fechaCorta, ultimaRondaConDato } from '../lib/lecturaRondas';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
+import { htmlEncuestasCuerpo } from '../components/reporte/encuestasHtml';
 import { ChipRonda, FilaChipsRondas, htmlChipRonda } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
@@ -1807,7 +1808,7 @@ const ResumenEncuesta = ({ preguntas, contexto = null }) => {
 // VISTA "COMPARATIVO" (solapa Encuestas) — lógica de datos compartida entre pantalla
 // (ComparativoEncuesta, JSX) y PDF (htmlComparativoEncuestaBody, HTML-string), definida
 // más abajo junto a esta última. Ya no hay sparkline (eliminado a favor de lectura
-// directa en texto plano, ver calcularVariacionIndicador/textoVariacionIndicador) ni
+// directa en texto plano, ver calcularVariacionIndicador) ni
 // una única función de HTML compartida: cada lado renderiza con su propia técnica
 // (JSX vs. HTML-string) sobre la MISMA lógica de cálculo, para no desincronizarse.
 // Convención de deltas: última ronda vs. anteúltima ronda (NO contra la primera) —
@@ -1855,16 +1856,6 @@ function colorVariacionIndicador(estado, positivoEsSubir, colorNeutro = 'var(--t
   return esBueno ? '#2E7D32' : '#C62828';
 }
 
-// Usado solo por el PDF (htmlIndicadorCardPlano/htmlTablaProblemasPlano) — pantalla
-// tiene su propio formateo de 2 líneas, ver formatoVariacionCard/BadgeVariacionProblema.
-function textoVariacionIndicador(v) {
-  if (!v || v.estado == null) return null;
-  if (v.estado === 'estable') return `≈ estable (${v.anterior.toFixed(1)}%)`;
-  const flecha = v.estado === 'sube' ? '▲' : '▼';
-  const verbo = v.estado === 'sube' ? 'subió' : 'bajó';
-  return `${flecha} ${verbo} desde ${v.anterior.toFixed(1)}%`;
-}
-
 // 5 cards: Aprobación x3 + Reelección x2. 4º elemento de cada tupla = positivoEsSubir
 // (default true si se omite, ninguna de las 5 lo necesita en false).
 // "Cordobeses en Alerta" se sacó del tablero por completo (card removida acá y de
@@ -1881,117 +1872,12 @@ const ITEMS_INDICADORES_COMPARATIVO = [
   ['Reelección Milei', 'Reelección Milei', 'Si'],
 ];
 
-// Mismo filtro de siempre (se omiten problemas en 0% en TODAS las rondas). Orden por
-// valor actual descendente — el problema más relevante hoy va primero (ya no
-// alfabético ni por orden fijo de categoría).
-function calcularFilasProblemasComparativo(rondas, umbral) {
-  const categorias = Array.from(new Set(rondas.flatMap(r => Object.keys(r.preguntas?.['Problemas principales'] || {}))));
-  return categorias
-    .map(cat => {
-      const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.['Problemas principales']?.[cat] })).filter(d => d.valor != null);
-      return { cat, datos, v: calcularVariacionIndicador(datos, umbral) };
-    })
-    .filter(f => f.datos.length > 0 && f.datos.some(d => d.valor > 0))
-    .sort((a, b) => b.v.actual - a.v.actual);
-}
-
-// Resumen de Principales problemas — última ronda vs. anteúltima (misma convención que
-// el resto de Comparativo; con exactamente 2 rondas la anteúltima es la primera).
-// Devuelve, además de las variaciones, las fechas de las dos rondas comparadas para
-// poder rotular de dónde sale cada número. "Más mencionados" = el % de vecinos que
-// nombra el problema subió; "menos mencionados" = bajó.
-function calcularResumenVariacionesProblemas(rondas, umbral) {
-  const vacio = { suben: [], bajan: [], fechaAnterior: null, fechaActual: null, sinRondasComparables: false };
-  // Solo cuentan las rondas que traen la pregunta: las rondas más nuevas (ej. 01/10)
-  // no la incluyen, y comparar contra una ronda sin dato diría "sin variaciones" sin
-  // que sea cierto.
-  const conProblemas = rondas.filter(r => r.preguntas?.['Problemas principales']);
-  if (conProblemas.length < 2) return { ...vacio, sinRondasComparables: true };
-  const anterior = conProblemas[conProblemas.length - 2], ultima = conProblemas[conProblemas.length - 1];
-  const probActual = ultima.preguntas['Problemas principales'];
-  const probAnterior = anterior.preguntas['Problemas principales'];
-  const categorias = new Set([...Object.keys(probActual), ...Object.keys(probAnterior)]);
-  const variaciones = [];
-  categorias.forEach(cat => {
-    const vA = probActual[cat], vB = probAnterior[cat];
-    if (vA == null || vB == null) return;
-    const delta = vA - vB;
-    if (Math.abs(delta) >= umbral) variaciones.push({ cat, delta, anterior: vB, actual: vA });
-  });
-  return {
-    suben: variaciones.filter(v => v.delta > 0).sort((a, b) => b.delta - a.delta),
-    bajan: variaciones.filter(v => v.delta < 0).sort((a, b) => a.delta - b.delta),
-    fechaAnterior: anterior.fecha, fechaActual: ultima.fecha,
-  };
-}
-
 // "Otro" en los datos significa "otros problemas que no están en la lista de opciones" —
 // se muestra igual (suele ser el que más se mueve, ocultarlo escondería información)
 // pero con esa aclaración, para que no se lea como un problema concreto.
 const etiquetaProblema = (cat) => cat === 'Otro' ? 'Otro (otros problemas no listados)' : cat;
 
-const TITULO_RESUMEN_PROBLEMAS = 'Problemas que más cambiaron en la percepción vecinal';
-const subtituloResumenProblemas = (fechaAnterior, fechaActual) =>
-  `Comparación entre ${formatearFecha(fechaAnterior)} y ${formatearFecha(fechaActual)} · variación en puntos porcentuales (pp) del % de vecinos que menciona cada problema`;
 const NOTA_SEMANTICA_PROBLEMAS = 'En problemas, que un porcentaje suba es una mala señal (rojo) y que baje es una buena señal (verde): al revés que en Aprobación.';
-
-// --- Render PDF (HTML-string, colores hardcodeados porque el documento no hereda
-// var(--...)) del resumen/cards/tabla que arma ComparativoEncuesta en pantalla, sobre
-// la MISMA lógica de cálculo de arriba — ver htmlComparativoEncuestaBody más abajo.
-// "Calificación de gestión" (barras apiladas) no pasa por acá, ver más abajo. ---
-function htmlIndicadorCardPlano(label, rondas, pregunta, categoria, umbral, positivoEsSubir) {
-  const datos = rondas.map(r => ({ fecha: r.fecha, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
-  const v = calcularVariacionIndicador(datos, umbral);
-  const frase = textoVariacionIndicador(v);
-  const color = colorVariacionIndicador(v?.estado, positivoEsSubir, '#999');
-  return `<div style="padding:14px;background:#f5f5f5;border-radius:10px;display:flex;flex-direction:column;gap:4px;min-height:96px">
-    <div style="font-size:11px;color:#666">${label}</div>
-    <div style="font-size:20px;font-weight:700;color:#1a1a1a">${v?.actual != null ? v.actual.toFixed(1) + '%' : '—'}</div>
-    ${frase ? `<div style="font-size:11px;font-weight:600;color:${color}">${frase}</div>` : ''}
-    ${v?.fechaActual ? `<div style="font-size:9px;color:#999;margin-top:2px">${formatearFecha(v.fechaActual)}</div>` : ''}
-  </div>`;
-}
-
-function htmlGridIndicadoresPlano(rondas, umbral) {
-  const cards = ITEMS_INDICADORES_COMPARATIVO
-    .map(([label, pregunta, categoria, positivoEsSubir = true]) => htmlIndicadorCardPlano(label, rondas, pregunta, categoria, umbral, positivoEsSubir))
-    .join('');
-  return `<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:10px">${cards}</div>`;
-}
-
-function htmlTablaProblemasPlano(rondas, umbral) {
-  const filas = calcularFilasProblemasComparativo(rondas, umbral);
-  if (filas.length === 0) return `<p style="font-size:12px;color:#999">Sin datos de problemas.</p>`;
-  const filasHtml = filas.map(f => `<tr>
-      <td style="padding:8px;border-top:1px solid #e0e0e0">${f.cat}</td>
-      <td style="padding:8px;border-top:1px solid #e0e0e0;text-align:right"><strong>${f.v.actual.toFixed(1)}%</strong></td>
-      <td style="padding:8px;border-top:1px solid #e0e0e0;text-align:right;font-weight:600;color:${colorVariacionIndicador(f.v.estado, false, '#999')}">${textoVariacionIndicador(f.v) || '—'}</td>
-    </tr>`).join('');
-  return `<table style="width:100%;border-collapse:collapse;font-size:12px">
-    <thead><tr>
-      <th style="padding:8px;text-align:left;background:#f5f5f5;font-weight:500">Problema</th>
-      <th style="padding:8px;text-align:right;background:#f5f5f5;font-weight:500">% actual</th>
-      <th style="padding:8px;text-align:right;background:#f5f5f5;font-weight:500">Variación</th>
-    </tr></thead>
-    <tbody>${filasHtml}</tbody>
-  </table>`;
-}
-
-function htmlResumenVariacionesPlano(rondas, umbral) {
-  const { suben, bajan, fechaAnterior, fechaActual, sinRondasComparables } = calcularResumenVariacionesProblemas(rondas, umbral);
-  if (suben.length === 0 && bajan.length === 0) {
-    return `<div style="font-size:12px;color:#999;margin-bottom:16px">${sinRondasComparables ? 'No hay dos rondas con la pregunta de problemas para comparar.' : `Sin variaciones significativas (≥${umbral}pp) entre rondas.`}</div>`;
-  }
-  const fila = (v, color) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px;font-weight:500;color:#1a1a1a"><span>${etiquetaProblema(v.cat)}</span><span style="white-space:nowrap;color:${color};font-weight:600">${v.anterior.toFixed(1)}% → ${v.actual.toFixed(1)}% (${v.delta > 0 ? '+' : ''}${v.delta.toFixed(1)} pp)</span></div>`;
-  const grupo = (titulo, items, color) => items.length === 0 ? '' : `<div style="margin-bottom:8px"><div style="font-size:13px;font-weight:700;color:${color};margin-bottom:2px">${titulo}</div>${items.map(v => fila(v, color)).join('')}</div>`;
-  return `<div style="margin-bottom:18px;break-inside:avoid">
-    <div style="font-size:14px;font-weight:700;color:#1a1a1a">${TITULO_RESUMEN_PROBLEMAS}</div>
-    <div style="font-size:11px;color:#999;margin:2px 0 10px">${subtituloResumenProblemas(fechaAnterior, fechaActual)}</div>
-    ${grupo('🔺 Más mencionados ahora', suben, '#C62828')}
-    ${grupo('🔻 Menos mencionados ahora', bajan, '#2E7D32')}
-    <div style="font-size:10px;color:#999">${NOTA_SEMANTICA_PROBLEMAS}</div>
-  </div>`;
-}
 
 // --- "Calificación de gestión" (barras apiladas). Una barra por ronda, de la más antigua (arriba) a la
 // actual (abajo). Cada barra lleva su chip de ronda + n; la actual va enfatizada (más alta, opacidad plena,
@@ -2066,38 +1952,9 @@ function htmlLegendGestion() {
   return `<div style="display:flex;gap:14px;margin-top:6px">${items}</div>`;
 }
 
-// Cuerpo completo de la vista Comparativo para el PDF — mismo criterio que
-// ComparativoEncuesta en pantalla: cards sin sparkline + tabla ordenada con frase en
-// texto plano para Indicadores/Principales problemas, "Calificación de gestión" sin
-// tocar (barras apiladas de siempre, ver bloque de arriba).
-function htmlComparativoEncuestaBody(encuesta, umbral) {
-  const rondas = encuesta.rondas;
-  return `
-    ${htmlResumenVariacionesPlano(rondas, umbral)}
-    <div style="margin-bottom:20px">
-      <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Indicadores</h4>
-      ${htmlGridIndicadoresPlano(rondas, umbral)}
-    </div>
-    <div style="margin-bottom:20px">
-      <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Calificación de gestión</h4>
-      ${htmlMiniPendientesGestion(rondas, umbral)}
-      ${htmlLegendGestion()}
-    </div>
-    <div>
-      <h4 style="font-size:13px;color:#666;margin-bottom:10px;font-weight:500">Principales problemas — evolución</h4>
-      ${htmlTablaProblemasPlano(rondas, umbral)}
-    </div>
-  `;
-}
-
 // ============================================
-// VISTA "COMPARATIVO" EN PANTALLA — JSX puro sobre la lógica de cálculo de arriba
-// (calcularVariacionIndicador/etc.), independiente del renderer del PDF
-// (htmlComparativoEncuestaBody, HTML-string) aunque comparten esa misma lógica — ver
-// comentario de la sección de arriba. El PDF sigue con su propio formato de texto
-// plano (textoVariacionIndicador) sin cambios visuales — acá abajo va el rediseño de
-// pantalla: cards de 2 líneas con acento por tipo de pregunta, badge en vez de frase
-// para Principales problemas, y umbral aplicado en el badge de gestión.
+// VISTA "COMPARATIVO" — JSX puro sobre la lógica de lib/lecturaRondas.js. Pantalla, reporte y ficha PDF usan estos
+// mismos componentes (el PDF los renderiza a HTML estático), así que no hay un segundo render para mantener.
 // ============================================
 
 // Acento por tipo de pregunta (encuestas_metadata.json → preguntas[pregunta].tipo) —
@@ -4424,35 +4281,7 @@ function pdfBadgeEstadoPauta(estado) {
   return `<span style="color:#ccc">—</span>`;
 }
 
-// --- Encuestas en el PDF: mismo criterio de agrupación que ResumenEncuesta en pantalla
-// (Aprobación / Calificación de gestión / Reelección), extendido con las preguntas de
-// ronda que la ficha todavía no mostraba. Sin librerías de charts: barras y donuts son
-// divs/SVG propios, igual que el resto de la ficha. ---
-function deltaEncuestaPDF(rondas, pregunta, categoria) {
-  const serie = rondas.map(r => r.preguntas?.[pregunta]?.[categoria]).filter(v => v != null);
-  if (serie.length < 2) return null;
-  return serie[serie.length - 1] - serie[0];
-}
-// "Mejoras en X" no tiene Positiva/Negativa sino Si,mucho/Si,algo/No — el delta se toma
-// sobre el total que percibe mejora (mucho + algo).
-function deltaMejoraPDF(rondas, pregunta) {
-  const serie = rondas
-    .map(r => r.preguntas?.[pregunta])
-    .filter(d => d != null)
-    .map(d => (d['Si, mucho'] || 0) + (d['Si, algo'] || 0));
-  if (serie.length < 2) return null;
-  return serie[serie.length - 1] - serie[0];
-}
-function badgeDeltaPDF(delta) {
-  if (delta == null) return '';
-  const cls = delta > 0 ? 'green' : delta < 0 ? 'red' : '';
-  const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '—';
-  const signo = delta > 0 ? '+' : '';
-  return `<div class="metric-sub ${cls}" style="font-weight:600">${arrow} ${signo}${delta.toFixed(1)} pp vs. 1ª ronda</div>`;
-}
-function htmlMetricPDF(label, valor, delta) {
-  return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value" style="font-size:18px">${valor}</div>${badgeDeltaPDF(delta)}</div>`;
-}
+// --- Piezas HTML-string de la ficha PDF (el cuerpo de Encuestas es el compartido con el reporte, ver htmlEncuestasFichaPDF). ---
 // Mismo ícono (círculo relleno + glifo blanco) y mismo criterio de color por nivel
 // que IconoTendencia en pantalla (solapa Comparativas) — no es una versión distinta,
 // es el mismo dibujo, solo con colores fijos en vez de variables CSS.
@@ -4485,29 +4314,6 @@ function htmlTendenciasCircuitoPDF(datos) {
   <div style="font-size:13px;color:#666;margin-top:10px">Ganó ${datos.Victorias_Total}/4 elecciones. ${datos.Crecio_vs_Capital ? 'Creció más que Capital con Llaryora.' : 'Creció menos que Capital con Llaryora.'} ${datos.Sch_Mejoro ? 'Mejoró en legislativas.' : 'Empeoró en legislativas.'}</div>
 </div>`;
 }
-// Mismo gauge semáforo (SVG a mano) y mismo criterio de color por valor que
-// GaugeAprobacion en pantalla (solapa Encuestas) — no es una versión distinta, es el
-// mismo dibujo, solo con colores fijos en vez de variables CSS (el HTML del PDF no
-// hereda las custom properties del tablero).
-function htmlGaugeAprobacionPDF(label, data, delta) {
-  if (!data || data.Apruebo == null) {
-    return `<div class="metric"><div class="metric-label">Aprobación ${label}</div><div class="metric-value" style="font-size:12px;color:#999">Sin dato</div></div>`;
-  }
-  const pct = data.Apruebo;
-  const color = pct >= 40 ? '#0DCE1D' : pct >= 25 ? '#D9B300' : '#D64550';
-  const r = 40, mediaCircunferencia = Math.PI * r;
-  const progreso = (Math.min(pct, 100) / 100) * mediaCircunferencia;
-  return `<div class="metric">
-    <svg viewBox="0 0 100 60" style="width:100%;max-width:140px">
-      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e0e0e0" stroke-width="10" stroke-linecap="round" />
-      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="${color}" stroke-width="10" stroke-linecap="round"
-        stroke-dasharray="${mediaCircunferencia} ${mediaCircunferencia}" stroke-dashoffset="${mediaCircunferencia - progreso}" />
-      <text x="50" y="45" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">${pct}%</text>
-    </svg>
-    <div style="font-size:11px;color:#666;margin-top:2px">Aprobación ${label}</div>
-    ${badgeDeltaPDF(delta)}
-  </div>`;
-}
 function htmlBarraCategoriasPDF(label, data, delta) {
   if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
   const deltaHtml = delta != null ? `<span class="${delta > 0 ? 'green' : delta < 0 ? 'red' : ''}" style="font-weight:600">${delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} ${delta > 0 ? '+' : ''}${delta.toFixed(1)} pp</span>` : '';
@@ -4532,112 +4338,34 @@ function htmlMejoraPDF(label, data, delta) {
     <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
   </div>`;
 }
-// Cuerpo de UNA ronda (Aprobación/Gestión/Reelección/Funcionamiento/Mejoras),
-// extraído de lo que antes era el cuerpo fijo de htmlEncuestasPDF, para poder
-// reusarlo tanto con delta (modo "Última ronda", comparando contra la 1ª) como sin
-// delta (modo "Elegir rondas", cada ronda mostrada de forma independiente).
-function htmlResumenRondaPDF(preguntas, delta, deltaMejora) {
-  const aprobacion = ['Intendente', 'Gobernador', 'Presidente'].map(f => {
-    const d = preguntas[`Aprobación ${f}`];
-    return htmlGaugeAprobacionPDF(f, d, delta(`Aprobación ${f}`, 'Apruebo'));
-  }).join('');
-
-  const gestion = ['Intendente', 'Gobernador', 'Presidente'].map(f =>
-    htmlBarraCategoriasPDF(`Calificación de gestión: ${f}`, preguntas[`Gestión del ${f}`], delta(`Gestión del ${f}`, 'Positiva'))
-  ).join('');
-
-  const reeleccion = [['Llaryora (Gobernador)', 'Reelección Llaryora'], ['Milei (Presidente)', 'Reelección Milei']].map(([nom, key]) => {
-    const d = preguntas[key];
-    return htmlMetricPDF(`Reelección ${nom}`, d?.Si != null ? d.Si.toFixed(1) + '%' : '—', delta(key, 'Si'));
-  }).join('');
-
-  const funcionamiento = [['Centro Vecinal', 'Funcionamiento Centro Vecinal'], ['CPC', 'Funcionamiento CPC']].map(([nom, key]) =>
-    htmlBarraCategoriasPDF(`Funcionamiento ${nom}`, preguntas[key], delta(key, 'Positiva'))
-  ).join('');
-
-  const mejoras = [
-    ['Bacheos', 'Mejoras en bacheos'],
-    ['Alumbrado público', 'Mejoras en alumbrado público'],
-    ['Espacios públicos', 'Mejoras en espacios públicos'],
-    ['Ordenamiento naranjitas y limpiavidrios', 'Mejoras en ordenamiento naranjitas y limpiavidrios'],
-  ].map(([nom, key]) => htmlMejoraPDF(nom, preguntas[key], deltaMejora(key))).join('');
-
-  const problemas = preguntas['Problemas principales'] || {};
-  const topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
-
-  return `
-  ${topProblemas.length > 0 ? `<div style="margin-bottom:16px"><table><thead><tr><th>Principales problemas</th><th class="text-right">%</th></tr></thead><tbody>${topProblemas.map(([nombre, pct]) => `<tr><td>${nombre}</td><td class="text-right"><strong>${pct.toFixed(1)}%</strong></td></tr>`).join('')}</tbody></table></div>` : ''}
-
-  <div class="mini-title">Aprobación de gestión</div>
-  <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px">${aprobacion}</div>
-
-  <div class="mini-title">Calificación de gestión</div>
-  ${gestion}
-
-  <div class="mini-title">Reelección</div>
-  <div class="metrics" style="grid-template-columns:repeat(2,1fr);margin-bottom:10px">${reeleccion}</div>
-
-  <div class="mini-title">Funcionamiento de instituciones locales</div>
-  ${funcionamiento}
-
-  <div class="mini-title">Mejoras percibidas (ronda actual)</div>
-  ${mejoras}`;
-}
-
-// Modo "Última ronda" del diálogo de export — comportamiento sin cambios respecto
-// al que existía antes de las 3 opciones de export: última ronda, con delta vs. la
-// 1ª si el circuito tiene comparativo.
-function htmlEncuestasPDF(encuestaCircuito) {
+// Sección "Encuestas" de la ficha: a PARIDAD con el reporte. Usa exactamente el mismo cuerpo
+// (components/reporte/encuestasHtml.js) — mismo fechado honesto de bloques, mismo tratamiento actual/arrastre, mismos
+// chips de ronda, misma estructura de tarjeta y misma trayectoria — más el Resumen de la ronda actual (con el
+// titular de voto) arriba. Los 3 modos del diálogo se traducen a las mismas opciones del reporte:
+//   'ultima' → ronda única (la última)          'comparativo' → evolución de todas las rondas (o las dos)
+//   'elegir' → una sección por cada ronda elegida (cada una con su arrastre propio)
+function htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, modo, indicesRondas, T }) {
+  const titulo = (t) => `<h3>${t}</h3>`;
   if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
-    return `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
+    return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
   }
   const rondas = encuestaCircuito.rondas;
-  const ultima = rondas[rondas.length - 1];
-  const preguntas = ultima.preguntas || {};
-  const comparativo = !!encuestaCircuito.tiene_comparativo && rondas.length >= 2;
-  const delta = (pregunta, categoria) => comparativo ? deltaEncuestaPDF(rondas, pregunta, categoria) : null;
-  const deltaMejora = (pregunta) => comparativo ? deltaMejoraPDF(rondas, pregunta) : null;
-
-  return `
-<div class="section">
-  <h3>Encuestas</h3>
-  <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
-    <div class="metric"><div class="metric-label">Rondas</div><div class="metric-value">${encuestaCircuito.cantidad_rondas}</div><div class="metric-sub">última: ${formatearFechaRonda(ultima.fecha, ultima.casos)}</div></div>
-    <div class="metric"><div class="metric-label">Cobertura</div><div class="metric-value" style="font-size:14px">${comparativo ? 'Con comparativo' : 'Ronda única'}</div></div>
-  </div>
-  ${htmlResumenRondaPDF(preguntas, delta, deltaMejora)}
-</div>`;
-}
-
-// Modo "Elegir rondas" — una sección de encuesta completa por cada ronda elegida
-// (en el orden en que vienen los índices, ya ordenados cronológicamente por el
-// diálogo), cada una con su fecha como subtítulo y sin deltas (cada ronda se
-// muestra de forma independiente, no hay "ronda base" con la que compararlas).
-function htmlEncuestasElegirRondasPDF(encuestaCircuito, indicesRondas) {
-  const rondas = encuestaCircuito.rondas;
-  const seleccion = (indicesRondas || []).filter(i => rondas[i]);
-  if (seleccion.length === 0) {
-    return `<div class="section"><h3>Encuestas</h3><p style="color:#999;font-size:12px">Sin rondas seleccionadas.</p></div>`;
-  }
-  const sinDelta = () => null;
-  return seleccion.map(i => {
-    const ronda = rondas[i];
-    return `
-<div class="section">
-  <h3>Encuestas</h3>
-  <div class="mini-title" style="margin-top:0">${formatearFechaRonda(ronda.fecha, ronda.casos)}</div>
-  ${htmlResumenRondaPDF(ronda.preguntas || {}, sinDelta, sinDelta)}
-</div>`;
+  const umbral = encuestasMetadata?.umbral_variacion_pp ?? 2.5;
+  const cuerpo = (opciones) => htmlEncuestasCuerpo({
+    rondas, opciones, umbral, metadata: encuestasMetadata, T,
+    ui: { ResumenEncuesta, ComparativoEncuesta }, fn: { htmlBarraCategoriasPDF, htmlMejoraPDF, formatearFecha },
   }).join('');
-}
-
-// Modo "Comparativo" — misma vista (resumen + cards + barras apiladas + tabla) que
-// el bloque A en pantalla, generada por la misma función htmlComparativoEncuestaBody.
-function htmlEncuestasComparativoPDF(encuestaCircuito, umbral) {
-  if (!encuestaCircuito || encuestaCircuito.rondas.length < 2) {
-    return `<div class="section"><h3>Encuestas — Comparativo</h3><p style="color:#999;font-size:12px">Sin datos suficientes para comparar.</p></div>`;
+  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} />);
+  if (modo === 'comparativo') {
+    if (rondas.length < 2) return `<div class="section">${titulo('Encuestas — Comparativo')}<p style="color:#999;font-size:12px">Sin datos suficientes para comparar.</p></div>`;
+    return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas — Comparativo')}${cuerpo({ comparativo: true, ronda: false, todas: rondas.length >= 3 })}</div>`;
   }
-  return `<div class="section"><h3>Encuestas — Comparativo</h3>${htmlComparativoEncuestaBody(encuestaCircuito, umbral)}</div>`;
+  if (modo === 'elegir') {
+    const elegidas = (indicesRondas || []).filter(i => rondas[i]);
+    if (elegidas.length === 0) return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">Sin rondas seleccionadas.</p></div>`;
+    return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div>` + elegidas.map(i => `<div class="section es-enc">${titulo('Encuestas')}${cuerpo({ ronda: true, comparativo: false, rondaIdx: i })}</div>`).join('');
+  }
+  return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas')}${cuerpo({ ronda: true, comparativo: false })}</div>`;
 }
 
 // Sección "barrio" del PDF (población, contexto político, barrios cercanos, visitas,
@@ -4751,6 +4479,16 @@ td{padding:8px;border-top:1px solid #e0e0e0}
 .page-break{page-break-before:always}
 .footer{margin-top:30px;padding-top:16px;border-top:1px solid #e0e0e0;font-size:10px;color:#999;text-align:center}
 @media print{body{padding:15px} .page-break{page-break-before:always}}
+/* Sección Encuestas a paridad con el reporte: mismos tokens y clases (components/reporte/estilos.js) */
+:root{--bg-primary:#fff;--bg-secondary:#f3f4f6;--text-primary:#1a1a1a;--text-secondary:#555;--text-tertiary:#777;--border:#d9d9d9}
+.es-enc h3{margin-bottom:8px}
+.rp-h3{font-size:12.5px;font-weight:700;margin:14px 0 6px;break-after:avoid;page-break-after:avoid}
+.rp-nota{font-size:11px;color:var(--text-tertiary);margin:4px 0}
+.rp-aviso{font-size:10.5px;color:#8a5a00;background:#fff4dc;border:1px solid #f0d28a;border-radius:6px;padding:6px 9px;margin:0 0 10px;break-inside:avoid}
+.rp-evitar{break-inside:avoid;page-break-inside:avoid}
+.es-enc h4{break-after:avoid;page-break-after:avoid}
+.es-enc [style*="border-radius"]{break-inside:avoid;page-break-inside:avoid}
+.es-enc [style*="border-radius"][style*="overflow:hidden"]{break-inside:auto}
 `;
 }
 
@@ -4816,6 +4554,8 @@ const generarFichaPDF = ({
   // 'comparativo' (vista comparativa del bloque A, en versión print).
   modoEncuestas,
   rondasSeleccionadas,
+  // T = { md } con renderToStaticMarkup (react-dom/server se carga recién al exportar, ver confirmarExportCircuito).
+  T,
 }) => {
   const mapkey = datos.Mapkey;
   const barriosCircuito = barrios?.[mapkey]?.barrios || [];
@@ -4837,13 +4577,7 @@ const generarFichaPDF = ({
   // --- Encuestas del circuito: mismo criterio de agrupación que ResumenEncuesta en pantalla.
   // modoEncuestas viene del diálogo de export; sin dato (llamador legado) se cae al
   // comportamiento de siempre (última ronda). ---
-  const umbralComparativo = encuestasMetadata?.umbral_variacion_pp ?? 2.5;
-  const encuestaHtml = (() => {
-    if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) return htmlEncuestasPDF(encuestaCircuito);
-    if (modoEncuestas === 'comparativo') return htmlEncuestasComparativoPDF(encuestaCircuito, umbralComparativo);
-    if (modoEncuestas === 'elegir') return htmlEncuestasElegirRondasPDF(encuestaCircuito, rondasSeleccionadas || []);
-    return htmlEncuestasPDF(encuestaCircuito);
-  })();
+  const encuestaHtml = htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, modo: modoEncuestas, indicesRondas: rondasSeleccionadas, T });
 
   const escuelasCircuitoHtml = INCLUIR_ESCUELAS_PDF ? `
 <div class="section">
@@ -5519,8 +5253,9 @@ export default function Home() {
 
   // Cero barrios marcados = solo la parte de circuito (generarFichaPDF no agrega
   // ninguna sección de barrio); varios marcados = una sección por cada uno, en orden.
-  const confirmarExportCircuito = () => {
+  const confirmarExportCircuito = async () => {
     if (!datosCircuito || !dialogExportCircuito) return;
+    const { renderToStaticMarkup } = await import('react-dom/server');
     const html = generarFichaPDF({
       datos: datosCircuito, barrios, partidos, padronTotal,
       eventosPorCircuito, encuestaCircuito, encuestasData, encuestasMetadata,
@@ -5530,6 +5265,7 @@ export default function Home() {
       nombresBarriosParaExportar: Array.from(dialogExportCircuito.seleccionados),
       modoEncuestas: dialogExportCircuito.modoEncuestas,
       rondasSeleccionadas: Array.from(dialogExportCircuito.rondasSeleccionadas).sort((a, b) => a - b),
+      T: { md: (el) => renderToStaticMarkup(el) },
     });
     abrirVentanaImpresion(html);
     setDialogExportCircuito(null);
