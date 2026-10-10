@@ -20,7 +20,7 @@ const textoN = (casos) => (casos != null ? `n=${casos}` : 'n no informado');
 // Chip + n (+ aviso si n < 30). "actual" marca la ronda actual.
 // etiqueta (opcional): texto del estado que va después de la fecha (ej. "sin dato nuevo"); si falta y actual=true, "actual".
 export const ChipRonda = ({ fecha, casos, actual = false, etiqueta = null, conN = true }) => (
-  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap' }}>
     <span style={estiloChipRonda(actual)}>{formatearFecha(fecha)}{etiqueta ? ` · ${etiqueta}` : actual ? ' · actual' : ''}</span>
     {conN && <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{textoN(casos)}</span>}
     {conN && muestraReducida(casos) && <span style={{ fontSize: '11px', fontWeight: 600, color: '#8a5a00' }}>{AVISO_N_CHICO}</span>}
@@ -33,7 +33,7 @@ export function htmlChipRonda(fecha, { casos, actual = false, etiqueta = null, c
   if (!conN) return chip;
   const n = `<span style="font-size:11px;color:var(--text-tertiary)">${textoN(casos)}</span>`;
   const aviso = muestraReducida(casos) ? `<span style="font-size:11px;font-weight:600;color:#8a5a00">${AVISO_N_CHICO}</span>` : '';
-  return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${chip}${n}${aviso}</span>`;
+  return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">${chip}${n}${aviso}</span>`;
 }
 
 // Fila con los chips de TODAS las rondas que entran en una comparación, en orden cronológico

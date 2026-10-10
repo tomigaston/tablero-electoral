@@ -8,7 +8,7 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { crearRefRonda, etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, ultimaRondaConDato } from '../lib/lecturaRondas';
+import { crearRefRonda, etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, fechaRondaActual, fechaCorta, ultimaRondaConDato } from '../lib/lecturaRondas';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
 import { ChipRonda, FilaChipsRondas, htmlChipRonda } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
@@ -1701,7 +1701,7 @@ const SeccionGestionFuncionarios = ({ gestiones, arrastres = {} }) => (
 const NotaArrastre = ({ arrastre }) => (
   <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2px 6px', marginTop: '4px' }}>
     <span>{arrastre.sinDato} · último:</span>
-    <ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} />
+    <ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} etiqueta="sin dato nuevo" />
   </div>
 );
 const estiloTarjetaMedidor = (arrastre) => (arrastre
@@ -2109,60 +2109,60 @@ const ACENTO_TIPO_PREGUNTA = { Aprobacion: '#1976D2', Reeleccion: '#26A69A' };
 const ACENTO_TIPO_NEUTRO = '#78909C';
 const colorAcentoTipoPregunta = (tipo) => ACENTO_TIPO_PREGUNTA[tipo] || ACENTO_TIPO_NEUTRO;
 
-// Variación con SUS DOS EXTREMOS: "jul 32.0% → oct 47.2%" + "▲ +15.2 pp" (o "· Estable").
-// Nunca un delta con solo la fecha final: el intervalo siempre queda declarado.
+// Trayectoria del indicador con TODOS sus puntos y fechas: "abr 41.0% → jul 35.2% → oct 44.5%" y el delta del último
+// paso con su referencia declarada: "▼ −5.5 pp vs jul" (o "· Estable vs jul"). Con dos mediciones es "abr X% → jul Y%".
+// Nunca un delta sin saber contra qué fecha se compara. null con una sola medición.
 const signoPP = (d) => `${d > 0 ? '+' : d < 0 ? '−' : ''}${Math.abs(d).toFixed(1)} pp`;
-function variacionConExtremos(v, positivoEsSubir, { atenuada = false } = {}) {
-  if (!v || v.estado == null) return null;
+function trayectoriaIndicador(v, positivoEsSubir, { atenuada = false } = {}) {
+  if (!v || v.estado == null || !v.serie || v.serie.length < 2) return null;
+  const et = etiquetasSerie(v.serie.map(d => d.fecha));
   const color = atenuada ? 'var(--text-tertiary)' : colorVariacionIndicador(v.estado, positivoEsSubir);
   const delta = v.estado === 'estable' ? '· Estable' : `${v.estado === 'sube' ? '▲' : '▼'} ${signoPP(v.delta)}`;
-  const titulo = `${formatearFecha(v.fechaAnterior)} → ${formatearFecha(v.fechaActual)}`;
-  // Con 3 o más mediciones se muestra el recorrido completo (abr → jul → ago → sep) y el delta es el del último
-  // paso, declarado ("vs ago"). Con 2, solo los dos extremos.
-  if (v.serie && v.serie.length > 2) {
-    const et = etiquetasSerie(v.serie.map(d => d.fecha));
-    return { extremos: v.serie.map((d, i) => `${et[i]} ${d.valor.toFixed(1)}%`).join(' → '), delta: `${delta} vs ${et[et.length - 2]}`, color, titulo };
-  }
-  const [a, b] = etiquetaExtremos(v.fechaAnterior, v.fechaActual);
-  return { extremos: `${a} ${v.anterior.toFixed(1)}% → ${b} ${v.actual.toFixed(1)}%`, delta, color, titulo };
+  return {
+    camino: v.serie.map((d, i) => `${et[i]} ${d.valor.toFixed(1)}%`).join(' → '),
+    delta, vs: `vs ${et[et.length - 2]}`, color,
+    titulo: `${formatearFecha(v.fechaAnterior)} → ${formatearFecha(v.fechaActual)}`,
+  };
 }
 
-// Tarjeta de un indicador. Dos tratamientos que se distinguen SIN leer la fecha:
-//  · ACTUAL   — viene de la ronda actual: tarjeta al frente (fondo blanco, borde de color, valor grande).
-//  · ARRASTRE — la ronda actual no midió la pregunta: tarjeta apagada (fondo gris, borde punteado, valor
-//    tenue) con la etiqueta "Sin dato en la ronda actual · último: <fecha> · n=<n>".
+// Tarjeta de un indicador. UNA sola estructura para actual y arrastre (cada elemento en la misma posición):
+//   Renglón 1: título.
+//   Renglón 2: número grande + chip de fecha/estado pegado al número + n (el ancla de fecha que el ojo busca).
+//   Renglón 3: trayectoria + delta con su "vs <mes>".
+// Lo único que cambia es el tratamiento:
+//  · ACTUAL   — tarjeta al frente (fondo blanco, borde de color); el chip dice "<fecha> · actual" si es la última
+//    ronda real del circuito y solo la fecha si la ventana la excluye.
+//  · ARRASTRE — la ronda de referencia no midió la pregunta: tarjeta gris con borde punteado y valores tenues;
+//    el chip dice "<fecha> · sin dato nuevo". Conserva su propia comparación (con su "vs").
 const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento, refRonda }) => {
   const v = resolverIndicador(rondas, refRonda.fecha, r => r.preguntas?.[pregunta]?.[categoria], umbral);
+  const base = { padding: '14px 16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '104px' };
   if (!v) {
     return (
-      <div style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }}>
+      <div style={{ ...base, backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)' }}>
         <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-tertiary)' }}>{label}</div>
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sin dato en las rondas elegidas</div>
       </div>
     );
   }
   const arrastre = v.esArrastre;
-  const cambio = variacionConExtremos(v, positivoEsSubir, { atenuada: arrastre });
+  const tray = trayectoriaIndicador(v, positivoEsSubir, { atenuada: arrastre });
   return (
     <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={arrastre
-      ? { padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }
-      : { padding: '14px 16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderLeft: `4px solid ${colorAcento}`, borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px', boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>
+      ? { ...base, backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)' }
+      : { ...base, backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderLeft: `4px solid ${colorAcento}`, boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>
       <div style={{ fontSize: '13px', fontWeight: 600, color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{label}</div>
-      {arrastre && (
-        <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}>
-          <span>{refRonda.sinDato} · último:</span>
-          <ChipRonda fecha={v.fechaActual} casos={v.actualCasos} />
-        </div>
-      )}
-      <div style={{ fontSize: arrastre ? '18px' : '24px', fontWeight: arrastre ? 500 : 700, color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', lineHeight: 1.1 }}>{v.actual.toFixed(1)}%</div>
-      {cambio ? (
-        <div title={cambio.titulo} style={{ fontSize: '11.5px', color: 'var(--text-tertiary)' }}>
-          {cambio.extremos}{' '}<span style={{ fontWeight: 700, color: cambio.color, whiteSpace: 'nowrap' }}>{cambio.delta}</span>
+      <div data-fila-fecha style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px' }}>
+        <span style={{ fontSize: '24px', fontWeight: 700, lineHeight: 1.1, whiteSpace: 'nowrap', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{v.actual.toFixed(1)}%</span>
+        <ChipRonda fecha={v.fechaActual} casos={v.actualCasos} actual={!arrastre && refRonda.esUltima} etiqueta={arrastre ? 'sin dato nuevo' : null} />
+      </div>
+      {tray ? (
+        <div title={tray.titulo} style={{ fontSize: '11.5px', color: 'var(--text-tertiary)' }}>
+          {tray.camino}{' '}<span style={{ fontWeight: 700, color: tray.color, whiteSpace: 'nowrap' }}>{tray.delta}</span>{' '}<span style={{ whiteSpace: 'nowrap' }}>{tray.vs}</span>
         </div>
       ) : (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>sin dato anterior</div>
       )}
-      {!arrastre && <div style={{ marginTop: '2px' }}><ChipRonda fecha={v.fechaActual} casos={v.actualCasos} actual={refRonda.esUltima} /></div>}
     </div>
   );
 };
@@ -2184,7 +2184,7 @@ const GridIndicadoresComparativo = ({ rondas, umbral, metadata, refRonda }) => {
           Las tarjetas grises con borde punteado no se midieron en {refRonda.rotuloFecha}: muestran el último dato disponible, que es más viejo.
         </div>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
         {ordenados.map(i => (
           <CardIndicadorComparativo
             key={i.label} label={i.label} rondas={rondas} pregunta={i.pregunta} categoria={i.categoria} umbral={umbral} positivoEsSubir={i.positivoEsSubir}
