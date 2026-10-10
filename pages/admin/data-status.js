@@ -80,6 +80,38 @@ function leerVisitasAplanadas() {
     .sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
 }
 
+// Escenarios de intención de voto para Gobernador: por ronda, cuántos escenarios y en qué circuitos
+// hay datos. Se lee del mismo JSON de producción y se cruza con el registro de encuestas_metadata.json
+// para marcar los escenarios que todavía no están registrados.
+function leerEscenariosGobernador() {
+  const dir = path.join(process.cwd(), 'public', 'data');
+  const datos = JSON.parse(fs.readFileSync(path.join(dir, 'encuestas_circuitos.json'), 'utf8'));
+  const meta = JSON.parse(fs.readFileSync(path.join(dir, 'encuestas_metadata.json'), 'utf8')).escenarios_gobernador;
+  if (!meta) return { rondas: [], sinEscenarios: 0, total: 0 };
+  const registrados = new Set(Object.keys(meta.escenarios || {}));
+  const porFecha = {};
+  const conEscenarios = new Set();
+  Object.entries(datos).forEach(([circuito, info]) => {
+    (info.rondas || []).forEach((r) => {
+      Object.keys(r.preguntas || {}).filter((q) => q.startsWith(meta.prefijo_pregunta)).forEach((q) => {
+        const esc = q.slice(meta.prefijo_pregunta.length);
+        conEscenarios.add(circuito);
+        const f = (porFecha[r.fecha] = porFecha[r.fecha] || { fecha: r.fecha, escenarios: {}, circuitos: new Set() });
+        f.circuitos.add(circuito);
+        (f.escenarios[esc] = f.escenarios[esc] || new Set()).add(circuito);
+      });
+    });
+  });
+  const rondas = Object.values(porFecha)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha))
+    .map((f) => ({
+      fecha: f.fecha,
+      circuitos: [...f.circuitos].sort(compararCircuitoKey),
+      escenarios: Object.entries(f.escenarios).map(([nombre, cs]) => ({ nombre, circuitos: cs.size, registrado: registrados.has(nombre) })),
+    }));
+  return { rondas, sinEscenarios: Object.keys(datos).length - conEscenarios.size, total: Object.keys(datos).length };
+}
+
 function leerEncuestasAplanadas() {
   const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'data', 'encuestas_circuitos.json'), 'utf8'));
   return Object.entries(raw)
@@ -122,8 +154,9 @@ export async function getServerSideProps() {
   }));
   const visitas = leerVisitasAplanadas();
   const encuestas = leerEncuestasAplanadas();
+  const escenarios = leerEscenariosGobernador();
   const obrasSinGeolocalizar = leerObrasSinGeolocalizar();
-  return { props: { manifest, visitas, encuestas, obrasSinGeolocalizar } };
+  return { props: { manifest, visitas, encuestas, escenarios, obrasSinGeolocalizar } };
 }
 
 function formatRelativo(iso) {
@@ -298,6 +331,55 @@ const TablaEncuestas = ({ encuestas, entry }) => {
   );
 };
 
+const TablaEscenarios = ({ escenarios, entry }) => (
+  <div style={{ marginBottom: '32px' }}>
+    <div style={{ marginBottom: '14px' }}>
+      <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>Intención de voto — Gobernador (escenarios)</h2>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <code style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>public/data/encuestas_circuitos.json</code>
+        <span style={{ color: 'var(--border)' }}>·</span>
+        <UltimaActualizacion entry={entry} />
+        <span style={{ color: 'var(--border)' }}>·</span>
+        <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{escenarios.total - escenarios.sinEscenarios} de {escenarios.total} circuitos con escenarios</span>
+      </div>
+    </div>
+    <div style={{ overflowX: 'auto', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+        <thead>
+          <tr style={{ backgroundColor: 'var(--bg-secondary)' }}>
+            <th style={thStyle}>Ronda</th>
+            <th style={thStyle}>Circuitos con datos</th>
+            <th style={thStyle}>Escenarios</th>
+          </tr>
+        </thead>
+        <tbody>
+          {escenarios.rondas.length === 0 ? (
+            <tr><td style={{ ...tdStyle, color: 'var(--text-tertiary)' }} colSpan={3}>Ninguna ronda tiene escenarios cargados.</td></tr>
+          ) : escenarios.rondas.map((r) => (
+            <tr key={r.fecha} style={{ borderTop: '1px solid var(--border)', verticalAlign: 'top' }}>
+              <td style={{ ...tdStyle, fontFamily: 'monospace', fontWeight: 500, whiteSpace: 'nowrap' }}>{r.fecha}</td>
+              <td style={tdStyle}>{r.circuitos.length}: {r.circuitos.join(', ')}</td>
+              <td style={tdStyle}>
+                <ol style={{ margin: 0, paddingLeft: '18px' }}>
+                  {r.escenarios.map((e) => (
+                    <li key={e.nombre}>
+                      {e.nombre} <span style={{ color: 'var(--text-tertiary)' }}>({e.circuitos} circuitos)</span>
+                      {!e.registrado && <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 600, color: '#B28900', backgroundColor: '#FFF8E1', padding: '1px 7px', borderRadius: '8px' }}>no registrado en encuestas_metadata.json</span>}
+                    </li>
+                  ))}
+                </ol>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '8px' }}>
+      Circuitos sin ningún escenario en ninguna ronda: {escenarios.sinEscenarios}. Validación de cada carga: <code>scripts/validar_escenarios_gobernador.py</code>.
+    </p>
+  </div>
+);
+
 const TablaObrasSinGeolocalizar = ({ obras, entry }) => {
   const [busqueda, setBusqueda] = useState('');
   const filtro = normalizarBusqueda(busqueda);
@@ -345,7 +427,7 @@ const TablaObrasSinGeolocalizar = ({ obras, entry }) => {
   );
 };
 
-export default function DataStatus({ manifest, visitas, encuestas, obrasSinGeolocalizar }) {
+export default function DataStatus({ manifest, visitas, encuestas, escenarios, obrasSinGeolocalizar }) {
   const entryVisitas = manifest.find((m) => m.archivo === 'recorridos_barrios.json');
   const entryEncuestas = manifest.find((m) => m.archivo === 'encuestas_circuitos.json');
   const entryObras = manifest.find((m) => m.archivo === 'obras_capital.json');
@@ -404,6 +486,7 @@ export default function DataStatus({ manifest, visitas, encuestas, obrasSinGeolo
         <div style={{ marginTop: '40px' }}>
           <TablaVisitas visitas={visitas} entry={entryVisitas} />
           <TablaEncuestas encuestas={encuestas} entry={entryEncuestas} />
+          <TablaEscenarios escenarios={escenarios} entry={entryEncuestas} />
           <TablaObrasSinGeolocalizar obras={obrasSinGeolocalizar} entry={entryObras} />
         </div>
       </div>
