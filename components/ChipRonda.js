@@ -18,17 +18,18 @@ export const AVISO_N_CHICO = '⚠ muestra reducida';
 const textoN = (casos) => (casos != null ? `n=${casos}` : 'n no informado');
 
 // Chip + n (+ aviso si n < 30). "actual" marca la ronda actual.
-export const ChipRonda = ({ fecha, casos, actual = false, conN = true }) => (
+// etiqueta (opcional): texto del estado que va después de la fecha (ej. "sin dato nuevo"); si falta y actual=true, "actual".
+export const ChipRonda = ({ fecha, casos, actual = false, etiqueta = null, conN = true }) => (
   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-    <span style={estiloChipRonda(actual)}>{formatearFecha(fecha)}{actual ? ' · actual' : ''}</span>
+    <span style={estiloChipRonda(actual)}>{formatearFecha(fecha)}{etiqueta ? ` · ${etiqueta}` : actual ? ' · actual' : ''}</span>
     {conN && <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{textoN(casos)}</span>}
     {conN && muestraReducida(casos) && <span style={{ fontSize: '11px', fontWeight: 600, color: '#8a5a00' }}>{AVISO_N_CHICO}</span>}
   </span>
 );
 
 // Versión HTML-string (para las barras de Calificación de gestión, que se arman como texto).
-export function htmlChipRonda(fecha, { casos, actual = false, conN = true } = {}) {
-  const chip = `<span style="${cssStr(estiloChipRonda(actual))}">${formatearFecha(fecha)}${actual ? ' · actual' : ''}</span>`;
+export function htmlChipRonda(fecha, { casos, actual = false, etiqueta = null, conN = true } = {}) {
+  const chip = `<span style="${cssStr(estiloChipRonda(actual))}">${formatearFecha(fecha)}${etiqueta ? ` · ${etiqueta}` : actual ? ' · actual' : ''}</span>`;
   if (!conN) return chip;
   const n = `<span style="font-size:11px;color:var(--text-tertiary)">${textoN(casos)}</span>`;
   const aviso = muestraReducida(casos) ? `<span style="font-size:11px;font-weight:600;color:#8a5a00">${AVISO_N_CHICO}</span>` : '';
@@ -36,10 +37,10 @@ export function htmlChipRonda(fecha, { casos, actual = false, conN = true } = {}
 }
 
 // Fila con los chips de TODAS las rondas que entran en una comparación, en orden cronológico
-// (de la más antigua a la actual). La actual lleva la marca "actual".
-export const FilaChipsRondas = ({ rondas, fechaActual }) => (
+// (de la más antigua a la más reciente). Solo la última real del circuito lleva la marca "actual".
+export const FilaChipsRondas = ({ rondas, fechaUltima }) => (
   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 14px', marginBottom: '14px' }}>
-    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Rondas, de la más antigua a la actual:</span>
-    {rondas.map(r => <ChipRonda key={r.fecha} fecha={r.fecha} casos={r.casos} actual={r.fecha === fechaActual} />)}
+    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Rondas, de la más antigua a la más reciente:</span>
+    {rondas.map(r => <ChipRonda key={r.fecha} fecha={r.fecha} casos={r.casos} actual={r.fecha === fechaUltima} />)}
   </div>
 );

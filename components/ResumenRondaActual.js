@@ -36,7 +36,9 @@ const gruposNoMedidos = (lista) => {
   return [...m.entries()].map(([fecha, nombres]) => ({ fecha, nombres }));
 };
 
-export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = true }) => {
+// ventanaHasta (opcional): fecha de la ronda más reciente que muestra el detalle de abajo; si es anterior a la última
+// del circuito, el encabezado aclara que el resumen refleja la última ronda aunque el detalle no la incluya.
+export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = true, ventanaHasta = null }) => {
   const rondas = ordenarRondas(encuesta?.rondas);
   if (!rondas.length) return null;
   const fechaActual = fechaRondaActual(rondas);
@@ -65,6 +67,11 @@ export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = t
         {conTitulo && <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>Resumen de la ronda actual</span>}
         <ChipRonda fecha={actual.fecha} casos={actual.casos} actual />
       </div>
+      {ventanaHasta && ventanaHasta < actual.fecha && (
+        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 4px' }}>
+          Refleja la última ronda del circuito ({formatearFecha(actual.fecha)}), aunque el detalle de más abajo llega solo hasta el {formatearFecha(ventanaHasta)}.
+        </div>
+      )}
 
       <Fila rotulo="Voto a Gobernador" atenuada={ivArrastre}>
         {!rondaIV && 'Sin escenarios de voto en esta ronda.'}

@@ -8,7 +8,7 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, ultimaRondaConDato } from '../lib/lecturaRondas';
+import { crearRefRonda, etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, ultimaRondaConDato } from '../lib/lecturaRondas';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
 import { ChipRonda, FilaChipsRondas, htmlChipRonda } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
@@ -1676,7 +1676,7 @@ const BarraGestion = ({ label, data, arrastre = null }) => {
   return (
     <div style={arrastre ? { marginBottom: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '8px', padding: '8px 10px' } : { marginBottom: '10px' }}>
       <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
-      {arrastre && <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '5px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}><span>Sin dato en la ronda actual · último:</span><ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} /></div>}
+      {arrastre && <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '5px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}><span>{arrastre.sinDato} · último:</span><ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} /></div>}
       <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { height: arrastre ? 18 : 26, atenuada: !!arrastre }) }} />
     </div>
   );
@@ -1700,7 +1700,7 @@ const SeccionGestionFuncionarios = ({ gestiones, arrastres = {} }) => (
 // Nota de ARRASTRE: la ronda actual no midió esta pregunta y se muestra el último valor disponible, atenuado.
 const NotaArrastre = ({ arrastre }) => (
   <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2px 6px', marginTop: '4px' }}>
-    <span>Sin dato en la ronda actual · último:</span>
+    <span>{arrastre.sinDato} · último:</span>
     <ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} />
   </div>
 );
@@ -1759,15 +1759,17 @@ const DonutReeleccion = ({ label, data, arrastre = null }) => {
   );
 };
 
-// contexto (opcional): { rondas, fecha } — todas las rondas del circuito y la fecha de la ronda que se muestra.
+// contexto (opcional): { rondas, fecha, fechaUltima } — todas las rondas del circuito, la fecha de la ronda que se
+// muestra y la última real del circuito (solo si coinciden se dice "actual").
 // Con contexto, las preguntas que ESA ronda no midió se completan con el último dato de una ronda anterior, marcado
 // como ARRASTRE (atenuado + "Sin dato en la ronda actual · último: <fecha> · n=<n>"). Sin contexto: solo esa ronda.
 const ResumenEncuesta = ({ preguntas, contexto = null }) => {
+  const ref = contexto ? crearRefRonda(contexto.fecha, contexto.fechaUltima ?? fechaRondaActual(contexto.rondas)) : null;
   const dato = (key) => {
     if (preguntas[key]) return { data: preguntas[key], arrastre: null, ronda: null };
     if (!contexto) return { data: null, arrastre: null, ronda: null };
     const r = ultimaRondaConDato(contexto.rondas, contexto.fecha, x => x.fecha < contexto.fecha && !!x.preguntas?.[key]);
-    return r ? { data: r.preguntas[key], arrastre: { fecha: r.fecha, casos: r.casos ?? null }, ronda: r } : { data: null, arrastre: null, ronda: null };
+    return r ? { data: r.preguntas[key], arrastre: { fecha: r.fecha, casos: r.casos ?? null, sinDato: ref.sinDato }, ronda: r } : { data: null, arrastre: null, ronda: null };
   };
   const prob = dato('Problemas principales');
   const gest = { Intendente: dato('Gestión del Intendente'), Gobernador: dato('Gestión del Gobernador'), Presidente: dato('Gestión del Presidente') };
@@ -1776,7 +1778,7 @@ const ResumenEncuesta = ({ preguntas, contexto = null }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {prob.arrastre
-        ? <BloqueProblemas rondas={[prob.ronda]} umbral={2.5} fechaActual={contexto.fecha} sinComparacion />
+        ? <BloqueProblemas rondas={[prob.ronda]} umbral={2.5} refRonda={ref} sinComparacion />
         : <BarraProblemas problemas={prob.data} />}
       <SeccionGestionFuncionarios
         gestiones={{ Intendente: gest.Intendente.data, Gobernador: gest.Gobernador.data, Presidente: gest.Presidente.data }}
@@ -2022,21 +2024,22 @@ function htmlDeltasGestion(previa, actual, fechaPrevia, umbral, atenuado) {
   return `<div style="display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:3px;font-size:10.5px"><span title="Comparado con la ronda del ${formatearFecha(fechaPrevia)}" style="font-weight:600;color:var(--text-tertiary,#777)">vs ${fechaCorta(fechaPrevia)}</span>${items}</div>`;
 }
 
-function htmlMiniPendienteGestion(funcionario, rondas, umbral, fechaActual = fechaRondaActual(rondas)) {
+function htmlMiniPendienteGestion(funcionario, rondas, umbral, ref = crearRefRonda(fechaRondaActual(rondas), fechaRondaActual(rondas))) {
   const pregunta = `Gestión del ${funcionario}`;
   const titulo = `<div style="font-size:13px;color:var(--text-secondary,#555);font-weight:600;margin-bottom:6px">Calificación de gestión: ${funcionario}</div>`;
   const filas = ordenarRondas(rondas).map(r => ({ fecha: r.fecha, casos: r.casos ?? null, data: r.preguntas?.[pregunta] })).filter(f => f.data);
   if (filas.length === 0) {
     return `<div style="margin-bottom:16px">${titulo}<p style="font-size:12px;color:var(--text-tertiary,#777);margin:0">Sin dato en las rondas elegidas.</p></div>`;
   }
-  const arrastre = filas[filas.length - 1].fecha !== fechaActual;
+  const arrastre = filas[filas.length - 1].fecha !== ref.fecha;
   const barras = filas.map((f, i) => {
-    const esActual = !arrastre && i === filas.length - 1;
-    const atenuada = arrastre || !esActual;
+    const esReciente = !arrastre && i === filas.length - 1;
+    const esActual = esReciente && ref.esUltima;
+    const atenuada = arrastre || !esReciente;
     const deltas = i > 0 ? htmlDeltasGestion(filas[i - 1].data, f.data, filas[i - 1].fecha, umbral, atenuada) : '';
-    return `<div style="margin-bottom:${esActual ? 4 : 10}px;break-inside:avoid">
+    return `<div style="margin-bottom:${esReciente ? 4 : 10}px;break-inside:avoid">
       <div style="margin-bottom:3px">${htmlChipRonda(f.fecha, { casos: f.casos, actual: esActual })}</div>
-      ${htmlBarraSegmentosPDF(f.data, { height: esActual ? 26 : 16, atenuada })}
+      ${htmlBarraSegmentosPDF(f.data, { height: esReciente ? 26 : 16, atenuada })}
       ${deltas}
     </div>`;
   }).join('');
@@ -2044,16 +2047,16 @@ function htmlMiniPendienteGestion(funcionario, rondas, umbral, fechaActual = fec
   const ult = filas[filas.length - 1];
   return `<div data-estado-gestion="arrastre" style="margin-bottom:18px;break-inside:avoid;background:var(--bg-secondary,#f3f4f6);border:1px dashed var(--border,#d9d9d9);border-radius:8px;padding:8px 10px">
     <div style="font-size:13px;color:var(--text-tertiary,#777);font-weight:600;margin-bottom:2px">Calificación de gestión: ${funcionario}</div>
-    <div style="font-size:10.5px;font-weight:600;color:var(--text-tertiary,#777);margin-bottom:6px">Sin dato en la ronda actual (${formatearFecha(fechaActual)}) · se muestra el último dato disponible: ${formatearFecha(ult.fecha)}${ult.casos != null ? ` · n=${ult.casos}` : ''}</div>
+    <div style="font-size:10.5px;font-weight:600;color:var(--text-tertiary,#777);margin-bottom:6px">${ref.sinDato}${ref.esUltima ? ` (${formatearFecha(ref.fecha)})` : ''} · se muestra el último dato disponible: ${formatearFecha(ult.fecha)}${ult.casos != null ? ` · n=${ult.casos}` : ''}</div>
     ${barras}
   </div>`;
 }
 
-function htmlMiniPendientesGestion(rondas, umbral) {
-  const fechaActual = fechaRondaActual(rondas);
+function htmlMiniPendientesGestion(rondas, umbral, fechaUltima = fechaRondaActual(rondas)) {
+  const ref = crearRefRonda(fechaRondaActual(rondas), fechaUltima);
   const nota = (rondas || []).length >= 2
-    ? `<div style="font-size:11px;color:var(--text-tertiary,#777);margin-bottom:10px;break-after:avoid;page-break-after:avoid">Cada barra es una ronda, de la más antigua (arriba) a la actual (abajo). Los cambios en pp se comparan con la barra de arriba.</div>` : '';
-  return nota + ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral, fechaActual)).join('');
+    ? `<div style="font-size:11px;color:var(--text-tertiary,#777);margin-bottom:10px;break-after:avoid;page-break-after:avoid">Cada barra es una ronda, de la más antigua (arriba) a la más reciente (abajo). Los cambios en pp se comparan con la barra de arriba.</div>` : '';
+  return nota + ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral, ref)).join('');
 }
 
 function htmlLegendGestion() {
@@ -2128,8 +2131,8 @@ function variacionConExtremos(v, positivoEsSubir, { atenuada = false } = {}) {
 //  · ACTUAL   — viene de la ronda actual: tarjeta al frente (fondo blanco, borde de color, valor grande).
 //  · ARRASTRE — la ronda actual no midió la pregunta: tarjeta apagada (fondo gris, borde punteado, valor
 //    tenue) con la etiqueta "Sin dato en la ronda actual · último: <fecha> · n=<n>".
-const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento, fechaActual }) => {
-  const v = resolverIndicador(rondas, fechaActual, r => r.preguntas?.[pregunta]?.[categoria], umbral);
+const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento, refRonda }) => {
+  const v = resolverIndicador(rondas, refRonda.fecha, r => r.preguntas?.[pregunta]?.[categoria], umbral);
   if (!v) {
     return (
       <div style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }}>
@@ -2147,7 +2150,7 @@ const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, 
       <div style={{ fontSize: '13px', fontWeight: 600, color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{label}</div>
       {arrastre && (
         <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}>
-          <span>Sin dato en la ronda actual · último:</span>
+          <span>{refRonda.sinDato} · último:</span>
           <ChipRonda fecha={v.fechaActual} casos={v.actualCasos} />
         </div>
       )}
@@ -2159,7 +2162,7 @@ const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, 
       ) : (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>sin dato anterior</div>
       )}
-      {!arrastre && <div style={{ marginTop: '2px' }}><ChipRonda fecha={v.fechaActual} casos={v.actualCasos} actual /></div>}
+      {!arrastre && <div style={{ marginTop: '2px' }}><ChipRonda fecha={v.fechaActual} casos={v.actualCasos} actual={refRonda.esUltima} /></div>}
     </div>
   );
 };
@@ -2167,10 +2170,10 @@ const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, 
 // Una sola grilla continua con wrap para Aprobación + Reelección + cualquier otra pregunta que se agregue.
 // Primero las tarjetas ACTUALES y después las de ARRASTRE (mismo orden relativo dentro de cada grupo), para
 // que lo que no se midió esta ronda quede agrupado y atrás.
-const GridIndicadoresComparativo = ({ rondas, umbral, metadata, fechaActual }) => {
+const GridIndicadoresComparativo = ({ rondas, umbral, metadata, refRonda }) => {
   const items = ITEMS_INDICADORES_COMPARATIVO.map(([label, pregunta, categoria, positivoEsSubir = true]) => ({
     label, pregunta, categoria, positivoEsSubir,
-    arrastre: !!resolverIndicador(rondas, fechaActual, r => r.preguntas?.[pregunta]?.[categoria], umbral)?.esArrastre,
+    arrastre: !!resolverIndicador(rondas, refRonda.fecha, r => r.preguntas?.[pregunta]?.[categoria], umbral)?.esArrastre,
   }));
   const ordenados = [...items.filter(i => !i.arrastre), ...items.filter(i => i.arrastre)];
   const hayArrastre = items.some(i => i.arrastre);
@@ -2178,14 +2181,14 @@ const GridIndicadoresComparativo = ({ rondas, umbral, metadata, fechaActual }) =
     <div>
       {hayArrastre && (
         <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px', breakAfter: 'avoid' }}>
-          Las tarjetas grises con borde punteado no se midieron en la ronda actual ({formatearFecha(fechaActual)}): muestran el último dato disponible, que es más viejo.
+          Las tarjetas grises con borde punteado no se midieron en {refRonda.rotuloFecha}: muestran el último dato disponible, que es más viejo.
         </div>
       )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '12px' }}>
         {ordenados.map(i => (
           <CardIndicadorComparativo
             key={i.label} label={i.label} rondas={rondas} pregunta={i.pregunta} categoria={i.categoria} umbral={umbral} positivoEsSubir={i.positivoEsSubir}
-            fechaActual={fechaActual} colorAcento={colorAcentoTipoPregunta(metadata?.preguntas?.[i.pregunta]?.tipo)}
+            refRonda={refRonda} colorAcento={colorAcentoTipoPregunta(metadata?.preguntas?.[i.pregunta]?.tipo)}
           />
         ))}
       </div>
@@ -2208,8 +2211,8 @@ const DeltaProblema = ({ f, atenuado }) => {
   );
 };
 
-const BloqueProblemas = ({ rondas, umbral, fechaActual, sinComparacion = false }) => {
-  const b = calcularBloqueProblemas(rondas, umbral, fechaActual);
+const BloqueProblemas = ({ rondas, umbral, refRonda, sinComparacion = false }) => {
+  const b = calcularBloqueProblemas(rondas, umbral, refRonda.fecha);
   const h4 = { fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 };
   if (!b) {
     return (
@@ -2223,10 +2226,10 @@ const BloqueProblemas = ({ rondas, umbral, fechaActual, sinComparacion = false }
   return (
     <div data-estado-problemas={arr ? 'arrastre' : 'actual'} style={{ breakInside: 'avoid', ...(arr ? { backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', padding: '10px 14px' } : {}) }}>
       <h4 style={{ ...h4, color: arr ? 'var(--text-tertiary)' : 'var(--text-secondary)' }}>
-        {arr ? `Problemas · última medición: ${formatearFecha(b.ultima.fecha)} (la ronda actual no relevó este bloque)` : 'Principales problemas'}
+        {arr ? `Problemas · última medición: ${formatearFecha(b.ultima.fecha)} (${refRonda.rotulo} no relevó este bloque)` : 'Principales problemas'}
       </h4>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 12px', marginBottom: '10px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
-        <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr} />
+        <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr && refRonda.esUltima} />
         <span>
           {sinComparacion ? 'valores de esa medición, sin comparación' : b.previa
             ? `comparación ${formatearFecha(b.previa.fecha)} → ${formatearFecha(b.ultima.fecha)} · variación en puntos porcentuales (pp)`
@@ -2250,22 +2253,25 @@ const BloqueProblemas = ({ rondas, umbral, fechaActual, sinComparacion = false }
   );
 };
 
-const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
+// fechaUltima: última ronda REAL del circuito (puede no estar en `encuesta.rondas` si la ventana la excluye).
+const ComparativoEncuesta = ({ encuesta, umbral, metadata, fechaUltima }) => {
   const rondas = encuesta.rondas;
+  const ultimaCircuito = fechaUltima ?? fechaRondaActual(rondas);
+  const refRonda = crearRefRonda(fechaRondaActual(rondas), ultimaCircuito);
   return (
     <div>
-      <FilaChipsRondas rondas={rondas} fechaActual={fechaRondaActual(rondas)} />
+      <FilaChipsRondas rondas={rondas} fechaUltima={ultimaCircuito} />
       <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
-        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} fechaActual={fechaRondaActual(rondas)} />
+        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} refRonda={refRonda} />
       </div>
       {/* Barras apiladas por ronda, vía dangerouslySetInnerHTML para reusar exactamente el mismo render
           que el reporte (htmlMiniPendientesGestion): chip de ronda, actual enfatizada, deltas con "vs <fecha>". */}
       <div style={{ marginBottom: '28px' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Calificación de gestión</h4>
-        <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas, umbral) + htmlLegendGestion() }} />
+        <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas, umbral, ultimaCircuito) + htmlLegendGestion() }} />
       </div>
-      <BloqueProblemas rondas={rondas} umbral={umbral} fechaActual={fechaRondaActual(rondas)} />
+      <BloqueProblemas rondas={rondas} umbral={umbral} refRonda={refRonda} />
     </div>
   );
 };
@@ -2286,11 +2292,11 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} />
+      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} ventanaHasta={vista === 'resumen' ? ronda.fecha : fechaRondaActual(encuesta.rondas)} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
           {vista === 'resumen'
-            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>Encuesta <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={encuesta.rondas.length > 1 && rondaIdx === encuesta.rondas.length - 1} /></span>
+            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>Encuesta <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={rondaIdx === encuesta.rondas.length - 1} /></span>
             : 'Comparativo entre rondas'}
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -2309,7 +2315,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
       </div>
 
       {vista === 'resumen'
-        ? <ResumenEncuesta preguntas={ronda.preguntas} contexto={{ rondas: encuesta.rondas, fecha: ronda.fecha }} />
+        ? <ResumenEncuesta preguntas={ronda.preguntas} contexto={{ rondas: encuesta.rondas, fecha: ronda.fecha, fechaUltima: fechaRondaActual(encuesta.rondas) }} />
         : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} metadata={metadata} />}
 
       {metadata?.escenarios_gobernador && (

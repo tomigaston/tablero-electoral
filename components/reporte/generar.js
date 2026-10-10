@@ -7,7 +7,7 @@ const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 export async function generarReporte({ ctx, seleccion, registro, tituloContexto, formatearFecha, estilos }) {
   // react-dom/server se carga recién acá: no pesa en la carga inicial del tablero.
   const { renderToStaticMarkup } = await import('react-dom/server');
-  const herramientas = { md: (el) => renderToStaticMarkup(el), formatearFecha, esc };
+  const herramientas = { md: (el) => renderToStaticMarkup(el), formatearFecha, esc, ids: seleccion.ids };
   const activas = registro.filter(s => seleccion.ids.includes(s.id) && s.disponible(ctx).ok);
   const hoy = formatearFecha(new Date());
 
