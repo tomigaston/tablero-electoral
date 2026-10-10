@@ -12,6 +12,9 @@
 // crearRegistroSecciones(D) recibe de pages/index.js los componentes y helpers que no
 // pueden importarse directamente (viven en ese archivo): D = { ui: {...}, fn: {...} }.
 
+import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion } from '../../lib/intencionVoto';
+import { EscenarioRonda, EscenarioComparativo } from '../IntencionVotoGobernador';
+
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
 
 const UMBRAL_MUESTRA_REDUCIDA = 30;
@@ -174,6 +177,70 @@ export function crearRegistroSecciones(D) {
       const ult = enc.rondas[enc.rondas.length - 1];
       return `<tr><td><strong>${esc(d.CircuitoKey)}</strong> ${esc(d.cirn_nom || '')}</td><td class="fecha">${formatearFecha(ult.fecha)}</td><td class="num">${ult.casos ?? '—'}</td><td class="num">${enc.rondas.length}</td><td class="num">${pct(ultimaDe(enc.rondas, 'Gestión del Gobernador', 'Positiva'))}</td><td class="num">${pct(ultimaDe(enc.rondas, 'Aprobación Gobernador', 'Apruebo'))}</td></tr>`;
     }).join('')}</tbody></table>`;
+  }
+
+  // ---------- Intención de voto — Gobernador ----------
+  // Los escenarios se leen de la encuesta del circuito (el barrio hereda la de su circuito principal).
+  // Capital no tiene dato agregado: no se promedian circuitos, se lista dónde hay datos.
+  const metaIV = (ctx) => ctx.encuestasMetadata?.escenarios_gobernador;
+  const datosIV = (ctx) => escenariosDeEncuesta(encuestaDeContexto(ctx).encuesta, metaIV(ctx));
+  const avisoMuestraIV = (rondas) => {
+    const chicas = rondas.filter(r => r.casos != null && r.casos < UMBRAL_MUESTRA_IV);
+    return chicas.length ? `<div class="rp-aviso">⚠ Muestra reducida: ${chicas.map(r => `${formatearFecha(r.fecha)} (n=${r.casos})`).join(', ')}. Con tan pocas respuestas los porcentajes son orientativos y pueden variar mucho.</div>` : '';
+  };
+
+  function renderIntencionCapital(ctx) {
+    const meta = metaIV(ctx);
+    const filas = (ctx.datos || []).map(d => ({ d, iv: escenariosDeEncuesta(buscarEncuestaCircuito(ctx.encuestasData, d.CircuitoKey), meta) }))
+      .filter(f => f.iv.rondas.length > 0).sort((a, b) => compararMapkey(a.d.CircuitoKey, b.d.CircuitoKey));
+    const aviso = '<div class="rp-aviso" style="color:#0d47a1;background:#e8f1fb;border-color:#b6d0ee">La intención de voto para Gobernador se relevó circuito por circuito: <strong>no hay un dato agregado de Capital</strong> y no se promedian circuitos. Para ver los porcentajes, generá el reporte desde un circuito.</div>';
+    if (!filas.length) return aviso + sectorTexto('Ningún circuito tiene intención de voto relevada.');
+    return `${aviso}<table class="rp-tabla rp-compacta"><thead><tr><th>Circuito</th><th class="fecha">Ronda</th><th class="num">n</th><th class="num">Escenarios</th></tr></thead><tbody>${filas.flatMap(({ d, iv }) => iv.rondas.map(r => `<tr><td><strong>${esc(d.CircuitoKey)}</strong> ${esc(d.cirn_nom || '')}</td><td class="fecha">${formatearFecha(r.fecha)}</td><td class="num">${r.casos ?? '—'}</td><td class="num">${r.escenarios.length}</td></tr>`)).join('')}</tbody></table>`;
+  }
+
+  function renderIntencion(ctx, opciones, T) {
+    if (ctx.tipo === 'capital') return renderIntencionCapital(ctx);
+    const meta = metaIV(ctx);
+    const umbral = ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5;
+    const { encuesta, heredada, circuito } = encuestaDeContexto(ctx);
+    const rondas = escenariosDeEncuesta(encuesta, meta).rondas;
+    if (!rondas.length) return sectorTexto('Sin intención de voto relevada.');
+    const o = opciones?.intencion || {};
+    const elegidos = Array.isArray(o.escenarios) && o.escenarios.length ? new Set(o.escenarios) : null;
+    const clamp = (i, d) => Math.min(Math.max(i ?? d, 0), rondas.length - 1);
+    const hacerComparativo = o.modo === 'comparativo' && rondas.length >= 2;
+    const partes = [];
+    if (heredada) partes.push(`<div class="rp-aviso" style="color:#0d47a1;background:#e8f1fb;border-color:#b6d0ee"><strong>Encuesta del circuito ${esc(circuito?.CircuitoKey)} — ${esc(circuito?.cirn_nom || '')}.</strong> La intención de voto se relevó por circuito, no por barrio: estos datos corresponden al circuito al que pertenece ${esc(ctx.nombreBarrio)}.</div>`);
+    partes.push(`<p class="rp-nota">La encuestadora repite la misma pregunta con listas de candidatos distintas: cada lista es un escenario. Los porcentajes se muestran como vienen en el informe.</p>`);
+
+    if (hacerComparativo) {
+      let ia = clamp(o.a, rondas.length - 2), ib = clamp(o.b, rondas.length - 1);
+      if (ia === ib) ia = Math.max(ib - 1, 0);
+      if (ia > ib) [ia, ib] = [ib, ia];
+      const A = rondas[ia], B = rondas[ib];
+      partes.push(avisoMuestraIV([A, B]));
+      const enB = B.escenarios.filter(e => !elegidos || elegidos.has(e.id));
+      const comunes = enB.filter(e => A.escenarios.some(x => x.id === e.id));
+      const excluidos = enB.filter(e => !comunes.includes(e));
+      if (!comunes.length) partes.push(`<div class="rp-aviso">Ningún escenario elegido está en las dos rondas (${formatearFecha(A.fecha)} y ${formatearFecha(B.fecha)}), así que no se puede comparar.</div>`);
+      const nn = notaNumeracion([A.fecha, B.fecha], meta, formatearFecha);
+      if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
+      comunes.forEach(e => {
+        partes.push(`<div class="rp-evitar" style="margin-top:12px">${T.md(<EscenarioComparativo rondaA={A} rondaB={B} escenario={e.id} meta={meta} umbral={umbral} conTitulo conNota={false} sufijo={`Comparativo ${formatearFecha(A.fecha)} → ${formatearFecha(B.fecha)}`} />)}</div>`);
+      });
+      if (comunes.length) partes.push(`<p class="rp-nota">${esc(NOTA_SIN_CONNOTACION_IV)} "Estable" = cambio menor a ${umbral} pp. "—" indica que el candidato no figuraba en esa ronda (no es 0%).</p>`);
+      if (excluidos.length) partes.push(`<p class="rp-nota">No se comparan por no estar en la ronda del ${formatearFecha(A.fecha)}: ${excluidos.map(e => esc(e.nombre)).join('; ')}.</p>`);
+    } else {
+      const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
+      partes.push(avisoMuestraIV([R]));
+      // Dos escenarios por fila (cada uno con su título, candidatos y tabla): 5-6 escenarios entran en 2 hojas.
+const nn = notaNumeracion([R.fecha], meta, formatearFecha);
+      if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
+      const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
+        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo sufijo={`Ronda ${formatearFecha(R.fecha)}`} />)}</div>`);
+      partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px 16px;align-items:start;margin-top:12px">${celdas.join('')}</div>`);
+    }
+    return partes.join('');
   }
 
   // ---------- Obras / Pauta de Capital ----------
@@ -378,6 +445,24 @@ export function crearRegistroSecciones(D) {
         return (e.comparativo ? 2 : 0) + ((e.ronda || !e.comparativo) ? 1.5 : 0.5);
       },
     },
+    {
+      id: 'intencion_gobernador', grupo: 'Opinión pública', label: 'Intención de voto — Gobernador', descripcion: 'Escenarios de la encuesta: una ronda o comparativo',
+      tieneOpcionesIV: true,
+      disponible: (ctx) => {
+        if (ctx.tipo === 'capital') return { ok: true };
+        return escenariosDeEncuesta(encuestaDeContexto(ctx).encuesta, ctx.encuestasMetadata?.escenarios_gobernador).rondas.length > 0
+          ? { ok: true } : { ok: false, motivo: ctx.tipo === 'barrio' ? 'El circuito de este barrio no tiene intención de voto relevada.' : 'Este circuito no tiene intención de voto relevada.' };
+      },
+      render: (ctx, o, T) => renderIntencion(ctx, o, T),
+      ultimoDato: (ctx) => ctx.tipo === 'capital' ? maxFecha(Object.values(ctx.encuestasData || {}).flatMap(e => escenariosDeEncuesta(e, metaIV(ctx)).rondas.map(r => r.fecha))) : maxFecha(datosIV(ctx).rondas.map(r => r.fecha)),
+      paginas: (ctx, o) => {
+        if (ctx.tipo === 'capital') return 1;
+        const d = datosIV(ctx); const i = o?.intencion || {};
+        const r = d.rondas[Math.min(Math.max(i.rondaIdx ?? d.rondas.length - 1, 0), d.rondas.length - 1)];
+        const n = i.escenarios?.length || r?.escenarios.length || 0;
+        return Math.max(0.5, i.modo === 'comparativo' ? n * 0.4 : Math.ceil(n / 2) * 0.4);
+      },
+    },
   ];
   return SECCIONES;
 }
@@ -390,4 +475,16 @@ export function infoEncuestasContexto(ctx, buscarEncuestaCircuito, resolverCircu
     return circ ? (buscarEncuestaCircuito(ctx.encuestasData, circ.CircuitoKey)?.rondas || []) : [];
   }
   return [];
+}
+
+// Escenarios del contexto, para las sub-opciones del modal: rondas con intención de voto y sus escenarios.
+export function infoIntencionContexto(ctx, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio) {
+  const meta = ctx.encuestasMetadata?.escenarios_gobernador;
+  let encuesta = null;
+  if (ctx.tipo === 'circuito') encuesta = buscarEncuestaCircuito(ctx.encuestasData, ctx.datosCircuito.CircuitoKey);
+  else if (ctx.tipo === 'barrio') {
+    const circ = resolverCircuitoPrincipalDeBarrio(ctx.nombreBarrio, ctx.cruceData, ctx.barriosGeoLookup, ctx.datos);
+    encuesta = circ ? buscarEncuestaCircuito(ctx.encuestasData, circ.CircuitoKey) : null;
+  }
+  return escenariosDeEncuesta(encuesta, meta).rondas;
 }

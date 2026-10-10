@@ -6,7 +6,9 @@ import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCirc
 import { formatearFecha } from '../lib/formatearFecha';
 import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
-import { crearRegistroSecciones, infoEncuestasContexto } from '../components/reporte/registro';
+import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
+import { escenariosDeEncuesta } from '../lib/intencionVoto';
+import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
@@ -1005,7 +1007,7 @@ const SolapaComparativas = ({ circuito, datos }) => {
 const SolapaResumenBarrio = ({
   nombreBarrio, props, cruceData, barriosGeoLookup, todosLosDatos, encuestasData,
   recorridosLookup, pautasBarriosData, votosEscuelasBarrioLookup, obrasEnriquecidas,
-  poblacionTotalPorBarrio, onIrACircuito, onCambiarSolapa,
+  poblacionTotalPorBarrio, onIrACircuito, onCambiarSolapa, encuestasMetadata,
 }) => {
   const poblacionTotalBarrio = poblacionTotalPorBarrio?.[normalizarNombreBarrio(nombreBarrio)];
   // Circuito principal resuelto de forma independiente de circuitoSeleccionado (Etapa 1).
@@ -1075,6 +1077,13 @@ const SolapaResumenBarrio = ({
           <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin circuito asociado.</div>
         )}
       </div>
+
+      {circuito && encuesta && encuestasMetadata?.escenarios_gobernador && (
+        <SeccionIntencionVoto
+          encuesta={encuesta} meta={encuestasMetadata.escenarios_gobernador} umbral={encuestasMetadata.umbral_variacion_pp ?? 2.5} vista="resumen"
+          aclaracion={`Encuesta del circuito ${circuito.CircuitoKey} — ${circuito.cirn_nom}: no es un dato del barrio.`}
+        />
+      )}
 
       <div>
         <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '10px' }}>En este barrio</div>
@@ -2292,22 +2301,31 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
       {vista === 'resumen'
         ? <ResumenEncuesta preguntas={ronda.preguntas} />
         : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} metadata={metadata} />}
+
+      {metadata?.escenarios_gobernador && (
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+          <SeccionIntencionVoto encuesta={encuesta} meta={metadata.escenarios_gobernador} umbral={umbral} vista={vista} fechaRonda={ronda.fecha} />
+        </div>
+      )}
     </div>
   );
 };
 
-const ListadoEncuestasCircuitos = ({ datos, encuestasData, onSelectCircuito }) => {
+const ListadoEncuestasCircuitos = ({ datos, encuestasData, encuestasMetadata, onSelectCircuito }) => {
   const filas = useMemo(() => {
     return datos
       .map(d => ({ circuito: d, encuesta: buscarEncuestaCircuito(encuestasData, d.CircuitoKey) }))
       .filter(f => f.encuesta)
-      .map(f => ({ ...f, fechaReciente: f.encuesta.rondas[f.encuesta.rondas.length - 1].fecha }))
+      .map(f => ({ ...f, fechaReciente: f.encuesta.rondas[f.encuesta.rondas.length - 1].fecha, conVotoGobernador: escenariosDeEncuesta(f.encuesta, encuestasMetadata?.escenarios_gobernador).rondas.length > 0 }))
       .sort((a, b) => compararMapkey(a.circuito.CircuitoKey, b.circuito.CircuitoKey));
-  }, [datos, encuestasData]);
+  }, [datos, encuestasData, encuestasMetadata]);
 
   return (
     <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
-      {filas.map(({ circuito, encuesta, fechaReciente }) => (
+      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', padding: '4px 16px 8px' }}>
+        La intención de voto para Gobernador se consulta circuito por circuito (solapa Encuestas): no hay un dato agregado de Capital. Los circuitos marcados con "Voto Gob." la tienen relevada.
+      </div>
+      {filas.map(({ circuito, encuesta, fechaReciente, conVotoGobernador }) => (
         <div
           key={circuito.CircuitoKey}
           onClick={() => onSelectCircuito(circuito.CircuitoKey)}
@@ -2317,6 +2335,7 @@ const ListadoEncuestasCircuitos = ({ datos, encuestasData, onSelectCircuito }) =
         >
           <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>{circuito.CircuitoKey} · {circuito.cirn_nom}</span>
           <span style={{ display: 'flex', gap: '18px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+            {conVotoGobernador && <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '8px', backgroundColor: '#1976D218', color: '#1565C0', alignSelf: 'center' }}>Voto Gob.</span>}
             <span>{encuesta.cantidad_rondas} ronda{encuesta.cantidad_rondas !== 1 ? 's' : ''}</span>
             <span>{formatearFecha(fechaReciente)}</span>
           </span>
@@ -5143,7 +5162,9 @@ export default function Home() {
     const barrios = (barriosGeoData?.features || [])
       .filter(f => f.properties?.nombre_barrio?.toLowerCase().includes(lower))
       .slice(0, 8)
-      .map(f => ({ tipo: 'barrio', key: `b-${f.properties.nombre_barrio}`, nombreBarrio: f.properties.nombre_barrio }));
+      // barrios_geo.json trae un feature por fragmento: un mismo barrio puede repetirse (ej. VILLA EL LIBERTADOR).
+      // La key incluye la posición en la lista para que sea única; el resultado en pantalla no cambia.
+      .map((f, i) => ({ tipo: 'barrio', key: `b-${i}-${f.properties.nombre_barrio}`, nombreBarrio: f.properties.nombre_barrio }));
     return [...circuitos, ...barrios];
   }, [datos, barriosGeoData, busqueda]);
   const padronTotal = useMemo(() => datos.reduce((sum, d) => sum + (d.Padron_G23 || 0), 0), [datos]);
@@ -5407,6 +5428,7 @@ export default function Home() {
   const tituloContextoReporte = contextoReporte.tipo === 'barrio' ? `Barrio ${contextoReporte.nombreBarrio}`
     : contextoReporte.tipo === 'circuito' ? `Circuito ${contextoReporte.datosCircuito.CircuitoKey} — ${contextoReporte.datosCircuito.cirn_nom || ''}` : 'Córdoba Capital';
   const rondasReporte = useMemo(() => infoEncuestasContexto(contextoReporte, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio), [contextoReporte]);
+  const rondasIVReporte = useMemo(() => infoIntencionContexto(contextoReporte, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio), [contextoReporte]);
   const generarReporte = async (seleccion) => {
     const partes = await armarReporte({ ctx: contextoReporte, seleccion, registro: REGISTRO_REPORTE, tituloContexto: tituloContextoReporte, formatearFecha, estilos: estilosReporte });
     setModalReporteAbierto(false);
@@ -5525,7 +5547,7 @@ export default function Home() {
           onIrACircuito={irACircuitoDesdeObra}
         />
       )}
-      <ModalReporte isOpen={modalReporteAbierto} ctx={contextoReporte} registro={REGISTRO_REPORTE} tituloContexto={tituloContextoReporte} rondas={rondasReporte} formatearFecha={formatearFecha} useFocusTrap={useFocusTrap} onGenerar={generarReporte} onCancelar={() => setModalReporteAbierto(false)} />
+      <ModalReporte isOpen={modalReporteAbierto} ctx={contextoReporte} registro={REGISTRO_REPORTE} tituloContexto={tituloContextoReporte} rondas={rondasReporte} rondasIV={rondasIVReporte} formatearFecha={formatearFecha} useFocusTrap={useFocusTrap} onGenerar={generarReporte} onCancelar={() => setModalReporteAbierto(false)} />
       {datosCircuito && (
         <DialogExportFicha
           datosCircuito={datosCircuito}
@@ -5609,7 +5631,7 @@ export default function Home() {
               <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>Circuitos con encuesta</span>
               <button onClick={() => setMostrarListadoEncuestas(false)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
             </div>
-            <ListadoEncuestasCircuitos datos={datos} encuestasData={encuestasData} onSelectCircuito={(c) => { irACircuitoDesdeListadoEncuestas(c); setMostrarListadoEncuestas(false); }} />
+            <ListadoEncuestasCircuitos datos={datos} encuestasData={encuestasData} encuestasMetadata={encuestasMetadata} onSelectCircuito={(c) => { irACircuitoDesdeListadoEncuestas(c); setMostrarListadoEncuestas(false); }} />
           </div>
         )}
 
@@ -5680,6 +5702,7 @@ export default function Home() {
                             barriosGeoLookup={barriosGeoLookup}
                             todosLosDatos={datos}
                             encuestasData={encuestasData}
+                            encuestasMetadata={encuestasMetadata}
                             recorridosLookup={recorridosLookup}
                             pautasBarriosData={pautasBarriosData}
                             votosEscuelasBarrioLookup={votosEscuelasBarrioLookup}

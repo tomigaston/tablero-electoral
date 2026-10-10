@@ -161,5 +161,112 @@
       }
     }
   },
-  "umbral_variacion_pp": 2.5
+  "umbral_variacion_pp": 2.5,
+  "escenarios_gobernador": {
+    "descripcion": "Registro de la pregunta de intención de voto para Gobernador. La encuestadora repite la MISMA pregunta (\"De la siguiente lista ¿A quién votaría para gobernador de Córdoba?\") con distintas listas de candidatos: cada lista es un escenario. En encuestas_circuitos.json cada escenario es una pregunta cuyo nombre es el prefijo + el nombre del escenario.",
+    "pregunta_original": "De la siguiente lista ¿A quién votaría para gobernador de Córdoba?",
+    "prefijo_pregunta": "Intención voto Gobernador - ",
+    "numeracion": "Escenario N = orden de aparición del escenario dentro de la ronda. En el informe del 01-10-2026 la pregunta viene numerada (1 a 6) y coincide con ese orden; en los informes de septiembre no está numerada y el orden de aparición es el del archivo.",
+    "umbral_muestra_reducida": 30,
+    "candidatos": {
+      "Martín Llaryora": {
+        "nombre": "Martín Llaryora",
+        "tipo": "candidato"
+      },
+      "Luis Juez": {
+        "nombre": "Luis Juez",
+        "tipo": "candidato"
+      },
+      "Gabriel Bornoroni": {
+        "nombre": "Gabriel Bornoroni",
+        "tipo": "candidato"
+      },
+      "Rodrigo De Loredo": {
+        "nombre": "Rodrigo De Loredo",
+        "tipo": "candidato"
+      },
+      "Agustin Spaccesi": {
+        "nombre": "Agustín Spaccesi",
+        "tipo": "candidato"
+      },
+      "Liliana Olivero": {
+        "nombre": "Liliana Olivero",
+        "tipo": "candidato"
+      },
+      "Natalia De La Sota": {
+        "nombre": "Natalia De la Sota",
+        "tipo": "candidato"
+      },
+      "Hernandez Maqueda": {
+        "nombre": "Hernández Maqueda",
+        "tipo": "candidato"
+      },
+      "El Presto": {
+        "nombre": "El Presto",
+        "tipo": "candidato"
+      },
+      "Otro": {
+        "nombre": "Otro",
+        "tipo": "otro"
+      },
+      "No lo sé": {
+        "nombre": "No lo sé",
+        "tipo": "nsnc"
+      }
+    },
+    "alias_candidatos": {
+      "Agustín Spaccesi": "Agustin Spaccesi",
+      "Hernández Maqueda": "Hernandez Maqueda",
+      "Martin Llaryora": "Martín Llaryora",
+      "Natalia De la Sota": "Natalia De La Sota",
+      "Natalia de la Sota": "Natalia De La Sota",
+      "No lo se": "No lo sé",
+      "No sé": "No lo sé",
+      "No se": "No lo sé"
+    },
+    "escenarios": {
+      "Todos los candidatos": {
+        "nota": "Lista completa de candidatos. Solo en las rondas de septiembre."
+      },
+      "Llaryora vs Bornoroni": {
+        "numero_en_informe": {
+          "2026-10-01": 3
+        },
+        "nota": "Incluye la opción 'Otro'. En la ronda del 01-10 la lista suma a Hernández Maqueda y El Presto."
+      },
+      "Llaryora vs Bornoroni (sin Otro)": {
+        "numero_en_informe": {
+          "2026-10-01": 4
+        },
+        "nota": "Misma lista que 'Llaryora vs Bornoroni' pero sin la opción 'Otro'. Solo en la ronda del 01-10."
+      },
+      "Llaryora vs Juez": {
+        "numero_en_informe": {
+          "2026-10-01": 5
+        },
+        "nota": "Incluye la opción 'Otro'. En la ronda del 01-10 la lista suma a Hernández Maqueda y El Presto."
+      },
+      "Llaryora vs De Loredo": {
+        "numero_en_informe": {
+          "2026-10-01": 6
+        },
+        "nota": "Incluye la opción 'Otro'. En la ronda del 01-10 la lista suma a Hernández Maqueda y El Presto."
+      },
+      "Llaryora, Juez, Bornoroni y De Loredo": {
+        "nota": "Cuatro candidatos, sin 'Otro'. Solo en las rondas de septiembre."
+      },
+      "Llaryora, Juez, Bornoroni, De Loredo, Olivero y De la Sota": {
+        "numero_en_informe": {
+          "2026-10-01": 1
+        },
+        "nota": "Solo en la ronda del 01-10."
+      },
+      "Llaryora, Juez, Bornoroni, De Loredo, Spaccesi y De la Sota": {
+        "numero_en_informe": {
+          "2026-10-01": 2
+        },
+        "nota": "Solo en la ronda del 01-10."
+      }
+    }
+  }
 }
