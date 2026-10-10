@@ -17,6 +17,7 @@ import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
 import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
+import VistaPautaCircuito from '../components/VistaPautaCircuito';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -4781,7 +4782,7 @@ export default function Home() {
   const [mostrarInfo, setMostrarInfo] = useState(false);
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
-  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital' | 'obras'
+  const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital' | 'obras' | 'pautaCircuito'
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
@@ -5331,6 +5332,7 @@ export default function Home() {
                     <button onClick={() => { setMostrarInfo(true); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>ℹ️ Info</button>
                     <button onClick={() => { setVistaFicha('capital'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📊 Estadísticas de Capital</button>
                     <button onClick={() => { setVistaFicha('obras'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>🏗️ Obras</button>
+                    <button onClick={() => { setVistaFicha('pautaCircuito'); setCircuitoSeleccionado(null); setMostrarMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}>📣 Pauta por circuito</button>
                     <button
                       onClick={() => { setMostrarListadoEncuestas(true); setMostrarMenu(false); }}
                       style={{ width: '100%', textAlign: 'left', padding: '11px 16px', border: 'none', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)' }}
@@ -5392,10 +5394,12 @@ export default function Home() {
         <BarraCobertura resumen={coberturaResumen} datos={datos} eventosPorCircuito={eventosPorCircuito} onClickVisita={irACircuitoDesdeGrilla} onClickMedicion={irACircuitoDesdeGrillaMedicion} onClickPauta={irABarrioDesdeMapaPauta} />
 
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
-          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio' || vistaFicha === 'obras') ? (
+          {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio' || vistaFicha === 'obras' || vistaFicha === 'pautaCircuito') ? (
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
-                {vistaFicha === 'obras' ? (
+                {vistaFicha === 'pautaCircuito' ? (
+                  <VistaPautaCircuito onVolver={() => setVistaFicha(null)} />
+                ) : vistaFicha === 'obras' ? (
                   <>
                     <div style={{ marginBottom: '16px' }}>
                       <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
