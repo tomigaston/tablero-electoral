@@ -2107,52 +2107,85 @@ const ACENTO_TIPO_PREGUNTA = { Aprobacion: '#1976D2', Reeleccion: '#26A69A' };
 const ACENTO_TIPO_NEUTRO = '#78909C';
 const colorAcentoTipoPregunta = (tipo) => ACENTO_TIPO_PREGUNTA[tipo] || ACENTO_TIPO_NEUTRO;
 
-// Formato de 2 líneas de la card, sobre calcularVariacionIndicador (anterior vs.
-// actual): con cambio ≥umbral, línea1 = delta en negrita+color, línea2 = "De A% a B%"
-// muted; por debajo del umbral, una sola línea "· Estable (A% → B%)" en gris — no hay
-// "subida"/"bajada" que destacar, así que no tiene sentido partirla en 2.
-function formatoVariacionCard(v, positivoEsSubir) {
+// Variación con SUS DOS EXTREMOS: "jul 32.0% → oct 47.2%" + "▲ +15.2 pp" (o "· Estable").
+// Nunca un delta con solo la fecha final: el intervalo siempre queda declarado.
+const signoPP = (d) => `${d > 0 ? '+' : d < 0 ? '−' : ''}${Math.abs(d).toFixed(1)} pp`;
+function variacionConExtremos(v, positivoEsSubir, { atenuada = false } = {}) {
   if (!v || v.estado == null) return null;
-  const color = colorVariacionIndicador(v.estado, positivoEsSubir);
-  if (v.estado === 'estable') return { color, linea1: `· Estable (${v.anterior.toFixed(1)}% → ${v.actual.toFixed(1)}%)`, linea2: null };
-  const flecha = v.estado === 'sube' ? '▲' : '▼';
-  const verbo = v.estado === 'sube' ? 'Subió' : 'Bajó';
-  return { color, linea1: `${flecha} ${verbo} ${Math.abs(v.delta).toFixed(1)} p.p`, linea2: `De ${v.anterior.toFixed(1)}% a ${v.actual.toFixed(1)}%` };
+  const [a, b] = etiquetaExtremos(v.fechaAnterior, v.fechaActual);
+  const color = atenuada ? 'var(--text-tertiary)' : colorVariacionIndicador(v.estado, positivoEsSubir);
+  const delta = v.estado === 'estable' ? '· Estable' : `${v.estado === 'sube' ? '▲' : '▼'} ${signoPP(v.delta)}`;
+  return { extremos: `${a} ${v.anterior.toFixed(1)}% → ${b} ${v.actual.toFixed(1)}%`, delta, color, titulo: `${formatearFecha(v.fechaAnterior)} → ${formatearFecha(v.fechaActual)}` };
 }
 
-const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento }) => {
-  const datos = rondas.map(r => ({ fecha: r.fecha, casos: r.casos, valor: r.preguntas?.[pregunta]?.[categoria] })).filter(d => d.valor != null);
-  const v = calcularVariacionIndicador(datos, umbral);
-  const cambio = formatoVariacionCard(v, positivoEsSubir);
+// Tarjeta de un indicador. Dos tratamientos que se distinguen SIN leer la fecha:
+//  · ACTUAL   — viene de la ronda actual: tarjeta al frente (fondo blanco, borde de color, valor grande).
+//  · ARRASTRE — la ronda actual no midió la pregunta: tarjeta apagada (fondo gris, borde punteado, valor
+//    tenue) con la etiqueta "Sin dato en la ronda actual · último: <fecha> · n=<n>".
+const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento, fechaActual }) => {
+  const v = resolverIndicador(rondas, fechaActual, r => r.preguntas?.[pregunta]?.[categoria], umbral);
+  if (!v) {
+    return (
+      <div style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }}>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-tertiary)' }}>{label}</div>
+        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sin dato en las rondas elegidas</div>
+      </div>
+    );
+  }
+  const arrastre = v.esArrastre;
+  const cambio = variacionConExtremos(v, positivoEsSubir, { atenuada: arrastre });
   return (
-    <div style={{ padding: '14px 16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderLeft: `3px solid ${colorAcento}`, borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }}>
-      <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{label}</div>
-      {cambio ? (
-        <>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: cambio.color }}>{cambio.linea1}</div>
-          {cambio.linea2 && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{cambio.linea2}</div>}
-        </>
-      ) : (
-        <div style={{ fontSize: '20px', fontWeight: 500, color: 'var(--text-primary)' }}>{v?.actual != null ? `${v.actual.toFixed(1)}%` : '—'}</div>
+    <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={arrastre
+      ? { padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px' }
+      : { padding: '14px 16px', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderLeft: `4px solid ${colorAcento}`, borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '92px', boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>
+      <div style={{ fontSize: '13px', fontWeight: 600, color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{label}</div>
+      {arrastre && (
+        <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}>
+          <span>Sin dato en la ronda actual · último:</span>
+          <ChipRonda fecha={v.fechaActual} casos={v.actualCasos} />
+        </div>
       )}
-      {v?.fechaActual && <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '2px' }}>{formatearFechaRonda(v.fechaActual, v.actualCasos)}</div>}
+      <div style={{ fontSize: arrastre ? '18px' : '24px', fontWeight: arrastre ? 500 : 700, color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', lineHeight: 1.1 }}>{v.actual.toFixed(1)}%</div>
+      {cambio ? (
+        <div title={cambio.titulo} style={{ fontSize: '11.5px', color: 'var(--text-tertiary)' }}>
+          {cambio.extremos}{' '}<span style={{ fontWeight: 700, color: cambio.color, whiteSpace: 'nowrap' }}>{cambio.delta}</span>
+        </div>
+      ) : (
+        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>sin dato anterior</div>
+      )}
+      {!arrastre && <div style={{ marginTop: '2px' }}><ChipRonda fecha={v.fechaActual} casos={v.actualCasos} actual /></div>}
     </div>
   );
 };
 
-// Una sola grilla continua con wrap para Aprobación + Reelección + cualquier otra
-// pregunta que se agregue (mismo orden relativo de ITEMS_INDICADORES_COMPARATIVO) —
-// la diferenciación entre categorías es el acento de color, no separación de layout.
-const GridIndicadoresComparativo = ({ rondas, umbral, metadata }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
-    {ITEMS_INDICADORES_COMPARATIVO.map(([label, pregunta, categoria, positivoEsSubir = true]) => (
-      <CardIndicadorComparativo
-        key={label} label={label} rondas={rondas} pregunta={pregunta} categoria={categoria} umbral={umbral} positivoEsSubir={positivoEsSubir}
-        colorAcento={colorAcentoTipoPregunta(metadata?.preguntas?.[pregunta]?.tipo)}
-      />
-    ))}
-  </div>
-);
+// Una sola grilla continua con wrap para Aprobación + Reelección + cualquier otra pregunta que se agregue.
+// Primero las tarjetas ACTUALES y después las de ARRASTRE (mismo orden relativo dentro de cada grupo), para
+// que lo que no se midió esta ronda quede agrupado y atrás.
+const GridIndicadoresComparativo = ({ rondas, umbral, metadata, fechaActual }) => {
+  const items = ITEMS_INDICADORES_COMPARATIVO.map(([label, pregunta, categoria, positivoEsSubir = true]) => ({
+    label, pregunta, categoria, positivoEsSubir,
+    arrastre: !!resolverIndicador(rondas, fechaActual, r => r.preguntas?.[pregunta]?.[categoria], umbral)?.esArrastre,
+  }));
+  const ordenados = [...items.filter(i => !i.arrastre), ...items.filter(i => i.arrastre)];
+  const hayArrastre = items.some(i => i.arrastre);
+  return (
+    <div>
+      {hayArrastre && (
+        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
+          Las tarjetas grises con borde punteado no se midieron en la ronda actual ({formatearFecha(fechaActual)}): muestran el último dato disponible, que es más viejo.
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '12px' }}>
+        {ordenados.map(i => (
+          <CardIndicadorComparativo
+            key={i.label} label={i.label} rondas={rondas} pregunta={i.pregunta} categoria={i.categoria} umbral={umbral} positivoEsSubir={i.positivoEsSubir}
+            fechaActual={fechaActual} colorAcento={colorAcentoTipoPregunta(metadata?.preguntas?.[i.pregunta]?.tipo)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // Badge de variación para una fila de Principales problemas — subir SIEMPRE es rojo
 // (más gente lo percibe como problema) y bajar SIEMPRE es verde, polaridad constante
@@ -2163,7 +2196,7 @@ const BadgeVariacionProblema = ({ v }) => {
   if (v.estado === 'estable') return <span style={{ fontSize: '12px', fontWeight: 600, color }}>· Estable</span>;
   const flecha = v.estado === 'sube' ? '▲' : '▼';
   const verbo = v.estado === 'sube' ? 'Subió' : 'Bajó';
-  return <span style={{ fontSize: '12px', fontWeight: 600, color, whiteSpace: 'nowrap' }}>{flecha} {verbo} {Math.abs(v.delta).toFixed(1)} p.p</span>;
+  return <span style={{ fontSize: '12px', fontWeight: 600, color, whiteSpace: 'nowrap' }}>{flecha} {verbo} {Math.abs(v.delta).toFixed(1)} pp</span>;
 };
 
 // Top 5 categorías por % actual, cada fila: nombre + barra horizontal + % actual +
@@ -2231,7 +2264,7 @@ const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
       <ResumenVariacionesComparativo rondas={rondas} umbral={umbral} />
       <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
-        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} />
+        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} fechaActual={fechaRondaActual(rondas)} />
       </div>
       {/* Barras apiladas Positiva/Regular/Negativa/Ns-Nc por ronda, vía
           dangerouslySetInnerHTML para reusar exactamente el mismo render que el PDF
