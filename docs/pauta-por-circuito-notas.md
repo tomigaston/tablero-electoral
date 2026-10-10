@@ -32,8 +32,16 @@ vigentes; 96 contradicen su `estado`; 296 sin fechas.
 - Las 9 piezas multi-barrio (fila_origen repetida: 4–46 barrios) tienen todas `circuito`
   poblado y un único circuito; contenido idéntico entre repeticiones (métricas idénticas →
   no se suman, se toma una).
-- NO existe COD. CONTENIDO ni id de pieza en el JSON. Clave de dedup: `fila_origen`
-  (única por pieza, ninguna fila aparece en más de un circuito ni bucket).
+- NO existe COD. CONTENIDO ni id de pieza en el JSON.
+- **`fila_origen` NO sirve como clave de dedup** (corrección tras verificar en pantalla): solo
+  repite en 9 piezas con `circuito` explícito. La mayoría de las piezas multi-barrio llegan con
+  una fila distinta POR BARRIO, y además con una fila "gemela" en `circuitos_sin_barrio`
+  (filas consecutivas, ej. 6561 barrio + 6562 circuito), mismo título/campaña/fechas/métricas.
+  Dentro de un circuito: 808 grupos / 1.955 repeticiones (~40%). Clave usada: título +
+  campaña + plataforma + inicio + fin + objetivo + tipo_pauta + estado + link + métricas
+  (JSON). Dos filas con mismo título pero métricas distintas (33 grupos) quedan separadas
+  (ad-sets distintos). Invariante: cada una de las 5.404 entradas cae en exactamente una
+  pieza (3.256 piezas: 2.932 en circuitos, 324 Alcance Capital, 0 sin resolver).
 - `material.link`: URL (1.758), null (3.637) o **texto libre que no es URL (9)**, ej.
   "Hockey Adaptado" → se trata como sin link usable. `redes_publicadas.ig/fb/yt`: URL o null
   (algunas `ig` apuntan a carpetas de Drive).
@@ -44,7 +52,7 @@ vigentes; 96 contradicen su `estado`; 296 sin fechas.
 Un barrio toca en promedio 2–3 circuitos (`barrio_to_circuitos`). Se eligió **circuito
 principal** (mismo criterio que Ficha/mapa: `circuito_principal` de `barrios_geo.json`,
 fallback cruce `orden_importancia: 1`), salvo que la entrada traiga `circuito` explícito.
-Resultado: cada pieza cae en un solo circuito, suma auditable (4.408 piezas únicas de barrio).
+Resultado: cada entrada cae en un solo circuito y la suma es auditable (entradas asignadas = 5.404).
 
 ## Gap de siglas con punto
 `circuito_barrios_cruce.json` sigue SIN corregir: `A.T. E`, `V.I.C.O.R`, `CO.VI.CO`, `S.E.P`,

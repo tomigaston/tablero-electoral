@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { formatearFecha } from '../lib/formatearFecha';
 import { estadoMostradoPauta } from '../lib/estadoPauta';
 import {
-  derivarPautaPorCircuito, filtrarPiezas, particionarPorVigencia, metricasParaMostrar, esUrlHttp,
+  derivarPautaPorCircuito, filtrarPiezas, particionarPorVigencia, coincideCircuito, metricasParaMostrar, esUrlHttp,
 } from '../lib/pautaPorCircuito';
 
 // Vista "Pauta por circuito" (vistaFicha === 'pautaCircuito'). El estado de filtros y
@@ -32,14 +32,16 @@ const ChipBarrio = ({ nombre, onClick }) => (
 );
 
 // Alcance de la pieza: barrio(s) clickeables -> Ficha de ese barrio; circuito sin barrio -> chip gris.
+const ChipGris = ({ children }) => (
+  <span style={{ padding: '2px 9px', borderRadius: '999px', backgroundColor: '#9E9E9E22', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap' }}>{children}</span>
+);
+
+// Alcance de la pieza: barrio(s) clickeables -> Ficha de ese barrio (con "+N" si cubre varios
+// de este circuito); pieza de circuito sin barrio -> chip gris. Si la misma pieza vino también
+// como fila de circuito sin barrio, se muestran ambos.
 const ChipsAlcance = ({ pieza, onIrABarrio }) => {
   const [todos, setTodos] = useState(false);
-  if (pieza.alcance === 'capital') {
-    return <span style={{ padding: '2px 9px', borderRadius: '999px', backgroundColor: '#9E9E9E22', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 600 }}>Toda la capital</span>;
-  }
-  if (pieza.barrios.length === 0) {
-    return <span style={{ padding: '2px 9px', borderRadius: '999px', backgroundColor: '#9E9E9E22', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 600 }}>Circuito (sin barrio)</span>;
-  }
+  if (pieza.alcance === 'capital') return <ChipGris>Toda la capital</ChipGris>;
   const visibles = todos ? pieza.barrios : pieza.barrios.slice(0, 1);
   const resto = pieza.barrios.length - 1;
   return (
@@ -52,6 +54,7 @@ const ChipsAlcance = ({ pieza, onIrABarrio }) => {
           style={{ padding: '2px 8px', borderRadius: '999px', border: '1px dashed var(--border)', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
         >{todos ? '−' : `+${resto}`}</button>
       )}
+      {pieza.sinBarrio && <ChipGris>Circuito (sin barrio)</ChipGris>}
     </>
   );
 };
@@ -136,6 +139,7 @@ const FilaPieza = React.memo(function FilaPieza({ pieza, onIrABarrio }) {
           </div>
           <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
             {[pauta.objetivo_campana, pauta.tipo_pauta, pauta.material?.tipo].filter(Boolean).join(' · ') || '—'}
+            {pieza.entradas > 1 && ` · Registro repetido ${pieza.entradas} veces en el dato (filas ${pieza.filas.join(', ')}); se muestra una vez, sin sumar métricas`}
           </div>
           {(redes.ig || redes.fb || redes.yt || linkTexto) && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', alignItems: 'center' }}>
@@ -196,11 +200,16 @@ const ResumenConteo = ({ activas, inactivas }) => (
   </span>
 );
 
-const SeccionCircuito = ({ item, abierto, onToggle, filtroEstado, onIrABarrio }) => {
+const SeccionCircuito = ({ item, abierto, saltar, onToggle, filtroEstado, onIrABarrio }) => {
   const { circuito, activas, inactivas, total } = item;
   const sinPauta = total === 0;
+  const ref = useRef(null);
+  // Buscador de circuito con una sola coincidencia: salta a la sección.
+  useEffect(() => {
+    if (saltar && ref.current) ref.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, [saltar]);
   return (
-    <div id={`pauta-circuito-${circuito.key}`} style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'var(--bg-primary)', opacity: sinPauta ? 0.65 : 1 }}>
+    <div ref={ref} id={`pauta-circuito-${circuito.key}`} style={{ scrollMarginTop: '130px', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'var(--bg-primary)', opacity: sinPauta ? 0.65 : 1 }}>
       <button
         onClick={onToggle}
         aria-expanded={abierto}
@@ -229,6 +238,50 @@ const SeccionCircuito = ({ item, abierto, onToggle, filtroEstado, onIrABarrio })
     </div>
   );
 };
+
+// ---- Buscadores y filtros ---------------------------------------------------------
+
+const Segmentado = ({ etiqueta, valor, opciones, onCambio }) => (
+  <div>
+    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '4px' }}>{etiqueta}</div>
+    <div role="group" aria-label={etiqueta} style={{ display: 'inline-flex', gap: '2px', padding: '2px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+      {opciones.map((o) => (
+        <button
+          key={o.valor}
+          onClick={() => onCambio(o.valor)}
+          aria-pressed={valor === o.valor}
+          style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', backgroundColor: valor === o.valor ? '#1976D2' : 'transparent', color: valor === o.valor ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}
+        >{o.etiqueta}</button>
+      ))}
+    </div>
+  </div>
+);
+
+const CampoBusqueda = ({ etiqueta, placeholder, valor, onCambio, ancho }) => (
+  <label style={{ display: 'block', flex: `1 1 ${ancho}px`, minWidth: '180px' }}>
+    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '4px' }}>{etiqueta}</div>
+    <div style={{ position: 'relative' }}>
+      <input
+        type="search"
+        value={valor}
+        onChange={(e) => onCambio(e.target.value)}
+        placeholder={placeholder}
+        style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-primary)', fontSize: '13px', color: 'var(--text-primary)' }}
+      />
+    </div>
+  </label>
+);
+
+// Dos buscadores separados a propósito (circuito vs pieza): mezclar circuito, barrio y
+// título en un solo input vuelve inmanejables las coincidencias cruzadas.
+const BarraFiltros = ({ estado, set }) => (
+  <div style={{ position: 'sticky', top: '-18px', zIndex: 5, backgroundColor: '#fff', padding: '10px 0 12px', margin: '0 0 12px', borderBottom: '1px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '12px 16px', alignItems: 'flex-end' }}>
+    <CampoBusqueda etiqueta="Circuito (código o nombre)" placeholder="Ej: 10I o Bella Vista" valor={estado.textoCircuito} onCambio={(v) => set({ textoCircuito: v })} ancho={220} />
+    <CampoBusqueda etiqueta="Pieza (campaña o título)" placeholder="Ej: Cordobeses en Alerta" valor={estado.textoPieza} onCambio={(v) => set({ textoPieza: v })} ancho={260} />
+    <Segmentado etiqueta="Estado" valor={estado.estado} onCambio={(v) => set({ estado: v })} opciones={[{ valor: 'activa', etiqueta: 'Activa' }, { valor: 'inactiva', etiqueta: 'Inactiva' }, { valor: 'todas', etiqueta: 'Todas' }]} />
+    <Segmentado etiqueta="Plataforma" valor={estado.plataforma} onCambio={(v) => set({ plataforma: v })} opciones={[{ valor: 'todas', etiqueta: 'Todas' }, { valor: 'META', etiqueta: 'META' }, { valor: 'GOOGLE', etiqueta: 'GOOGLE' }]} />
+  </div>
+);
 
 // ---- Vista ------------------------------------------------------------------------
 
@@ -262,13 +315,22 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
     return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', padding: '20px' }}>Cargando pauta…</div>;
   }
 
-  const conActividad = items.filter((i) => i.visibles > 0);
-  const resto = items.filter((i) => i.visibles === 0);
+  const itemsCircuito = items.filter((i) => coincideCircuito(i.circuito, estado.textoCircuito));
+  const conActividad = itemsCircuito.filter((i) => i.visibles > 0);
+  const resto = itemsCircuito.filter((i) => i.visibles === 0);
+  const buscandoCircuito = estado.textoCircuito.trim() !== '';
+  const buscandoPieza = estado.textoPieza.trim() !== '';
+  // Se abren solas las secciones que el usuario fue a buscar: un único circuito coincidente,
+  // o (buscando una pieza) los pocos circuitos donde aparece.
+  const unico = itemsCircuito.length === 1 ? itemsCircuito[0].circuito.key : null;
+  const abrirTodasConPieza = buscandoPieza && conActividad.length <= 10;
   const abiertos = new Set(estado.abiertos);
+  const estaAbierto = (key) => abiertos.has(key) || key === unico || (abrirTodasConPieza && conActividad.some((i) => i.circuito.key === key));
   const toggle = (key) => set({ abiertos: abiertos.has(key) ? estado.abiertos.filter((k) => k !== key) : [...estado.abiertos, key] });
   const renderSeccion = (item) => (
-    <SeccionCircuito key={item.circuito.key} item={item} abierto={abiertos.has(item.circuito.key)} onToggle={() => toggle(item.circuito.key)} filtroEstado={estado.estado} onIrABarrio={onIrABarrio} />
+    <SeccionCircuito key={item.circuito.key} item={item} abierto={estaAbierto(item.circuito.key)} saltar={item.circuito.key === unico} onToggle={() => toggle(item.circuito.key)} filtroEstado={estado.estado} onIrABarrio={onIrABarrio} />
   );
+  const restoVisible = estado.verSinPauta || buscandoCircuito;
 
   return (
     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px' }}>
@@ -277,8 +339,10 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
       </div>
       <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>Pauta por circuito</h2>
       <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: '4px 0 16px' }}>
-        {derivado.control.piezasEnCircuitos + derivado.control.piezasCapital + derivado.control.piezasSinResolver} piezas únicas · {derivado.control.piezasEnCircuitos} en circuitos · {derivado.control.piezasCapital} de alcance Capital · {derivado.control.piezasSinResolver} sin circuito resuelto
+        {derivado.control.entradas.toLocaleString('es-AR')} registros en el dato → {(derivado.control.piezasEnCircuitos + derivado.control.piezasCapital + derivado.control.piezasSinResolver).toLocaleString('es-AR')} piezas distintas ({derivado.control.piezasEnCircuitos.toLocaleString('es-AR')} en circuitos · {derivado.control.piezasCapital} de alcance Capital · {derivado.control.piezasSinResolver} sin circuito resuelto)
       </p>
+
+      <BarraFiltros estado={estado} set={set} />
 
       <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '18px' }}>
         <button
@@ -293,21 +357,28 @@ export default function VistaPautaCircuito({ pautasBarriosData, datos, barriosGe
         </button>
         {estado.capitalAbierto && (
           <div style={{ padding: '12px 14px' }}>
-            <ListaPiezas activas={capital.activas} inactivas={capital.inactivas} filtroEstado={estado.estado} limiteInicial={8} vacio={estado.estado === 'inactiva' ? 'Sin piezas inactivas de alcance Capital con estos filtros.' : 'Sin piezas activas de alcance Capital con estos filtros.'} onIrABarrio={onIrABarrio} />
+            <ListaPiezas activas={capital.activas} inactivas={capital.inactivas} filtroEstado={estado.estado} limiteInicial={4} vacio={estado.estado === 'inactiva' ? 'Sin piezas inactivas de alcance Capital con estos filtros.' : 'Sin piezas activas de alcance Capital con estos filtros.'} onIrABarrio={onIrABarrio} />
           </div>
         )}
       </div>
 
+      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-tertiary)', margin: '0 0 8px' }}>
+        {conActividad.length} circuito{conActividad.length === 1 ? '' : 's'} con {estado.estado === 'inactiva' ? 'pauta inactiva' : estado.estado === 'todas' ? 'pauta' : 'pauta activa'}
+        {buscandoPieza ? ' para esa búsqueda' : ''}
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {conActividad.map(renderSeccion)}
       </div>
+      {itemsCircuito.length === 0 && <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', padding: '12px 2px' }}>Ningún circuito coincide con “{estado.textoCircuito}”.</div>}
 
       {resto.length > 0 && (
         <div style={{ marginTop: '16px' }}>
-          <button onClick={() => set({ verSinPauta: !estado.verSinPauta })} aria-expanded={estado.verSinPauta} style={botonChico}>
-            {estado.verSinPauta ? 'Ocultar' : 'Ver'} {resto.length} circuito{resto.length === 1 ? '' : 's'} sin pauta para este filtro {estado.verSinPauta ? '▴' : '▾'}
-          </button>
-          {estado.verSinPauta && <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>{resto.map(renderSeccion)}</div>}
+          {!buscandoCircuito && (
+            <button onClick={() => set({ verSinPauta: !estado.verSinPauta })} aria-expanded={estado.verSinPauta} style={botonChico}>
+              {estado.verSinPauta ? 'Ocultar' : 'Ver'} {resto.length} circuito{resto.length === 1 ? '' : 's'} sin pauta para este filtro {estado.verSinPauta ? '▴' : '▾'}
+            </button>
+          )}
+          {restoVisible && <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: buscandoCircuito ? 0 : '10px' }}>{resto.map(renderSeccion)}</div>}
         </div>
       )}
     </div>
