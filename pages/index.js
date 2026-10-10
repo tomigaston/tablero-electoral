@@ -1870,27 +1870,45 @@ function calcularFilasProblemasComparativo(rondas, umbral) {
     .sort((a, b) => b.v.actual - a.v.actual);
 }
 
-// Resumen "🔺 Subió / 🔻 Bajó" — última ronda vs. anteúltima (misma convención que el
-// resto de Comparativo; con exactamente 2 rondas la anteúltima es la primera).
+// Resumen de Principales problemas — última ronda vs. anteúltima (misma convención que
+// el resto de Comparativo; con exactamente 2 rondas la anteúltima es la primera).
+// Devuelve, además de las variaciones, las fechas de las dos rondas comparadas para
+// poder rotular de dónde sale cada número. "Más mencionados" = el % de vecinos que
+// nombra el problema subió; "menos mencionados" = bajó.
 function calcularResumenVariacionesProblemas(rondas, umbral) {
-  if (rondas.length < 2) return { suben: [], bajan: [] };
-  const anterior = rondas[rondas.length - 2], ultima = rondas[rondas.length - 1];
-  const probActual = ultima.preguntas?.['Problemas principales'];
-  const probAnterior = anterior.preguntas?.['Problemas principales'];
-  if (!probActual || !probAnterior) return { suben: [], bajan: [] };
+  const vacio = { suben: [], bajan: [], fechaAnterior: null, fechaActual: null };
+  // Solo cuentan las rondas que traen la pregunta: las rondas más nuevas (ej. 01/10)
+  // no la incluyen, y comparar contra una ronda sin dato diría "sin variaciones" sin
+  // que sea cierto.
+  const conProblemas = rondas.filter(r => r.preguntas?.['Problemas principales']);
+  if (conProblemas.length < 2) return vacio;
+  const anterior = conProblemas[conProblemas.length - 2], ultima = conProblemas[conProblemas.length - 1];
+  const probActual = ultima.preguntas['Problemas principales'];
+  const probAnterior = anterior.preguntas['Problemas principales'];
   const categorias = new Set([...Object.keys(probActual), ...Object.keys(probAnterior)]);
   const variaciones = [];
   categorias.forEach(cat => {
     const vA = probActual[cat], vB = probAnterior[cat];
     if (vA == null || vB == null) return;
     const delta = vA - vB;
-    if (Math.abs(delta) >= umbral) variaciones.push({ cat, delta });
+    if (Math.abs(delta) >= umbral) variaciones.push({ cat, delta, anterior: vB, actual: vA });
   });
   return {
     suben: variaciones.filter(v => v.delta > 0).sort((a, b) => b.delta - a.delta),
     bajan: variaciones.filter(v => v.delta < 0).sort((a, b) => a.delta - b.delta),
+    fechaAnterior: anterior.fecha, fechaActual: ultima.fecha,
   };
 }
+
+// "Otro" en los datos significa "otros problemas que no están en la lista de opciones" —
+// se muestra igual (suele ser el que más se mueve, ocultarlo escondería información)
+// pero con esa aclaración, para que no se lea como un problema concreto.
+const etiquetaProblema = (cat) => cat === 'Otro' ? 'Otro (otros problemas no listados)' : cat;
+
+const TITULO_RESUMEN_PROBLEMAS = 'Problemas que más cambiaron en la percepción vecinal';
+const subtituloResumenProblemas = (fechaAnterior, fechaActual) =>
+  `Comparación entre ${formatearFecha(fechaAnterior)} y ${formatearFecha(fechaActual)} · variación en puntos porcentuales (pp) del % de vecinos que menciona cada problema`;
+const NOTA_SEMANTICA_PROBLEMAS = 'En problemas, que un porcentaje suba es una mala señal (rojo) y que baje es una buena señal (verde): al revés que en Aprobación.';
 
 // --- Render PDF (HTML-string, colores hardcodeados porque el documento no hereda
 // var(--...)) del resumen/cards/tabla que arma ComparativoEncuesta en pantalla, sobre
@@ -1935,14 +1953,19 @@ function htmlTablaProblemasPlano(rondas, umbral) {
 }
 
 function htmlResumenVariacionesPlano(rondas, umbral) {
-  const { suben, bajan } = calcularResumenVariacionesProblemas(rondas, umbral);
+  const { suben, bajan, fechaAnterior, fechaActual } = calcularResumenVariacionesProblemas(rondas, umbral);
   if (suben.length === 0 && bajan.length === 0) {
     return `<div style="font-size:12px;color:#999;margin-bottom:16px">Sin variaciones significativas (≥${umbral}pp) entre rondas.</div>`;
   }
-  const partes = [];
-  if (suben.length > 0) partes.push(`<div>🔺 Subió: ${suben.map(v => `${v.cat} (+${v.delta.toFixed(1)}pp)`).join(' · ')}</div>`);
-  if (bajan.length > 0) partes.push(`<div>🔻 Bajó: ${bajan.map(v => `${v.cat} (${v.delta.toFixed(1)}pp)`).join(' · ')}</div>`);
-  return `<div style="font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:18px;display:flex;flex-direction:column;gap:6px">${partes.join('')}</div>`;
+  const fila = (v, color) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px;font-weight:500;color:#1a1a1a"><span>${etiquetaProblema(v.cat)}</span><span style="white-space:nowrap;color:${color};font-weight:600">${v.anterior.toFixed(1)}% → ${v.actual.toFixed(1)}% (${v.delta > 0 ? '+' : ''}${v.delta.toFixed(1)} pp)</span></div>`;
+  const grupo = (titulo, items, color) => items.length === 0 ? '' : `<div style="margin-bottom:8px"><div style="font-size:13px;font-weight:700;color:${color};margin-bottom:2px">${titulo}</div>${items.map(v => fila(v, color)).join('')}</div>`;
+  return `<div style="margin-bottom:18px;break-inside:avoid">
+    <div style="font-size:14px;font-weight:700;color:#1a1a1a">${TITULO_RESUMEN_PROBLEMAS}</div>
+    <div style="font-size:11px;color:#999;margin:2px 0 10px">${subtituloResumenProblemas(fechaAnterior, fechaActual)}</div>
+    ${grupo('🔺 Más mencionados ahora', suben, '#C62828')}
+    ${grupo('🔻 Menos mencionados ahora', bajan, '#2E7D32')}
+    <div style="font-size:10px;color:#999">${NOTA_SEMANTICA_PROBLEMAS}</div>
+  </div>`;
 }
 
 // --- "Calificación de gestión" (barras apiladas). Una fila por ronda (fecha a la
@@ -2156,19 +2179,37 @@ const FilasProblemasComparativo = ({ rondas, umbral }) => {
   );
 };
 
-// Resumen automático "🔺 Subió / 🔻 Bajó" — última ronda vs. anteúltima (misma
-// convención que el resto de Comparativo, ver calcularResumenVariacionesProblemas),
-// con más jerarquía visual (antes 12px sin destacar): va primero, más grande y en
-// negrita, para que sea lo primero que se lee.
+// Resumen automático de Principales problemas — última ronda vs. anteúltima (misma
+// convención que el resto de Comparativo, ver calcularResumenVariacionesProblemas).
+// Va primero y con jerarquía visual: título + subtítulo que explican qué se está
+// comparando, y dos grupos (más / menos mencionados) con valor anterior → actual.
+// Cada fila hace wrap en pantallas angostas (flex-wrap) para leerse bien en mobile.
+const FilaCambioProblema = ({ v, color }) => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '2px 12px', padding: '4px 0', fontSize: '14px', color: 'var(--text-primary)' }}>
+    <span style={{ fontWeight: 500 }}>{etiquetaProblema(v.cat)}</span>
+    <span style={{ fontWeight: 600, color, whiteSpace: 'nowrap' }}>{v.anterior.toFixed(1)}% → {v.actual.toFixed(1)}% ({v.delta > 0 ? '+' : ''}{v.delta.toFixed(1)} pp)</span>
+  </div>
+);
+
+const GrupoCambiosProblemas = ({ titulo, items, color }) => items.length === 0 ? null : (
+  <div style={{ marginBottom: '10px' }}>
+    <div style={{ fontSize: '14px', fontWeight: 700, color, marginBottom: '2px' }}>{titulo}</div>
+    {items.map(v => <FilaCambioProblema key={v.cat} v={v} color={color} />)}
+  </div>
+);
+
 const ResumenVariacionesComparativo = ({ rondas, umbral }) => {
-  const { suben, bajan } = calcularResumenVariacionesProblemas(rondas, umbral);
+  const { suben, bajan, fechaAnterior, fechaActual } = calcularResumenVariacionesProblemas(rondas, umbral);
   if (suben.length === 0 && bajan.length === 0) {
     return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '22px' }}>Sin variaciones significativas (≥{umbral}pp) entre rondas.</div>;
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '24px' }}>
-      {suben.length > 0 && <div>🔺 Subió: {suben.map(v => `${v.cat} (+${v.delta.toFixed(1)}pp)`).join(' · ')}</div>}
-      {bajan.length > 0 && <div>🔻 Bajó: {bajan.map(v => `${v.cat} (${v.delta.toFixed(1)}pp)`).join(' · ')}</div>}
+    <div style={{ marginBottom: '24px' }}>
+      <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>{TITULO_RESUMEN_PROBLEMAS}</div>
+      <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: '2px 0 12px' }}>{subtituloResumenProblemas(fechaAnterior, fechaActual)}</div>
+      <GrupoCambiosProblemas titulo="🔺 Más mencionados ahora" items={suben} color="#C62828" />
+      <GrupoCambiosProblemas titulo="🔻 Menos mencionados ahora" items={bajan} color="#2E7D32" />
+      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{NOTA_SEMANTICA_PROBLEMAS}</div>
     </div>
   );
 };
