@@ -17,7 +17,7 @@ import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
 import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
-import VistaPautaCircuito from '../components/VistaPautaCircuito';
+import VistaPautaCircuito, { ESTADO_INICIAL_VISTA_PAUTA } from '../components/VistaPautaCircuito';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
   ssr: false,
@@ -4784,6 +4784,12 @@ export default function Home() {
   const [mostrarListadoEncuestas, setMostrarListadoEncuestas] = useState(false);
   const [vistaFicha, setVistaFicha] = useState(null); // null | 'circuito' | 'barrio' | 'capital' | 'obras' | 'pautaCircuito'
   const [barrioSeleccionado, setBarrioSeleccionado] = useState(null);
+  // Filtros/secciones abiertas de "Pauta por circuito": lifted acá porque ir a la Ficha de un
+  // barrio desmonta la vista (mismo criterio que los filtros de VistaObras).
+  const [vistaPautaEstado, setVistaPautaEstado] = useState(ESTADO_INICIAL_VISTA_PAUTA);
+  // true si la ficha de barrio abierta se alcanzó desde "Pauta por circuito": habilita el
+  // botón "← Pauta por circuito" en su header. Mismo patrón que origenCoberturaPautaCircuito.
+  const [origenVistaPauta, setOrigenVistaPauta] = useState(false);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
   const [panelTab, setPanelTab] = useState('circuito');
@@ -5023,7 +5029,7 @@ export default function Home() {
   // "solapa" es opcional (default 'resumen', mismo criterio que onVerFicha para circuito
   // en la línea de abajo) — permite pedir que la ficha de barrio aterrice en una solapa
   // puntual (ver irABarrioDesdeMapaPauta) sin romper los callers existentes.
-  const handleSelectBarrio = (nombre, solapa) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio(solapa || 'resumen'); setOrigenCoberturaPautaCircuito(null); };
+  const handleSelectBarrio = (nombre, solapa) => { setBarrioSeleccionado(nombre); setPanelTab('barrio'); setSolapaActivaBarrio(solapa || 'resumen'); setOrigenCoberturaPautaCircuito(null); setOrigenVistaPauta(false); };
 
   // Selección de barrio desde el buscador: a diferencia de "Otros barrios en este circuito"
   // (que mantiene el circuito activo sin tocarlo), acá no hay circuito activo relevante que
@@ -5122,6 +5128,15 @@ export default function Home() {
   const irABarrioDesdeMapaPauta = (nombreBarrio) => {
     handleSelectBarrio(nombreBarrio, 'pauta');
     setVistaFicha('barrio');
+  };
+
+  // Click en un chip de barrio de "Pauta por circuito": misma navegación que el popup del
+  // mapa (irABarrioDesdeMapaPauta -> ficha del barrio, solapa Pauta), recordando el origen
+  // para ofrecer el botón de vuelta. El flag se fija DESPUÉS de handleSelectBarrio por el
+  // mismo motivo que origenCoberturaPautaCircuito.
+  const irABarrioDesdePautaCircuito = (nombreBarrio) => {
+    irABarrioDesdeMapaPauta(nombreBarrio);
+    setOrigenVistaPauta(true);
   };
 
   // Click en "Ver en solapa Territorio" del popup de estrella de Alcance Capital
@@ -5398,7 +5413,16 @@ export default function Home() {
             <>
               <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
                 {vistaFicha === 'pautaCircuito' ? (
-                  <VistaPautaCircuito onVolver={() => setVistaFicha(null)} />
+                  <VistaPautaCircuito
+                    pautasBarriosData={pautasBarriosData}
+                    datos={datos}
+                    barriosGeoData={barriosGeoData}
+                    cruceData={cruceData}
+                    estado={vistaPautaEstado}
+                    setEstado={setVistaPautaEstado}
+                    onVolver={() => setVistaFicha(null)}
+                    onIrABarrio={irABarrioDesdePautaCircuito}
+                  />
                 ) : vistaFicha === 'obras' ? (
                   <>
                     <div style={{ marginBottom: '16px' }}>
@@ -5430,6 +5454,7 @@ export default function Home() {
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>{barrioSeleccionado}</h2>
+                            {origenVistaPauta && <button onClick={() => { setOrigenVistaPauta(false); setVistaFicha('pautaCircuito'); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid #1976D2', backgroundColor: 'transparent', fontSize: '12px', fontWeight: 600, color: '#1976D2', cursor: 'pointer' }}>← Pauta por circuito</button>}
                             <button onClick={() => { setBarrioSeleccionado(null); setVistaFicha(null); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
                             <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
                           </div>
