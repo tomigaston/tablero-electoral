@@ -15,6 +15,7 @@
 import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion, ACLARACION_ESCENARIOS } from '../../lib/intencionVoto';
 import { EscenarioRonda, EscenarioComparativo, TitularVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
+import { ResumenRondaActual } from '../ResumenRondaActual';
 import { fechaRondaActual, bloquesNoMedidos } from '../../lib/lecturaRondas';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
@@ -458,6 +459,22 @@ const nn = notaNumeracion([R.fecha], meta, formatearFecha);
       paginas: () => 3,
     },
     // ---------------- Opinión pública ----------------
+    {
+      // Resumen corto (3-4 líneas) de la ronda actual: va ANTES de Encuestas y no cuenta como indicador repetido.
+      id: 'resumen_ronda', unida: true, grupo: 'Opinión pública', label: 'Resumen de la ronda actual', descripcion: 'Fecha, voto, aprobación, problema principal y avisos',
+      tituloImpreso: (ctx) => {
+        if (ctx.tipo !== 'barrio') return 'Resumen de la ronda actual';
+        const c = encuestaDeContexto(ctx).circuito;
+        return c ? `Resumen de la ronda actual · Encuesta del circuito ${c.CircuitoKey} — ${c.cirn_nom || ''}` : 'Resumen de la ronda actual';
+      },
+      disponible: (ctx) => {
+        if (ctx.tipo === 'capital') return { ok: false, motivo: 'Es un resumen por circuito: elegí un circuito o un barrio.' };
+        return rondasDe(ctx).length > 0 ? { ok: true } : { ok: false, motivo: ctx.tipo === 'barrio' ? 'El circuito de este barrio no tiene encuestas relevadas.' : 'Este circuito no tiene encuestas relevadas.' };
+      },
+      render: (ctx, o, T) => T.md(<ResumenRondaActual encuesta={encuestaDeContexto(ctx).encuesta} meta={metaIV(ctx)} umbral={ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5} conTitulo={false} />),
+      datosAl: () => null,
+      paginas: () => 0.3,
+    },
     {
       id: 'encuestas', grupo: 'Opinión pública', label: 'Encuestas', descripcion: 'Una ronda, comparativo entre rondas o evolución',
       tieneOpciones: true,

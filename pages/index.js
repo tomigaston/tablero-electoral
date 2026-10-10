@@ -8,7 +8,8 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
+import { calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
+import { ResumenRondaActual } from '../components/ResumenRondaActual';
 import { ChipRonda, FilaChipsRondas, htmlChipRonda, estiloChipRonda, AVISO_N_CHICO } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
@@ -2159,25 +2160,6 @@ const GridIndicadoresComparativo = ({ rondas, umbral, metadata, fechaActual }) =
 // La pareja son las dos últimas rondas que SÍ midieron problemas (la fecha es la real de la medición, no la
 // de la ronda actual). Si la ronda actual no relevó el bloque, queda atenuado y el encabezado lo dice.
 // Polaridad constante: subir = rojo (más gente lo percibe como problema), bajar = verde.
-const MAX_PROBLEMAS = 6;
-function calcularBloqueProblemas(rondas, umbral, fechaActual) {
-  const con = ordenarRondas(rondas).filter(r => r.preguntas?.['Problemas principales']);
-  if (con.length === 0) return null;
-  const ultima = con[con.length - 1];
-  const previa = con.length > 1 ? con[con.length - 2] : null;
-  const pUlt = ultima.preguntas['Problemas principales'];
-  const pPrev = previa?.preguntas['Problemas principales'] || null;
-  const filas = Object.keys(pUlt).filter(cat => (pUlt[cat] > 0) || (pPrev?.[cat] > 0))
-    .map(cat => {
-      const valor = pUlt[cat] ?? 0, anterior = pPrev ? (pPrev[cat] ?? null) : null;
-      const delta = anterior != null ? valor - anterior : null;
-      const estado = delta == null ? null : Math.abs(delta) < umbral ? 'estable' : (delta > 0 ? 'sube' : 'baja');
-      return { cat, valor, anterior, delta, estado };
-    })
-    .sort((x, y) => y.valor - x.valor);
-  return { ultima, previa, filas: filas.slice(0, MAX_PROBLEMAS), hayMas: filas.length > MAX_PROBLEMAS, esArrastre: fechaActual != null && ultima.fecha !== fechaActual };
-}
-
 const DeltaProblema = ({ f, atenuado }) => {
   if (f.estado == null) return <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>—</span>;
   const color = atenuado ? 'var(--text-tertiary)' : colorVariacionIndicador(f.estado, false);
@@ -2267,6 +2249,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
           {vista === 'resumen'
