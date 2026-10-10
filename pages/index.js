@@ -1684,7 +1684,7 @@ const BarraGestion = ({ label, data }) => {
 };
 
 const SeccionGestionFuncionarios = ({ gestiones }) => (
-  <div>
+  <div style={{ breakInside: 'avoid' }}>
     <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
     {Object.entries(gestiones).map(([label, data]) => <BarraGestion key={label} label={`Calificación de gestión: ${label}`} data={data} />)}
     <div style={{ display: 'flex', gap: '14px', marginTop: '6px' }}>
@@ -1755,7 +1755,7 @@ const ResumenEncuesta = ({ preguntas }) => (
       Gobernador: preguntas['Gestión del Gobernador'],
       Presidente: preguntas['Gestión del Presidente'],
     }} />
-    <div>
+    <div style={{ breakInside: 'avoid' }}>
       <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Aprobación de gestión</h4>
       <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
         <GaugeAprobacion label="Intendente" data={preguntas['Aprobación Intendente']} />
@@ -1763,7 +1763,7 @@ const ResumenEncuesta = ({ preguntas }) => (
         <GaugeAprobacion label="Presidente" data={preguntas['Aprobación Presidente']} />
       </div>
     </div>
-    <div>
+    <div style={{ breakInside: 'avoid' }}>
       <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Reelección</h4>
       <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
         <DonutReeleccion label="Llaryora (Gobernador)" data={preguntas['Reelección Llaryora']} />
@@ -2234,7 +2234,7 @@ const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
   return (
     <div>
       <ResumenVariacionesComparativo rondas={rondas} umbral={umbral} />
-      <div style={{ marginBottom: '28px' }}>
+      <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
         <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} />
       </div>
@@ -2242,11 +2242,11 @@ const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
           dangerouslySetInnerHTML para reusar exactamente el mismo render que el PDF
           (htmlMiniPendientesGestion) — ahora con badge de delta en todas las barras
           menos la primera, ver htmlDeltaSegmentoBadge/calcularDeltasCategoriasGestion. */}
-      <div style={{ marginBottom: '28px' }}>
+      <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
         <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas, umbral) + htmlLegendGestion() }} />
       </div>
-      <div>
+      <div style={{ breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Principales problemas — evolución</h4>
         <FilasProblemasComparativo rondas={rondas} umbral={umbral} />
       </div>
