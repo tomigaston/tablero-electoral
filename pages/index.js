@@ -8,7 +8,7 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
+import { layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
 import { ChipRonda, FilaChipsRondas, htmlChipRonda, estiloChipRonda, AVISO_N_CHICO } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
@@ -1670,26 +1670,12 @@ const BarraProblemas = ({ problemas }) => {
 
 const BarraGestion = ({ label, data }) => {
   if (!data) return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
-  const categorias = categoriasGestion(data);
+  // Mismo render que Calificación de gestión del comparativo (htmlBarraSegmentosPDF): ningún segmento no nulo
+  // pierde su %; los finos llevan la etiqueta debajo con un conector.
   return (
     <div style={{ marginBottom: '10px' }}>
       <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
-      <div style={{ display: 'flex', height: '26px', borderRadius: '6px', overflow: 'hidden' }}>
-        {categorias.map(cat => {
-          const v = data[cat];
-          if (!v || v <= 0) return null;
-          const esNsNc = cat === 'Ns/Nc';
-          return (
-            <div
-              key={cat}
-              title={esNsNc ? `${cat}: ${v}%` : undefined}
-              style={{ width: `${v}%`, backgroundColor: colorCategoriaGestion(cat), display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              {!esNsNc && v > 8 && <span style={{ fontSize: '11px', color: '#fff', fontWeight: 600 }}>{v}%</span>}
-            </div>
-          );
-        })}
-      </div>
+      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { height: 26 }) }} />
     </div>
   );
 };
@@ -1795,32 +1781,30 @@ const ResumenEncuesta = ({ preguntas }) => (
 // con exactamente 2 rondas la anteúltima es la primera, caso base sin nada especial.
 // ============================================
 
-// Solo la barra apilada Positiva/Regular/Negativa/Ns-Nc (sin label), para poder
-// componerla tanto en una fila de mini-pendiente (fecha a la izquierda) como en
-// htmlBarraCategoriasPDF (label arriba). Mismos colores/umbral de texto que BarraGestion.
-// deltas (opcional): {categoria: delta} para pintar, arriba de CADA segmento presente,
-// su variación en pp contra la barra INMEDIATAMENTE ANTERIOR — se pasa null en la
-// primera barra de la serie (nada previo con qué comparar, ver htmlMiniPendienteGestion).
-// Cada label ocupa el mismo ancho % que su segmento para quedar centrado justo arriba
-// de él. umbral: mismo umbral_variacion_pp del resto — por debajo, el segmento se trata
-// como estable (ver htmlDeltaSegmentoBadge).
-const UMBRAL_SEGMENTO_CHICO = 12;
-function htmlBarraSegmentosPDF(data, { height = 18, deltas = null, umbral = 2.5 } = {}) {
+// Barra apilada Positiva/Regular/Negativa/Ns-Nc (sin título). Cada segmento no nulo lleva su %: adentro
+// si entra, y si es muy fino, debajo de la barra con un conector (ver layoutSegmentos). Los 0% de
+// Positiva/Regular/Negativa se avisan siempre en una línea chica ("Regular 0%"): ni se dibujan ni se omiten
+// en silencio. La usan Calificación de gestión (web y reporte) y la vista de una sola ronda.
+const fmtPctSeg = (v) => `${Number(v).toFixed(1)}%`;
+const COLOR_TEXTO_SEGMENTO = { 'Positiva': '#fff', 'Negativa': '#fff', 'Regular': '#1a1a1a', 'Ns/Nc': '#1a1a1a' };
+const ALTO_FILA_ETIQUETA = 13;
+function htmlBarraSegmentosPDF(data, { height = 18, atenuada = false } = {}) {
   if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
-  const categorias = categoriasGestion(data);
-  const presentes = categorias.filter(cat => data[cat] > 0);
-  const segmentos = presentes.map(cat => {
-    const v = data[cat];
-    const texto = cat !== 'Ns/Nc' && v > 8 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
-    return `<div title="${cat}: ${v}%" style="width:${v}%;background:${colorCategoriaGestion(cat)};display:flex;align-items:center;justify-content:center">${texto}</div>`;
+  const { segs, filas } = layoutSegmentos(data, categoriasGestion(data));
+  const segmentos = segs.map(sg => {
+    const texto = sg.dentro ? `<span style="font-size:10px;font-weight:600;color:${COLOR_TEXTO_SEGMENTO[sg.cat] || '#fff'}">${fmtPctSeg(sg.v)}</span>` : '';
+    return `<div title="${sg.cat}: ${fmtPctSeg(sg.v)}" style="width:${sg.v}%;background:${colorCategoriaGestion(sg.cat)};display:flex;align-items:center;justify-content:center;min-width:2px">${texto}</div>`;
   }).join('');
-  const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>`;
-  if (!deltas) return barra;
-  // Segmentos angostos (< UMBRAL_SEGMENTO_CHICO %) llevan el badge en versión compacta
-  // (solo flecha + número, sin "pp") y con overflow visible centrado, para que no se
-  // pise con el del vecino ni se corte; el valor completo queda en el tooltip del segmento.
-  const labels = presentes.map(cat => `<div style="width:${data[cat]}%;display:flex;justify-content:center;white-space:nowrap;min-width:0">${deltas[cat] != null ? htmlDeltaSegmentoBadge(deltas[cat], umbral, cat, data[cat] < UMBRAL_SEGMENTO_CHICO) : ''}</div>`).join('');
-  return `<div style="display:flex;margin-bottom:3px">${labels}</div>${barra}`;
+  const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee;${atenuada ? 'opacity:.72' : ''}">${segmentos}</div>`;
+  const fuera = segs.filter(sg => !sg.dentro);
+  const callouts = fuera.length === 0 ? '' : `<div style="position:relative;height:${4 + filas * ALTO_FILA_ETIQUETA + 2}px">${fuera.map(sg => {
+    const top = 4 + sg.fila * ALTO_FILA_ETIQUETA;
+    const izq = Math.min(Math.max(sg.centro, 3), 97);
+    return `<div style="position:absolute;left:${sg.centro}%;top:0;width:1px;height:${top + 2}px;background:#9aa0a6"></div><div style="position:absolute;left:${izq}%;top:${top}px;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:600;line-height:${ALTO_FILA_ETIQUETA - 1}px;color:var(--text-secondary,#555)"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${colorCategoriaGestion(sg.cat)};margin-right:3px"></span>${fmtPctSeg(sg.v)}</div>`;
+  }).join('')}</div>`;
+  const ceros = ['Positiva', 'Regular', 'Negativa'].filter(c => data[c] === 0);
+  const notaCeros = ceros.length ? `<div style="font-size:10px;color:var(--text-tertiary,#777);margin-top:2px">${ceros.map(c => `${c} 0%`).join(' · ')}</div>` : '';
+  return `${barra}${callouts}${notaCeros}`;
 }
 
 // calcularVariacionIndicador / resolverIndicador viven en lib/lecturaRondas.js (lógica pura compartida
@@ -1976,85 +1960,69 @@ function htmlResumenVariacionesPlano(rondas, umbral) {
   </div>`;
 }
 
-// --- "Calificación de gestión" (barras apiladas). Una fila por ronda (fecha a la
-// izquierda + barra apilada Positiva/Regular/Negativa/Ns-Nc, reutilizando
-// htmlBarraSegmentosPDF), apiladas verticalmente. Cada barra desde la SEGUNDA en
-// adelante lleva, arriba de cada segmento, su delta contra la barra INMEDIATAMENTE
-// ANTERIOR (no contra la primera) — ver htmlDeltaSegmentoBadge/
-// calcularDeltasCategoriasGestion. La primera barra nunca lleva badge (nada previo
-// con qué comparar). ---
-// Polaridad de "sube = buena noticia" por categoría de Calificación de gestión — a
-// diferencia de ITEMS_INDICADORES_COMPARATIVO (una sola polaridad para todo el
-// indicador), acá cada categoría de la MISMA barra apilada tiene sentido opuesto:
-// Positiva/Regular subiendo es buena noticia (verde), Negativa/Ns-Nc subiendo es mala
-// noticia (rojo) — y a la inversa si bajan. Reemplaza la lógica vieja de color por
-// signo crudo del delta (ver calcularDeltasCategoriasGestion).
+// --- "Calificación de gestión" (barras apiladas). Una barra por ronda, de la más antigua (arriba) a la
+// actual (abajo). Cada barra lleva su chip de ronda + n; la actual va enfatizada (más alta, opacidad plena,
+// chip "actual") y las anteriores atenuadas. Desde la segunda barra, una línea "vs 11-07" declara contra
+// qué ronda se comparan los deltas (siempre contra la barra INMEDIATAMENTE ANTERIOR del mismo funcionario).
+// Si el funcionario no se midió en la ronda actual, todo el bloque va como ARRASTRE (gris, borde punteado,
+// "Sin dato en la ronda actual · último: …"). Sin límite de rondas: no hay nada pensado para 2 o 3. ---
+// Polaridad de "sube = buena noticia" por categoría: Positiva/Regular subiendo es bueno (verde),
+// Negativa/Ns-Nc subiendo es malo (rojo) — y a la inversa si bajan.
 const POSITIVO_ES_SUBIR_GESTION = { 'Positiva': true, 'Regular': true, 'Negativa': false, 'Ns/Nc': false };
 
-// umbral: por debajo, "estable" (mismo criterio que el resto de Comparativo, misma
-// convención de < estricto que calcularVariacionIndicador) en vez de forzar un color
-// por un cambio de redondeo. categoria: Positiva/Regular/Negativa/Ns-Nc — decide el
-// color vía POSITIVO_ES_SUBIR_GESTION; sin categoría (llamador legado) cae a "sube
-// siempre es bueno" como estaba antes.
-function htmlDeltaSegmentoBadge(delta, umbral = 2.5, categoria, compacto = false) {
-  const redondeado = Math.round(delta * 10) / 10;
-  if (Math.abs(redondeado) < umbral) return `<span style="font-size:10px;font-weight:600;color:#999">${compacto ? '·' : '· Estable'}</span>`;
-  const sube = redondeado > 0;
-  // categoria == null es el llamador legado documentado arriba (cae a "sube = bueno"
-  // sin avisar); categoria definida pero ausente del mapa es el mismo tipo de nombre
-  // no reconocido que colorCategoriaGestion, con el mismo aviso una sola vez.
-  if (categoria != null && !(categoria in POSITIVO_ES_SUBIR_GESTION) && !categoriasGestionAvisadas.has(categoria)) {
-    categoriasGestionAvisadas.add(categoria);
-    console.warn(`Calificación de gestión: categoría "${categoria}" no reconocida (sin polaridad mapeada), asumiendo "sube = bueno".`);
+// Delta de una categoría: "Positiva ▲ +13.3 pp" (verde/rojo según polaridad) o "Regular · estable" por
+// debajo del umbral. atenuado: gris neutro (bloques de arrastre).
+function htmlDeltaCategoriaGestion(cat, delta, umbral, atenuado) {
+  const r = Math.round(delta * 10) / 10;
+  if (Math.abs(r) < umbral) return `<span style="color:var(--text-tertiary,#777);white-space:nowrap">${cat} · estable</span>`;
+  if (!(cat in POSITIVO_ES_SUBIR_GESTION) && !categoriasGestionAvisadas.has(cat)) {
+    categoriasGestionAvisadas.add(cat);
+    console.warn(`Calificación de gestión: categoría "${cat}" no reconocida (sin polaridad mapeada), asumiendo "sube = bueno".`);
   }
-  const positivoEsSubir = POSITIVO_ES_SUBIR_GESTION[categoria] ?? true;
-  const esBueno = positivoEsSubir ? sube : !sube;
-  const color = esBueno ? '#2E7D32' : '#C62828';
-  const arrow = sube ? '▲' : '▼';
-  const signo = sube ? '+' : '';
-  return `<span style="font-size:${compacto ? 9 : 10}px;font-weight:600;color:${color}">${arrow} ${signo}${redondeado.toFixed(1)}${compacto ? '' : ' pp'}</span>`;
+  const sube = r > 0;
+  const esBueno = (POSITIVO_ES_SUBIR_GESTION[cat] ?? true) ? sube : !sube;
+  const color = atenuado ? 'var(--text-tertiary,#777)' : (esBueno ? '#2E7D32' : '#C62828');
+  return `<span style="font-weight:600;color:${color};white-space:nowrap">${cat} ${sube ? '▲' : '▼'} ${signoPP(r)}</span>`;
 }
 
-// Delta por categoría (Positiva/Regular/Negativa/Ns-Nc) entre dos filas CONSECUTIVAS
-// (anterior/actual) para un funcionario — se llama una vez por cada par de barras
-// adyacentes, no solo primera-vs-última. Devuelve el delta crudo (con signo); el color
-// semántico según categoría se decide en htmlDeltaSegmentoBadge (POSITIVO_ES_SUBIR_GESTION),
-// no acá. Si una categoría existe en la barra actual pero no en la anterior (ej.
-// Ns/Nc recién aparece), se toma 0% como valor de esa categoría en la anterior.
-function calcularDeltasCategoriasGestion(anteriorData, actualData) {
-  const categorias = categoriasGestion(actualData);
-  const deltas = {};
-  categorias.forEach(cat => {
-    const vActual = actualData[cat];
-    if (!vActual || vActual <= 0) return; // sin segmento en esta barra => sin badge
-    deltas[cat] = vActual - (anteriorData[cat] || 0);
-  });
-  return deltas;
+function htmlDeltasGestion(previa, actual, fechaPrevia, umbral, atenuado) {
+  const cats = categoriasGestion(actual).filter(c => (actual[c] > 0 || previa[c] > 0));
+  const items = cats.map(c => htmlDeltaCategoriaGestion(c, (actual[c] || 0) - (previa[c] || 0), umbral, atenuado)).join('');
+  return `<div style="display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:3px;font-size:10.5px"><span title="Comparado con la ronda del ${formatearFecha(fechaPrevia)}" style="font-weight:600;color:var(--text-tertiary,#777)">vs ${fechaCorta(fechaPrevia)}</span>${items}</div>`;
 }
 
-function htmlMiniPendienteGestion(funcionario, rondas, umbral) {
+function htmlMiniPendienteGestion(funcionario, rondas, umbral, fechaActual = fechaRondaActual(rondas)) {
   const pregunta = `Gestión del ${funcionario}`;
-  const filas = rondas.map(r => ({ fecha: r.fecha, casos: r.casos, data: r.preguntas?.[pregunta] })).filter(f => f.data);
+  const titulo = `<div style="font-size:13px;color:var(--text-secondary,#555);font-weight:600;margin-bottom:6px">Calificación de gestión: ${funcionario}</div>`;
+  const filas = ordenarRondas(rondas).map(r => ({ fecha: r.fecha, casos: r.casos ?? null, data: r.preguntas?.[pregunta] })).filter(f => f.data);
   if (filas.length === 0) {
-    return `<div style="margin-bottom:16px"><div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div><p style="font-size:12px;color:#999">Sin dato.</p></div>`;
+    return `<div style="margin-bottom:16px">${titulo}<p style="font-size:12px;color:var(--text-tertiary,#777);margin:0">Sin dato en las rondas elegidas.</p></div>`;
   }
-  const filasHtml = filas.map((f, i) => {
-    const deltas = i > 0 ? calcularDeltasCategoriasGestion(filas[i - 1].data, f.data) : null;
-    return `
-    <div style="margin-bottom:10px;break-inside:avoid">
-      <div style="font-size:12px;font-weight:600;color:#1a1a1a">${formatearFecha(f.fecha)}</div>
-      <div style="font-size:10px;color:var(--text-tertiary,#999);margin-bottom:3px">${f.casos != null ? `n = ${f.casos} respuestas` : 'n no informado'}</div>
-      ${htmlBarraSegmentosPDF(f.data, { height: 22, deltas, umbral })}
+  const arrastre = filas[filas.length - 1].fecha !== fechaActual;
+  const barras = filas.map((f, i) => {
+    const esActual = !arrastre && i === filas.length - 1;
+    const atenuada = arrastre || !esActual;
+    const deltas = i > 0 ? htmlDeltasGestion(filas[i - 1].data, f.data, filas[i - 1].fecha, umbral, atenuada) : '';
+    return `<div style="margin-bottom:${esActual ? 4 : 10}px;break-inside:avoid">
+      <div style="margin-bottom:3px">${htmlChipRonda(f.fecha, { casos: f.casos, actual: esActual })}</div>
+      ${htmlBarraSegmentosPDF(f.data, { height: esActual ? 26 : 16, atenuada })}
+      ${deltas}
     </div>`;
   }).join('');
-  return `<div style="margin-bottom:16px;break-inside:avoid">
-    <div style="font-size:13px;color:#666;font-weight:500;margin-bottom:8px">Calificación de gestión: ${funcionario}</div>
-    ${filasHtml}
+  if (!arrastre) return `<div style="margin-bottom:18px;break-inside:avoid">${titulo}${barras}</div>`;
+  const ult = filas[filas.length - 1];
+  return `<div data-estado-gestion="arrastre" style="margin-bottom:18px;break-inside:avoid;background:var(--bg-secondary,#f3f4f6);border:1px dashed var(--border,#d9d9d9);border-radius:8px;padding:8px 10px">
+    <div style="font-size:13px;color:var(--text-tertiary,#777);font-weight:600;margin-bottom:2px">Calificación de gestión: ${funcionario}</div>
+    <div style="font-size:10.5px;font-weight:600;color:var(--text-tertiary,#777);margin-bottom:6px">Sin dato en la ronda actual (${formatearFecha(fechaActual)}) · se muestra el último dato disponible: ${formatearFecha(ult.fecha)}${ult.casos != null ? ` · n=${ult.casos}` : ''}</div>
+    ${barras}
   </div>`;
 }
 
 function htmlMiniPendientesGestion(rondas, umbral) {
-  return ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral)).join('');
+  const fechaActual = fechaRondaActual(rondas);
+  const nota = (rondas || []).length >= 2
+    ? `<div style="font-size:11px;color:var(--text-tertiary,#777);margin-bottom:10px">Cada barra es una ronda, de la más antigua (arriba) a la actual (abajo). Los cambios en pp se comparan con la barra de arriba.</div>` : '';
+  return nota + ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral, fechaActual)).join('');
 }
 
 function htmlLegendGestion() {
