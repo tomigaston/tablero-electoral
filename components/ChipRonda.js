@@ -1,9 +1,9 @@
 import { formatearFecha } from '../lib/formatearFecha';
-import { cssStr, muestraReducida } from '../lib/lecturaRondas';
+import { cssStr } from '../lib/lecturaRondas';
 
 // Chip de ronda: la MISMA ronda se ve igual en toda la pantalla y en todo el reporte.
 // Canal visual neutro a propósito (gris / azul de marca): nunca rojo, verde ni ámbar, para no chocar
-// con "bueno/malo" ni con el aviso de muestra reducida.
+// con "bueno/malo".
 //   · ronda actual  → azul de marca suave + marca "actual"
 //   · ronda anterior → gris
 const BASE = {
@@ -14,16 +14,14 @@ const BASE = {
 const ACTUAL = { backgroundColor: '#1976D21A', color: '#0D47A1', border: '1px solid #1976D255' };
 
 export const estiloChipRonda = (actual) => (actual ? { ...BASE, ...ACTUAL } : BASE);
-export const AVISO_N_CHICO = '⚠ muestra reducida';
 const textoN = (casos) => (casos != null ? `n=${casos}` : 'n no informado');
 
-// Chip + n (+ aviso si n < 30). "actual" marca la ronda actual.
+// Chip + n. "actual" marca la ronda actual.
 // etiqueta (opcional): texto del estado que va después de la fecha (ej. "sin dato nuevo"); si falta y actual=true, "actual".
 export const ChipRonda = ({ fecha, casos, actual = false, etiqueta = null, conN = true }) => (
   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap' }}>
     <span style={estiloChipRonda(actual)}>{formatearFecha(fecha)}{etiqueta ? ` · ${etiqueta}` : actual ? ' · actual' : ''}</span>
     {conN && <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{textoN(casos)}</span>}
-    {conN && muestraReducida(casos) && <span style={{ fontSize: '11px', fontWeight: 600, color: '#8a5a00' }}>{AVISO_N_CHICO}</span>}
   </span>
 );
 
@@ -32,8 +30,7 @@ export function htmlChipRonda(fecha, { casos, actual = false, etiqueta = null, c
   const chip = `<span style="${cssStr(estiloChipRonda(actual))}">${formatearFecha(fecha)}${etiqueta ? ` · ${etiqueta}` : actual ? ' · actual' : ''}</span>`;
   if (!conN) return chip;
   const n = `<span style="font-size:11px;color:var(--text-tertiary)">${textoN(casos)}</span>`;
-  const aviso = muestraReducida(casos) ? `<span style="font-size:11px;font-weight:600;color:#8a5a00">${AVISO_N_CHICO}</span>` : '';
-  return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">${chip}${n}${aviso}</span>`;
+  return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">${chip}${n}</span>`;
 }
 
 // Fila con los chips de TODAS las rondas que entran en una comparación, en orden cronológico

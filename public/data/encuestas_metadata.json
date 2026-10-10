@@ -167,7 +167,6 @@
     "pregunta_original": "De la siguiente lista ¿A quién votaría para gobernador de Córdoba?",
     "prefijo_pregunta": "Intención voto Gobernador - ",
     "numeracion": "Escenario N = orden de aparición del escenario dentro de la ronda. En el informe del 01-10-2026 la pregunta viene numerada (1 a 6) y coincide con ese orden; en los informes de septiembre no está numerada y el orden de aparición es el del archivo.",
-    "umbral_muestra_reducida": 30,
     "candidatos": {
       "Martín Llaryora": {
         "nombre": "Martín Llaryora",

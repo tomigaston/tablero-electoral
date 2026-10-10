@@ -1,7 +1,7 @@
 import { formatearFecha } from '../lib/formatearFecha';
 import { ChipRonda } from './ChipRonda';
 import {
-  fechaRondaActual, ordenarRondas, resolverIndicador, etiquetaExtremos, bloquesNoMedidos, calcularBloqueProblemas, muestraReducida,
+  fechaRondaActual, ordenarRondas, resolverIndicador, etiquetaExtremos, bloquesNoMedidos, calcularBloqueProblemas,
 } from '../lib/lecturaRondas';
 import { escenariosDeEncuesta, titularEscenario, nombreCandidato } from '../lib/intencionVoto';
 
@@ -11,7 +11,7 @@ import { escenariosDeEncuesta, titularEscenario, nombreCandidato } from '../lib/
 //   · voto principal: Escenario 1 — quién va 1°, su % y la diferencia con el 2° (aunque no sea Llaryora)
 //   · aprobación del Gobernador y su dirección
 //   · problema principal (con su fecha real si es arrastre)
-//   · avisos: n chico y bloques que la ronda actual no midió
+//   · avisos: bloques que la ronda actual no midió
 // Aprobación: subir es buena noticia (verde), bajar es mala (rojo). Mismos tonos que el resto del tablero.
 const COLOR_SUBE_BUENO = '#2E7D32';
 const COLOR_BAJA_MALO = '#C62828';
@@ -59,7 +59,6 @@ export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = t
   const top = prob?.filas?.[0];
 
   const noMedidos = bloquesNoMedidos(rondas, fechaActual);
-  const chico = muestraReducida(actual.casos);
 
   return (
     <div data-resumen-ronda-actual style={{ border: '1px solid var(--border)', borderLeft: '4px solid #1976D2', borderRadius: '10px', padding: '10px 14px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid' }}>
@@ -111,9 +110,8 @@ export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = t
         )}
       </Fila>
 
-      {(chico || noMedidos.length > 0) && (
+      {noMedidos.length > 0 && (
         <Fila rotulo="Avisos">
-          {chico && <div style={{ color: '#8a5a00', fontWeight: 600 }}>⚠ Muestra reducida (n={actual.casos}): los porcentajes son orientativos.</div>}
           {noMedidos.length > 0 && (
             <div style={tenue}>
               No se midió en esta ronda (se muestra su último dato, más viejo): {gruposNoMedidos(noMedidos).map(g => `${g.nombres.join(', ')} (último: ${formatearFecha(g.fecha)})`).join('; ')}.

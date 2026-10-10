@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import {
   escenariosDeEncuesta, ordenarFilas, punteroYDiferencia, variacion, alinearComparativo, escenariosEnAmbas,
-  nombreCandidato, tipoCandidato, UMBRAL_MUESTRA_REDUCIDA, NOTA_SIN_CONNOTACION, notaNumeracion,
+  nombreCandidato, tipoCandidato, NOTA_SIN_CONNOTACION, notaNumeracion,
   esCandidatoDestacado, titularEscenario, ACLARACION_ESCENARIOS,
 } from '../lib/intencionVoto';
 import { formatearFecha } from '../lib/formatearFecha';
@@ -33,7 +33,7 @@ const BarraFina = ({ valor, escalaMax, color }) => {
   );
 };
 
-// Encabezado de cada tabla: el chip de ronda (el mismo de todo el reporte), con n y aviso de muestra reducida.
+// Encabezado de cada tabla: el chip de ronda (el mismo de todo el reporte), con n.
 const EncabezadoTabla = ({ fecha, casos, compacto, actual }) => (
   <div style={{ marginBottom: compacto ? '5px' : '8px' }}>
     <ChipRonda fecha={fecha} casos={casos} actual={actual} />

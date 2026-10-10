@@ -12,7 +12,7 @@
 // crearRegistroSecciones(D) recibe de pages/index.js los componentes y helpers que no
 // pueden importarse directamente (viven en ese archivo): D = { ui: {...}, fn: {...} }.
 
-import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion, ACLARACION_ESCENARIOS } from '../../lib/intencionVoto';
+import { escenariosDeEncuesta, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion, ACLARACION_ESCENARIOS } from '../../lib/intencionVoto';
 import { EscenarioRonda, EscenarioComparativo, TitularVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
 import { ResumenRondaActual } from '../ResumenRondaActual';
@@ -21,7 +21,6 @@ import { htmlEncuestasCuerpo, seleccionEncuestas, rondasMostradas, pieDatosEncue
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
 
-const UMBRAL_MUESTRA_REDUCIDA = 30;
 const maxFecha = (fechas) => fechas.filter(Boolean).reduce((m, f) => (!m || f > m ? f : m), null);
 const conClaseTabla = (html) => html.replace(/<table>/g, '<table class="rp-tabla">');
 
@@ -129,10 +128,6 @@ export function crearRegistroSecciones(D) {
   // Capital no tiene dato agregado: no se promedian circuitos, se lista dónde hay datos.
   const metaIV = (ctx) => ctx.encuestasMetadata?.escenarios_gobernador;
   const datosIV = (ctx) => escenariosDeEncuesta(encuestaDeContexto(ctx).encuesta, metaIV(ctx));
-  const avisoMuestraIV = (rondas) => {
-    const chicas = rondas.filter(r => r.casos != null && r.casos < UMBRAL_MUESTRA_IV);
-    return chicas.length ? `<div class="rp-aviso">⚠ Muestra reducida: ${chicas.map(r => `${formatearFecha(r.fecha)} (n=${r.casos})`).join(', ')}. Con tan pocas respuestas los porcentajes son orientativos y pueden variar mucho.</div>` : '';
-  };
 
   function renderIntencionCapital(ctx) {
     const meta = metaIV(ctx);
@@ -165,7 +160,6 @@ export function crearRegistroSecciones(D) {
       if (ia === ib) ia = Math.max(ib - 1, 0);
       if (ia > ib) [ia, ib] = [ib, ia];
       const A = rondas[ia], B = rondas[ib];
-      partes.push(avisoMuestraIV([A, B]));
       partes.push(T.md(<TitularVoto ronda={B} meta={meta} fechaActual={fechaActualEnc} anterior={A} />));
       partes.push(`<p class="rp-nota" style="break-after:avoid;page-break-after:avoid">${esc(ACLARACION_ESCENARIOS)}</p>`);
       if (B.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(B.fecha)}.</p>`);
@@ -182,7 +176,6 @@ export function crearRegistroSecciones(D) {
       if (excluidos.length) partes.push(`<p class="rp-nota">No se comparan por no estar en la ronda del ${formatearFecha(A.fecha)}: ${excluidos.map(e => esc(e.nombre)).join('; ')}.</p>`);
     } else {
       const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
-      partes.push(avisoMuestraIV([R]));
       partes.push(T.md(<TitularVoto ronda={R} meta={meta} fechaActual={fechaActualEnc} />));
       partes.push(`<p class="rp-nota" style="break-after:avoid;page-break-after:avoid">${esc(ACLARACION_ESCENARIOS)}</p>`);
       if (R.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(R.fecha)}.</p>`);
