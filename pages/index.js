@@ -1679,7 +1679,7 @@ const BarraGestion = ({ label, data, arrastre = null }) => {
     <div style={arrastre ? { marginBottom: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '8px', padding: '8px 10px' } : { marginBottom: '10px' }}>
       <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
       {arrastre && <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '5px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}><span>{arrastre.sinDato} · último:</span><ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} /></div>}
-      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { height: arrastre ? 18 : 26, atenuada: !!arrastre }) }} />
+      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { atenuada: !!arrastre }) }} />
     </div>
   );
 };
@@ -1823,14 +1823,18 @@ const ResumenEncuesta = ({ preguntas, contexto = null }) => {
 const fmtPctSeg = (v) => `${Number(v).toFixed(1)}%`;
 const COLOR_TEXTO_SEGMENTO = { 'Positiva': '#fff', 'Negativa': '#fff', 'Regular': '#1a1a1a', 'Ns/Nc': '#1a1a1a' };
 const ALTO_FILA_ETIQUETA = 13;
-function htmlBarraSegmentosPDF(data, { height = 18, atenuada = false } = {}) {
-  if (!data) return `<div style="height:${height}px;border-radius:5px;background:#eee"></div>`;
+// Geometría única de las barras apiladas: mismo alto y mismo radio en toda ronda, bloque y estado (actual, anterior,
+// arrastre). Lo que distingue una barra de otra es el color/opacidad y el chip, nunca el tamaño.
+const ALTO_BARRA_GESTION = 24;
+const RADIO_BARRA_GESTION = 5;
+function htmlBarraSegmentosPDF(data, { height = ALTO_BARRA_GESTION, atenuada = false } = {}) {
+  if (!data) return `<div data-barra-gestion style="height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;background:#eee"></div>`;
   const { segs, filas } = layoutSegmentos(data, categoriasGestion(data));
   const segmentos = segs.map(sg => {
     const texto = sg.dentro ? `<span style="font-size:10px;font-weight:600;color:${COLOR_TEXTO_SEGMENTO[sg.cat] || '#fff'}">${fmtPctSeg(sg.v)}</span>` : '';
     return `<div title="${sg.cat}: ${fmtPctSeg(sg.v)}" style="width:${sg.v}%;background:${colorCategoriaGestion(sg.cat)};display:flex;align-items:center;justify-content:center;min-width:2px">${texto}</div>`;
   }).join('');
-  const barra = `<div style="display:flex;height:${height}px;border-radius:5px;overflow:hidden;background:#eee;${atenuada ? 'opacity:.72' : ''}">${segmentos}</div>`;
+  const barra = `<div data-barra-gestion style="display:flex;height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;overflow:hidden;background:#eee;${atenuada ? 'opacity:.72' : ''}">${segmentos}</div>`;
   const fuera = segs.filter(sg => !sg.dentro);
   const callouts = fuera.length === 0 ? '' : `<div style="position:relative;height:${4 + filas * ALTO_FILA_ETIQUETA + 2}px">${fuera.map(sg => {
     const top = 4 + sg.fila * ALTO_FILA_ETIQUETA;
@@ -1924,9 +1928,9 @@ function htmlMiniPendienteGestion(funcionario, rondas, umbral, ref = crearRefRon
     const esActual = esReciente && ref.esUltima;
     const atenuada = arrastre || !esReciente;
     const deltas = i > 0 ? htmlDeltasGestion(filas[i - 1].data, f.data, filas[i - 1].fecha, umbral, atenuada) : '';
-    return `<div style="margin-bottom:${esReciente ? 4 : 10}px;break-inside:avoid">
+    return `<div style="margin-bottom:10px;break-inside:avoid">
       <div style="margin-bottom:3px">${htmlChipRonda(f.fecha, { casos: f.casos, actual: esActual })}</div>
-      ${htmlBarraSegmentosPDF(f.data, { height: esReciente ? 26 : 16, atenuada })}
+      ${htmlBarraSegmentosPDF(f.data, { atenuada })}
       ${deltas}
     </div>`;
   }).join('');
