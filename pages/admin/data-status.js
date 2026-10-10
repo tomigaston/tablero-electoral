@@ -99,12 +99,14 @@ function leerObrasSinGeolocalizar() {
   return raw
     .filter((o) => (o.lat == null || o.lon == null) && !o.barrio)
     .map((o) => ({
-      id: o.id,
-      nombre: o.nombre,
+      // obras_capital.json cambió de esquema (id_registro / nombre_obra): se aceptan ambos y nunca se
+      // devuelve undefined (Next no puede serializarlo en getServerSideProps).
+      id: o.id_registro ?? o.id ?? null,
+      nombre: o.nombre_obra ?? o.nombre ?? '',
       reparticion: o.reparticion || '',
       tipo_obra: o.tipo_obra || '',
       estado: o.estado || '',
-      fuente_barrio: o.fuente_barrio,
+      fuente_barrio: o.fuente_barrio ?? null,
     }))
     .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
 }
@@ -328,7 +330,7 @@ const TablaObrasSinGeolocalizar = ({ obras, entry }) => {
             {filtradas.length === 0 ? (
               <tr><td style={{ ...tdStyle, color: 'var(--text-tertiary)' }} colSpan={5}>Sin resultados para "{busqueda}".</td></tr>
             ) : filtradas.map((o) => (
-              <tr key={o.id} style={{ borderTop: '1px solid var(--border)' }}>
+              <tr key={o.id ?? o.nombre} style={{ borderTop: '1px solid var(--border)' }}>
                 <td style={{ ...tdStyle, fontWeight: 500 }}>{o.nombre}</td>
                 <td style={tdStyle}>{o.reparticion || '—'}</td>
                 <td style={tdStyle}>{o.tipo_obra || '—'}</td>
