@@ -67,7 +67,7 @@ export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = t
       </div>
 
       <Fila rotulo="Voto a Gobernador" atenuada={ivArrastre}>
-        {!rondaIV && 'Sin escenarios de voto en esta encuesta.'}
+        {!rondaIV && 'Sin escenarios de voto en esta ronda.'}
         {rondaIV && !tit && 'Sin escenarios de voto en esta ronda.'}
         {tit && (
           <>

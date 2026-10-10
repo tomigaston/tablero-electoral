@@ -8,7 +8,7 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
+import { etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, serieIndicador, fechaRondaActual, etiquetaExtremos, fechaCorta, bloquesNoMedidos, muestraReducida, ultimaRondaConDato, cssStr } from '../lib/lecturaRondas';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
 import { ChipRonda, FilaChipsRondas, htmlChipRonda, estiloChipRonda, AVISO_N_CHICO } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
@@ -2111,10 +2111,17 @@ const colorAcentoTipoPregunta = (tipo) => ACENTO_TIPO_PREGUNTA[tipo] || ACENTO_T
 const signoPP = (d) => `${d > 0 ? '+' : d < 0 ? '−' : ''}${Math.abs(d).toFixed(1)} pp`;
 function variacionConExtremos(v, positivoEsSubir, { atenuada = false } = {}) {
   if (!v || v.estado == null) return null;
-  const [a, b] = etiquetaExtremos(v.fechaAnterior, v.fechaActual);
   const color = atenuada ? 'var(--text-tertiary)' : colorVariacionIndicador(v.estado, positivoEsSubir);
   const delta = v.estado === 'estable' ? '· Estable' : `${v.estado === 'sube' ? '▲' : '▼'} ${signoPP(v.delta)}`;
-  return { extremos: `${a} ${v.anterior.toFixed(1)}% → ${b} ${v.actual.toFixed(1)}%`, delta, color, titulo: `${formatearFecha(v.fechaAnterior)} → ${formatearFecha(v.fechaActual)}` };
+  const titulo = `${formatearFecha(v.fechaAnterior)} → ${formatearFecha(v.fechaActual)}`;
+  // Con 3 o más mediciones se muestra el recorrido completo (abr → jul → ago → sep) y el delta es el del último
+  // paso, declarado ("vs ago"). Con 2, solo los dos extremos.
+  if (v.serie && v.serie.length > 2) {
+    const et = etiquetasSerie(v.serie.map(d => d.fecha));
+    return { extremos: v.serie.map((d, i) => `${et[i]} ${d.valor.toFixed(1)}%`).join(' → '), delta: `${delta} vs ${et[et.length - 2]}`, color, titulo };
+  }
+  const [a, b] = etiquetaExtremos(v.fechaAnterior, v.fechaActual);
+  return { extremos: `${a} ${v.anterior.toFixed(1)}% → ${b} ${v.actual.toFixed(1)}%`, delta, color, titulo };
 }
 
 // Tarjeta de un indicador. Dos tratamientos que se distinguen SIN leer la fecha:
@@ -2283,7 +2290,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
           {vista === 'resumen'
-            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>Encuesta <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={rondaIdx === encuesta.rondas.length - 1} /></span>
+            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>Encuesta <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={encuesta.rondas.length > 1 && rondaIdx === encuesta.rondas.length - 1} /></span>
             : 'Comparativo entre rondas'}
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
