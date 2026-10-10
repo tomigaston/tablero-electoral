@@ -2086,7 +2086,7 @@ const BloqueProblemas = ({ rondas, umbral, refRonda, sinComparacion = false }) =
         {arr ? `Problemas · última medición: ${formatearFecha(b.ultima.fecha)} (${refRonda.rotulo} no relevó este bloque)` : 'Principales problemas'}
       </h4>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 12px', marginBottom: '10px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
-        <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr && refRonda.esUltima} />
+        <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr && refRonda.esUltima} etiqueta={arr ? 'sin dato nuevo' : null} />
         <span>
           {sinComparacion ? 'valores de esa medición, sin comparación' : b.previa
             ? `comparación ${formatearFecha(b.previa.fecha)} → ${formatearFecha(b.ultima.fecha)} · variación en puntos porcentuales (pp)`
@@ -4355,7 +4355,9 @@ function htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, modo, indi
     rondas, opciones, umbral, metadata: encuestasMetadata, T,
     ui: { ResumenEncuesta, ComparativoEncuesta }, fn: { htmlBarraCategoriasPDF, htmlMejoraPDF, formatearFecha },
   }).join('');
-  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} />);
+  // En 'elegir' la ventana puede no llegar a la última ronda: el resumen lo aclara (siempre refleja la última del circuito).
+  const hasta = modo === 'elegir' ? fechaRondaActual((indicesRondas || []).filter(i => rondas[i]).map(i => rondas[i])) : null;
+  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} ventanaHasta={hasta} />);
   if (modo === 'comparativo') {
     if (rondas.length < 2) return `<div class="section">${titulo('Encuestas — Comparativo')}<p style="color:#999;font-size:12px">Sin datos suficientes para comparar.</p></div>`;
     return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas — Comparativo')}${cuerpo({ comparativo: true, ronda: false, todas: rondas.length >= 3 })}</div>`;

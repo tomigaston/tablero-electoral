@@ -52,3 +52,14 @@ Problemas ni Gestión del Intendente, y esas tarjetas se ven igual que las de Go
 - Lógica pura en `lib/lecturaRondas.js`; el render sigue en JSX / HTML-string con SVG propio, sin
   dependencias nuevas.
 - Chip de ronda neutro (gris; la ronda actual con el azul de marca), idéntico en todo el reporte.
+
+## Ajustes de la segunda ronda
+
+- **"actual"** solo cuando la ronda más reciente mostrada es la última real del circuito (`crearRefRonda`). Si la
+  ventana la excluye (ej. abril vs julio con octubre existente), esa ronda va con su fecha neutra y los textos dicen
+  "la ronda del 11-07-2026". El Resumen de ronda actual siempre habla de la última del circuito y lo aclara cuando el
+  detalle de abajo llega solo hasta otra fecha.
+- **Tarjeta de indicador única**: título / número + chip de fecha + n / trayectoria con delta "vs <mes>". El arrastre
+  usa el mismo layout, en gris punteado y con el chip "<fecha> · sin dato nuevo".
+- **Muestra reducida**: eliminada (banner, etiquetas y umbral n<30). El n se sigue mostrando.
+- **Exportar ficha**: la sección Encuestas usa el mismo cuerpo que el reporte (`components/reporte/encuestasHtml.js`).
