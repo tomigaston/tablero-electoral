@@ -14,10 +14,13 @@ export async function generarReporte({ ctx, seleccion, registro, tituloContexto,
   const cuerpo = activas.map(s => {
     const html = s.render(ctx, seleccion.opciones, herramientas);
     const dato = s.ultimoDato ? s.ultimoDato(ctx) : null;
+    // datosAl (opcional): pie propio cuando "Datos al <fecha más reciente>" no describe la sección (p. ej. Encuestas,
+    // donde cada bloque puede venir de una ronda distinta). Devuelve texto, o null para no mostrar pie.
+    const pieDatos = s.datosAl ? s.datosAl(ctx, seleccion.opciones) : undefined;
     return `<section class="rp-sec${s.nuevaPagina ? ' rp-nueva-pagina' : ''}${s.unida ? ' rp-unida' : ''}" data-seccion="${s.id}">
   <h2 class="rp-h2">${esc(s.tituloImpreso ? s.tituloImpreso(ctx) : s.label)}</h2>
   <div class="rp-body">${html}</div>
-  ${dato ? `<p class="rp-datos">Datos al ${formatearFecha(dato)}</p>` : ''}
+  ${pieDatos !== undefined ? (pieDatos ? `<p class="rp-datos">${esc(pieDatos)}</p>` : '') : (dato ? `<p class="rp-datos">Datos al ${formatearFecha(dato)}</p>` : '')}
 </section>`;
   }).join('\n');
 

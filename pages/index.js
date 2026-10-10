@@ -1636,12 +1636,12 @@ function categoriasGestion(data) {
 // con FilasProblemasComparativo (vista Comparativo), que agrega badge de variación al
 // lado. Misma pieza en los dos lugares, sin duplicar el cálculo de si el texto entra
 // adentro de la barra o no.
-const BarraHorizontalPct = ({ pct }) => {
+const BarraHorizontalPct = ({ pct, color = '#1976D2' }) => {
   const anchoPct = Math.min(pct, 100);
   const cabeAdentro = anchoPct >= 15; // suficiente lugar para el texto dentro del relleno
   return (
     <div style={{ flex: 1, backgroundColor: 'var(--bg-secondary)', borderRadius: '5px', height: '20px', position: 'relative' }}>
-      <div style={{ width: `${anchoPct}%`, backgroundColor: '#1976D2', height: '100%', borderRadius: '5px' }} />
+      <div style={{ width: `${anchoPct}%`, backgroundColor: color, height: '100%', borderRadius: '5px' }} />
       <span style={{
         position: 'absolute', top: '2px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
         ...(cabeAdentro ? { left: '8px', color: '#fff' } : { left: `calc(${anchoPct}% + 6px)`, color: 'var(--text-primary)' }),
@@ -2155,71 +2155,78 @@ const GridIndicadoresComparativo = ({ rondas, umbral, metadata, fechaActual }) =
   );
 };
 
-// Badge de variación para una fila de Principales problemas — subir SIEMPRE es rojo
-// (más gente lo percibe como problema) y bajar SIEMPRE es verde, polaridad constante
-// (por eso positivoEsSubir=false fijo, a diferencia de las cards de arriba).
-const BadgeVariacionProblema = ({ v }) => {
-  if (!v || v.estado == null) return <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>—</span>;
-  const color = colorVariacionIndicador(v.estado, false);
-  if (v.estado === 'estable') return <span style={{ fontSize: '12px', fontWeight: 600, color }}>· Estable</span>;
-  const flecha = v.estado === 'sube' ? '▲' : '▼';
-  const verbo = v.estado === 'sube' ? 'Subió' : 'Bajó';
-  return <span style={{ fontSize: '12px', fontWeight: 600, color, whiteSpace: 'nowrap' }}>{flecha} {verbo} {Math.abs(v.delta).toFixed(1)} pp</span>;
-};
+// --- Principales problemas: UNA sola vista y UNA sola pareja de comparación. ---
+// La pareja son las dos últimas rondas que SÍ midieron problemas (la fecha es la real de la medición, no la
+// de la ronda actual). Si la ronda actual no relevó el bloque, queda atenuado y el encabezado lo dice.
+// Polaridad constante: subir = rojo (más gente lo percibe como problema), bajar = verde.
+const MAX_PROBLEMAS = 6;
+function calcularBloqueProblemas(rondas, umbral, fechaActual) {
+  const con = ordenarRondas(rondas).filter(r => r.preguntas?.['Problemas principales']);
+  if (con.length === 0) return null;
+  const ultima = con[con.length - 1];
+  const previa = con.length > 1 ? con[con.length - 2] : null;
+  const pUlt = ultima.preguntas['Problemas principales'];
+  const pPrev = previa?.preguntas['Problemas principales'] || null;
+  const filas = Object.keys(pUlt).filter(cat => (pUlt[cat] > 0) || (pPrev?.[cat] > 0))
+    .map(cat => {
+      const valor = pUlt[cat] ?? 0, anterior = pPrev ? (pPrev[cat] ?? null) : null;
+      const delta = anterior != null ? valor - anterior : null;
+      const estado = delta == null ? null : Math.abs(delta) < umbral ? 'estable' : (delta > 0 ? 'sube' : 'baja');
+      return { cat, valor, anterior, delta, estado };
+    })
+    .sort((x, y) => y.valor - x.valor);
+  return { ultima, previa, filas: filas.slice(0, MAX_PROBLEMAS), hayMas: filas.length > MAX_PROBLEMAS, esArrastre: fechaActual != null && ultima.fecha !== fechaActual };
+}
 
-// Top 5 categorías por % actual, cada fila: nombre + barra horizontal + % actual +
-// badge de variación (última vs. anteúltima ronda). El corte a 5 es solo de pantalla
-// (calcularFilasProblemasComparativo se comparte con el PDF, que sigue mostrando la
-// tabla completa) — no se filtran filas "vacías" si el circuito tiene menos de 5
-// categorías con datos.
-const FilasProblemasComparativo = ({ rondas, umbral }) => {
-  const filas = calcularFilasProblemasComparativo(rondas, umbral).slice(0, 5);
-  if (filas.length === 0) return <p style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Sin datos de problemas.</p>;
+const DeltaProblema = ({ f, atenuado }) => {
+  if (f.estado == null) return <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>—</span>;
+  const color = atenuado ? 'var(--text-tertiary)' : colorVariacionIndicador(f.estado, false);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {filas.map(f => (
-        <div key={f.cat} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '170px', flexShrink: 0, fontSize: '13px', color: 'var(--text-primary)' }}>{f.cat}</div>
-          <BarraHorizontalPct pct={Number(f.v.actual.toFixed(1))} />
-          <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', minWidth: '48px', textAlign: 'right' }}>{f.v.actual.toFixed(1)}%</div>
-          <div style={{ minWidth: '100px', textAlign: 'right' }}><BadgeVariacionProblema v={f.v} /></div>
-        </div>
-      ))}
-    </div>
+    <span style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
+      <span style={{ fontWeight: 700, color }}>{f.estado === 'estable' ? '· Estable' : `${f.estado === 'sube' ? '▲' : '▼'} ${signoPP(f.delta)}`}</span>
+      <span style={{ color: 'var(--text-tertiary)', fontSize: '11px' }}> · antes {f.anterior.toFixed(1)}%</span>
+    </span>
   );
 };
 
-// Resumen automático de Principales problemas — última ronda vs. anteúltima (misma
-// convención que el resto de Comparativo, ver calcularResumenVariacionesProblemas).
-// Va primero y con jerarquía visual: título + subtítulo que explican qué se está
-// comparando, y dos grupos (más / menos mencionados) con valor anterior → actual.
-// Cada fila hace wrap en pantallas angostas (flex-wrap) para leerse bien en mobile.
-const FilaCambioProblema = ({ v, color }) => (
-  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '2px 12px', padding: '4px 0', fontSize: '14px', color: 'var(--text-primary)' }}>
-    <span style={{ fontWeight: 500 }}>{etiquetaProblema(v.cat)}</span>
-    <span style={{ fontWeight: 600, color, whiteSpace: 'nowrap' }}>{v.anterior.toFixed(1)}% → {v.actual.toFixed(1)}% ({v.delta > 0 ? '+' : ''}{v.delta.toFixed(1)} pp)</span>
-  </div>
-);
-
-const GrupoCambiosProblemas = ({ titulo, items, color }) => items.length === 0 ? null : (
-  <div style={{ marginBottom: '10px' }}>
-    <div style={{ fontSize: '14px', fontWeight: 700, color, marginBottom: '2px' }}>{titulo}</div>
-    {items.map(v => <FilaCambioProblema key={v.cat} v={v} color={color} />)}
-  </div>
-);
-
-const ResumenVariacionesComparativo = ({ rondas, umbral }) => {
-  const { suben, bajan, fechaAnterior, fechaActual, sinRondasComparables } = calcularResumenVariacionesProblemas(rondas, umbral);
-  if (suben.length === 0 && bajan.length === 0) {
-    return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '22px' }}>{sinRondasComparables ? 'No hay dos rondas con la pregunta de problemas para comparar.' : `Sin variaciones significativas (≥${umbral}pp) entre rondas.`}</div>;
+const BloqueProblemas = ({ rondas, umbral, fechaActual }) => {
+  const b = calcularBloqueProblemas(rondas, umbral, fechaActual);
+  const h4 = { fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 };
+  if (!b) {
+    return (
+      <div style={{ breakInside: 'avoid' }}>
+        <h4 style={h4}>Principales problemas</h4>
+        <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: 0 }}>Esta pregunta no se midió en las rondas elegidas.</p>
+      </div>
+    );
   }
+  const arr = b.esArrastre;
   return (
-    <div style={{ marginBottom: '24px' }}>
-      <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>{TITULO_RESUMEN_PROBLEMAS}</div>
-      <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: '2px 0 12px' }}>{subtituloResumenProblemas(fechaAnterior, fechaActual)}</div>
-      <GrupoCambiosProblemas titulo="🔺 Más mencionados ahora" items={suben} color="#C62828" />
-      <GrupoCambiosProblemas titulo="🔻 Menos mencionados ahora" items={bajan} color="#2E7D32" />
-      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{NOTA_SEMANTICA_PROBLEMAS}</div>
+    <div data-estado-problemas={arr ? 'arrastre' : 'actual'} style={{ breakInside: 'avoid', ...(arr ? { backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', padding: '10px 14px' } : {}) }}>
+      <h4 style={{ ...h4, color: arr ? 'var(--text-tertiary)' : 'var(--text-secondary)' }}>
+        {arr ? `Problemas · última medición: ${formatearFecha(b.ultima.fecha)} (la ronda actual no relevó este bloque)` : 'Principales problemas'}
+      </h4>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 12px', marginBottom: '10px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
+        <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr} />
+        <span>
+          {b.previa
+            ? `comparación ${formatearFecha(b.previa.fecha)} → ${formatearFecha(b.ultima.fecha)} · variación en puntos porcentuales (pp)`
+            : 'medida una sola vez: sin dato anterior para comparar'}
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {b.filas.map(f => (
+          <div key={f.cat} style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ width: '170px', flexShrink: 0, fontSize: '12.5px', color: arr ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{etiquetaProblema(f.cat)}</div>
+            <div style={{ flex: '1 1 120px', minWidth: '120px', display: 'flex' }}><BarraHorizontalPct pct={Number(f.valor.toFixed(1))} color={arr ? '#90A4AE' : '#1976D2'} /></div>
+            <div style={{ fontSize: '13px', fontWeight: 700, minWidth: '46px', textAlign: 'right', color: arr ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{f.valor.toFixed(1)}%</div>
+            {b.previa && <div style={{ minWidth: '130px', textAlign: 'right' }}><DeltaProblema f={f} atenuado={arr} /></div>}
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: '10.5px', color: 'var(--text-tertiary)', marginTop: '8px' }}>
+        {b.hayMas ? `Se muestran los ${MAX_PROBLEMAS} más mencionados. ` : ''}{NOTA_SEMANTICA_PROBLEMAS}
+      </div>
     </div>
   );
 };
@@ -2229,23 +2236,17 @@ const ComparativoEncuesta = ({ encuesta, umbral, metadata }) => {
   return (
     <div>
       <FilaChipsRondas rondas={rondas} fechaActual={fechaRondaActual(rondas)} />
-      <ResumenVariacionesComparativo rondas={rondas} umbral={umbral} />
       <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
         <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
         <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} fechaActual={fechaRondaActual(rondas)} />
       </div>
-      {/* Barras apiladas Positiva/Regular/Negativa/Ns-Nc por ronda, vía
-          dangerouslySetInnerHTML para reusar exactamente el mismo render que el PDF
-          (htmlMiniPendientesGestion) — ahora con badge de delta en todas las barras
-          menos la primera, ver htmlDeltaSegmentoBadge/calcularDeltasCategoriasGestion. */}
-      <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
+      {/* Barras apiladas por ronda, vía dangerouslySetInnerHTML para reusar exactamente el mismo render
+          que el reporte (htmlMiniPendientesGestion): chip de ronda, actual enfatizada, deltas con "vs <fecha>". */}
+      <div style={{ marginBottom: '28px' }}>
+        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Calificación de gestión</h4>
         <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas, umbral) + htmlLegendGestion() }} />
       </div>
-      <div style={{ breakInside: 'avoid' }}>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px', fontWeight: 500 }}>Principales problemas — evolución</h4>
-        <FilasProblemasComparativo rondas={rondas} umbral={umbral} />
-      </div>
+      <BloqueProblemas rondas={rondas} umbral={umbral} fechaActual={fechaRondaActual(rondas)} />
     </div>
   );
 };

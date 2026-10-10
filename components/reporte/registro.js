@@ -15,7 +15,7 @@
 import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion } from '../../lib/intencionVoto';
 import { EscenarioRonda, EscenarioComparativo } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
-import { fechaRondaActual } from '../../lib/lecturaRondas';
+import { fechaRondaActual, bloquesNoMedidos } from '../../lib/lecturaRondas';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
 
@@ -111,16 +111,8 @@ export function crearRegistroSecciones(D) {
     return `<div class="rp-evitar">${func ? `<div class="rp-h3">Funcionamiento de instituciones locales</div>${func}` : ''}${mej ? `<div class="rp-h3">Mejoras percibidas</div>${mej}` : ''}</div>`;
   }
 
-  // Estructura sin repetir contenido:
-  //  · Comparativo (A→B, o todas las rondas): resumen de cambios + indicadores + gestión + problemas, UNA vez.
-  //  · Una ronda: foto completa de esa ronda. Si esa ronda ya está dentro del comparativo, no se vuelve a
-  //    mostrar (sus indicadores ya están arriba): solo se agregan los datos que el comparativo no trae
-  //    (funcionamiento de instituciones y mejoras percibidas).
-  function renderEncuestas(ctx, opciones, T) {
-    const { encuesta, heredada, circuito } = encuestaDeContexto(ctx);
-    const rondas = encuesta?.rondas || [];
-    const o = opciones?.encuestas || {};
-    const umbral = ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5;
+  // Qué rondas entran en la sección Encuestas según las opciones del modal (ronda única / comparativo A vs B / evolución).
+  function seleccionEncuestas(rondas, o = {}) {
     const iR = Math.min(Math.max(o.rondaIdx ?? rondas.length - 1, 0), rondas.length - 1);
     const hacerComparativo = !!o.comparativo && rondas.length >= 2;
     const hacerRonda = !!o.ronda || !hacerComparativo;
@@ -135,18 +127,50 @@ export function crearRegistroSecciones(D) {
         rondasComparadas = [rondas[a], rondas[b]];
       }
     }
+    return { iR, hacerComparativo, hacerRonda, rondasComparadas };
+  }
+
+  // Pie de la sección Encuestas: la fecha de la ronda actual y, si algún bloque trae un dato más viejo, cuál.
+  // (Antes se estampaba "Datos al <fecha más reciente>" sobre bloques cuyo dato es de una ronda anterior.)
+  function pieDatosEncuestas(ctx, o) {
+    const rondas = rondasDe(ctx);
+    if (!rondas.length) return null;
+    const s = seleccionEncuestas(rondas, o?.encuestas || {});
+    const mostradas = [...s.rondasComparadas, ...(s.hacerRonda ? [rondas[s.iR]] : [])];
+    const actual = fechaRondaActual(mostradas);
+    const viejos = bloquesNoMedidos(mostradas.length > 1 ? [...new Set(mostradas)] : rondas.filter(r => r.fecha <= actual), actual);
+    return `Ronda actual: ${formatearFecha(actual)}.${viejos.length ? ` Con último dato anterior: ${viejos.map(b => `${b.nombre} (${formatearFecha(b.ultimaFecha)})`).join('; ')}.` : ''}`;
+  }
+
+  // "La ronda actual (01-10-2026) no relevó: A, B. Para esos bloques se muestra el último dato disponible (más
+  // viejo), atenuado y con su fecha." null si la ronda actual midió todo lo que se midió antes.
+  const notaBloquesNoMedidos = (rondasMostradas) => {
+    const actual = fechaRondaActual(rondasMostradas);
+    const faltan = bloquesNoMedidos(rondasMostradas, actual);
+    if (!faltan.length) return '';
+    return `La ronda actual (${formatearFecha(actual)}) no relevó: ${faltan.map(b => `${b.nombre} (último dato ${formatearFecha(b.ultimaFecha)})`).join('; ')}. Para esos bloques se muestra el último dato disponible, atenuado y con su fecha.`;
+  };
+
+  // Estructura sin repetir contenido:
+  //  · Comparativo (A→B, o todas las rondas): resumen de cambios + indicadores + gestión + problemas, UNA vez.
+  //  · Una ronda: foto completa de esa ronda. Si esa ronda ya está dentro del comparativo, no se vuelve a
+  //    mostrar (sus indicadores ya están arriba): solo se agregan los datos que el comparativo no trae
+  //    (funcionamiento de instituciones y mejoras percibidas).
+  function renderEncuestas(ctx, opciones, T) {
+    const { encuesta, heredada, circuito } = encuestaDeContexto(ctx);
+    const rondas = encuesta?.rondas || [];
+    const o = opciones?.encuestas || {};
+    const umbral = ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5;
+    const { iR, hacerComparativo, hacerRonda, rondasComparadas } = seleccionEncuestas(rondas, o);
     const partes = [];
     if (heredada) partes.push(`<div class="rp-aviso" style="color:#0d47a1;background:#e8f1fb;border-color:#b6d0ee"><strong>Encuesta del circuito ${esc(circuito?.CircuitoKey)} — ${esc(circuito?.cirn_nom || '')}.</strong> Las encuestas se relevan por circuito, no por barrio: estos datos corresponden al circuito al que pertenece ${esc(ctx.nombreBarrio)}.</div>`);
     const involucradas = [...rondasComparadas, ...(hacerRonda ? [rondas[iR]] : [])];
     partes.push(avisoMuestra([...new Set(involucradas)]));
-    // Las rondas más nuevas pueden no repetir todas las preguntas: se avisa cuáles faltan en la última
-    // ronda comparada, porque para esas el comparativo usa la última ronda que sí las tiene (la fecha
-    // figura en cada tarjeta).
+    // Las rondas más nuevas pueden no repetir todas las preguntas: el aviso sale de lo que REALMENTE tiene cada
+    // ronda (no de una lista fija) y dice de cuándo es el dato que se muestra en su lugar.
     if (hacerComparativo) {
-      const ultimaComp = rondasComparadas[rondasComparadas.length - 1];
-      const faltan = [['Problemas principales', 'problemas principales'], ['Aprobación Intendente', 'aprobación del Intendente'], ['Gestión del Intendente', 'gestión del Intendente'], ['Reelección Llaryora', 'reelección']]
-        .filter(([k]) => !ultimaComp.preguntas?.[k]).map(([, n]) => n);
-      if (faltan.length) partes.push(`<p class="rp-nota">La ronda del ${formatearFecha(ultimaComp.fecha)} no incluyó: ${faltan.join(', ')}. Para esas preguntas se compara contra la última ronda que sí las tiene (la fecha figura en cada tarjeta).</p>`);
+      const aviso = notaBloquesNoMedidos(rondasComparadas);
+      if (aviso) partes.push(`<p class="rp-nota">${aviso}</p>`);
     }
 
     if (hacerComparativo) {
@@ -441,6 +465,7 @@ const nn = notaNumeracion([R.fecha], meta, formatearFecha);
       },
       render: (ctx, o, T) => ctx.tipo === 'capital' ? renderEncuestasCapital(ctx) : renderEncuestas(ctx, o, T),
       ultimoDato: (ctx) => ctx.tipo === 'capital' ? maxFecha(Object.values(ctx.encuestasData || {}).flatMap(e => (e.rondas || []).map(r => r.fecha))) : maxFecha(rondasDe(ctx).map(r => r.fecha)),
+      datosAl: (ctx, o) => ctx.tipo === 'capital' ? undefined : pieDatosEncuestas(ctx, o),
       paginas: (ctx, o) => {
         if (ctx.tipo === 'capital') return 3;
         const e = o?.encuestas || {};
