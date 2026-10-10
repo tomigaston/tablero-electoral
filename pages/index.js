@@ -579,7 +579,7 @@ const SolapaResumen = ({ circuito, datos, padronTotal, encuestasData }) => {
                 <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{cobertura.cantidad_rondas} ronda{cobertura.cantidad_rondas !== 1 ? 's' : ''}</div>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {(cobertura.fechas_rondas || []).map((f, i) => (
-                    <span key={i} style={{ fontSize: '12px', padding: '5px 12px', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontWeight: 500 }}>{f}</span>
+                    <span key={i} style={{ fontSize: '12px', padding: '5px 12px', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', fontWeight: 500 }}>{formatearFecha(f)}</span>
                   ))}
                 </div>
               </div>
@@ -1885,12 +1885,12 @@ function calcularFilasProblemasComparativo(rondas, umbral) {
 // poder rotular de dónde sale cada número. "Más mencionados" = el % de vecinos que
 // nombra el problema subió; "menos mencionados" = bajó.
 function calcularResumenVariacionesProblemas(rondas, umbral) {
-  const vacio = { suben: [], bajan: [], fechaAnterior: null, fechaActual: null };
+  const vacio = { suben: [], bajan: [], fechaAnterior: null, fechaActual: null, sinRondasComparables: false };
   // Solo cuentan las rondas que traen la pregunta: las rondas más nuevas (ej. 01/10)
   // no la incluyen, y comparar contra una ronda sin dato diría "sin variaciones" sin
   // que sea cierto.
   const conProblemas = rondas.filter(r => r.preguntas?.['Problemas principales']);
-  if (conProblemas.length < 2) return vacio;
+  if (conProblemas.length < 2) return { ...vacio, sinRondasComparables: true };
   const anterior = conProblemas[conProblemas.length - 2], ultima = conProblemas[conProblemas.length - 1];
   const probActual = ultima.preguntas['Problemas principales'];
   const probAnterior = anterior.preguntas['Problemas principales'];
@@ -1962,9 +1962,9 @@ function htmlTablaProblemasPlano(rondas, umbral) {
 }
 
 function htmlResumenVariacionesPlano(rondas, umbral) {
-  const { suben, bajan, fechaAnterior, fechaActual } = calcularResumenVariacionesProblemas(rondas, umbral);
+  const { suben, bajan, fechaAnterior, fechaActual, sinRondasComparables } = calcularResumenVariacionesProblemas(rondas, umbral);
   if (suben.length === 0 && bajan.length === 0) {
-    return `<div style="font-size:12px;color:#999;margin-bottom:16px">Sin variaciones significativas (≥${umbral}pp) entre rondas.</div>`;
+    return `<div style="font-size:12px;color:#999;margin-bottom:16px">${sinRondasComparables ? 'No hay dos rondas con la pregunta de problemas para comparar.' : `Sin variaciones significativas (≥${umbral}pp) entre rondas.`}</div>`;
   }
   const fila = (v, color) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px;font-weight:500;color:#1a1a1a"><span>${etiquetaProblema(v.cat)}</span><span style="white-space:nowrap;color:${color};font-weight:600">${v.anterior.toFixed(1)}% → ${v.actual.toFixed(1)}% (${v.delta > 0 ? '+' : ''}${v.delta.toFixed(1)} pp)</span></div>`;
   const grupo = (titulo, items, color) => items.length === 0 ? '' : `<div style="margin-bottom:8px"><div style="font-size:13px;font-weight:700;color:${color};margin-bottom:2px">${titulo}</div>${items.map(v => fila(v, color)).join('')}</div>`;
@@ -2209,9 +2209,9 @@ const GrupoCambiosProblemas = ({ titulo, items, color }) => items.length === 0 ?
 );
 
 const ResumenVariacionesComparativo = ({ rondas, umbral }) => {
-  const { suben, bajan, fechaAnterior, fechaActual } = calcularResumenVariacionesProblemas(rondas, umbral);
+  const { suben, bajan, fechaAnterior, fechaActual, sinRondasComparables } = calcularResumenVariacionesProblemas(rondas, umbral);
   if (suben.length === 0 && bajan.length === 0) {
-    return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '22px' }}>Sin variaciones significativas (≥{umbral}pp) entre rondas.</div>;
+    return <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '22px' }}>{sinRondasComparables ? 'No hay dos rondas con la pregunta de problemas para comparar.' : `Sin variaciones significativas (≥${umbral}pp) entre rondas.`}</div>;
   }
   return (
     <div style={{ marginBottom: '24px' }}>
