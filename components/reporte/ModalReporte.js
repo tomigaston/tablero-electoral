@@ -1,0 +1,178 @@
+import { useState, useEffect, useMemo } from 'react';
+import { GRUPOS_REPORTE } from './registro';
+
+// Modal "Generar reporte". Muestra las secciones del registro agrupadas, deshabilita (con
+// motivo) las que no aplican al territorio actual, y arma la selección + opciones de
+// Encuestas. El orden del PDF lo decide el registro, no el orden de tildado.
+const CLAVE_STORAGE = 'tablero.reporte.v2';
+const OPC_ENC_DEFAULT = { ronda: true, comparativo: false, todas: false };
+
+const estiloLink = { background: 'none', border: 'none', color: '#1976D2', cursor: 'pointer', padding: 0, fontSize: '12px' };
+const estiloSelect = { padding: '5px 8px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '12px', backgroundColor: '#fff', maxWidth: '100%' };
+
+export default function ModalReporte({ isOpen, ctx, registro, tituloContexto, rondas, formatearFecha, useFocusTrap, onGenerar, onCancelar }) {
+  const overlayRef = useFocusTrap(isOpen);
+  const disponibilidad = useMemo(() => Object.fromEntries(registro.map(s => [s.id, s.disponible(ctx)])), [registro, ctx]);
+  const idsDisponibles = useMemo(() => registro.filter(s => disponibilidad[s.id].ok).map(s => s.id), [registro, disponibilidad]);
+  // Clave estable del territorio: el efecto de restauración corre al abrir o al cambiar de
+  // territorio, no en cada render (ctx se reconstruye con los datos del tablero).
+  const claveCtx = `${ctx.tipo}|${ctx.datosCircuito?.CircuitoKey || ''}|${ctx.nombreBarrio || ''}`;
+  const [ids, setIds] = useState(() => new Set());
+  const [enc, setEnc] = useState({ ...OPC_ENC_DEFAULT, rondaIdx: 0, a: 0, b: 1 });
+  const [generando, setGenerando] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Al abrir: restaurar la última selección (con try/catch: localStorage puede no estar disponible).
+  useEffect(() => {
+    if (!isOpen) return;
+    setGenerando(false); setError(null);
+    let guardado = null;
+    try { guardado = JSON.parse(localStorage.getItem(CLAVE_STORAGE) || 'null'); } catch (e) { /* sin storage */ }
+    const base = Array.isArray(guardado?.ids) ? guardado.ids.filter(id => idsDisponibles.includes(id)) : idsDisponibles;
+    setIds(new Set(base.length || !guardado ? base : idsDisponibles));
+    const g = guardado?.enc || {};
+    const n = rondas.length;
+    setEnc({
+      ronda: g.ronda ?? OPC_ENC_DEFAULT.ronda, comparativo: (g.comparativo ?? false) && n >= 2, todas: (g.todas ?? false) && n >= 3,
+      rondaIdx: Math.max(n - 1, 0), a: Math.max(n - 2, 0), b: Math.max(n - 1, 0),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, claveCtx]);
+
+  const seleccionOrdenada = registro.filter(s => ids.has(s.id) && disponibilidad[s.id].ok);
+  const opciones = { encuestas: enc };
+  const paginas = Math.max(1, Math.ceil(seleccionOrdenada.reduce((acc, s) => acc + (s.paginas ? s.paginas(ctx, opciones) : 1), 0)));
+
+  if (!isOpen) return null;
+  const toggle = (id) => setIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const setE = (patch) => setEnc(prev => {
+    const n = { ...prev, ...patch };
+    if (!n.ronda && !n.comparativo) n.ronda = true; // siempre queda al menos una vista de encuestas
+    return n;
+  });
+
+  const descargar = async () => {
+    if (seleccionOrdenada.length === 0) return;
+    try { localStorage.setItem(CLAVE_STORAGE, JSON.stringify({ ids: seleccionOrdenada.map(s => s.id), enc: { ronda: enc.ronda, comparativo: enc.comparativo, todas: enc.todas } })); } catch (e) { /* ignorar */ }
+    setGenerando(true); setError(null);
+    try {
+      await onGenerar({ ids: seleccionOrdenada.map(s => s.id), opciones: { encuestas: { ronda: enc.ronda, rondaIdx: enc.rondaIdx, comparativo: enc.comparativo, todas: enc.todas, a: enc.a, b: enc.b } } });
+    } catch (e) {
+      setError('No se pudo generar el reporte. Probá de nuevo o desactivá alguna sección.');
+      console.error('Reporte:', e);
+    } finally { setGenerando(false); }
+  };
+
+  const optRonda = (r, i) => <option key={i} value={i}>{formatearFecha(r.fecha)}{r.casos != null ? ` · n=${r.casos}` : ''}</option>;
+  const comparaRondaElegida = enc.comparativo && enc.ronda && (enc.todas || enc.rondaIdx === enc.a || enc.rondaIdx === enc.b);
+
+  const subOpcionesEncuestas = (
+    <div style={{ margin: '4px 14px 12px 38px', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
+          <input type="checkbox" checked={enc.ronda} disabled={enc.ronda && !enc.comparativo} onChange={(e) => setE({ ronda: e.target.checked })} />
+          Una ronda
+        </label>
+        {enc.ronda && (
+          <div style={{ marginLeft: '24px', marginTop: '6px' }}>
+            <select value={enc.rondaIdx} onChange={(e) => setE({ rondaIdx: Number(e.target.value) })} style={estiloSelect} aria-label="Ronda">
+              {rondas.map(optRonda)}
+            </select>
+          </div>
+        )}
+      </div>
+      <div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: rondas.length >= 2 ? 'pointer' : 'not-allowed', color: rondas.length >= 2 ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>
+          <input type="checkbox" checked={enc.comparativo} disabled={rondas.length < 2 || (enc.comparativo && !enc.ronda)} onChange={(e) => setE({ comparativo: e.target.checked })} />
+          Comparativo entre rondas
+        </label>
+        {rondas.length < 2 && <div style={{ marginLeft: '24px', fontSize: '11px', color: 'var(--text-tertiary)' }}>Este territorio tiene una sola ronda: no hay con qué comparar.</div>}
+        {enc.comparativo && (
+          <div style={{ marginLeft: '24px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {rondas.length >= 3 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px' }}>
+                <label style={{ display: 'flex', gap: '6px', alignItems: 'center', cursor: 'pointer' }}><input type="radio" name="modoComp" checked={!enc.todas} onChange={() => setE({ todas: false })} /> Dos rondas puntuales</label>
+                <label style={{ display: 'flex', gap: '6px', alignItems: 'center', cursor: 'pointer' }}><input type="radio" name="modoComp" checked={enc.todas} onChange={() => setE({ todas: true })} /> Evolución de todas las rondas ({rondas.length})</label>
+              </div>
+            )}
+            {!enc.todas && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '12px' }}>
+                <select value={enc.a} onChange={(e) => { const a = Number(e.target.value); setE({ a, b: enc.b > a ? enc.b : Math.min(a + 1, rondas.length - 1) }); }} style={estiloSelect} aria-label="Ronda A">
+                  {rondas.slice(0, -1).map(optRonda)}
+                </select>
+                <span>vs</span>
+                <select value={enc.b} onChange={(e) => setE({ b: Number(e.target.value) })} style={estiloSelect} aria-label="Ronda B">
+                  {rondas.map((r, i) => i > enc.a ? optRonda(r, i) : null)}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {comparaRondaElegida && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>La ronda elegida ya está en el comparativo: no se repite. Solo se suman sus datos de funcionamiento institucional y mejoras percibidas, si los hay.</div>}
+    </div>
+  );
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
+      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '22px 24px', maxWidth: '620px', width: '100%', maxHeight: '90vh', overflow: 'hidden', margin: '12px', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+        <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Generar reporte</h2>
+        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>Reporte para: <strong style={{ color: 'var(--text-primary)' }}>{tituloContexto}</strong></p>
+
+        <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '8px' }}>
+          <button onClick={() => setIds(new Set(idsDisponibles))} style={estiloLink}>Seleccionar todo</button>
+          <button onClick={() => setIds(new Set())} style={estiloLink}>Ninguno</button>
+          <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--text-secondary)' }}>{seleccionOrdenada.length} {seleccionOrdenada.length === 1 ? 'sección seleccionada' : 'secciones seleccionadas'}</span>
+        </div>
+
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {GRUPOS_REPORTE.map(grupo => {
+            const items = registro.filter(s => s.grupo === grupo);
+            if (!items.length) return null;
+            return (
+              <div key={grupo}>
+                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>{grupo}</div>
+                <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
+                  {items.map((s, i) => {
+                    const disp = disponibilidad[s.id];
+                    const marcado = ids.has(s.id) && disp.ok;
+                    return (
+                      <div key={s.id} data-seccion={s.id} style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none', backgroundColor: disp.ok ? 'var(--bg-primary)' : 'var(--bg-secondary)' }}>
+                        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 14px', fontSize: '14px', cursor: disp.ok ? 'pointer' : 'not-allowed' }}>
+                          <input type="checkbox" style={{ marginTop: '3px' }} checked={marcado} disabled={!disp.ok} onChange={() => toggle(s.id)} />
+                          <span style={{ flex: 1, color: disp.ok ? 'var(--text-primary)' : 'var(--text-tertiary)' }}>
+                            {s.label}
+                            <span style={{ display: 'block', fontSize: '12px', color: 'var(--text-tertiary)' }}>{disp.ok ? s.descripcion : disp.motivo}</span>
+                          </span>
+                        </label>
+                        {s.tieneOpciones && marcado && ctx.tipo !== 'capital' && subOpcionesEncuestas}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {seleccionOrdenada.length > 0 && (
+          <div style={{ marginTop: '14px', padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>Vista previa · ≈ {paginas} {paginas === 1 ? 'página' : 'páginas'} A4</div>
+            <ol style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+              {seleccionOrdenada.map(s => <li key={s.id}>{s.label}</li>)}
+            </ol>
+          </div>
+        )}
+
+        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '10px' }}>Formato A4 vertical. Se abre la ventana de impresión: elegí “Guardar como PDF”. Los mapas no se incluyen en esta versión. Las secciones salen en el orden de esta lista, no en el que las tildes.</p>
+        {error && <p role="alert" style={{ fontSize: '12px', color: '#C62828', marginTop: '6px' }}>{error}</p>}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
+          <button onClick={onCancelar} style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-secondary)' }}>Cancelar</button>
+          <button onClick={descargar} disabled={seleccionOrdenada.length === 0 || generando} style={{ padding: '9px 16px', borderRadius: '8px', border: 'none', backgroundColor: seleccionOrdenada.length === 0 || generando ? '#B0BEC5' : '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: seleccionOrdenada.length === 0 || generando ? 'not-allowed' : 'pointer' }}>{generando ? 'Generando…' : '📄 Descargar PDF'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}

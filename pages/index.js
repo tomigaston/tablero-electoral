@@ -5,6 +5,10 @@ import * as topojson from 'topojson-client';
 import { obrasCercanasABarrio, obrasCercanasACircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre, enriquecerObrasConCircuito, obrasCercanasAObra } from '../lib/obrasCercanas';
 import { formatearFecha } from '../lib/formatearFecha';
 import { descargarExcelEventos } from '../lib/exportarEventosExcel';
+import ModalReporte from '../components/reporte/ModalReporte';
+import { crearRegistroSecciones, infoEncuestasContexto } from '../components/reporte/registro';
+import { generarReporteHTML } from '../components/reporte/generar';
+import { estilosReporte } from '../components/reporte/estilos';
 import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
 
 const MapaCircuitos = dynamic(() => import('../components/MapaCircuitos'), { 
@@ -3662,58 +3666,6 @@ const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBa
   );
 };
 
-// Modal "Generar reporte": checkboxes por sección (registro SECCIONES_REPORTE), contexto
-// actual (circuito/barrio/Capital) y descarga. La última selección se recuerda en
-// localStorage (con try/catch: puede estar bloqueado o vacío).
-const ModalReporte = ({ isOpen, contextoTitulo, onGenerar, onCancelar }) => {
-  const overlayRef = useFocusTrap(isOpen);
-  const [seleccion, setSeleccion] = useState(() => new Set(SECCIONES_REPORTE.map(s => s.id)));
-  const [generando, setGenerando] = useState(false);
-  useEffect(() => {
-    if (!isOpen) return;
-    setGenerando(false);
-    try {
-      const guardado = JSON.parse(localStorage.getItem(CLAVE_STORAGE_REPORTE) || 'null');
-      if (Array.isArray(guardado)) setSeleccion(new Set(guardado.filter(id => SECCIONES_REPORTE.some(s => s.id === id))));
-    } catch (e) { /* sin localStorage: queda todo tildado */ }
-  }, [isOpen]);
-  if (!isOpen) return null;
-  const toggle = (id) => setSeleccion(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const descargar = () => {
-    const ids = SECCIONES_REPORTE.filter(s => seleccion.has(s.id)).map(s => s.id);
-    if (ids.length === 0) return;
-    try { localStorage.setItem(CLAVE_STORAGE_REPORTE, JSON.stringify(ids)); } catch (e) { /* ignorar */ }
-    setGenerando(true);
-    // Un tick para que el estado "Generando…" llegue a pantalla antes del trabajo pesado.
-    setTimeout(() => { try { onGenerar(ids); } finally { setGenerando(false); } }, 50);
-  };
-  return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }} onClick={onCancelar}>
-      <div ref={overlayRef} tabIndex={-1} role="dialog" aria-modal="true" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', maxWidth: '460px', width: '100%', maxHeight: '84vh', overflowY: 'auto', margin: '16px' }} onClick={e => e.stopPropagation()}>
-        <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)' }}>Generar reporte</h2>
-        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>Reporte para: <strong style={{ color: 'var(--text-primary)' }}>{contextoTitulo}</strong></p>
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '8px', fontSize: '12px' }}>
-          <button onClick={() => setSeleccion(new Set(SECCIONES_REPORTE.map(s => s.id)))} style={{ background: 'none', border: 'none', color: '#1976D2', cursor: 'pointer', padding: 0, fontSize: '12px' }}>Seleccionar todo</button>
-          <button onClick={() => setSeleccion(new Set())} style={{ background: 'none', border: 'none', color: '#1976D2', cursor: 'pointer', padding: 0, fontSize: '12px' }}>Ninguno</button>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
-          {SECCIONES_REPORTE.map((s, i) => (
-            <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', fontSize: '14px', cursor: 'pointer', backgroundColor: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)' }}>
-              <input type="checkbox" checked={seleccion.has(s.id)} onChange={() => toggle(s.id)} />
-              <span style={{ flex: 1, color: 'var(--text-primary)' }}>{s.label} <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>· {s.descripcion}</span></span>
-            </label>
-          ))}
-        </div>
-        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '10px' }}>Formato A4 vertical. Se abre la ventana de impresión: elegí “Guardar como PDF”. Los mapas no se incluyen en esta versión.</p>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '18px' }}>
-          <button onClick={onCancelar} style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '13px', cursor: 'pointer', color: 'var(--text-secondary)' }}>Cancelar</button>
-          <button onClick={descargar} disabled={seleccion.size === 0 || generando} style={{ padding: '9px 16px', borderRadius: '8px', border: 'none', backgroundColor: seleccion.size === 0 || generando ? '#B0BEC5' : '#1976D2', color: '#fff', fontSize: '13px', fontWeight: 500, cursor: seleccion.size === 0 || generando ? 'not-allowed' : 'pointer' }}>{generando ? 'Generando…' : '📄 Descargar PDF'}</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const PanelMiniCircuito = ({ datos, padronTotal, onVerFicha, cruceData, barriosGeoLookup, barrioSeleccionado, onSelectBarrio, encuestasData, obrasEnriquecidas, circuitosGeoJsonData }) => {
   if (!datos) {
     return <div style={{ padding: '16px 4px', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>Hacé click en un circuito del mapa para ver su resumen.</div>;
@@ -4783,196 +4735,6 @@ function abrirVentanaImpresion(html) {
   setTimeout(() => ventana.print(), 500);
 }
 
-// ============================================
-// REPORTE PERSONALIZABLE (botón "Generar reporte" del header)
-// Mismo mecanismo que "Exportar ficha": documento HTML autónomo + window.print() con
-// @page A4 vertical (cada capa con su propio salto de página). Se eligió esto antes que
-// una librería de PDF (jsPDF/html2canvas) o un render server-side porque ya está
-// probado en el tablero, no suma dependencias, y el navegador pagina bien tablas
-// (thead repetido, filas sin cortar). Los mapas Leaflet quedan afuera de esta versión:
-// son tiles externos + canvas, y imprimirlos de forma confiable exige capturar el mapa
-// como imagen (dependencia extra y problemas de CORS con los tiles).
-//
-// Para sumar una sección: agregar un objeto a SECCIONES_REPORTE (id, label, descripcion,
-// html(ctx)). El modal y el armado del PDF la toman solos — no hay que tocar nada más.
-// ctx = { tipo: 'capital'|'circuito'|'barrio', datosCircuito, nombreBarrio, ...datasets }
-// ============================================
-const CLAVE_STORAGE_REPORTE = 'tablero.reporte.secciones';
-
-const nota = (txt) => `<p style="color:#999;font-size:12px">${txt}</p>`;
-const maxFecha = (fechas) => fechas.filter(Boolean).reduce((m, f) => (!m || f > m ? f : m), null);
-
-// --- Visitas ---
-function visitasUnicasCapital(recorridosLookup, barriosGeoLookup) {
-  const vistos = new Map();
-  Object.entries(recorridosLookup || {}).forEach(([key, r]) => (r.visitas || []).forEach(v => {
-    const id = v.id ?? `${v.fecha}|${v.info}`;
-    if (!vistos.has(id)) vistos.set(id, { ...v, _barrio: barriosGeoLookup?.[key]?.nombre_barrio || key });
-  }));
-  return [...vistos.values()].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
-}
-function htmlVisitasCapitalPDF({ recorridosLookup, barriosGeoLookup }) {
-  const visitas = visitasUnicasCapital(recorridosLookup, barriosGeoLookup);
-  if (visitas.length === 0) return nota('Sin visitas registradas.');
-  const porTipo = {};
-  visitas.forEach(v => { const t = v.tipo_visita || 'Sin tipo'; porTipo[t] = (porTipo[t] || 0) + 1; });
-  const barriosConVisita = new Set(visitas.map(v => v._barrio)).size;
-  const recientes = visitas.slice(0, 25);
-  return `
-    <div class="metrics" style="grid-template-columns:repeat(3,1fr)">
-      <div class="metric"><div class="metric-label">Visitas registradas</div><div class="metric-value">${visitas.length}</div></div>
-      <div class="metric"><div class="metric-label">Barrios visitados</div><div class="metric-value">${barriosConVisita}</div></div>
-      <div class="metric"><div class="metric-label">Última visita</div><div class="metric-value" style="font-size:16px">${formatearFecha(visitas[0].fecha)}</div></div>
-    </div>
-    <div class="mini-title">Visitas por tipo</div>
-    <table><thead><tr><th>Tipo</th><th class="text-right">Cantidad</th></tr></thead><tbody>${Object.entries(porTipo).sort((a, b) => b[1] - a[1]).map(([t, n]) => `<tr><td>${t}</td><td class="text-right">${n}</td></tr>`).join('')}</tbody></table>
-    <div class="mini-title">Últimas ${recientes.length} visitas</div>
-    <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Barrio</th><th>Detalle</th></tr></thead><tbody>${recientes.map(v => `<tr><td style="white-space:nowrap">${formatearFecha(v.fecha)}</td><td>${v.tipo_visita || '—'}</td><td>${v._barrio}</td><td>${v.info || '—'}</td></tr>`).join('')}</tbody></table>`;
-}
-
-// --- Encuestas ---
-function htmlEncuestaContextoPDF(encuesta, umbral, aclaracion) {
-  if (!encuesta || !(encuesta.cantidad_rondas > 0)) return nota('Sin encuesta relevada.');
-  const ultima = htmlEncuestasPDF(encuesta);
-  const comparativo = encuesta.rondas.length >= 2 ? htmlEncuestasComparativoPDF(encuesta, umbral) : '';
-  return `${aclaracion ? nota(aclaracion) : ''}${ultima}${comparativo ? `<div class="page-break">${comparativo}</div>` : ''}`;
-}
-function htmlEncuestasCapitalPDF({ datos, encuestasData }) {
-  const filas = (datos || []).map(d => ({ d, enc: buscarEncuestaCircuito(encuestasData, d.CircuitoKey) }))
-    .filter(f => f.enc && f.enc.rondas?.length)
-    .sort((a, b) => compararMapkey(a.d.CircuitoKey, b.d.CircuitoKey));
-  if (filas.length === 0) return nota('Sin encuestas relevadas.');
-  const ultimaDe = (rondas, pregunta, cat) => { for (let i = rondas.length - 1; i >= 0; i--) { const v = rondas[i].preguntas?.[pregunta]?.[cat]; if (v != null) return v; } return null; };
-  const pct = (v) => v != null ? `${v.toFixed(1)}%` : '—';
-  return `
-    <p style="font-size:12px;color:#666;margin-bottom:10px">${filas.length} de ${datos.length} circuitos con encuesta. Se muestra, por circuito, la última ronda y el último dato disponible de cada indicador.</p>
-    <table><thead><tr><th>Circuito</th><th>Última ronda</th><th class="text-right">Respuestas</th><th class="text-right">Rondas</th><th class="text-right">Gestión Gob. (positiva)</th><th class="text-right">Aprobación Gob.</th></tr></thead><tbody>${filas.map(({ d, enc }) => {
-      const ult = enc.rondas[enc.rondas.length - 1];
-      return `<tr><td><strong>${d.CircuitoKey}</strong> ${d.cirn_nom || ''}</td><td style="white-space:nowrap">${formatearFecha(ult.fecha)}</td><td class="text-right">${ult.casos ?? '—'}</td><td class="text-right">${enc.rondas.length}</td><td class="text-right">${pct(ultimaDe(enc.rondas, 'Gestión del Gobernador', 'Positiva'))}</td><td class="text-right">${pct(ultimaDe(enc.rondas, 'Aprobación Gobernador', 'Apruebo'))}</td></tr>`;
-    }).join('')}</tbody></table>`;
-}
-
-// --- Obras ---
-function htmlObrasCapitalPDF({ obrasEnriquecidas }) {
-  const obras = obrasEnriquecidas || [];
-  if (obras.length === 0) return nota('Sin obras registradas.');
-  const contar = (fn) => { const c = {}; obras.forEach(o => { const k = fn(o) || 'Sin dato'; c[k] = (c[k] || 0) + 1; }); return Object.entries(c).sort((a, b) => b[1] - a[1]); };
-  const tabla = (titulo, filas) => `<div class="mini-title">${titulo}</div><table><thead><tr><th>${titulo.replace('Obras por ', '').replace(/^./, c => c.toUpperCase())}</th><th class="text-right">Obras</th><th class="text-right">%</th></tr></thead><tbody>${filas.map(([k, n]) => `<tr><td>${k}</td><td class="text-right">${n}</td><td class="text-right">${((n / obras.length) * 100).toFixed(1)}%</td></tr>`).join('')}</tbody></table>`;
-  return `
-    <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
-      <div class="metric"><div class="metric-label">Obras registradas</div><div class="metric-value">${obras.length}</div></div>
-      <div class="metric"><div class="metric-label">Con ubicación en el mapa</div><div class="metric-value">${obras.filter(o => o.lat != null && o.lon != null).length}</div></div>
-    </div>
-    ${tabla('Obras por estado', contar(o => o.estado))}
-    ${tabla('Obras por repartición', contar(o => o.reparticion))}
-    ${tabla('Obras por tipo', contar(o => o.tipo_obra).slice(0, 12))}`;
-}
-
-// --- Pauta ---
-function todasLasPautas(pautasBarriosData) {
-  const p = pautasBarriosData || {};
-  const lista = [];
-  Object.values(p.barrios || {}).forEach(b => lista.push(...(b.pautas || [])));
-  Object.values(p.circuitos_sin_barrio || {}).forEach(c => lista.push(...(c.pautas || [])));
-  lista.push(...(p.toda_capital?.pautas || []));
-  return lista;
-}
-function htmlPautaCapitalPDF({ pautasBarriosData }) {
-  const pautas = todasLasPautas(pautasBarriosData);
-  if (pautas.length === 0) return nota('Sin pauta registrada.');
-  const activas = pautas.filter(p => estadoMostradoPauta(p) === 'ACTIVO');
-  const porPlataforma = {};
-  pautas.forEach(p => { const k = p.plataforma || 'Sin dato'; porPlataforma[k] = (porPlataforma[k] || 0) + 1; });
-  return `
-    <div class="metrics" style="grid-template-columns:repeat(3,1fr)">
-      <div class="metric"><div class="metric-label">Piezas registradas</div><div class="metric-value">${pautas.length}</div></div>
-      <div class="metric"><div class="metric-label">Activas hoy</div><div class="metric-value">${activas.length}</div></div>
-      <div class="metric"><div class="metric-label">Alcance toda Capital</div><div class="metric-value">${pautasBarriosData?.toda_capital?.total_pautas ?? 0}</div><div class="metric-sub">piezas sin barrio ni circuito</div></div>
-    </div>
-    <div class="mini-title">Piezas por plataforma</div>
-    <table><thead><tr><th>Plataforma</th><th class="text-right">Piezas</th></tr></thead><tbody>${Object.entries(porPlataforma).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<tr><td>${k}</td><td class="text-right">${n}</td></tr>`).join('')}</tbody></table>
-    <div class="mini-title">Pauta de alcance a toda la Capital</div>
-    ${htmlPautaPDF(pautasBarriosData?.toda_capital?.pautas || [])}`;
-}
-
-// Registro único de secciones. html(ctx) devuelve el cuerpo (el título lo pone el armado).
-const SECCIONES_REPORTE = [
-  {
-    id: 'visitas', label: 'Visitas', descripcion: 'Recorridos del Gobernador',
-    html: (ctx) => ctx.tipo === 'barrio' ? `<h3>Visitas del Gobernador</h3>${htmlVisitasPDF(unificarVisitasPDF(ctx.recorridosLookup?.[normalizarNombreBarrio(ctx.nombreBarrio)]?.visitas || [], []))}`
-      : ctx.tipo === 'circuito' ? `<h3>Visitas del Gobernador</h3>${htmlVisitasCircuitoPDF(visitasCircuitoPDF(ctx.datosCircuito, ctx.cruceData, ctx.recorridosLookup, ctx.barriosGeoLookup))}`
-      : htmlVisitasCapitalPDF(ctx),
-    ultimoDato: (ctx) => maxFecha(Object.values(ctx.recorridosLookup || {}).flatMap(r => (r.visitas || []).map(v => v.fecha))),
-  },
-  {
-    id: 'encuestas', label: 'Encuestas', descripcion: 'Resumen y comparativo entre rondas',
-    html: (ctx) => {
-      const umbral = ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5;
-      if (ctx.tipo === 'circuito') return htmlEncuestaContextoPDF(buscarEncuestaCircuito(ctx.encuestasData, ctx.datosCircuito.CircuitoKey), umbral);
-      if (ctx.tipo === 'barrio') {
-        const circ = resolverCircuitoPrincipalDeBarrio(ctx.nombreBarrio, ctx.cruceData, ctx.barriosGeoLookup, ctx.datos);
-        return circ ? htmlEncuestaContextoPDF(buscarEncuestaCircuito(ctx.encuestasData, circ.CircuitoKey), umbral, `Las encuestas se relevan por circuito: se muestra la del circuito ${circ.CircuitoKey}, al que pertenece este barrio.`) : nota('Sin encuesta relevada.');
-      }
-      return htmlEncuestasCapitalPDF(ctx);
-    },
-    ultimoDato: (ctx) => maxFecha(Object.values(ctx.encuestasData || {}).flatMap(e => (e.rondas || []).map(r => r.fecha))),
-  },
-  {
-    id: 'obras', label: 'Obras', descripcion: 'Obras en el territorio',
-    html: (ctx) => ctx.tipo === 'barrio' ? `<h3>Obras en el barrio</h3>${htmlObrasPDF((ctx.obrasEnriquecidas || []).filter(o => normalizarNombreBarrio(o.barrio) === normalizarNombreBarrio(ctx.nombreBarrio)))}`
-      : ctx.tipo === 'circuito' ? `<h3>Obras en el circuito</h3>${htmlObrasPDF((ctx.obrasEnriquecidas || []).filter(o => o._circuitoMapkey === ctx.datosCircuito.Mapkey))}`
-      : htmlObrasCapitalPDF(ctx),
-    ultimoDato: (ctx) => maxFecha((ctx.obrasEnriquecidas || []).map(o => o.fecha_relevamiento)),
-  },
-  {
-    id: 'pauta', label: 'Pauta', descripcion: 'Pauta publicitaria',
-    html: (ctx) => ctx.tipo === 'barrio' ? `<h3>Pauta publicitaria</h3>${htmlPautaPDF(obtenerPautasDeBarrio(ctx.pautasBarriosData, ctx.nombreBarrio))}`
-      : ctx.tipo === 'circuito' ? `<h3>Pauta publicitaria</h3>${htmlPautaCircuitoPDF(pautaCircuitoPDF(ctx.datosCircuito, ctx.cruceData, ctx.pautasBarriosData, ctx.barriosGeoLookup))}`
-      : htmlPautaCapitalPDF(ctx),
-    ultimoDato: (ctx) => maxFecha(todasLasPautas(ctx.pautasBarriosData).map(p => p.inicio)),
-  },
-];
-
-const tituloContextoReporte = (ctx) => ctx.tipo === 'barrio' ? `Barrio ${ctx.nombreBarrio}` : ctx.tipo === 'circuito' ? `Circuito ${ctx.datosCircuito.CircuitoKey} — ${ctx.datosCircuito.cirn_nom || ''}` : 'Córdoba Capital';
-
-function estilosReportePDF() {
-  return `${estilosFichaPDF()}
-@page{size:A4 portrait;margin:14mm}
-body{padding:0;max-width:none}
-.portada{border-bottom:3px solid #1976D2;padding-bottom:16px;margin-bottom:20px}
-.portada h1{font-size:26px;font-weight:700}
-.portada h2{font-size:16px;font-weight:400;color:#666;margin-top:6px}
-.reporte-seccion h2{font-size:20px;font-weight:700;border-bottom:2px solid #1976D2;padding-bottom:6px;margin-bottom:16px}
-.reporte-seccion{page-break-before:always}
-thead{display:table-header-group}
-tr,.metric,.comp-box{break-inside:avoid;page-break-inside:avoid}
-h2,h3,h4,.mini-title,.subheader{break-after:avoid;page-break-after:avoid}
-.fuentes td,.fuentes th{font-size:11px;padding:6px 8px}
-@media print{body{padding:0} .reporte-seccion{page-break-before:always}}
-`;
-}
-
-function generarReporteHTML(ctx, idsSecciones) {
-  const secciones = SECCIONES_REPORTE.filter(s => idsSecciones.includes(s.id));
-  const fuentes = secciones.map(s => `<tr><td>${s.label}</td><td>${(s.ultimoDato && s.ultimoDato(ctx)) ? formatearFecha(s.ultimoDato(ctx)) : 'No informada en los datos'}</td></tr>`).join('');
-  const cuerpo = secciones.map(s => `<div class="reporte-seccion"><h2>${s.label}</h2>${s.html(ctx)}</div>`).join('');
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Reporte — ${tituloContextoReporte(ctx)}</title>
-<style>${estilosReportePDF()}</style></head><body>
-<div class="portada">
-  <h1>Reporte — Diagnóstico Territorial</h1>
-  <h2>${tituloContextoReporte(ctx)}</h2>
-  <p style="font-size:12px;color:#999;margin-top:8px">Generado el ${formatearFecha(new Date())} · Secciones: ${secciones.map(s => s.label).join(', ')}</p>
-</div>
-<div class="section fuentes">
-  <h3>Fuentes de datos</h3>
-  <table><thead><tr><th>Sección</th><th>Dato más reciente en la capa</th></tr></thead><tbody>${fuentes}</tbody></table>
-  <p style="font-size:10px;color:#999;margin-top:6px">Fecha del dato más reciente cargado en cada capa (última visita, última ronda de encuesta, relevamiento de obras, inicio de pauta más reciente).</p>
-</div>
-${cuerpo}
-<div class="footer">Diagnóstico Territorial - Córdoba Capital │ Generado el ${formatearFecha(new Date())}</div>
-</body></html>`;
-}
-
 // Ficha standalone de UN barrio (cualquiera, no solo el principal de un circuito) —
 // mismas secciones de barrio que ya usa generarFichaPDF embebidas, reutilizadas vía
 // generarSeccionBarrioPDF, sin la parte de circuito completa.
@@ -5208,6 +4970,22 @@ ${barrioPartHtml}
 // ============================================
 // PÁGINA PRINCIPAL
 // ============================================
+// Registro de secciones del reporte imprimible (components/reporte). Se arma acá porque
+// los componentes de la UI que reutiliza viven en este archivo.
+const REGISTRO_REPORTE = crearRegistroSecciones({
+  ui: {
+    SolapaResumen, SolapaEvolucion, SolapaPartidos, SolapaComparativas, SolapaTerritorio, SolapaResumenBarrio,
+    SolapaTerritorioBarrio, SolapaEscuelasBarrio, ResumenEncuesta, ComparativoEncuesta,
+    CabeceraCapital, ResultadosCapital, Badge, COLORES_CATEGORIA,
+  },
+  fn: {
+    formatearFecha, normalizarNombreBarrio, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio,
+    compararMapkey, estadoMostradoPauta, obtenerPautasDeBarrio, unificarVisitasPDF, visitasCircuitoPDF,
+    htmlPautaPDF, htmlPautaCircuitoPDF, pautaCircuitoPDF, htmlObrasPDF, htmlBarraCategoriasPDF, htmlMejoraPDF,
+    formatPct,
+  },
+});
+
 export default function Home() {
   const [circuitoSeleccionado, setCircuitoSeleccionado] = useState(null);
   const [solapaActiva, setSolapaActiva] = useState('resumen');
@@ -5610,14 +5388,27 @@ export default function Home() {
   ];
   
   // Contexto del reporte: barrio abierto en ficha > circuito seleccionado > toda la Capital.
-  const contextoReporte = (() => {
-    const base = { datos, cruceData, barriosGeoLookup, encuestasData, encuestasMetadata, recorridosLookup, pautasBarriosData, obrasEnriquecidas };
-    if (vistaFicha === 'barrio' && barrioSeleccionado) return { ...base, tipo: 'barrio', nombreBarrio: barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)]?.nombre_barrio || barrioSeleccionado };
+  const contextoReporte = useMemo(() => {
+    const base = {
+      datos, cruceData, barrios, partidos, padronTotal, barriosGeoLookup, barriosGeoData, encuestasData, encuestasMetadata,
+      recorridosLookup, pautasBarriosData, obrasEnriquecidas, votosEscuelasCircuitoData, votosEscuelasBarrioLookup,
+      votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito, circuitosGeoJsonData,
+    };
+    if (vistaFicha === 'barrio' && barrioSeleccionado) {
+      const feature = barriosGeoLookup[normalizarNombreBarrio(barrioSeleccionado)];
+      return { ...base, tipo: 'barrio', nombreBarrio: feature?.nombre_barrio || barrioSeleccionado, barrioProps: feature || null };
+    }
     if (circuitoSeleccionado && datosCircuito) return { ...base, tipo: 'circuito', datosCircuito };
     return { ...base, tipo: 'capital' };
-  })();
-  const generarReporte = (ids) => {
-    abrirVentanaImpresion(generarReporteHTML(contextoReporte, ids));
+  }, [datos, cruceData, barrios, partidos, padronTotal, barriosGeoLookup, barriosGeoData, encuestasData, encuestasMetadata, recorridosLookup, pautasBarriosData, obrasEnriquecidas,
+    votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData, poblacionTotalPorBarrio, eventosPorCircuito, circuitosGeoJsonData,
+    vistaFicha, barrioSeleccionado, circuitoSeleccionado, datosCircuito]);
+  const tituloContextoReporte = contextoReporte.tipo === 'barrio' ? `Barrio ${contextoReporte.nombreBarrio}`
+    : contextoReporte.tipo === 'circuito' ? `Circuito ${contextoReporte.datosCircuito.CircuitoKey} — ${contextoReporte.datosCircuito.cirn_nom || ''}` : 'Córdoba Capital';
+  const rondasReporte = useMemo(() => infoEncuestasContexto(contextoReporte, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio), [contextoReporte]);
+  const generarReporte = async (seleccion) => {
+    const html = await generarReporteHTML({ ctx: contextoReporte, seleccion, registro: REGISTRO_REPORTE, tituloContexto: tituloContextoReporte, formatearFecha, estilos: estilosReporte });
+    abrirVentanaImpresion(html);
     setModalReporteAbierto(false);
   };
 
@@ -5733,7 +5524,7 @@ export default function Home() {
           onIrACircuito={irACircuitoDesdeObra}
         />
       )}
-      <ModalReporte isOpen={modalReporteAbierto} contextoTitulo={tituloContextoReporte(contextoReporte)} onGenerar={generarReporte} onCancelar={() => setModalReporteAbierto(false)} />
+      <ModalReporte isOpen={modalReporteAbierto} ctx={contextoReporte} registro={REGISTRO_REPORTE} tituloContexto={tituloContextoReporte} rondas={rondasReporte} formatearFecha={formatearFecha} useFocusTrap={useFocusTrap} onGenerar={generarReporte} onCancelar={() => setModalReporteAbierto(false)} />
       {datosCircuito && (
         <DialogExportFicha
           datosCircuito={datosCircuito}
