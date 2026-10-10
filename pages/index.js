@@ -4790,6 +4790,10 @@ export default function Home() {
   // true si la ficha de barrio abierta se alcanzó desde "Pauta por circuito": habilita el
   // botón "← Pauta por circuito" en su header. Mismo patrón que origenCoberturaPautaCircuito.
   const [origenVistaPauta, setOrigenVistaPauta] = useState(false);
+  // Scroll del panel central: la lista de Pauta por circuito es larga, así que al abrir la
+  // ficha de un barrio se vuelve arriba, y al volver se restaura donde estaba el usuario.
+  const fichaScrollRef = useRef(null);
+  const scrollPautaRef = useRef(0);
   const [zoomBarrioSolicitado, setZoomBarrioSolicitado] = useState(null); // { nombre, ts } | null — pedido puntual de zoom a barrio (buscador)
   const [rondaFechaSolicitada, setRondaFechaSolicitada] = useState(null); // fecha (YYYY-MM-DD) de ronda pedida al hacer click en un evento de Medición (tabla de cobertura), o null = última ronda (default de SolapaEncuestas)
   const [panelTab, setPanelTab] = useState('circuito');
@@ -5135,8 +5139,15 @@ export default function Home() {
   // para ofrecer el botón de vuelta. El flag se fija DESPUÉS de handleSelectBarrio por el
   // mismo motivo que origenCoberturaPautaCircuito.
   const irABarrioDesdePautaCircuito = (nombreBarrio) => {
+    scrollPautaRef.current = fichaScrollRef.current?.scrollTop || 0;
     irABarrioDesdeMapaPauta(nombreBarrio);
     setOrigenVistaPauta(true);
+    setTimeout(() => fichaScrollRef.current?.scrollTo(0, 0), 0);
+  };
+  const volverAPautaCircuito = () => {
+    setOrigenVistaPauta(false);
+    setVistaFicha('pautaCircuito');
+    setTimeout(() => fichaScrollRef.current?.scrollTo(0, scrollPautaRef.current), 60);
   };
 
   // Click en "Ver en solapa Territorio" del popup de estrella de Alcance Capital
@@ -5411,7 +5422,7 @@ export default function Home() {
         <div style={{ display: 'flex', height: 'calc(100vh - 118px)' }}>
           {(vistaFicha === 'circuito' || vistaFicha === 'capital' || vistaFicha === 'barrio' || vistaFicha === 'obras' || vistaFicha === 'pautaCircuito') ? (
             <>
-              <div style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
+              <div ref={fichaScrollRef} style={{ flex: '1', padding: '18px', overflowY: 'auto' }}>
                 {vistaFicha === 'pautaCircuito' ? (
                   <VistaPautaCircuito
                     pautasBarriosData={pautasBarriosData}
@@ -5454,7 +5465,7 @@ export default function Home() {
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>{barrioSeleccionado}</h2>
-                            {origenVistaPauta && <button onClick={() => { setOrigenVistaPauta(false); setVistaFicha('pautaCircuito'); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid #1976D2', backgroundColor: 'transparent', fontSize: '12px', fontWeight: 600, color: '#1976D2', cursor: 'pointer' }}>← Pauta por circuito</button>}
+                            {origenVistaPauta && <button onClick={volverAPautaCircuito} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid #1976D2', backgroundColor: 'transparent', fontSize: '12px', fontWeight: 600, color: '#1976D2', cursor: 'pointer' }}>← Pauta por circuito</button>}
                             <button onClick={() => { setBarrioSeleccionado(null); setVistaFicha(null); }} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕ Cerrar</button>
                             <button onClick={() => setVistaFicha(null)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>← Volver al mapa</button>
                           </div>
