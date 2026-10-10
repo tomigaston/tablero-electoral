@@ -5162,7 +5162,9 @@ export default function Home() {
     const barrios = (barriosGeoData?.features || [])
       .filter(f => f.properties?.nombre_barrio?.toLowerCase().includes(lower))
       .slice(0, 8)
-      .map(f => ({ tipo: 'barrio', key: `b-${f.properties.nombre_barrio}`, nombreBarrio: f.properties.nombre_barrio }));
+      // barrios_geo.json trae un feature por fragmento: un mismo barrio puede repetirse (ej. VILLA EL LIBERTADOR).
+      // La key incluye la posición en la lista para que sea única; el resultado en pantalla no cambia.
+      .map((f, i) => ({ tipo: 'barrio', key: `b-${i}-${f.properties.nombre_barrio}`, nombreBarrio: f.properties.nombre_barrio }));
     return [...circuitos, ...barrios];
   }, [datos, barriosGeoData, busqueda]);
   const padronTotal = useMemo(() => datos.reduce((sum, d) => sum + (d.Padron_G23 || 0), 0), [datos]);
