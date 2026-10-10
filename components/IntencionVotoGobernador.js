@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import {
   escenariosDeEncuesta, ordenarFilas, punteroYDiferencia, variacion, alinearComparativo, escenariosEnAmbas,
-  nombreCandidato, tipoCandidato, UMBRAL_MUESTRA_REDUCIDA, NOTA_SIN_CONNOTACION,
+  nombreCandidato, tipoCandidato, UMBRAL_MUESTRA_REDUCIDA, NOTA_SIN_CONNOTACION, notaNumeracion,
 } from '../lib/intencionVoto';
 import { formatearFecha } from '../lib/formatearFecha';
 
@@ -102,28 +102,33 @@ const ChipsCandidatos = ({ claves, meta }) => (
   </div>
 );
 
-export const TituloEscenario = ({ escenario, orden }) => (
-  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '6px', breakAfter: 'avoid' }}>
-    {orden != null ? `Escenario ${orden} · ` : ''}{escenario}
+// Título del escenario: "Escenario N · nombre · sufijo" y, debajo, la lista completa de candidatos.
+export const TituloEscenario = ({ escenario, orden, sufijo, candidatos, meta }) => (
+  <div style={{ marginBottom: '8px', breakAfter: 'avoid' }}>
+    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
+      {orden != null ? `Escenario ${orden} · ` : ''}{escenario}{sufijo ? ` · ${sufijo}` : ''}
+    </div>
+    {candidatos && <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '2px' }}>Candidatos: {candidatos.map(c => nombreCandidato(c, meta)).join(' · ')}</div>}
   </div>
 );
 
 // UNA ronda, UN escenario.
-export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true }) => {
+export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true, sufijo }) => {
   const esc = ronda.escenarios.find(e => e.id === escenario);
   if (!esc) return null;
   const filas = ordenarFilas(esc.valores, meta).map(c => ({ clave: c, valor: esc.valores[c] }));
   return (
     <div style={{ breakInside: 'avoid' }}>
-      {conTitulo && <TituloEscenario escenario={esc.nombre} orden={esc.orden} />}
-      <ChipsCandidatos claves={filas.map(f => f.clave)} meta={meta} />
+      {conTitulo
+        ? <TituloEscenario escenario={esc.nombre} orden={esc.orden} sufijo={sufijo} candidatos={filas.map(f => f.clave)} meta={meta} />
+        : <ChipsCandidatos claves={filas.map(f => f.clave)} meta={meta} />}
       <div style={{ maxWidth: '480px' }}><TablaEscenario fecha={ronda.fecha} casos={ronda.casos} filas={filas} meta={meta} /></div>
     </div>
   );
 };
 
 // Dos rondas lado a lado (en pantallas angostas se apilan, cada una con su fecha de encabezado).
-export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, conTitulo = true, conNota = true }) => {
+export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, conTitulo = true, conNota = true, sufijo }) => {
   const a = rondaA.escenarios.find(e => e.id === escenario);
   const b = rondaB.escenarios.find(e => e.id === escenario);
   if (!a || !b) return null;
@@ -134,7 +139,7 @@ export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, 
   const solo = alineadas.some(f => f.a == null || f.b == null);
   return (
     <div style={{ breakInside: 'avoid' }}>
-      {conTitulo && <TituloEscenario escenario={b.nombre} orden={b.orden} />}
+      {conTitulo && <TituloEscenario escenario={b.nombre} orden={b.orden} sufijo={sufijo} candidatos={alineadas.map(f => f.clave)} meta={meta} />}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '16px', alignItems: 'start' }}>
         <TablaEscenario fecha={rondaA.fecha} casos={rondaA.casos} filas={filasA} meta={meta} escalaMax={escalaMax} />
         <TablaEscenario fecha={rondaB.fecha} casos={rondaB.casos} filas={filasB} meta={meta} escalaMax={escalaMax} conVariacion />
@@ -188,6 +193,7 @@ export const SeccionIntencionVoto = ({ encuesta, meta, umbral = 2.5, vista = 're
       <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 12px' }}>
         La encuestadora repite la misma pregunta con listas de candidatos distintas: cada lista es un escenario. Los porcentajes se muestran como vienen en el informe.
       </p>
+      {(() => { const n = notaNumeracion(comparar ? [opciones.x.fecha, opciones.y.fecha] : [rondaUnica.fecha], meta, formatearFecha); return n ? <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '-6px 0 10px' }}>{n}</div> : null; })()}
       {avisoRonda && <Aviso>{avisoRonda}</Aviso>}
       {vista === 'comparativo' && rondas.length < 2 && <Aviso>La intención de voto se relevó en una sola ronda ({formatearFecha(rondas[0].fecha)}): no hay con qué comparar. Se muestra esa ronda.</Aviso>}
       {comparar && (

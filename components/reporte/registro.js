@@ -12,7 +12,7 @@
 // crearRegistroSecciones(D) recibe de pages/index.js los componentes y helpers que no
 // pueden importarse directamente (viven en ese archivo): D = { ui: {...}, fn: {...} }.
 
-import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV } from '../../lib/intencionVoto';
+import { escenariosDeEncuesta, UMBRAL_MUESTRA_REDUCIDA as UMBRAL_MUESTRA_IV, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion } from '../../lib/intencionVoto';
 import { EscenarioRonda, EscenarioComparativo } from '../IntencionVotoGobernador';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
@@ -223,8 +223,10 @@ export function crearRegistroSecciones(D) {
       const comunes = enB.filter(e => A.escenarios.some(x => x.id === e.id));
       const excluidos = enB.filter(e => !comunes.includes(e));
       if (!comunes.length) partes.push(`<div class="rp-aviso">Ningún escenario elegido está en las dos rondas (${formatearFecha(A.fecha)} y ${formatearFecha(B.fecha)}), así que no se puede comparar.</div>`);
+      const nn = notaNumeracion([A.fecha, B.fecha], meta, formatearFecha);
+      if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
       comunes.forEach(e => {
-        partes.push(`<div class="rp-evitar"><div class="rp-h3" style="margin-top:12px">Escenario ${e.orden} · ${esc(e.nombre)} · Comparativo ${formatearFecha(A.fecha)} → ${formatearFecha(B.fecha)}</div>${T.md(<EscenarioComparativo rondaA={A} rondaB={B} escenario={e.id} meta={meta} umbral={umbral} conTitulo={false} conNota={false} />)}</div>`);
+        partes.push(`<div class="rp-evitar" style="margin-top:12px">${T.md(<EscenarioComparativo rondaA={A} rondaB={B} escenario={e.id} meta={meta} umbral={umbral} conTitulo conNota={false} sufijo={`Comparativo ${formatearFecha(A.fecha)} → ${formatearFecha(B.fecha)}`} />)}</div>`);
       });
       if (comunes.length) partes.push(`<p class="rp-nota">${esc(NOTA_SIN_CONNOTACION_IV)} "Estable" = cambio menor a ${umbral} pp. "—" indica que el candidato no figuraba en esa ronda (no es 0%).</p>`);
       if (excluidos.length) partes.push(`<p class="rp-nota">No se comparan por no estar en la ronda del ${formatearFecha(A.fecha)}: ${excluidos.map(e => esc(e.nombre)).join('; ')}.</p>`);
@@ -232,8 +234,10 @@ export function crearRegistroSecciones(D) {
       const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
       partes.push(avisoMuestraIV([R]));
       // Dos escenarios por fila (cada uno con su título, candidatos y tabla): 5-6 escenarios entran en 2 hojas.
+const nn = notaNumeracion([R.fecha], meta, formatearFecha);
+      if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
       const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
-        `<div class="rp-evitar" style="min-width:0"><div class="rp-h3" style="margin-top:0">Escenario ${e.orden} · ${esc(e.nombre)} · Ronda ${formatearFecha(R.fecha)}</div>${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo={false} />)}</div>`);
+        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo sufijo={`Ronda ${formatearFecha(R.fecha)}`} />)}</div>`);
       partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px 16px;align-items:start;margin-top:12px">${celdas.join('')}</div>`);
     }
     return partes.join('');
