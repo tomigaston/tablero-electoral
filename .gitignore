@@ -2,3 +2,8 @@ node_modules/
 .next/
 .DS_Store
 .vercel
+
+# Copias de sincronización (iCloud/Finder: "archivo 2.js", "carpeta 2/") y basura de R
+* [0-9].*
+* [0-9]
+.Rhistory

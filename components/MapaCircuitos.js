@@ -5,6 +5,7 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import 'leaflet/dist/leaflet.css';
 import { formatearFecha } from '../lib/formatearFecha';
 import { parsearFechaISOPauta, pautaEstaVigente, esObraPautaMesaCapital } from '../lib/estadoPauta';
+import { estrellasPautaPropia } from '../lib/pautaMapa';
 
 // Colores por categoría v4 - INCLUYE "D" para EN DISPUTA
 const COLORES_CATEGORIA = {
@@ -41,7 +42,6 @@ const COLOR_ESCUELA_CENTRO_VOTACION = '#1976D2';
 const COLOR_ESCUELA_SIN_VOTACION = '#9E9E9E';
 const COLOR_BORDE_PENDIENTE_REVISION = '#F57F17';
 const COLOR_PAUTA = '#D500F9'; // violeta/fucsia, no choca con la paleta de estados de Obras ni Circuitos
-const COLOR_PAUTA_FINALIZADA = '#9E9E9E'; // apagado — mismo gris que "sin dato" en Obras/Escuelas
 
 // Opacidad de relleno de Circuitos cuando hay alguna capa de puntos activa (Obras,
 // Pauta o Escuelas): los rellenos categóricos fuertes (0.7/0.9) matan el contraste de
@@ -68,9 +68,9 @@ const PANE_PUNTOS = 'panePuntos';
 // activa=true: relleno pleno del color de Pauta; activa=false (solo pautas finalizadas
 // en ese barrio): mismo dibujo pero apagado en gris, para que se lea a simple vista sin
 // abrir el popup.
-function crearIconoPautaEstrella(activa) {
+function crearIconoPautaEstrella() {
   const L = require('leaflet');
-  const color = activa ? COLOR_PAUTA : COLOR_PAUTA_FINALIZADA;
+  const color = COLOR_PAUTA;
   const svg = `
     <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
@@ -250,7 +250,7 @@ function BotonVerCircuitoEnPauta({ circuitoKey, onVerCircuitoEnPauta }) {
         fontSize: '11px', fontWeight: 600, cursor: 'pointer',
       }}
     >
-      Ver en solapa Territorio
+      Ver en Pauta por circuito
     </button>
   );
 }
@@ -284,7 +284,7 @@ function ClickHandler({ geoJsonData, barriosGeoData, datosLookup, onMapClick }) 
   return null;
 }
 
-export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, pautasBarriosData, cruceData, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta, onVerCircuitoEnPauta, capasActivas, setCapasActivas }) {
+export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnriquecidas, escuelasData, derivadoPauta, circuitoSeleccionado, onMapClick, barrioSeleccionado, filtroCategoria, setFiltroCategoria, coloresCategoria, zoomBarrioSolicitado, onSelectObra, onVerBarrioEnPauta, onVerCircuitoEnPauta, capasActivas, setCapasActivas }) {
   const geoJsonRef = useRef(null);
 
   // capasActivas/setCapasActivas vienen del padre (Home, pages/index.js), no son estado
@@ -316,9 +316,6 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
   // Mismo criterio que filtroRangoAvanceObra: filtro local (no lifted), sigue teniendo
   // sentido con un circuito/barrio enfocado y no se resetea en navegación.
   const [filtroTipoEscuela, setFiltroTipoEscuela] = useState(null);
-  // Mismo criterio que filtroRangoAvanceObra/filtroTipoEscuela: filtro local (no lifted),
-  // sigue teniendo sentido con un circuito/barrio enfocado y no se resetea en navegación.
-  const [filtroTipoPauta, setFiltroTipoPauta] = useState(null);
 
   const geoJsonData = useMemo(() => {
     if (!geoData) return null;
@@ -343,32 +340,9 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
   const escuelasParaMostrar = useMemo(() => escuelasData?.escuelas || [], [escuelasData]);
 
-  // pautas_barrios.json (esquema campañas 2026) viene con dos buckets: `barrios`
-  // (indexado por nombre, nivel barrio, no por pieza individual) y `circuitos_sin_barrio`
-  // (pautas asignadas directo a un circuito, sin barrio identificado). Este marker por
-  // barrio solo recorre el bucket `barrios` — circuitos_sin_barrio queda deliberadamente
-  // fuera del mapa por ahora (se evalúa cómo mostrarlo más adelante), un marker por
-  // barrio con pauta, ubicado en el centroide de su polígono en barrios_geo.json (mismo
-  // cruce normalizado que ya usa este archivo para Barrios/Territorio). barrios_geo.json
-  // tiene 16 nombres de barrio duplicados (fragmentos no contiguos, ver comentario de
-  // resolverCircuitoPrincipalDeBarrio en pages/index.js) — para el marker se toma el
-  // primer fragmento que matchea, sin intentar elegir "el principal" (no hay campo que
-  // lo indique). Los barrios de pauta sin ningún fragmento que matchee ni con
-  // normalización quedan afuera del mapa (no se inventa ubicación) y se listan en
-  // consola para poder avisarlos.
-  // Cada pauta se anota con _activa (fin >= hoy) al vuelo acá — una sola vez por render
-  // de esta capa, no en el render de cada marker — y un barrio "tiene pauta activa" si
-  // alguna de sus pautas lo está, O si tiene al menos una obra de Mesa de Capital
-  // (esObraPautaMesaCapital) — mismo criterio combinado que tienePautaActivaBarrio en
-  // pages/index.js (badge del header de la ficha), para que el color de la estrella no
-  // contradiga lo que muestra la ficha. Fechas ausentes/no parseables se tratan como
-  // finalizadas (no rompen el cálculo) y se cuentan para avisar en consola.
-  //
-  // El universo de barrios ya NO es solo Object.keys(pautasBarriosData.barrios): se une
-  // con los barrios que tienen obras de Mesa de Capital activa pero CERO pautas de
-  // pautas_barrios.json (8 de 22 barrios con Mesa de Capital, verificado contra el
-  // archivo real) — sin esto, esos barrios no generaban marker y su pauta de Mesa de
-  // Capital quedaba invisible en el mapa por completo, no solo ausente del popup.
+  // Obras de Mesa de Capital (obras_capital.json): ya NO deciden si un barrio lleva estrella
+  // (la estrella es solo pauta propia activa de pautas_barrios.json, ver estrellasPauta); acá
+  // se indexan solo para listarlas en el popup de la estrella de un barrio que ya la tiene.
   const obrasMesaCapitalPorBarrio = useMemo(() => {
     const indice = {};
     (obrasEnriquecidas || []).forEach(o => {
@@ -391,100 +365,24 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
     return indice;
   }, [obrasEnriquecidas]);
 
-  const pautaBarrioMarkers = useMemo(() => {
-    const bucket = pautasBarriosData?.barrios || {};
-    if (!barriosGeoData) return [];
+  // Capa Pauta = SOLO pauta PROPIA ACTIVA (barrio o circuito), derivada de la misma fuente que
+  // las tarjetas y la pestaña "Pauta por circuito" (ver lib/pautaMapa.js). La pauta general
+  // (toda_capital) y la inactiva no se dibujan: viven en la tarjeta global / la pestaña.
+  const estrellasPauta = useMemo(() => {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const sinMatch = [];
-    let sinFechaValidaCount = 0;
-    (Object.values(bucket)).forEach(({ pautas }) => (pautas || []).forEach(p => {
-      if (parsearFechaISOPauta(p.fin) == null) sinFechaValidaCount += 1;
-    }));
+    const { barrios, circuitos } = estrellasPautaPropia({ derivado: derivadoPauta, barriosGeoData, circuitosGeoJson: geoJsonData });
+    const aPautas = (piezas) => anotarPautas(piezas.map((pz) => pz.pauta), hoy);
+    return {
+      barrios: barrios.map((b) => ({ ...b, pautas: aPautas(b.piezas), obrasMesaCapital: obrasMesaCapitalPorBarrio[normalizarNombreBarrio(b.nombreBarrio)] || [] })),
+      circuitos: circuitos.map((c) => ({ ...c, pautas: aPautas(c.piezas) })),
+    };
+  }, [derivadoPauta, barriosGeoData, geoJsonData, obrasMesaCapitalPorBarrio]);
+  const pautaBarrioMarkers = estrellasPauta.barrios;
+  const pautaCircuitoMarkers = estrellasPauta.circuitos;
 
-    // Universo de barrios: los del bucket de pautas_barrios.json UNIDOS a los que solo
-    // tienen Mesa de Capital (ver comentario arriba). Se preserva el nombre "original"
-    // (sin normalizar) del bucket cuando existe, para no cambiar el label que ya se
-    // mostraba; para los que solo aportan Mesa de Capital se usa el nombre de la obra.
-    const nombresPorClave = {};
-    Object.keys(bucket).forEach(n => { nombresPorClave[normalizarNombreBarrio(n)] = n; });
-    Object.keys(obrasMesaCapitalPorBarrio).forEach(clave => {
-      if (!nombresPorClave[clave]) nombresPorClave[clave] = obrasMesaCapitalPorBarrio[clave][0].barrio;
-    });
 
-    const markers = Object.entries(nombresPorClave).map(([clave, nombreBarrio]) => {
-      const feature = barriosGeoData.features.find(f => normalizarNombreBarrio(f.properties?.nombre_barrio) === clave);
-      const lat = feature?.properties?.centroid_lat;
-      const lon = feature?.properties?.centroid_lon;
-      const pautas = anotarPautas(bucket[nombreBarrio]?.pautas, hoy);
-      const obrasMesaCapital = obrasMesaCapitalPorBarrio[clave] || [];
-      if (lat == null || lon == null) {
-        sinMatch.push(nombreBarrio);
-        return null;
-      }
-      return { nombreBarrio, lat, lon, pautas, obrasMesaCapital, tieneActiva: pautas.some(p => p._activa) || obrasMesaCapital.length > 0 };
-    }).filter(Boolean);
-
-    if (sinMatch.length > 0) {
-      console.warn('Pauta: barrios sin match geográfico en barrios_geo.json (excluidos del mapa):', sinMatch);
-    }
-    if (sinFechaValidaCount > 0) {
-      console.warn(`Pauta: ${sinFechaValidaCount} registro(s) sin fin parseable, tratados como finalizados.`);
-    }
-    return markers;
-  }, [pautasBarriosData, barriosGeoData, obrasMesaCapitalPorBarrio]);
-
-  // Bucket `toda_capital` (esquema campañas 2026): campañas genéricas de alcance
-  // Capital-completa, sin barrio ni circuito puntual — las MISMAS piezas aplican por
-  // igual a los 119 circuitos, así que no hay un centroide natural (a diferencia de
-  // pautaBarrioMarkers, que ubica cada marker en el centroide de SU barrio). Se planta
-  // una estrella por circuito en un punto de anclaje = promedio simple de
-  // centroid_lat/centroid_lon de los barrios que integran ese circuito
-  // (circuito_barrios_cruce.json → circuito_to_barrios, mismo criterio de "primer
-  // fragmento que matchea" que ya usa pautaBarrioMarkers para resolver nombre_barrio ->
-  // centroide, y mismo descarte de la fila sintética "Sin Barrio - Circuito ..." que
-  // resolverBarriosDelCircuito en pages/index.js). Capa ADICIONAL: no reemplaza ni
-  // modifica pautaBarrioMarkers, y reusa el mismo ícono (sin distinción visual) — ver
-  // crearIconoPautaEstrella. Se recalcula solo cuando cambian sus fuentes (useMemo), no
-  // en cada render.
-  const pautaCapitalMarkers = useMemo(() => {
-    const pautasRaw = pautasBarriosData?.toda_capital?.pautas;
-    if (!pautasRaw || pautasRaw.length === 0 || !cruceData || !barriosGeoData || !datos) return [];
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const pautas = anotarPautas(pautasRaw, hoy);
-    const tieneActiva = pautas.some(p => p._activa);
-    const sinAnchor = [];
-
-    const markers = datos.map(d => {
-      const clave = `${d.Mapkey} - ${d.cirn_nom}`;
-      const barriosDelCircuito = cruceData?.circuito_to_barrios?.[clave] || [];
-      const puntos = [];
-      barriosDelCircuito.forEach(b => {
-        if (!b.barrio || b.barrio.startsWith('Sin Barrio')) return;
-        const normalizado = normalizarNombreBarrio(b.barrio_normalizado || b.barrio);
-        const feature = barriosGeoData.features.find(f => normalizarNombreBarrio(f.properties?.nombre_barrio) === normalizado);
-        const lat = feature?.properties?.centroid_lat;
-        const lon = feature?.properties?.centroid_lon;
-        if (lat != null && lon != null) puntos.push([lat, lon]);
-      });
-      if (puntos.length === 0) {
-        sinAnchor.push(d.Mapkey);
-        return null;
-      }
-      const lat = puntos.reduce((s, p) => s + p[0], 0) / puntos.length;
-      const lon = puntos.reduce((s, p) => s + p[1], 0) / puntos.length;
-      return { mapkey: d.Mapkey, circuitoKey: d.CircuitoKey, circuitoNombre: d.cirn_nom, lat, lon, pautas, tieneActiva };
-    }).filter(Boolean);
-
-    if (sinAnchor.length > 0) {
-      console.warn('Pauta (Alcance Capital): circuitos sin punto de anclaje (sin barrios con centroide en barrios_geo.json):', sinAnchor);
-    }
-    return markers;
-  }, [pautasBarriosData, cruceData, barriosGeoData, datos]);
-
-  const iconoPautaActiva = useMemo(() => crearIconoPautaEstrella(true), []);
-  const iconoPautaFinalizada = useMemo(() => crearIconoPautaEstrella(false), []);
+  const iconoPautaActiva = useMemo(() => crearIconoPautaEstrella(), []);
 
   const getBarrioStyle = (feature) => {
     const nombre = feature.properties?.nombre_barrio;
@@ -641,23 +539,11 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
 
       {capasActivas.pauta && (
         <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 500, backgroundColor: '#fff', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', maxWidth: '170px' }}>
-          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Pauta (click para filtrar)</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {[
-              { tipo: 'activa', color: COLOR_PAUTA, label: 'Pauta activa' },
-              { tipo: 'finalizada', color: COLOR_PAUTA_FINALIZADA, label: 'Pauta expirada' },
-            ].map(({ tipo, color, label }) => (
-              <div
-                key={tipo}
-                onClick={() => setFiltroTipoPauta(filtroTipoPauta === tipo ? null : tipo)}
-                style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: filtroTipoPauta === tipo ? `${color}20` : 'transparent', border: filtroTipoPauta === tipo ? `1px solid ${color}` : '1px solid transparent' }}
-              >
-                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: color, border: '1px solid #fff', boxShadow: `0 0 0 1px ${color}`, flexShrink: 0 }} />
-                <span style={{ fontSize: '9px', color: '#546E7A' }}>{label}</span>
-              </div>
-            ))}
+          <div style={{ fontSize: '11px', color: '#37474F', marginBottom: '5px' }}>Pauta</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 5px' }}>
+            <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: COLOR_PAUTA, border: '1px solid #fff', boxShadow: `0 0 0 1px ${COLOR_PAUTA}`, flexShrink: 0 }} />
+            <span style={{ fontSize: '9px', color: '#546E7A' }}>Pauta activa propia (barrio o circuito)</span>
           </div>
-          {filtroTipoPauta && <button onClick={() => setFiltroTipoPauta(null)} style={{ marginTop: '6px', padding: '3px 6px', fontSize: '10px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: 'transparent', cursor: 'pointer', color: '#666', width: '100%' }}>✕ Limpiar filtro</button>}
         </div>
       )}
 
@@ -755,23 +641,20 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
             );
           })}
           {capasActivas.pauta && pautaBarrioMarkers.map((m) => {
-            // Mismo criterio de aislar/restaurar que filtroRangoAvanceObra/filtroTipoEscuela:
-            // se atenúa (no se oculta) lo que no matchea el filtro activo.
-            const isFiltered = filtroTipoPauta && (filtroTipoPauta === 'activa') !== m.tieneActiva;
             return (
-            <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={m.tieneActiva ? iconoPautaActiva : iconoPautaFinalizada} opacity={isFiltered ? 0.25 : 1}>
+            <Marker key={`pauta-${m.nombreBarrio}`} position={[m.lat, m.lon]} icon={iconoPautaActiva}>
               <Popup offset={[0, -8]} pane="popupPane">
                 <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600,
                     padding: '2px 8px', borderRadius: '10px', marginBottom: '6px',
-                    backgroundColor: m.tieneActiva ? '#2E7D3222' : '#9E9E9E22',
-                    color: m.tieneActiva ? '#2E7D32' : '#616161',
+                    backgroundColor: '#2E7D3222',
+                    color: '#2E7D32',
                   }}>
-                    {m.tieneActiva ? '● Pauta activa' : '○ Sin pauta activa'}
+                    ● Pauta activa
                   </div>
                   <div><strong style={{ fontSize: '13px' }}>{m.nombreBarrio}</strong></div>
-                  <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta{m.obrasMesaCapital.length > 0 ? ` · ${m.obrasMesaCapital.length} de Mesa de Capital` : ''}</div>
+                  <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta activa{m.obrasMesaCapital.length > 0 ? ` · ${m.obrasMesaCapital.length} de Mesa de Capital` : ''}</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
                     {/* Mesa de Capital (obras_capital.json) SIEMPRE primero, mismo criterio
                         de orden que SolapaPautaBarrio en pages/index.js — reusa
@@ -827,43 +710,27 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
             </Marker>
             );
           })}
-          {/* Alcance Capital (toda_capital): capa adicional, una estrella por circuito
-              (no por barrio) en su punto de anclaje — ver pautaCapitalMarkers. Mismo
-              ícono que pautaBarrioMarkers (sin distinción visual) y mismo toggle/filtro
-              de capa Pauta, así que no agrega controles propios. */}
-          {capasActivas.pauta && pautaCapitalMarkers.map((m) => {
-            const isFiltered = filtroTipoPauta && (filtroTipoPauta === 'activa') !== m.tieneActiva;
-            return (
-            <Marker key={`pauta-capital-${m.mapkey}`} position={[m.lat, m.lon]} icon={m.tieneActiva ? iconoPautaActiva : iconoPautaFinalizada} opacity={isFiltered ? 0.25 : 1}>
+          {/* Pauta propia de CIRCUITO (circuitos_sin_barrio, o pieza de barrio que no se
+              puede ubicar en su barrio sin contradecir el contador): una estrella por
+              circuito, en un punto interior de su polígono — ver lib/pautaMapa.js. */}
+          {capasActivas.pauta && pautaCircuitoMarkers.map((m) => (
+            <Marker key={`pauta-circuito-${m.circuitoKey}`} position={[m.lat, m.lon]} icon={iconoPautaActiva}>
               <Popup offset={[0, -8]} pane="popupPane">
                 <div style={{ fontFamily: '-apple-system, sans-serif', padding: '2px 4px', maxWidth: '250px' }}>
-                  <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600,
-                    padding: '2px 8px', borderRadius: '10px', marginBottom: '6px',
-                    backgroundColor: m.tieneActiva ? '#2E7D3222' : '#9E9E9E22',
-                    color: m.tieneActiva ? '#2E7D32' : '#616161',
-                  }}>
-                    {m.tieneActiva ? '● Pauta activa' : '○ Sin pauta activa'}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '10px', marginBottom: '6px', backgroundColor: '#2E7D3222', color: '#2E7D32' }}>
+                    ● Pauta activa
                   </div>
-                  <div><strong style={{ fontSize: '13px' }}>Alcance Capital</strong></div>
-                  <div style={{ fontSize: '10px', color: '#999', marginTop: '1px' }}>{m.circuitoKey} - {m.circuitoNombre}</div>
-                  <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta, aplican a toda Capital</div>
+                  <div><strong style={{ fontSize: '13px' }}>Circuito {m.circuitoKey}</strong></div>
+                  <div style={{ fontSize: '10px', color: '#999', marginTop: '1px' }}>{m.circuitoNombre}</div>
+                  <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>{m.pautas.length} anuncio{m.pautas.length !== 1 ? 's' : ''} de pauta activa propia (de circuito y de sus barrios)</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
-                    {/* Mismo patrón que pautaBarrioMarkers: solo las 2 pautas más
-                        recientes (m.pautas ya viene ordenado por inicio desc), con el
-                        resto resumido abajo como "+X más". */}
                     {m.pautas.slice(0, 2).map((p, i) => {
                       const etiqueta = p.plataforma === 'GOOGLE' ? 'Visualizaciones' : 'Impresiones';
                       const inv = p.metricas_ejecutadas?.inversion;
                       const alcance = p.metricas_ejecutadas?.alcance_o_visualizaciones;
                       return (
                       <div key={p.fila_origen ?? i} style={{ borderTop: i > 0 ? '1px solid #eee' : 'none', paddingTop: i > 0 ? '6px' : 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
-                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.titulo_pieza || '—'}</div>
-                          <span style={{ flexShrink: 0, fontSize: '9px', fontWeight: 600, padding: '1px 6px', borderRadius: '8px', whiteSpace: 'nowrap', backgroundColor: p._activa ? '#2E7D3222' : '#9E9E9E22', color: p._activa ? '#2E7D32' : '#757575' }}>
-                            {p._activa ? 'Activa' : 'Finalizada'}
-                          </span>
-                        </div>
+                        <div style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{p.titulo_pieza || '—'}</div>
                         <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>Vigencia: {formatearFecha(p.inicio)} → {formatearFecha(p.fin)}</div>
                         <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
                           {etiqueta}: {alcance != null ? alcance.toLocaleString() : 's/d'} · Inversión: {inv != null ? `$${inv.toLocaleString()}` : 's/d'}
@@ -879,8 +746,7 @@ export default function MapaCircuitos({ datos, geoData, barriosGeoData, obrasEnr
                 </div>
               </Popup>
             </Marker>
-            );
-          })}
+          ))}
           {capasActivas.escuelas && escuelasParaMostrar.map((esc) => {
             const pendienteRevision = esc.es_centro_votacion && esc.confianza === 'pendiente_revision';
             const colorRelleno = esc.es_centro_votacion ? COLOR_ESCUELA_CENTRO_VOTACION : COLOR_ESCUELA_SIN_VOTACION;
