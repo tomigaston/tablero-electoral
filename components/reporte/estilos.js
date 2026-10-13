@@ -61,6 +61,10 @@ html,body{margin:0;padding:0;background:#fff;color:var(--text-primary);font-fami
 .rp-body [style*="border-radius"][style*="overflow:hidden"]{break-inside:auto}
 .rp-unida{break-inside:avoid;page-break-inside:avoid}
 .rp-evitar{break-inside:avoid;page-break-inside:avoid}
+/* Comparativas electorales: 3 cards + tendencias miden más que una hoja a tamaño normal y, al ser
+   "unida", saltaba entera a la hoja 2 dejando la 1 con solo el encabezado. Reducida entra completa
+   en la primera hoja, debajo del encabezado. */
+.rp-sec[data-seccion="comparativas"] .rp-body{zoom:.82}
 
 /* Tablas largas (119 circuitos): filas compactas */
 .rp-compacta td{padding-top:2px !important;padding-bottom:2px !important;font-size:10px}
