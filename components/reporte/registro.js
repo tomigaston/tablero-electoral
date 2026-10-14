@@ -173,7 +173,7 @@ export function crearRegistroSecciones(D) {
       });
       if (comunes.length) {
         const hayAusentes = comunes.some(e => alinearComparativo(A.escenarios.find(x => x.id === e.id).valores, e.valores, meta).some(f => f.a == null || f.b == null));
-        partes.push(T.md(<PieIntencionVoto escenarios={comunes} meta={meta} fechas={[A.fecha, B.fecha]} comparativo umbral={umbral} hayAusentes={hayAusentes} />));
+        partes.push(T.md(<PieIntencionVoto comparativo umbral={umbral} hayAusentes={hayAusentes} />));
       }
       if (excluidos.length) partes.push(`<p class="rp-nota">No se comparan por no estar en la ronda del ${formatearFecha(A.fecha)}: ${excluidos.map(e => esc(e.nombre)).join('; ')}.</p>`);
     } else {
@@ -184,7 +184,6 @@ export function crearRegistroSecciones(D) {
       const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
         `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo compacto />)}</div>`);
       partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px 16px;align-items:start;margin-top:10px">${celdas.join('')}</div>`);
-      partes.push(T.md(<PieIntencionVoto escenarios={R.escenarios.filter(e => !elegidos || elegidos.has(e.id))} meta={meta} fechas={[R.fecha]} />));
     }
     return partes.join('');
   }
@@ -417,6 +416,7 @@ export function crearRegistroSecciones(D) {
           ? { ok: true } : { ok: false, motivo: ctx.tipo === 'barrio' ? 'El circuito de este barrio no tiene intención de voto relevada.' : 'Este circuito no tiene intención de voto relevada.' };
       },
       render: (ctx, o, T) => renderIntencion(ctx, o, T),
+      datosAl: (ctx) => ctx.tipo === 'capital' ? undefined : null, // sin pie "Datos al …": la ronda va en el chip de la sección
       ultimoDato: (ctx) => ctx.tipo === 'capital' ? maxFecha(Object.values(ctx.encuestasData || {}).flatMap(e => escenariosDeEncuesta(e, metaIV(ctx)).rondas.map(r => r.fecha))) : maxFecha(datosIV(ctx).rondas.map(r => r.fecha)),
       paginas: (ctx, o) => {
         if (ctx.tipo === 'capital') return 1;

@@ -80,13 +80,13 @@ export const TablaEscenario = ({ fecha, filas, meta, conVariacion = false, escal
               // izquierda + fondo), que se ve en TODOS los escenarios. Si coinciden se suman.
               return (
                 <tr key={f.clave} data-fila={esDestacado ? 'destacado' : undefined} style={{ borderTop: '1px solid var(--border)', backgroundColor: 'transparent', boxShadow: esDestacado ? 'inset 4px 0 0 #0D47A1' : 'none' }}>
-                  <td style={{ padding: pad, paddingLeft: esDestacado ? '14px' : undefined, verticalAlign: 'middle', color: tipo === 'candidato' ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: esPrimero || esDestacado ? 700 : 400, overflowWrap: 'anywhere' }}>
+                  <td style={{ padding: pad, paddingLeft: esDestacado ? '14px' : undefined, verticalAlign: 'middle', color: 'var(--text-primary)', fontWeight: 400, overflowWrap: 'anywhere' }}>
                     {esPrimero && <MarcaPosicion texto="1°" />}
                     {!esPrimero && esDestacado && tit?.destacado && tit.destacado.posicion > 1 && <MarcaPosicion texto={tit.destacado.ordinal} />}
                     {nombreCandidato(f.clave, meta)}
                                         <div style={{ marginTop: compacto ? '1px' : '3px', opacity: f.valor == null ? 0 : 1 }}><BarraFina valor={f.valor} escalaMax={max} color={color} /></div>
                   </td>
-                  <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: compacto ? '14px' : '15px', fontWeight: esPrimero || esDestacado ? 800 : 600, color: f.valor == null ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{fmtPct(f.valor)}</td>
+                  <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: compacto ? '14px' : '15px', fontWeight: 600, color: f.valor == null ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{fmtPct(f.valor)}</td>
                   {conVariacion && <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: '12px' }}><Variacion v={f.variacion} /></td>}
                 </tr>
               );
@@ -170,17 +170,10 @@ export const CabeceraRondaIV = ({ rondas, fechaActual }) => (
   </div>
 );
 
-// Pie de la sección: la aclaración en una línea + UNA línea de notas (numeración, notas de escenarios, aclaración del
-// comparativo). fechas: rondas mostradas (para la nota de numeración). Mismo pie en pantalla y reporte.
-export const PieIntencionVoto = ({ escenarios, meta, fechas, comparativo = false, umbral = 2.5, hayAusentes = false }) => {
-  const notas = [notaNumeracion(fechas, meta, formatearFecha), notaEscenariosPie(escenarios, meta), comparativo ? notaComparativo(umbral, hayAusentes) : null].filter(Boolean).join(' · ');
-  return (
-    <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-tertiary)', lineHeight: 1.4 }}>
-      <div>{ACLARACION_ESCENARIOS}</div>
-      {notas && <div style={{ marginTop: '3px' }}>{notas}</div>}
-    </div>
-  );
-};
+// Pie de la sección: solo en el comparativo, la aclaración de "Estable" y "—". Sin leyendas ni notas de escenarios.
+export const PieIntencionVoto = ({ comparativo = false, umbral = 2.5, hayAusentes = false }) => (
+  comparativo ? <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-tertiary)', lineHeight: 1.4 }}>{notaComparativo(umbral, hayAusentes)}</div> : null
+);
 
 const selectStyle = { padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '12px', backgroundColor: '#fff', maxWidth: '100%' };
 const Aviso = ({ children }) => <div style={{ fontSize: '12px', color: '#8a5a00', backgroundColor: '#fff4dc', border: '1px solid #f0d28a', borderRadius: '8px', padding: '8px 12px', marginBottom: '10px' }}>{children}</div>;
@@ -253,7 +246,7 @@ export const SeccionIntencionVoto = ({ encuesta, meta, umbral = 2.5, vista = 're
       {actual && (() => {
         const enComp = comparar && iA !== iB;
         const hayAusentes = enComp && alinearComparativo(opciones.x.escenarios.find(e => e.id === actual.id)?.valores || {}, opciones.y.escenarios.find(e => e.id === actual.id)?.valores || {}, meta).some(f => f.a == null || f.b == null);
-        return <PieIntencionVoto escenarios={[actual]} meta={meta} fechas={enComp ? [opciones.x.fecha, opciones.y.fecha] : [(comparar ? rondaB : rondaUnica).fecha]} comparativo={enComp} umbral={umbral} hayAusentes={hayAusentes} />;
+        return <PieIntencionVoto comparativo={enComp} umbral={umbral} hayAusentes={hayAusentes} />;
       })()}
     </div>
   );
