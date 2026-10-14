@@ -8,10 +8,11 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { crearRefRonda, etiquetasSerie, calcularBloqueProblemas, MAX_PROBLEMAS, layoutSegmentos, ordenarRondas, calcularVariacionIndicador, resolverIndicador, fechaRondaActual, fechaCorta, ultimaRondaConDato } from '../lib/lecturaRondas';
+import { fechaRondaActual } from '../lib/lecturaRondas';
+import { EncuestasBlock, SelectorRondas, fechasPorDefecto } from '../components/EncuestasBlock';
+import { seleccionarRondas, MAX_RONDAS } from '../lib/encuestasBloque';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
 import { htmlEncuestasCuerpo } from '../components/reporte/encuestasHtml';
-import { ChipRonda, FilaChipsRondas, htmlChipRonda } from '../components/ChipRonda';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
 import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
@@ -309,10 +310,6 @@ const InfoModal = ({ isOpen, onClose }) => {
 
 const formatPct = (val) => val != null ? `${(val * 100).toFixed(1)}%` : '—';
 const formatPP = (val) => val != null ? `${val > 0 ? '+' : ''}${(val * 100).toFixed(1)} pp` : '—';
-// Fecha de una ronda de encuesta + su cantidad de encuestados cuando está
-// disponible — casos es number | null; null (o el campo ausente en rondas viejas)
-// se trata como dato ausente, nunca como 0, así que se omite "Respuestas" en ese caso.
-const formatearFechaRonda = (fecha, casos) => `${formatearFecha(fecha)}${casos != null ? ` · Respuestas: ${casos}` : ''}`;
 const getNumeroBase = (circuitoKey) => {
   if (!circuitoKey) return '';
   return String(circuitoKey).replace(/[A-Za-z]/g, '');
@@ -1610,587 +1607,31 @@ function buscarPautaCircuito(pautasBarriosData, barriosGeoData, datos, circuitoK
   return pautas;
 }
 
-const COLOR_GESTION = { 'Positiva': '#22C55E', 'Regular': '#FBBF24', 'Negativa': '#EF4444', 'Ns/Nc': '#CBD5E1' };
-const ORDEN_CATEGORIAS_GESTION = ['Positiva', 'Regular', 'Negativa', 'Ns/Nc'];
-
-// Fallback defensivo: si algún día una ronda vuelve a cargarse con un nombre de
-// categoría no reconocido (el mismo tipo de error que motivó el fix de "No se" ->
-// "Ns/Nc" en encuestas_circuitos.json), el segmento no debe desaparecer en silencio
-// del gráfico ni pintarse "undefined" — cae a gris neutro y avisa una vez por nombre
-// en consola, para detectarlo en QA en vez de mucho después. avisadas vive a nivel de
-// módulo a propósito: un solo aviso por nombre por sesión de la app alcanza para QA,
-// no hace falta repetirlo en cada render.
-const COLOR_GESTION_FALLBACK = '#9CA3AF';
-const categoriasGestionAvisadas = new Set();
-function colorCategoriaGestion(cat) {
-  if (COLOR_GESTION[cat]) return COLOR_GESTION[cat];
-  if (!categoriasGestionAvisadas.has(cat)) {
-    categoriasGestionAvisadas.add(cat);
-    console.warn(`Calificación de gestión: categoría "${cat}" no reconocida (sin color mapeado), usando gris de fallback.`);
-  }
-  return COLOR_GESTION_FALLBACK;
-}
-
-// Orden canónico primero, seguido de cualquier categoría inesperada presente en el
-// dato (para que también se dibuje su segmento en vez de perderse por no estar en
-// ORDEN_CATEGORIAS_GESTION) — ver colorCategoriaGestion.
-function categoriasGestion(data) {
-  const extra = Object.keys(data).filter(k => !ORDEN_CATEGORIAS_GESTION.includes(k));
-  return [...ORDEN_CATEGORIAS_GESTION, ...extra];
-}
-
-// Barra horizontal azul con % embebido (dentro si entra, afuera si no) — compartida
-// con FilasProblemasComparativo (vista Comparativo), que agrega badge de variación al
-// lado. Misma pieza en los dos lugares, sin duplicar el cálculo de si el texto entra
-// adentro de la barra o no.
-const BarraHorizontalPct = ({ pct, color = '#1976D2' }) => {
-  const anchoPct = Math.min(pct, 100);
-  const cabeAdentro = anchoPct >= 15; // suficiente lugar para el texto dentro del relleno
-  return (
-    <div style={{ flex: 1, backgroundColor: 'var(--bg-secondary)', borderRadius: '5px', height: '20px', position: 'relative' }}>
-      <div style={{ width: `${anchoPct}%`, backgroundColor: color, height: '100%', borderRadius: '5px' }} />
-      <span style={{
-        position: 'absolute', top: '2px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
-        ...(cabeAdentro ? { left: '8px', color: '#fff' } : { left: `calc(${anchoPct}% + 6px)`, color: 'var(--text-primary)' }),
-      }}>{Number(pct).toFixed(1)}%</span>
-    </div>
-  );
-};
-
-const BarraProblemas = ({ problemas }) => {
-  if (!problemas) return null;
-  const entradas = Object.entries(problemas).sort((a, b) => b[1] - a[1]);
-  return (
-    <div>
-      <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Principales problemas</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {entradas.map(([nombre, pct]) => (
-          <div key={nombre} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '190px', flexShrink: 0, fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'right' }}>{nombre}</div>
-            <BarraHorizontalPct pct={pct} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const BarraGestion = ({ label, data, arrastre = null }) => {
-  if (!data) return <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
-  // Mismo render que Calificación de gestión del comparativo (htmlBarraSegmentosPDF): ningún segmento no nulo
-  // pierde su %; los finos llevan la etiqueta debajo con un conector.
-  return (
-    <div style={arrastre ? { marginBottom: '10px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '8px', padding: '8px 10px' } : { marginBottom: '10px' }}>
-      <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginBottom: '5px' }}>{label}</div>
-      {arrastre && <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', marginBottom: '5px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 6px' }}><span>{arrastre.sinDato} · último:</span><ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} /></div>}
-      <div dangerouslySetInnerHTML={{ __html: htmlBarraSegmentosPDF(data, { atenuada: !!arrastre, carril: true }) }} />
-    </div>
-  );
-};
-
-const SeccionGestionFuncionarios = ({ gestiones, arrastres = {} }) => (
-  <div style={{ breakInside: 'avoid' }}>
-    <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Calificación de gestión</h4>
-    {Object.entries(gestiones).map(([label, data]) => <BarraGestion key={label} label={`Calificación de gestión: ${label}`} data={data} arrastre={arrastres[label] || null} />)}
-    <div style={{ display: 'flex', gap: '14px', marginTop: '6px' }}>
-      {['Positiva', 'Regular', 'Negativa'].map(cat => (
-        <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: COLOR_GESTION[cat] }} />
-          <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{cat}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-// Nota de ARRASTRE: la ronda actual no midió esta pregunta y se muestra el último valor disponible, atenuado.
-const NotaArrastre = ({ arrastre }) => (
-  <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--text-tertiary)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2px 6px', marginTop: '4px' }}>
-    <span>{arrastre.sinDato} · último:</span>
-    <ChipRonda fecha={arrastre.fecha} casos={arrastre.casos} etiqueta="sin dato nuevo" />
-  </div>
-);
-const estiloTarjetaMedidor = (arrastre) => (arrastre
-  ? { flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px' }
-  : { flex: '1 1 140px', textAlign: 'center', padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px' });
-
-const GaugeAprobacion = ({ label, data, arrastre = null }) => {
-  if (!data || data.Apruebo == null) {
-    return <div style={{ flex: '1 1 140px', padding: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>Aprobación {label}: sin dato</div>;
-  }
-  const pct = data.Apruebo;
-  const color = arrastre ? '#B0BEC5' : pct >= 40 ? '#0DCE1D' : pct >= 25 ? '#D9B300' : '#D64550';
-  const r = 40, mediaCircunferencia = Math.PI * r;
-  const progreso = (Math.min(pct, 100) / 100) * mediaCircunferencia;
-  return (
-    <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={estiloTarjetaMedidor(arrastre)}>
-      <svg viewBox="0 0 100 60" style={{ width: '100%', maxWidth: '160px' }}>
-        <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--border)" strokeWidth="10" strokeLinecap="round" />
-        <path
-          d="M 10 50 A 40 40 0 0 1 90 50"
-          fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
-          strokeDasharray={`${mediaCircunferencia} ${mediaCircunferencia}`}
-          strokeDashoffset={mediaCircunferencia - progreso}
-        />
-        <text x="50" y="45" textAnchor="middle" fontSize="18" fontWeight="700" fill={arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)'}>{pct}%</text>
-      </svg>
-      <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-secondary)', marginTop: '2px' }}>Aprobación {label}</div>
-      {arrastre && <NotaArrastre arrastre={arrastre} />}
-    </div>
-  );
-};
-
-const DonutReeleccion = ({ label, data, arrastre = null }) => {
-  if (!data || data.Si == null) {
-    return <div style={{ flex: '1 1 140px', padding: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>{label}: sin dato</div>;
-  }
-  const si = data.Si;
-  const r = 35, cx = 50, cy = 50, circunferencia = 2 * Math.PI * r;
-  const siLen = (Math.min(si, 100) / 100) * circunferencia;
-  return (
-    <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={estiloTarjetaMedidor(arrastre)}>
-      <svg viewBox="0 0 100 100" style={{ width: '100%', maxWidth: '140px' }}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke={arrastre ? '#CFD8DC' : '#EF4444'} strokeWidth="16" />
-        <circle
-          cx={cx} cy={cy} r={r} fill="none" stroke={arrastre ? '#90A4AE' : '#22C55E'} strokeWidth="16"
-          strokeDasharray={`${siLen} ${circunferencia}`}
-          transform={`rotate(-90 ${cx} ${cy})`}
-        />
-        <text x="50" y="55" textAnchor="middle" fontSize="16" fontWeight="700" fill={arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)'}>{si}%</text>
-      </svg>
-      <div style={{ fontSize: '12px', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)', marginTop: '4px' }}>{label}</div>
-      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sí</div>
-      {arrastre && <NotaArrastre arrastre={arrastre} />}
-    </div>
-  );
-};
-
-// contexto (opcional): { rondas, fecha, fechaUltima } — todas las rondas del circuito, la fecha de la ronda que se
-// muestra y la última real del circuito (solo si coinciden se dice "actual").
-// Con contexto, las preguntas que ESA ronda no midió se completan con el último dato de una ronda anterior, marcado
-// como ARRASTRE (atenuado + "Sin dato en la ronda actual · último: <fecha> · n=<n>"). Sin contexto: solo esa ronda.
-const ResumenEncuesta = ({ preguntas, contexto = null }) => {
-  const ref = contexto ? crearRefRonda(contexto.fecha, contexto.fechaUltima ?? fechaRondaActual(contexto.rondas)) : null;
-  const dato = (key) => {
-    if (preguntas[key]) return { data: preguntas[key], arrastre: null, ronda: null };
-    if (!contexto) return { data: null, arrastre: null, ronda: null };
-    const r = ultimaRondaConDato(contexto.rondas, contexto.fecha, x => x.fecha < contexto.fecha && !!x.preguntas?.[key]);
-    return r ? { data: r.preguntas[key], arrastre: { fecha: r.fecha, casos: r.casos ?? null, sinDato: ref.sinDato }, ronda: r } : { data: null, arrastre: null, ronda: null };
-  };
-  const prob = dato('Problemas principales');
-  const gest = { Intendente: dato('Gestión del Intendente'), Gobernador: dato('Gestión del Gobernador'), Presidente: dato('Gestión del Presidente') };
-  const apr = { Intendente: dato('Aprobación Intendente'), Gobernador: dato('Aprobación Gobernador'), Presidente: dato('Aprobación Presidente') };
-  const ree = { llar: dato('Reelección Llaryora'), milei: dato('Reelección Milei') };
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {prob.arrastre
-        ? <BloqueProblemas rondas={[prob.ronda]} umbral={2.5} refRonda={ref} sinComparacion />
-        : <BarraProblemas problemas={prob.data} />}
-      <SeccionGestionFuncionarios
-        gestiones={{ Intendente: gest.Intendente.data, Gobernador: gest.Gobernador.data, Presidente: gest.Presidente.data }}
-        arrastres={{ Intendente: gest.Intendente.arrastre, Gobernador: gest.Gobernador.arrastre, Presidente: gest.Presidente.arrastre }}
-      />
-      <div style={{ breakInside: 'avoid' }}>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Aprobación de gestión</h4>
-        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-          <GaugeAprobacion label="Intendente" data={apr.Intendente.data} arrastre={apr.Intendente.arrastre} />
-          <GaugeAprobacion label="Gobernador" data={apr.Gobernador.data} arrastre={apr.Gobernador.arrastre} />
-          <GaugeAprobacion label="Presidente" data={apr.Presidente.data} arrastre={apr.Presidente.arrastre} />
-        </div>
-      </div>
-      <div style={{ breakInside: 'avoid' }}>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Reelección</h4>
-        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-          <DonutReeleccion label="Llaryora (Gobernador)" data={ree.llar.data} arrastre={ree.llar.arrastre} />
-          <DonutReeleccion label="Milei (Presidente)" data={ree.milei.data} arrastre={ree.milei.arrastre} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ============================================
-// VISTA "COMPARATIVO" (solapa Encuestas) — lógica de datos compartida entre pantalla
-// (ComparativoEncuesta, JSX) y PDF (htmlComparativoEncuestaBody, HTML-string), definida
-// más abajo junto a esta última. Ya no hay sparkline (eliminado a favor de lectura
-// directa en texto plano, ver calcularVariacionIndicador) ni
-// una única función de HTML compartida: cada lado renderiza con su propia técnica
-// (JSX vs. HTML-string) sobre la MISMA lógica de cálculo, para no desincronizarse.
-// Convención de deltas: última ronda vs. anteúltima ronda (NO contra la primera) —
-// con exactamente 2 rondas la anteúltima es la primera, caso base sin nada especial.
-// ============================================
-
-// Barra apilada Positiva/Regular/Negativa/Ns-Nc (sin título). Cada segmento no nulo lleva su %: adentro
-// si entra, y si es muy fino, debajo de la barra con un conector (ver layoutSegmentos). Los 0% de
-// Positiva/Regular/Negativa se avisan siempre en una línea chica ("Regular 0%"): ni se dibujan ni se omiten
-// en silencio. La usan Calificación de gestión (web y reporte) y la vista de una sola ronda.
-const fmtPctSeg = (v) => `${Number(v).toFixed(1)}%`;
-const COLOR_TEXTO_SEGMENTO = { 'Positiva': '#fff', 'Negativa': '#fff', 'Regular': '#1a1a1a', 'Ns/Nc': '#1a1a1a' };
-const ALTO_FILA_ETIQUETA = 13;
-const TOP_ETIQUETA = 4; // separación entre la barra y la etiqueta externa
-const ALTO_CARRIL_ETIQUETA = TOP_ETIQUETA + ALTO_FILA_ETIQUETA; // una sola fila
-// Geometría única de las barras apiladas: mismo alto y mismo radio en toda ronda, bloque y estado (actual, anterior,
-// arrastre). Lo que distingue una barra de otra es el color/opacidad y el chip, nunca el tamaño.
-const ALTO_BARRA_GESTION = 24;
-const RADIO_BARRA_GESTION = 5;
-function htmlBarraSegmentosPDF(data, { height = ALTO_BARRA_GESTION, atenuada = false, carril = false } = {}) {
-  if (!data) return `<div data-barra-gestion style="height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;background:#eee"></div>`;
-  const { segs } = layoutSegmentos(data, categoriasGestion(data));
-  const segmentos = segs.map(sg => {
-    const texto = sg.dentro ? `<span style="font-size:10px;font-weight:600;color:${COLOR_TEXTO_SEGMENTO[sg.cat] || '#fff'}">${fmtPctSeg(sg.v)}</span>` : '';
-    return `<div title="${sg.cat}: ${fmtPctSeg(sg.v)}" style="flex:${sg.ancho} 1 0%;background:${colorCategoriaGestion(sg.cat)};display:flex;align-items:center;justify-content:center;min-width:2px">${texto}</div>`;
-  }).join('');
-  const barra = `<div data-barra-gestion style="display:flex;height:${height}px;border-radius:${RADIO_BARRA_GESTION}px;overflow:hidden;background:#eee;${atenuada ? 'opacity:.72' : ''}">${segmentos}</div>`;
-  const fuera = segs.filter(sg => !sg.dentro);
-  const ceros = ['Positiva', 'Regular', 'Negativa'].filter(c => data[c] === 0);
-  // El aviso de 0% va del lado del carril que no ocupa una etiqueta externa (izquierda por defecto).
-  const ladoLibre = fuera.length && Math.min(...fuera.map(sg => sg.pos)) < 30 ? 'right' : 'left';
-  const notaCeros = ceros.length ? `<span style="position:absolute;${ladoLibre}:0;top:${TOP_ETIQUETA}px;font-size:10px;line-height:${ALTO_FILA_ETIQUETA - 1}px;color:var(--text-tertiary,#777)">${ceros.map(c => `${c} 0%`).join(' · ')}</span>` : '';
-  const etiquetas = fuera.map(sg => `<div style="position:absolute;left:${sg.centro}%;top:0;width:1px;height:${TOP_ETIQUETA + 2}px;background:#9aa0a6"></div><div style="position:absolute;left:${sg.pos}%;top:${TOP_ETIQUETA}px;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:600;line-height:${ALTO_FILA_ETIQUETA - 1}px;color:var(--text-secondary,#555)"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${colorCategoriaGestion(sg.cat)};margin-right:3px"></span>${fmtPctSeg(sg.v)}</div>`).join('');
-  // Carril bajo la barra: en las barras de Calificación de gestión (carril: true) siempre ocupa el mismo alto, tenga o no
-  // etiquetas externas o aviso de 0%, para que los deltas y los bloques queden a la misma distancia en todas.
-  const alto = carril || fuera.length || ceros.length ? ALTO_CARRIL_ETIQUETA : 0;
-  const lane = alto ? `<div style="position:relative;height:${alto}px">${etiquetas}${notaCeros}</div>` : '';
-  return `${barra}${lane}`;
-}
-
-// calcularVariacionIndicador / resolverIndicador viven en lib/lecturaRondas.js (lógica pura compartida
-// entre pantalla y reporte; ahora devuelven también la fecha y el n del extremo anterior).
-
-// positivoEsSubir: polaridad del indicador, no del delta — true para Aprobación/
-// Reelección (subir es buena noticia en las 5 cards, ver
-// ITEMS_INDICADORES_COMPARATIVO), false para "Principales problemas" (subir es
-// siempre mala noticia, constante para esa tabla). colorNeutro es configurable porque
-// pantalla usa var(--text-tertiary) y el PDF necesita un hex fijo (no hereda custom
-// properties).
-function colorVariacionIndicador(estado, positivoEsSubir, colorNeutro = 'var(--text-tertiary)') {
-  if (!estado || estado === 'estable') return colorNeutro;
-  const esBueno = positivoEsSubir ? estado === 'sube' : estado === 'baja';
-  return esBueno ? '#2E7D32' : '#C62828';
-}
-
-// 5 cards: Aprobación x3 + Reelección x2. 4º elemento de cada tupla = positivoEsSubir
-// (default true si se omite, ninguna de las 5 lo necesita en false).
-// "Cordobeses en Alerta" se sacó del tablero por completo (card removida acá y de
-// htmlResumenRondaPDF) — el grid es auto-fill así que no queda hueco en el layout,
-// mismo comportamiento que ya tiene el sistema para preguntas ausentes en una ronda.
-// "Calificación de gestión" NO es una card de este grid — sigue siendo la sección
-// aparte de barras apiladas de siempre (htmlMiniPendientesGestion/ComparativoEncuesta
-// más abajo), sin ningún cambio de diseño.
-const ITEMS_INDICADORES_COMPARATIVO = [
-  ['Aprobación Intendente', 'Aprobación Intendente', 'Apruebo'],
-  ['Aprobación Gobernador', 'Aprobación Gobernador', 'Apruebo'],
-  ['Aprobación Presidente', 'Aprobación Presidente', 'Apruebo'],
-  ['Reelección Llaryora', 'Reelección Llaryora', 'Si'],
-  ['Reelección Milei', 'Reelección Milei', 'Si'],
-];
-
-// "Otro" en los datos significa "otros problemas que no están en la lista de opciones" —
-// se muestra igual (suele ser el que más se mueve, ocultarlo escondería información)
-// pero con esa aclaración, para que no se lea como un problema concreto.
-const etiquetaProblema = (cat) => cat === 'Otro' ? 'Otro (otros problemas no listados)' : cat;
-
-const NOTA_SEMANTICA_PROBLEMAS = 'En problemas, que un porcentaje suba es una mala señal (rojo) y que baje es una buena señal (verde): al revés que en Aprobación.';
-
-// --- "Calificación de gestión" (barras apiladas). Una barra por ronda, de la más antigua (arriba) a la
-// actual (abajo). Cada barra lleva su chip de ronda + n; la actual va enfatizada (más alta, opacidad plena,
-// chip "actual") y las anteriores atenuadas. Desde la segunda barra, una línea "vs 11-07" declara contra
-// qué ronda se comparan los deltas (siempre contra la barra INMEDIATAMENTE ANTERIOR del mismo funcionario).
-// Si el funcionario no se midió en la ronda actual, todo el bloque va como ARRASTRE (gris, borde punteado,
-// "Sin dato en la ronda actual · último: …"). Sin límite de rondas: no hay nada pensado para 2 o 3. ---
-// Polaridad de "sube = buena noticia" por categoría: Positiva/Regular subiendo es bueno (verde),
-// Negativa/Ns-Nc subiendo es malo (rojo) — y a la inversa si bajan.
-const POSITIVO_ES_SUBIR_GESTION = { 'Positiva': true, 'Regular': true, 'Negativa': false, 'Ns/Nc': false };
-
-// Delta de una categoría: "Positiva ▲ +13.3 pp" (verde/rojo según polaridad) o "Regular · estable" por
-// debajo del umbral. atenuado: gris neutro (bloques de arrastre).
-function htmlDeltaCategoriaGestion(cat, delta, umbral, atenuado) {
-  const r = Math.round(delta * 10) / 10;
-  if (Math.abs(r) < umbral) return `<span style="color:var(--text-tertiary,#777);white-space:nowrap">${cat} · estable</span>`;
-  if (!(cat in POSITIVO_ES_SUBIR_GESTION) && !categoriasGestionAvisadas.has(cat)) {
-    categoriasGestionAvisadas.add(cat);
-    console.warn(`Calificación de gestión: categoría "${cat}" no reconocida (sin polaridad mapeada), asumiendo "sube = bueno".`);
-  }
-  const sube = r > 0;
-  const esBueno = (POSITIVO_ES_SUBIR_GESTION[cat] ?? true) ? sube : !sube;
-  const color = atenuado ? 'var(--text-tertiary,#777)' : (esBueno ? '#2E7D32' : '#C62828');
-  return `<span style="font-weight:600;color:${color};white-space:nowrap">${cat} ${sube ? '▲' : '▼'} ${signoPP(r)}</span>`;
-}
-
-function htmlDeltasGestion(previa, actual, fechaPrevia, umbral, atenuado) {
-  const cats = categoriasGestion(actual).filter(c => (actual[c] > 0 || previa[c] > 0));
-  const items = cats.map(c => htmlDeltaCategoriaGestion(c, (actual[c] || 0) - (previa[c] || 0), umbral, atenuado)).join('');
-  return `<div style="display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:3px;font-size:10.5px"><span title="Comparado con la ronda del ${formatearFecha(fechaPrevia)}" style="font-weight:600;color:var(--text-tertiary,#777)">vs ${fechaCorta(fechaPrevia)}</span>${items}</div>`;
-}
-
-function htmlMiniPendienteGestion(funcionario, rondas, umbral, ref = crearRefRonda(fechaRondaActual(rondas), fechaRondaActual(rondas))) {
-  const pregunta = `Gestión del ${funcionario}`;
-  const titulo = `<div style="font-size:13px;color:var(--text-secondary,#555);font-weight:600;margin-bottom:6px">Calificación de gestión: ${funcionario}</div>`;
-  const filas = ordenarRondas(rondas).map(r => ({ fecha: r.fecha, casos: r.casos ?? null, data: r.preguntas?.[pregunta] })).filter(f => f.data);
-  if (filas.length === 0) {
-    return `<div style="margin-bottom:16px">${titulo}<p style="font-size:12px;color:var(--text-tertiary,#777);margin:0">Sin dato en las rondas elegidas.</p></div>`;
-  }
-  const arrastre = filas[filas.length - 1].fecha !== ref.fecha;
-  const barras = filas.map((f, i) => {
-    const esReciente = !arrastre && i === filas.length - 1;
-    const esActual = esReciente && ref.esUltima;
-    const atenuada = arrastre || !esReciente;
-    const deltas = i > 0 ? htmlDeltasGestion(filas[i - 1].data, f.data, filas[i - 1].fecha, umbral, atenuada) : '';
-    return `<div style="margin-bottom:10px;break-inside:avoid">
-      <div style="margin-bottom:3px">${htmlChipRonda(f.fecha, { casos: f.casos, actual: esActual })}</div>
-      ${htmlBarraSegmentosPDF(f.data, { atenuada, carril: true })}
-      ${deltas}
-    </div>`;
-  }).join('');
-  if (!arrastre) return `<div style="margin-bottom:18px;break-inside:avoid">${titulo}${barras}</div>`;
-  const ult = filas[filas.length - 1];
-  return `<div data-estado-gestion="arrastre" style="margin-bottom:18px;break-inside:avoid;background:var(--bg-secondary,#f3f4f6);border:1px dashed var(--border,#d9d9d9);border-radius:8px;padding:8px 10px">
-    <div style="font-size:13px;color:var(--text-tertiary,#777);font-weight:600;margin-bottom:2px">Calificación de gestión: ${funcionario}</div>
-    <div style="font-size:10.5px;font-weight:600;color:var(--text-tertiary,#777);margin-bottom:6px">${ref.sinDato}${ref.esUltima ? ` (${formatearFecha(ref.fecha)})` : ''} · se muestra el último dato disponible: ${formatearFecha(ult.fecha)}${ult.casos != null ? ` · n=${ult.casos}` : ''}</div>
-    ${barras}
-  </div>`;
-}
-
-function htmlMiniPendientesGestion(rondas, umbral, fechaUltima = fechaRondaActual(rondas)) {
-  const ref = crearRefRonda(fechaRondaActual(rondas), fechaUltima);
-  const nota = (rondas || []).length >= 2
-    ? `<div style="font-size:11px;color:var(--text-tertiary,#777);margin-bottom:10px;break-after:avoid;page-break-after:avoid">Cada barra es una ronda, de la más antigua (arriba) a la más reciente (abajo). Los cambios en pp se comparan con la barra de arriba.</div>` : '';
-  return nota + ['Intendente', 'Gobernador', 'Presidente'].map(f => htmlMiniPendienteGestion(f, rondas, umbral, ref)).join('');
-}
-
-function htmlLegendGestion() {
-  const items = ['Positiva', 'Regular', 'Negativa'].map(cat =>
-    `<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${COLOR_GESTION[cat]}"></div><span style="font-size:11px;color:#666">${cat}</span></div>`
-  ).join('');
-  return `<div style="display:flex;gap:14px;margin-top:6px">${items}</div>`;
-}
-
-// ============================================
-// VISTA "COMPARATIVO" — JSX puro sobre la lógica de lib/lecturaRondas.js. Pantalla, reporte y ficha PDF usan estos
-// mismos componentes (el PDF los renderiza a HTML estático), así que no hay un segundo render para mantener.
-// ============================================
-
-// Acento por tipo de pregunta (encuestas_metadata.json → preguntas[pregunta].tipo) —
-// mismos colores ya usados en otras partes del tablero, no inventados para esto:
-// Aprobación = azul primario del tablero, Reelección = teal de TERRITORIO LEAL/
-// Relevado, neutro = gris pizarra de EN DISPUTA/ADVERSO (fallback para cualquier tipo
-// futuro sin color asignado en ITEMS_INDICADORES_COMPARATIVO).
-const ACENTO_TIPO_PREGUNTA = { Aprobacion: '#1976D2', Reeleccion: '#26A69A' };
-const ACENTO_TIPO_NEUTRO = '#78909C';
-const colorAcentoTipoPregunta = (tipo) => ACENTO_TIPO_PREGUNTA[tipo] || ACENTO_TIPO_NEUTRO;
-
-// Trayectoria del indicador con TODOS sus puntos y fechas: "abr 41.0% → jul 35.2% → oct 44.5%" y el delta del último
-// paso con su referencia declarada: "▼ −5.5 pp vs jul" (o "· Estable vs jul"). Con dos mediciones es "abr X% → jul Y%".
-// Nunca un delta sin saber contra qué fecha se compara. null con una sola medición.
-const signoPP = (d) => `${d > 0 ? '+' : d < 0 ? '−' : ''}${Math.abs(d).toFixed(1)} pp`;
-function trayectoriaIndicador(v, positivoEsSubir, { atenuada = false } = {}) {
-  if (!v || v.estado == null || !v.serie || v.serie.length < 2) return null;
-  const et = etiquetasSerie(v.serie.map(d => d.fecha));
-  const color = atenuada ? 'var(--text-tertiary)' : colorVariacionIndicador(v.estado, positivoEsSubir);
-  const delta = v.estado === 'estable' ? '· Estable' : `${v.estado === 'sube' ? '▲' : '▼'} ${signoPP(v.delta)}`;
-  return {
-    camino: v.serie.map((d, i) => `${et[i]} ${d.valor.toFixed(1)}%`).join(' → '),
-    delta, vs: `vs ${et[et.length - 2]}`, color,
-    titulo: `${formatearFecha(v.fechaAnterior)} → ${formatearFecha(v.fechaActual)}`,
-  };
-}
-
-// Tarjeta de un indicador. UNA sola estructura para actual y arrastre (cada elemento en la misma posición):
-//   Renglón 1: título.
-//   Renglón 2: número grande + chip de fecha/estado pegado al número + n (el ancla de fecha que el ojo busca).
-//   Renglón 3: trayectoria + delta con su "vs <mes>".
-// Lo único que cambia es el tratamiento:
-//  · ACTUAL   — tarjeta al frente (fondo blanco, borde de color); el chip dice "<fecha> · actual" si es la última
-//    ronda real del circuito y solo la fecha si la ventana la excluye.
-//  · ARRASTRE — la ronda de referencia no midió la pregunta: tarjeta gris con borde punteado y valores tenues;
-//    el chip dice "<fecha> · sin dato nuevo". Conserva su propia comparación (con su "vs").
-const CardIndicadorComparativo = ({ label, rondas, pregunta, categoria, umbral, positivoEsSubir = true, colorAcento, refRonda }) => {
-  const v = resolverIndicador(rondas, refRonda.fecha, r => r.preguntas?.[pregunta]?.[categoria], umbral);
-  const base = { padding: '14px 16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '104px' };
-  if (!v) {
-    return (
-      <div style={{ ...base, backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)' }}>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-tertiary)' }}>{label}</div>
-        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Sin dato en las rondas elegidas</div>
-      </div>
-    );
-  }
-  const arrastre = v.esArrastre;
-  const tray = trayectoriaIndicador(v, positivoEsSubir, { atenuada: arrastre });
-  return (
-    <div data-estado-indicador={arrastre ? 'arrastre' : 'actual'} style={arrastre
-      ? { ...base, backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)' }
-      : { ...base, backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)', borderLeft: `4px solid ${colorAcento}`, boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>
-      <div style={{ fontSize: '13px', fontWeight: 600, color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{label}</div>
-      <div data-fila-fecha style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px' }}>
-        <span style={{ fontSize: '24px', fontWeight: 700, lineHeight: 1.1, whiteSpace: 'nowrap', color: arrastre ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{v.actual.toFixed(1)}%</span>
-        <ChipRonda fecha={v.fechaActual} casos={v.actualCasos} actual={!arrastre && refRonda.esUltima} etiqueta={arrastre ? 'sin dato nuevo' : null} />
-      </div>
-      {tray ? (
-        <div title={tray.titulo} style={{ fontSize: '11.5px', color: 'var(--text-tertiary)' }}>
-          {tray.camino}{' '}<span style={{ fontWeight: 700, color: tray.color, whiteSpace: 'nowrap' }}>{tray.delta}</span>{' '}<span style={{ whiteSpace: 'nowrap' }}>{tray.vs}</span>
-        </div>
-      ) : (
-        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>sin dato anterior</div>
-      )}
-    </div>
-  );
-};
-
-// Una sola grilla continua con wrap para Aprobación + Reelección + cualquier otra pregunta que se agregue.
-// Primero las tarjetas ACTUALES y después las de ARRASTRE (mismo orden relativo dentro de cada grupo), para
-// que lo que no se midió esta ronda quede agrupado y atrás.
-const GridIndicadoresComparativo = ({ rondas, umbral, metadata, refRonda }) => {
-  const items = ITEMS_INDICADORES_COMPARATIVO.map(([label, pregunta, categoria, positivoEsSubir = true]) => ({
-    label, pregunta, categoria, positivoEsSubir,
-    arrastre: !!resolverIndicador(rondas, refRonda.fecha, r => r.preguntas?.[pregunta]?.[categoria], umbral)?.esArrastre,
-  }));
-  const ordenados = [...items.filter(i => !i.arrastre), ...items.filter(i => i.arrastre)];
-  const hayArrastre = items.some(i => i.arrastre);
-  return (
-    <div>
-      {hayArrastre && (
-        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px', breakAfter: 'avoid' }}>
-          Las tarjetas grises con borde punteado no se midieron en {refRonda.rotuloFecha}: muestran el último dato disponible, que es más viejo.
-        </div>
-      )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
-        {ordenados.map(i => (
-          <CardIndicadorComparativo
-            key={i.label} label={i.label} rondas={rondas} pregunta={i.pregunta} categoria={i.categoria} umbral={umbral} positivoEsSubir={i.positivoEsSubir}
-            refRonda={refRonda} colorAcento={colorAcentoTipoPregunta(metadata?.preguntas?.[i.pregunta]?.tipo)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// --- Principales problemas: UNA sola vista y UNA sola pareja de comparación. ---
-// La pareja son las dos últimas rondas que SÍ midieron problemas (la fecha es la real de la medición, no la
-// de la ronda actual). Si la ronda actual no relevó el bloque, queda atenuado y el encabezado lo dice.
-// Polaridad constante: subir = rojo (más gente lo percibe como problema), bajar = verde.
-const DeltaProblema = ({ f, atenuado }) => {
-  if (f.estado == null) return <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>—</span>;
-  const color = atenuado ? 'var(--text-tertiary)' : colorVariacionIndicador(f.estado, false);
-  return (
-    <span style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
-      <span style={{ fontWeight: 700, color }}>{f.estado === 'estable' ? '· Estable' : `${f.estado === 'sube' ? '▲' : '▼'} ${signoPP(f.delta)}`}</span>
-      <span style={{ color: 'var(--text-tertiary)', fontSize: '11px' }}> · antes {f.anterior.toFixed(1)}%</span>
-    </span>
-  );
-};
-
-const BloqueProblemas = ({ rondas, umbral, refRonda, sinComparacion = false }) => {
-  const b = calcularBloqueProblemas(rondas, umbral, refRonda.fecha);
-  const h4 = { fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 };
-  if (!b) {
-    return (
-      <div style={{ breakInside: 'avoid' }}>
-        <h4 style={h4}>Principales problemas</h4>
-        <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: 0 }}>Esta pregunta no se midió en las rondas elegidas.</p>
-      </div>
-    );
-  }
-  const arr = b.esArrastre;
-  return (
-    <div data-estado-problemas={arr ? 'arrastre' : 'actual'} style={{ breakInside: 'avoid', ...(arr ? { backgroundColor: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: '10px', padding: '10px 14px' } : {}) }}>
-      <h4 style={{ ...h4, color: arr ? 'var(--text-tertiary)' : 'var(--text-secondary)' }}>
-        {arr ? `Problemas · última medición: ${formatearFecha(b.ultima.fecha)} (${refRonda.rotulo} no relevó este bloque)` : 'Principales problemas'}
-      </h4>
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 12px', marginBottom: '10px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
-        <ChipRonda fecha={b.ultima.fecha} casos={b.ultima.casos} actual={!arr && refRonda.esUltima} etiqueta={arr ? 'sin dato nuevo' : null} />
-        <span>
-          {sinComparacion ? 'valores de esa medición, sin comparación' : b.previa
-            ? `comparación ${formatearFecha(b.previa.fecha)} → ${formatearFecha(b.ultima.fecha)} · variación en puntos porcentuales (pp)`
-            : 'sin otra medición en las rondas elegidas para comparar'}
-        </span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {b.filas.map(f => (
-          <div key={f.cat} style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <div style={{ width: '170px', flexShrink: 0, fontSize: '12.5px', color: arr ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{etiquetaProblema(f.cat)}</div>
-            <div style={{ flex: '1 1 120px', minWidth: '120px', display: 'flex' }}><BarraHorizontalPct pct={Number(f.valor.toFixed(1))} color={arr ? '#90A4AE' : '#1976D2'} /></div>
-            <div style={{ fontSize: '13px', fontWeight: 700, minWidth: '46px', textAlign: 'right', color: arr ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{f.valor.toFixed(1)}%</div>
-            {b.previa && !sinComparacion && <div style={{ minWidth: '130px', textAlign: 'right' }}><DeltaProblema f={f} atenuado={arr} /></div>}
-          </div>
-        ))}
-      </div>
-      <div style={{ fontSize: '10.5px', color: 'var(--text-tertiary)', marginTop: '8px' }}>
-        {b.hayMas ? `Se muestran los ${MAX_PROBLEMAS} más mencionados. ` : ''}{NOTA_SEMANTICA_PROBLEMAS}
-      </div>
-    </div>
-  );
-};
-
-// fechaUltima: última ronda REAL del circuito (puede no estar en `encuesta.rondas` si la ventana la excluye).
-const ComparativoEncuesta = ({ encuesta, umbral, metadata, fechaUltima }) => {
-  const rondas = encuesta.rondas;
-  const ultimaCircuito = fechaUltima ?? fechaRondaActual(rondas);
-  const refRonda = crearRefRonda(fechaRondaActual(rondas), ultimaCircuito);
-  return (
-    <div>
-      <FilaChipsRondas rondas={rondas} fechaUltima={ultimaCircuito} />
-      <div style={{ marginBottom: '28px', breakInside: 'avoid' }}>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: 500 }}>Indicadores</h4>
-        <GridIndicadoresComparativo rondas={rondas} umbral={umbral} metadata={metadata} refRonda={refRonda} />
-      </div>
-      {/* Barras apiladas por ronda, vía dangerouslySetInnerHTML para reusar exactamente el mismo render
-          que el reporte (htmlMiniPendientesGestion): chip de ronda, actual enfatizada, deltas con "vs <fecha>". */}
-      <div style={{ marginBottom: '28px' }}>
-        <h4 style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 500 }}>Calificación de gestión</h4>
-        <div dangerouslySetInnerHTML={{ __html: htmlMiniPendientesGestion(rondas, umbral, ultimaCircuito) + htmlLegendGestion() }} />
-      </div>
-      <BloqueProblemas rondas={rondas} umbral={umbral} refRonda={refRonda} />
-    </div>
-  );
-};
-
 // fechaRondaInicial (opcional): pedido puntual de qué ronda mostrar al montar (ver
 // click en evento de Medición de TablaEventosCobertura, irACircuitoDesdeGrillaMedicion).
 // Sin ese pedido, o si la fecha no matchea ninguna ronda de ESTE circuito, se cae al
-// comportamiento de siempre (última ronda) — no rompe ningún otro caller.
+// comportamiento de siempre (las 3 rondas más recientes) — no rompe ningún otro caller.
 const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
-  const [rondaIdx, setRondaIdx] = useState(() => {
-    if (!fechaRondaInicial) return encuesta.rondas.length - 1;
-    const idx = encuesta.rondas.findIndex(r => r.fecha === fechaRondaInicial);
-    return idx >= 0 ? idx : encuesta.rondas.length - 1;
+  const rondas = encuesta.rondas;
+  // Rondas a comparar (máx. 3). Por defecto las 3 más recientes; con fechaRondaInicial, la ventana de 3 que termina en esa ronda.
+  const [fechas, setFechas] = useState(() => {
+    const orden = [...rondas].sort((x, y) => (x.fecha < y.fecha ? -1 : 1));
+    const idx = fechaRondaInicial ? orden.findIndex(r => r.fecha === fechaRondaInicial) : -1;
+    return idx >= 0 ? orden.slice(Math.max(0, idx - MAX_RONDAS + 1), idx + 1).map(r => r.fecha) : fechasPorDefecto(rondas);
   });
-  const [vista, setVista] = useState('resumen');
-  const ronda = encuesta.rondas[rondaIdx];
+  const mostradas = seleccionarRondas(rondas, fechas);
+  const ultimaMostrada = mostradas[mostradas.length - 1].fecha;
   const umbral = metadata?.umbral_variacion_pp ?? 2.5;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} ventanaHasta={vista === 'resumen' ? ronda.fecha : fechaRondaActual(encuesta.rondas)} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500 }}>
-          {vista === 'resumen'
-            ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>Encuesta <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={rondaIdx === encuesta.rondas.length - 1} /></span>
-            : 'Comparativo entre rondas'}
-        </div>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          {vista === 'resumen' && encuesta.rondas.length > 1 && (
-            <select value={rondaIdx} onChange={(e) => setRondaIdx(Number(e.target.value))} style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '12px', backgroundColor: '#fff' }}>
-              {encuesta.rondas.map((r, i) => <option key={i} value={i}>{formatearFechaRonda(r.fecha, r.casos)}</option>)}
-            </select>
-          )}
-          {encuesta.tiene_comparativo && (
-            <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', padding: '3px' }}>
-              <button onClick={() => setVista('resumen')} style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', backgroundColor: vista === 'resumen' ? '#1976D2' : 'transparent', color: vista === 'resumen' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Resumen</button>
-              <button onClick={() => setVista('comparativo')} style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', backgroundColor: vista === 'comparativo' ? '#1976D2' : 'transparent', color: vista === 'comparativo' ? '#fff' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>Comparativo</button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {vista === 'resumen'
-        ? <ResumenEncuesta preguntas={ronda.preguntas} contexto={{ rondas: encuesta.rondas, fecha: ronda.fecha, fechaUltima: fechaRondaActual(encuesta.rondas) }} />
-        : <ComparativoEncuesta encuesta={encuesta} umbral={umbral} metadata={metadata} />}
+      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} ventanaHasta={ultimaMostrada} />
+      {rondas.length > 1 && <SelectorRondas rondas={rondas} seleccion={fechas} onChange={setFechas} />}
+      <EncuestasBlock rondas={rondas} fechas={fechas} />
 
       {metadata?.escenarios_gobernador && (
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-          <SeccionIntencionVoto encuesta={encuesta} meta={metadata.escenarios_gobernador} umbral={umbral} vista={vista} fechaRonda={ronda.fecha} />
+          <SeccionIntencionVoto encuesta={encuesta} meta={metadata.escenarios_gobernador} umbral={umbral} vista={mostradas.length > 1 ? 'comparativo' : 'resumen'} fechaRonda={ultimaMostrada} />
         </div>
       )}
     </div>
@@ -3483,10 +2924,10 @@ const ModalObra = ({ obra, onClose, onSelectObra, obrasEnriquecidas }) => {
 // de encuesta incluir — solo visible con 2+ rondas). Datos de barrios: mismos que la
 // tabla "Barrios del circuito" de la solapa Territorio, ordenados por población (no
 // por orden_importancia) y con el principal premarcado.
-const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBarrio, onSetModoEncuestas, onToggleRonda, onExportar, onCancelar }) => {
+const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBarrio, onSetFechasEncuestas, onExportar, onCancelar }) => {
   const overlayRef = useFocusTrap(!!dialog);
   if (!dialog) return null;
-  const { barrios, seleccionados, principalNorm, modoEncuestas, rondasSeleccionadas } = dialog;
+  const { barrios, seleccionados, principalNorm, fechasEncuestas } = dialog;
   const cantidadBarrios = seleccionados.size;
   const textoBoton = cantidadBarrios === 0
     ? 'Exportar circuito'
@@ -3525,31 +2966,8 @@ const DialogExportFicha = ({ datosCircuito, dialog, encuestaCircuito, onToggleBa
         {mostrarSeccionEncuestas && (
           <div style={{ marginBottom: '8px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
             <h3 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Encuestas</h3>
-            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>El circuito tiene {rondas.length} rondas. Elegí qué incluir en el PDF.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                <input type="radio" name="modoEncuestasExport" checked={modoEncuestas === 'ultima'} onChange={() => onSetModoEncuestas('ultima')} />
-                Última ronda
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                <input type="radio" name="modoEncuestasExport" checked={modoEncuestas === 'elegir'} onChange={() => onSetModoEncuestas('elegir')} />
-                Elegir rondas
-              </label>
-              {modoEncuestas === 'elegir' && (
-                <div style={{ marginLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px', padding: '8px 0' }}>
-                  {rondas.map((r, i) => (
-                    <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                      <input type="checkbox" checked={rondasSeleccionadas.has(i)} onChange={() => onToggleRonda(i)} />
-                      {formatearFecha(r.fecha)}
-                    </label>
-                  ))}
-                </div>
-              )}
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                <input type="radio" name="modoEncuestasExport" checked={modoEncuestas === 'comparativo'} onChange={() => onSetModoEncuestas('comparativo')} />
-                Comparativo
-              </label>
-            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>El circuito tiene {rondas.length} rondas. Elegí hasta {MAX_RONDAS} para comparar en el PDF (por defecto, las más recientes).</p>
+            <SelectorRondas rondas={rondas} seleccion={fechasEncuestas} onChange={onSetFechasEncuestas} compacto />
           </div>
         )}
 
@@ -4326,60 +3744,20 @@ function htmlTendenciasCircuitoPDF(datos) {
   <div style="font-size:13px;color:#666;margin-top:10px">Ganó ${datos.Victorias_Total}/4 elecciones. ${datos.Crecio_vs_Capital ? 'Creció más que Capital con Llaryora.' : 'Creció menos que Capital con Llaryora.'} ${datos.Sch_Mejoro ? 'Mejoró en legislativas.' : 'Empeoró en legislativas.'}</div>
 </div>`;
 }
-function htmlBarraCategoriasPDF(label, data, delta) {
-  if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
-  const deltaHtml = delta != null ? `<span class="${delta > 0 ? 'green' : delta < 0 ? 'red' : ''}" style="font-weight:600">${delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} ${delta > 0 ? '+' : ''}${delta.toFixed(1)} pp</span>` : '';
-  return `<div style="margin-bottom:10px">
-    <div style="font-size:11px;color:#1a1a1a;margin-bottom:4px;display:flex;justify-content:space-between"><span>${label}</span>${deltaHtml}</div>
-    ${htmlBarraSegmentosPDF(data, { height: 18 })}
-  </div>`;
-}
-function htmlMejoraPDF(label, data, delta) {
-  if (!data) return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#1a1a1a;margin-bottom:4px">${label}</div><p style="font-size:11px;color:#999">Sin dato.</p></div>`;
-  const segmentos = [
-    ['Si, mucho', '#22C55E'], ['Si, algo', '#86EFAC'], ['No', '#EF4444'],
-  ].map(([cat, color]) => {
-    const v = data[cat];
-    if (!v || v <= 0) return '';
-    const texto = v > 10 ? `<span style="font-size:9px;color:#fff;font-weight:600">${v}%</span>` : '';
-    return `<div style="width:${v}%;background:${color};display:flex;align-items:center;justify-content:center">${texto}</div>`;
-  }).join('');
-  const deltaHtml = delta != null ? `<span class="${delta > 0 ? 'green' : delta < 0 ? 'red' : ''}" style="font-weight:600">${delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} ${delta > 0 ? '+' : ''}${delta.toFixed(1)} pp</span>` : '';
-  return `<div style="margin-bottom:10px">
-    <div style="font-size:11px;color:#1a1a1a;margin-bottom:4px;display:flex;justify-content:space-between"><span>${label}</span>${deltaHtml}</div>
-    <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:#eee">${segmentos}</div>
-  </div>`;
-}
-// Sección "Encuestas" de la ficha: a PARIDAD con el reporte. Usa exactamente el mismo cuerpo
-// (components/reporte/encuestasHtml.js) — mismo fechado honesto de bloques, mismo tratamiento actual/arrastre, mismos
-// chips de ronda, misma estructura de tarjeta y misma trayectoria — más el Resumen de la ronda actual (con el
-// titular de voto) arriba. Los 3 modos del diálogo se traducen a las mismas opciones del reporte:
-//   'ultima' → ronda única (la última)          'comparativo' → evolución de todas las rondas (o las dos)
-//   'elegir' → una sección por cada ronda elegida (cada una con su arrastre propio)
-function htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, modo, indicesRondas, T }) {
+// Sección "Encuestas" de la ficha: el MISMO <EncuestasBlock> que la pantalla y el reporte (components/reporte/encuestasHtml.js),
+// con las rondas elegidas en el diálogo de export (máx. 3, las más recientes, de la más vieja a la más nueva), más el
+// Resumen de la ronda actual (con el titular de voto) arriba.
+function htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, fechas, T }) {
   const titulo = (t) => `<h3>${t}</h3>`;
   if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
     return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
   }
   const rondas = encuestaCircuito.rondas;
   const umbral = encuestasMetadata?.umbral_variacion_pp ?? 2.5;
-  const cuerpo = (opciones) => htmlEncuestasCuerpo({
-    rondas, opciones, umbral, metadata: encuestasMetadata, T,
-    ui: { ResumenEncuesta, ComparativoEncuesta }, fn: { htmlBarraCategoriasPDF, htmlMejoraPDF, formatearFecha },
-  }).join('');
-  // En 'elegir' la ventana puede no llegar a la última ronda: el resumen lo aclara (siempre refleja la última del circuito).
-  const hasta = modo === 'elegir' ? fechaRondaActual((indicesRondas || []).filter(i => rondas[i]).map(i => rondas[i])) : null;
-  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} ventanaHasta={hasta} />);
-  if (modo === 'comparativo') {
-    if (rondas.length < 2) return `<div class="section">${titulo('Encuestas — Comparativo')}<p style="color:#999;font-size:12px">Sin datos suficientes para comparar.</p></div>`;
-    return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas — Comparativo')}${cuerpo({ comparativo: true, ronda: false, todas: rondas.length >= 3 })}</div>`;
-  }
-  if (modo === 'elegir') {
-    const elegidas = (indicesRondas || []).filter(i => rondas[i]);
-    if (elegidas.length === 0) return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">Sin rondas seleccionadas.</p></div>`;
-    return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div>` + elegidas.map(i => `<div class="section es-enc">${titulo('Encuestas')}${cuerpo({ ronda: true, comparativo: false, rondaIdx: i })}</div>`).join('');
-  }
-  return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas')}${cuerpo({ ronda: true, comparativo: false })}</div>`;
+  const mostradas = seleccionarRondas(rondas, fechas);
+  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} ventanaHasta={fechaRondaActual(mostradas)} />);
+  const cuerpo = htmlEncuestasCuerpo({ rondas, opciones: { fechas }, T }).join('');
+  return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas')}${cuerpo}</div>`;
 }
 
 // Sección "barrio" del PDF (población, contexto político, barrios cercanos, visitas,
@@ -4454,6 +3832,7 @@ ${INCLUIR_ESCUELAS_PDF ? `<div class="section"><h3>Votos por escuela</h3>${htmlE
 // consistentes con el resto de la ficha.
 function estilosFichaPDF() {
   return `
+@page{size:A4;margin:12mm}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:30px;max-width:850px;margin:0 auto;color:#1a1a1a;font-size:13px}
 .header{border-bottom:3px solid #1976D2;padding-bottom:16px;margin-bottom:24px}
@@ -4563,11 +3942,8 @@ const generarFichaPDF = ({
   // (puede ser [], uno, o varios). Sin este parámetro (llamador legado), se cae al
   // comportamiento de siempre: solo el barrio principal.
   nombresBarriosParaExportar,
-  // Sección "Encuestas" del diálogo de export: 'ultima' (default, comportamiento de
-  // siempre) | 'elegir' (una sección completa por ronda, ver rondasSeleccionadas) |
-  // 'comparativo' (vista comparativa del bloque A, en versión print).
-  modoEncuestas,
-  rondasSeleccionadas,
+  // Rondas de Encuestas elegidas en el diálogo de export (fechas ISO, máx. 3). Sin dato: las 3 más recientes.
+  fechasEncuestas,
   // T = { md } con renderToStaticMarkup (react-dom/server se carga recién al exportar, ver confirmarExportCircuito).
   T,
 }) => {
@@ -4588,10 +3964,9 @@ const generarFichaPDF = ({
   // --- Barrio principal del circuito (dirección inversa de resolverCircuitoPrincipalDeBarrio) ---
   const barrioPrincipal = resolverBarrioPrincipalDeCircuito(datos, cruceData, barriosGeoLookup);
 
-  // --- Encuestas del circuito: mismo criterio de agrupación que ResumenEncuesta en pantalla.
-  // modoEncuestas viene del diálogo de export; sin dato (llamador legado) se cae al
-  // comportamiento de siempre (última ronda). ---
-  const encuestaHtml = htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, modo: modoEncuestas, indicesRondas: rondasSeleccionadas, T });
+  // --- Encuestas del circuito: mismo <EncuestasBlock> que la pantalla y el reporte.
+  // fechasEncuestas viene del diálogo de export; sin dato (llamador legado) se muestran las 3 rondas más recientes. ---
+  const encuestaHtml = htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, fechas: fechasEncuestas, T });
 
   const escuelasCircuitoHtml = INCLUIR_ESCUELAS_PDF ? `
 <div class="section">
@@ -4759,13 +4134,13 @@ ${barrioPartHtml}
 const REGISTRO_REPORTE = crearRegistroSecciones({
   ui: {
     SolapaResumen, SolapaEvolucion, SolapaPartidos, SolapaComparativas, SolapaTerritorio, SolapaResumenBarrio,
-    SolapaTerritorioBarrio, SolapaEscuelasBarrio, ResumenEncuesta, ComparativoEncuesta,
+    SolapaTerritorioBarrio, SolapaEscuelasBarrio,
     CabeceraCapital, ResultadosCapital, Badge, COLORES_CATEGORIA,
   },
   fn: {
     formatearFecha, normalizarNombreBarrio, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio,
     compararMapkey, estadoMostradoPauta, obtenerPautasDeBarrio, unificarVisitasPDF, visitasCircuitoPDF,
-    htmlPautaPDF, htmlPautaCircuitoPDF, pautaCircuitoPDF, htmlObrasPDF, htmlBarraCategoriasPDF, htmlMejoraPDF,
+    htmlPautaPDF, htmlPautaCircuitoPDF, pautaCircuitoPDF, htmlObrasPDF,
     formatPct,
   },
 });
@@ -4851,7 +4226,7 @@ export default function Home() {
   const [vistaObrasModo, setVistaObrasModo] = useState('tabla'); // 'tabla' | 'calendario'
   const [vistaObrasAnio, setVistaObrasAnio] = useState(() => new Date().getFullYear());
   const [vistaObrasMes, setVistaObrasMes] = useState(() => new Date().getMonth());
-  const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre>, principalNorm, modoEncuestas, rondasSeleccionadas: Set<idx> } | null — diálogo de opciones de exportación de la ficha de un circuito
+  const [dialogExportCircuito, setDialogExportCircuito] = useState(null); // { barrios, seleccionados: Set<nombre>, principalNorm, fechasEncuestas: string[] } | null — diálogo de opciones de exportación de la ficha de un circuito
   const [modalReporteAbierto, setModalReporteAbierto] = useState(false); // modal "Generar reporte" (secciones elegibles, ver SECCIONES_REPORTE)
   const [solapaActivaBarrio, setSolapaActivaBarrio] = useState('resumen'); // estado de tabs separado del de circuito (evita choques de clave, ej. 'resumen'/'escuelas'/'obras' existen en los dos)
 
@@ -5275,13 +4650,11 @@ export default function Home() {
     const seleccionados = new Set(
       barriosCircuitoOrdenados.filter(b => principalNorm && normalizarNombreBarrio(b.nombre) === principalNorm).map(b => b.nombre)
     );
-    const cantidadRondas = encuestaCircuito?.cantidad_rondas || 0;
     setDialogExportCircuito({
       barrios: barriosCircuitoOrdenados,
       seleccionados,
       principalNorm,
-      modoEncuestas: 'ultima',
-      rondasSeleccionadas: new Set(Array.from({ length: cantidadRondas }, (_, i) => i)),
+      fechasEncuestas: fechasPorDefecto(encuestaCircuito?.rondas || []),
     });
   };
 
@@ -5294,17 +4667,8 @@ export default function Home() {
     });
   };
 
-  const setModoEncuestasExportCircuito = (modo) => {
-    setDialogExportCircuito(prev => prev ? { ...prev, modoEncuestas: modo } : prev);
-  };
-
-  const toggleRondaExportCircuito = (idx) => {
-    setDialogExportCircuito(prev => {
-      if (!prev) return prev;
-      const rondasSeleccionadas = new Set(prev.rondasSeleccionadas);
-      if (rondasSeleccionadas.has(idx)) rondasSeleccionadas.delete(idx); else rondasSeleccionadas.add(idx);
-      return { ...prev, rondasSeleccionadas };
-    });
+  const setFechasEncuestasExportCircuito = (fechasEncuestas) => {
+    setDialogExportCircuito(prev => prev ? { ...prev, fechasEncuestas } : prev);
   };
 
   // Cero barrios marcados = solo la parte de circuito (generarFichaPDF no agrega
@@ -5319,8 +4683,7 @@ export default function Home() {
       recorridosLookup, pautasBarriosData, obrasEnriquecidas,
       votosEscuelasCircuitoData, votosEscuelasBarrioLookup, votosEscuelasBarrioData,
       nombresBarriosParaExportar: Array.from(dialogExportCircuito.seleccionados),
-      modoEncuestas: dialogExportCircuito.modoEncuestas,
-      rondasSeleccionadas: Array.from(dialogExportCircuito.rondasSeleccionadas).sort((a, b) => a - b),
+      fechasEncuestas: dialogExportCircuito.fechasEncuestas,
       T: { md: (el) => renderToStaticMarkup(el) },
     });
     abrirVentanaImpresion(html);
@@ -5362,8 +4725,7 @@ export default function Home() {
           dialog={dialogExportCircuito}
           encuestaCircuito={encuestaCircuito}
           onToggleBarrio={toggleBarrioExportCircuito}
-          onSetModoEncuestas={setModoEncuestasExportCircuito}
-          onToggleRonda={toggleRondaExportCircuito}
+          onSetFechasEncuestas={setFechasEncuestasExportCircuito}
           onExportar={confirmarExportCircuito}
           onCancelar={() => setDialogExportCircuito(null)}
         />
