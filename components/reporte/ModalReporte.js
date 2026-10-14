@@ -78,7 +78,7 @@ export default function ModalReporte({ isOpen, ctx, registro, tituloContexto, ro
     </div>
   );
 
-  const optRondaIV = (r, i) => <option key={r.fecha} value={i}>{formatearFecha(r.fecha)}{r.casos != null ? ` · n=${r.casos}` : ''}</option>;
+  const optRondaIV = (r, i) => <option key={r.fecha} value={i}>{formatearFecha(r.fecha)}</option>;
   const toggleEscIV = (id) => setIv(prev => {
     const quedan = idsEscenariosIV.filter(x => !prev.excluidos.includes(x));
     if (!prev.excluidos.includes(id) && quedan.length <= 1) return prev; // siempre queda al menos un escenario

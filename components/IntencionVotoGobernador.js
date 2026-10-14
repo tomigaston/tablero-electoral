@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import {
   escenariosDeEncuesta, ordenarFilas, punteroYDiferencia, variacion, alinearComparativo, escenariosEnAmbas,
-  nombreCandidato, tipoCandidato, NOTA_SIN_CONNOTACION, notaNumeracion,
-  esCandidatoDestacado, titularEscenario, ACLARACION_ESCENARIOS,
+  nombreCandidato, tipoCandidato, notaNumeracion,
+  esCandidatoDestacado, titularEscenario, ACLARACION_ESCENARIOS, tituloCorto, notaEscenariosPie, notaComparativo,
 } from '../lib/intencionVoto';
 import { formatearFecha } from '../lib/formatearFecha';
 import { ChipRonda } from './ChipRonda';
@@ -26,29 +26,35 @@ const Variacion = ({ v }) => {
 const BarraFina = ({ valor, escalaMax, color }) => {
   const ancho = valor == null || !escalaMax ? 0 : Math.max(0, Math.min(100, (valor / escalaMax) * 100));
   return (
-    <svg viewBox="0 0 100 6" preserveAspectRatio="none" width="100%" height="6" role="presentation" aria-hidden="true" style={{ display: 'block' }}>
-      <rect x="0" y="0" width="100" height="6" rx="3" fill="#E5E7EB" />
-      {ancho > 0 && <rect x="0" y="0" width={ancho} height="6" rx="3" fill={color} />}
+    <svg viewBox="0 0 100 4" preserveAspectRatio="none" width="100%" height="4" role="presentation" aria-hidden="true" style={{ display: 'block' }}>
+      <rect x="0" y="0" width="100" height="4" rx="2" fill="#EEF1F5" />
+      {ancho > 0 && <rect x="0" y="0" width={ancho} height="4" rx="2" fill={color} />}
     </svg>
   );
 };
 
-// Encabezado de cada tabla: el chip de ronda (el mismo de todo el reporte), con n.
-const EncabezadoTabla = ({ fecha, casos, compacto, actual }) => (
-  <div style={{ marginBottom: compacto ? '5px' : '8px' }}>
-    <ChipRonda fecha={fecha} casos={casos} actual={actual} />
-  </div>
+// Encabezado de una tabla: solo en el comparativo (para distinguir las dos columnas de rondas), con la fecha en texto
+// plano. En lo demás la ronda se dice UNA vez, arriba de la sección (CabeceraRondaIV). Sin n.
+const EncabezadoTabla = ({ fecha, compacto }) => (fecha ? (
+  <div style={{ marginBottom: compacto ? '5px' : '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>{formatearFecha(fecha)}</div>
+) : null);
+
+// Marca de puntero: "1°" para quien va primero (sea quien sea). Llaryora, cuando no es el primero, lleva su lugar ("2°").
+const MarcaPosicion = ({ texto }) => (
+  <span style={{ display: 'inline-block', marginRight: '7px', padding: '0 5px', fontSize: '10.5px', fontWeight: 800, lineHeight: '15px', color: '#1a1a1a', border: '1px solid #1a1a1a', borderRadius: '4px', verticalAlign: 'middle' }}>{texto}</span>
 );
 
 // Una tabla: filas = candidatos. filas: [{ clave, valor, variacion? }]. conVariacion agrega la columna Δ pp.
-export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false, escalaMax, resaltar = true, compacto = false, actual = false }) => {
+export const TablaEscenario = ({ fecha, filas, meta, conVariacion = false, escalaMax, resaltar = true, compacto = false }) => {
   const pad = compacto ? '3px 9px' : '7px 10px';
   const valores = Object.fromEntries(filas.filter(f => f.valor != null).map(f => [f.clave, f.valor]));
   const puntero = resaltar ? punteroYDiferencia(valores, meta) : null;
   const max = escalaMax || Math.max(...Object.values(valores), 1);
+  const tit = resaltar ? titularEscenario(valores, meta) : null;
+  const empate = !!tit?.empate;
   return (
     <div style={{ minWidth: 0, breakInside: 'avoid' }}>
-      <EncabezadoTabla fecha={fecha} casos={casos} compacto={compacto} actual={actual} />
+      <EncabezadoTabla fecha={fecha} compacto={compacto} />
       <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'var(--bg-primary)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', tableLayout: 'fixed' }}>
           <colgroup>
@@ -65,18 +71,19 @@ export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false
           </thead>
           <tbody>
             {filas.map(f => {
-              const esPrimero = puntero && f.clave === puntero.primero;
+              const esPrimero = !!puntero && (f.clave === puntero.primero || (empate && f.clave === puntero.segundo));
               const esDestacado = esCandidatoDestacado(f.clave, meta);
               const tipo = tipoCandidato(f.clave, meta);
-              const color = esDestacado ? '#0D47A1' : tipo === 'candidato' ? '#1976D2' : '#9AA5B1';
+              const color = tipo === 'candidato' ? '#90CAF9' : '#C3CAD2';
               // Dos marcas distintas: el PRIMERO (fondo azul claro + etiqueta) y Llaryora (franja azul oscuro a la
               // izquierda + fondo), que se ve en TODOS los escenarios. Si coinciden se suman.
               return (
-                <tr key={f.clave} data-fila={esDestacado ? 'destacado' : undefined} style={{ borderTop: '1px solid var(--border)', backgroundColor: esDestacado ? '#0D47A118' : esPrimero ? '#1976D20F' : 'transparent', boxShadow: esDestacado ? 'inset 4px 0 0 #0D47A1' : 'none' }}>
+                <tr key={f.clave} data-fila={esDestacado ? 'destacado' : undefined} style={{ borderTop: '1px solid var(--border)', backgroundColor: 'transparent', boxShadow: esDestacado ? 'inset 4px 0 0 #0D47A1' : 'none' }}>
                   <td style={{ padding: pad, paddingLeft: esDestacado ? '14px' : undefined, verticalAlign: 'middle', color: tipo === 'candidato' ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: esPrimero || esDestacado ? 700 : 400, overflowWrap: 'anywhere' }}>
+                    {esPrimero && <MarcaPosicion texto="1°" />}
+                    {!esPrimero && esDestacado && tit?.destacado && tit.destacado.posicion > 1 && <MarcaPosicion texto={tit.destacado.ordinal} />}
                     {nombreCandidato(f.clave, meta)}
-                    {esPrimero && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: '#1565C0' }}>PRIMERO</span>}
-                    <div style={{ marginTop: compacto ? '1px' : '3px', opacity: f.valor == null ? 0 : 1 }}><BarraFina valor={f.valor} escalaMax={max} color={color} /></div>
+                                        <div style={{ marginTop: compacto ? '1px' : '3px', opacity: f.valor == null ? 0 : 1 }}><BarraFina valor={f.valor} escalaMax={max} color={color} /></div>
                   </td>
                   <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: compacto ? '14px' : '15px', fontWeight: esPrimero || esDestacado ? 800 : 600, color: f.valor == null ? 'var(--text-tertiary)' : 'var(--text-primary)' }}>{fmtPct(f.valor)}</td>
                   {conVariacion && <td style={{ padding: pad, textAlign: 'right', verticalAlign: 'top', fontSize: '12px' }}><Variacion v={f.variacion} /></td>}
@@ -88,7 +95,7 @@ export const TablaEscenario = ({ fecha, casos, filas, meta, conVariacion = false
       </div>
       {puntero && puntero.segundo != null && (
         <div style={{ marginTop: compacto ? '4px' : '6px', fontSize: compacto ? '11px' : '12px', color: 'var(--text-secondary)' }}>
-          Diferencia entre el primero y el segundo: <strong style={{ color: 'var(--text-primary)' }}>{puntero.diferencia.toFixed(1)} pp</strong> ({nombreCandidato(puntero.primero, meta)} vs. {nombreCandidato(puntero.segundo, meta)}).
+          Brecha 1º–2º: <strong style={{ color: 'var(--text-primary)' }}>{puntero.diferencia.toFixed(1)} pp</strong> ({nombreCandidato(puntero.primero, meta)} vs. {nombreCandidato(puntero.segundo, meta)})
         </div>
       )}
     </div>
@@ -104,7 +111,7 @@ const linea = (t, meta) => {
   if (t.empate) return `Empate entre ${nombreCandidato(t.primero, meta)} y ${nombreCandidato(t.segundo, meta)}: ${t.valorPrimero.toFixed(1)}%`;
   return `${nombreCandidato(t.primero, meta)} ${t.valorPrimero.toFixed(1)}%${t.segundo != null ? ` sobre ${nombreCandidato(t.segundo, meta)} ${t.valorSegundo.toFixed(1)}% (+${t.diferencia.toFixed(1)} pp)` : ''}`;
 };
-export const TitularVoto = ({ ronda, meta, fechaActual = null, anterior = null }) => {
+export const TitularVoto = ({ ronda, meta, anterior = null }) => {
   const esc1 = ronda?.escenarios?.[0];
   if (!esc1) return <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: '0 0 10px' }}>Sin escenarios de voto en esta ronda.</p>;
   const t = titularEscenario(esc1.valores, meta);
@@ -115,8 +122,7 @@ export const TitularVoto = ({ ronda, meta, fechaActual = null, anterior = null }
   return (
     <div data-titular-voto style={{ border: '1px solid var(--border)', borderLeft: '4px solid #0D47A1', borderRadius: '10px', padding: '10px 14px', margin: '0 0 12px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid', breakAfter: 'avoid' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px', marginBottom: '4px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
-        <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>Escenario 1 · {esc1.nombre}</span>
-        <ChipRonda fecha={ronda.fecha} casos={ronda.casos} actual={ronda.fecha === fechaActual} />
+        <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{tituloCorto(esc1.nombre, esc1.orden)}</span>
       </div>
       <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
         {t.empate ? '' : '1° '}{linea(t, meta)}
@@ -144,17 +150,17 @@ const ChipsCandidatos = ({ claves, meta }) => (
   </div>
 );
 
-// Título del escenario: "Escenario N · nombre · sufijo". Los candidatos ya están en la tabla.
+// Título del escenario: "Escenario N" (listas amplias) o "Escenario N · A vs B" (cara a cara), ver tituloCorto.
 export const TituloEscenario = ({ escenario, orden, sufijo, compacto }) => (
   <div style={{ marginBottom: compacto ? '5px' : '8px', breakAfter: 'avoid' }}>
     <div style={{ fontSize: compacto ? '12.5px' : '14px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.25 }}>
-      {orden != null ? `Escenario ${orden} · ` : ''}{escenario}{sufijo ? ` · ${sufijo}` : ''}
+      {tituloCorto(escenario, orden)}{sufijo ? ` · ${sufijo}` : ''}
     </div>
   </div>
 );
 
 // UNA ronda, UN escenario.
-export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true, sufijo, compacto = false, fechaActual = null }) => {
+export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true, sufijo, compacto = false }) => {
   const esc = ronda.escenarios.find(e => e.id === escenario);
   if (!esc) return null;
   const filas = ordenarFilas(esc.valores, meta).map(c => ({ clave: c, valor: esc.valores[c] }));
@@ -163,13 +169,13 @@ export const EscenarioRonda = ({ ronda, escenario, meta, conTitulo = true, sufij
       {conTitulo
         ? <TituloEscenario escenario={esc.nombre} orden={esc.orden} sufijo={sufijo} compacto={compacto} />
         : <ChipsCandidatos claves={filas.map(f => f.clave)} meta={meta} />}
-      <div style={{ maxWidth: '480px' }}><TablaEscenario fecha={ronda.fecha} casos={ronda.casos} filas={filas} meta={meta} compacto={compacto} actual={ronda.fecha === fechaActual} /></div>
+      <div style={{ maxWidth: '480px' }}><TablaEscenario filas={filas} meta={meta} compacto={compacto} /></div>
     </div>
   );
 };
 
 // Dos rondas lado a lado (en pantallas angostas se apilan, cada una con su fecha de encabezado).
-export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, conTitulo = true, conNota = true, sufijo, fechaActual = null }) => {
+export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, conTitulo = true, sufijo }) => {
   const a = rondaA.escenarios.find(e => e.id === escenario);
   const b = rondaB.escenarios.find(e => e.id === escenario);
   if (!a || !b) return null;
@@ -177,19 +183,37 @@ export const EscenarioComparativo = ({ rondaA, rondaB, escenario, meta, umbral, 
   const escalaMax = Math.max(...alineadas.flatMap(f => [f.a ?? 0, f.b ?? 0]), 1);
   const filasA = alineadas.map(f => ({ clave: f.clave, valor: f.a }));
   const filasB = alineadas.map(f => ({ clave: f.clave, valor: f.b, variacion: variacion(f.b, f.a, umbral) }));
-  const solo = alineadas.some(f => f.a == null || f.b == null);
   return (
     <div style={{ breakInside: 'avoid' }}>
       {conTitulo && <TituloEscenario escenario={b.nombre} orden={b.orden} sufijo={sufijo} />}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '16px', alignItems: 'start' }}>
-        <TablaEscenario fecha={rondaA.fecha} casos={rondaA.casos} filas={filasA} meta={meta} escalaMax={escalaMax} actual={rondaA.fecha === fechaActual} />
-        <TablaEscenario fecha={rondaB.fecha} casos={rondaB.casos} filas={filasB} meta={meta} escalaMax={escalaMax} conVariacion actual={rondaB.fecha === fechaActual} />
+        <TablaEscenario fecha={rondaA.fecha} filas={filasA} meta={meta} escalaMax={escalaMax} />
+        <TablaEscenario fecha={rondaB.fecha} filas={filasB} meta={meta} escalaMax={escalaMax} conVariacion />
       </div>
-      {conNota && <div style={{ marginTop: '8px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
-        {NOTA_SIN_CONNOTACION}{' '}
-        {`"Estable" = cambio menor a ${umbral} pp. `}
-        {solo && '"—" indica que el candidato no figuraba en esa ronda (no es 0%).'}
-      </div>}
+    </div>
+  );
+};
+
+// Ronda(s) de la sección, UNA sola vez arriba (las tablas no llevan chip). Sin n. "actual" solo si es la ronda actual del circuito.
+export const CabeceraRondaIV = ({ rondas, fechaActual }) => (
+  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px', margin: '0 0 10px' }}>
+    {rondas.map((r, i) => (
+      <span key={r.fecha} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        {i > 0 && <span style={{ color: 'var(--text-tertiary)' }}>→</span>}
+        <ChipRonda fecha={r.fecha} casos={r.casos} actual={r.fecha === fechaActual} conN={false} />
+      </span>
+    ))}
+  </div>
+);
+
+// Pie de la sección: la aclaración en una línea + UNA línea de notas (numeración, notas de escenarios, aclaración del
+// comparativo). fechas: rondas mostradas (para la nota de numeración). Mismo pie en pantalla y reporte.
+export const PieIntencionVoto = ({ escenarios, meta, fechas, comparativo = false, umbral = 2.5, hayAusentes = false }) => {
+  const notas = [notaNumeracion(fechas, meta, formatearFecha), notaEscenariosPie(escenarios, meta), comparativo ? notaComparativo(umbral, hayAusentes) : null].filter(Boolean).join(' · ');
+  return (
+    <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-tertiary)', lineHeight: 1.4 }}>
+      <div>{ACLARACION_ESCENARIOS}</div>
+      {notas && <div style={{ marginTop: '3px' }}>{notas}</div>}
     </div>
   );
 };
@@ -226,17 +250,13 @@ export const SeccionIntencionVoto = ({ encuesta, meta, umbral = 2.5, vista = 're
   })() : null;
   const listaEsc = comparar ? opciones.ids.map(id => opciones.y.escenarios.find(e => e.id === id)) : rondaUnica.escenarios;
   const actual = listaEsc.find(e => e.id === escId) || listaEsc[0];
-  const nota = actual ? meta?.escenarios?.[actual.id]?.nota : null;
 
   return (
     <div>
       {titulo}
       {aclaracion && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>{aclaracion}</div>}
-      <TitularVoto ronda={comparar ? opciones.y : rondaUnica} meta={meta} fechaActual={fechaActualEncuesta} anterior={comparar && iA !== iB ? opciones.x : null} />
-      <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 12px' }}>
-        {ACLARACION_ESCENARIOS} Los porcentajes se muestran como vienen en el informe.
-      </p>
-      {(() => { const n = notaNumeracion(comparar ? [opciones.x.fecha, opciones.y.fecha] : [rondaUnica.fecha], meta, formatearFecha); return n ? <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '-6px 0 10px' }}>{n}</div> : null; })()}
+      <CabeceraRondaIV rondas={comparar && iA !== iB ? [opciones.x, opciones.y] : [comparar ? rondaB : rondaUnica]} fechaActual={fechaActualEncuesta} />
+      <TitularVoto ronda={comparar ? opciones.y : rondaUnica} meta={meta} anterior={comparar && iA !== iB ? opciones.x : null} />
       {avisoRonda && <Aviso>{avisoRonda}</Aviso>}
       {vista === 'comparativo' && rondas.length < 2 && <Aviso>La intención de voto se relevó en una sola ronda ({formatearFecha(rondas[0].fecha)}): no hay con qué comparar. Se muestra esa ronda.</Aviso>}
       {comparar && (
@@ -262,12 +282,16 @@ export const SeccionIntencionVoto = ({ encuesta, meta, umbral = 2.5, vista = 're
       )}
       {actual && (
         <>
-          {nota && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>{nota}</div>}
           {comparar && iA !== iB
-            ? <EscenarioComparativo rondaA={opciones.x} rondaB={opciones.y} escenario={actual.id} meta={meta} umbral={umbral} conTitulo={listaEsc.length <= 1} fechaActual={fechaActualEncuesta} />
-            : <EscenarioRonda ronda={comparar ? rondaB : rondaUnica} escenario={actual.id} meta={meta} conTitulo={listaEsc.length <= 1} fechaActual={fechaActualEncuesta} />}
+            ? <EscenarioComparativo rondaA={opciones.x} rondaB={opciones.y} escenario={actual.id} meta={meta} umbral={umbral} conTitulo={listaEsc.length <= 1} />
+            : <EscenarioRonda ronda={comparar ? rondaB : rondaUnica} escenario={actual.id} meta={meta} conTitulo={listaEsc.length <= 1} />}
         </>
       )}
+      {actual && (() => {
+        const enComp = comparar && iA !== iB;
+        const hayAusentes = enComp && alinearComparativo(opciones.x.escenarios.find(e => e.id === actual.id)?.valores || {}, opciones.y.escenarios.find(e => e.id === actual.id)?.valores || {}, meta).some(f => f.a == null || f.b == null);
+        return <PieIntencionVoto escenarios={[actual]} meta={meta} fechas={enComp ? [opciones.x.fecha, opciones.y.fecha] : [(comparar ? rondaB : rondaUnica).fecha]} comparativo={enComp} umbral={umbral} hayAusentes={hayAusentes} />;
+      })()}
     </div>
   );
 };
