@@ -35,4 +35,6 @@ rondas mostradas se omiten.
 
 ## Fuera del bloque (no tocado a propósito)
 Intención de voto, Resumen de la ronda actual (`ResumenRondaActual`), panel de barrio y tabla de Capital. Siguen usando
-`lib/lecturaRondas.js` y `ChipRonda` (con su marca "actual"); retirarlos de ahí es un cambio aparte.
+`ChipRonda` (con su marca "actual", pedida una sola vez arriba de la sección). El Resumen de la ronda actual ya usa el
+mismo idioma que el bloque (fecha por fila, sin n/chip/atenuado/avisos, delta neutro) y `lib/lecturaRondas.js` se eliminó
+(`fechaRondaActual` vive en `lib/encuestasBloque.js`).

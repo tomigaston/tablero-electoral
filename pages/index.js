@@ -8,9 +8,8 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { fechaRondaActual } from '../lib/lecturaRondas';
 import { EncuestasBlock, SelectorRondas, fechasPorDefecto } from '../components/EncuestasBlock';
-import { seleccionarRondas, MAX_RONDAS } from '../lib/encuestasBloque';
+import { seleccionarRondas, MAX_RONDAS, problemasDeCircuito, TEXTO_SIN_RONDAS, TEXTO_SIN_PROBLEMAS } from '../lib/encuestasBloque';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
 import { htmlEncuestasCuerpo } from '../components/reporte/encuestasHtml';
 import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } from '../components/reporte/registro';
@@ -1020,15 +1019,9 @@ const SolapaResumenBarrio = ({
   const circuito = resolverCircuitoPrincipalDeBarrio(nombreBarrio, cruceData, barriosGeoLookup, todosLosDatos);
   const encuesta = circuito ? buscarEncuestaCircuito(encuestasData, circuito.CircuitoKey) : null;
 
-  // Top 3 "Problemas principales" de la ÚLTIMA ronda (valor absoluto, no la variación
-  // entre rondas que calcula ResumenAutomaticoProblemas) — para el bloque "Contexto
-  // político". Son datos del CIRCUITO, no del barrio (una encuesta no se releva por barrio).
-  let topProblemas = [];
-  if (encuesta?.rondas?.length > 0) {
-    const ultima = encuesta.rondas[encuesta.rondas.length - 1];
-    const problemas = ultima.preguntas?.['Problemas principales'];
-    if (problemas) topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  }
+  // Top 3 "Problemas principales" de la ronda MÁS RECIENTE QUE LOS PREGUNTÓ (no necesariamente la última del circuito:
+  // ver problemasDeCircuito). Son datos del CIRCUITO, no del barrio (una encuesta no se releva por barrio).
+  const problemasCtx = problemasDeCircuito(encuesta?.rondas);
 
   const key = normalizarNombreBarrio(nombreBarrio);
   const totalVisitas = recorridosLookup?.[key]?.total_visitas || 0;
@@ -1063,19 +1056,19 @@ const SolapaResumenBarrio = ({
                 {circuito.ShareCap_G23 != null && <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}> (vs Capital {formatPct(circuito.ShareCap_G23)})</span>}
               </div>
             </div>
-            {topProblemas.length > 0 ? (
+            {problemasCtx.estado === 'ok' ? (
               <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>Principales problemas (última ronda de encuesta)</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '6px' }}>Principales problemas · {formatearFecha(problemasCtx.fecha)}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {topProblemas.map(([nombre, pct]) => (
-                    <div key={nombre} style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', fontSize: '12px', color: 'var(--text-secondary)' }}>
-                      <span>{nombre}</span><strong style={{ color: 'var(--text-primary)', flexShrink: 0 }}>{pct.toFixed(1)}%</strong>
+                  {problemasCtx.items.map(({ cat, texto }) => (
+                    <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      <span>{cat}</span><strong style={{ color: 'var(--text-primary)', flexShrink: 0 }}>{texto}</strong>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>Sin encuestas registradas para este circuito.</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>{problemasCtx.estado === 'sin_rondas' ? TEXTO_SIN_RONDAS : TEXTO_SIN_PROBLEMAS}</div>
             )}
             <button onClick={() => onIrACircuito(circuito)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'transparent', fontSize: '12px', color: '#1976D2', cursor: 'pointer', fontWeight: 500 }}>Ver ficha completa del circuito →</button>
           </>
@@ -1627,7 +1620,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} ventanaHasta={ultimaMostrada} />
+      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} />
       {rondas.length > 1 && <SelectorRondas rondas={rondas} seleccion={fechas} onChange={setFechas} />}
       <EncuestasBlock rondas={rondas} fechas={fechas} />
 
@@ -3681,15 +3674,10 @@ function htmlContextoPoliticoPDF(circuito, encuestasData) {
     return `<div class="section"><h3>Contexto político</h3><p style="color:#999;font-size:12px">Sin circuito asociado.</p></div>`;
   }
   const encuesta = buscarEncuestaCircuito(encuestasData, circuito.CircuitoKey);
-  let topProblemas = [];
-  if (encuesta?.rondas?.length > 0) {
-    const ultima = encuesta.rondas[encuesta.rondas.length - 1];
-    const problemas = ultima.preguntas?.['Problemas principales'] || {};
-    topProblemas = Object.entries(problemas).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  }
-  const topProblemasHtml = topProblemas.length > 0
-    ? `<div style="margin-top:10px"><div style="font-size:11px;color:#666;margin-bottom:4px">Principales problemas (última ronda)</div><table><tbody>${topProblemas.map(([nombre, pct]) => `<tr><td>${nombre}</td><td class="text-right"><strong>${pct.toFixed(1)}%</strong></td></tr>`).join('')}</tbody></table></div>`
-    : `<p style="color:#999;font-size:12px;margin-top:6px">Sin encuestas registradas para este circuito.</p>`;
+  const pc = problemasDeCircuito(encuesta?.rondas);
+  const topProblemasHtml = pc.estado === 'ok'
+    ? `<div style="margin-top:10px"><div style="font-size:11px;color:#666;margin-bottom:4px">Principales problemas · ${formatearFecha(pc.fecha)}</div><table><tbody>${pc.items.map(({ cat, texto }) => `<tr><td>${cat}</td><td class="text-right"><strong>${texto}</strong></td></tr>`).join('')}</tbody></table></div>`
+    : `<p style="color:#999;font-size:12px;margin-top:6px">${pc.estado === 'sin_rondas' ? TEXTO_SIN_RONDAS : TEXTO_SIN_PROBLEMAS}</p>`;
   return `
 <div class="section">
   <h3>Contexto político — Circuito ${circuito.CircuitoKey} ${circuito.cirn_nom}</h3>
@@ -3751,13 +3739,11 @@ function htmlTendenciasCircuitoPDF(datos) {
 // Resumen de la ronda actual (con el titular de voto) arriba.
 function htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, fechas, T }) {
   const titulo = (t) => `<h3>${t}</h3>`;
-  if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
-    return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
+  const rondas = encuestaCircuito?.rondas || [];
+  if (!rondas.length) {
+    return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">${TEXTO_SIN_RONDAS}</p></div>`;
   }
-  const rondas = encuestaCircuito.rondas;
-  const umbral = encuestasMetadata?.umbral_variacion_pp ?? 2.5;
-  const mostradas = seleccionarRondas(rondas, fechas);
-  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} ventanaHasta={fechaRondaActual(mostradas)} />);
+  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} conTitulo={false} />);
   const cuerpo = htmlEncuestasCuerpo({ rondas, opciones: { fechas }, T }).join('');
   return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas')}${cuerpo}</div>`;
 }

@@ -1,3 +1,6 @@
+> **Histórico.** `lib/lecturaRondas.js` y el modelo actual/arrastre descripto acá se eliminaron: el bloque Encuestas y el
+> Resumen de la ronda actual muestran cada dato con su propia fecha (ver `encuestas-block-notas.md`).
+
 # Lectura de rondas de encuesta — notas de exploración y modelo
 
 Rama `feat/lectura-rondas`. Objetivo: que el comparativo de encuestas (web) y el reporte PDF se
