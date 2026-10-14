@@ -104,42 +104,6 @@ export const TablaEscenario = ({ fecha, filas, meta, conVariacion = false, escal
 };
 
 
-// Titular de la sección: Escenario 1 (la lista completa de la ronda) — quién va primero, su %, la diferencia con el
-// segundo y dónde está Llaryora. Dice la verdad aunque Llaryora no sea el primero. Pensado para leerse en 10 segundos.
-// ronda: { fecha, casos, escenarios }; anterior (opcional): ronda previa, para una línea "Antes".
-const linea = (t, meta) => {
-  if (!t) return null;
-  if (t.empate) return `Empate entre ${nombreCandidato(t.primero, meta)} y ${nombreCandidato(t.segundo, meta)}: ${t.valorPrimero.toFixed(1)}%`;
-  return `${nombreCandidato(t.primero, meta)} ${t.valorPrimero.toFixed(1)}%${t.segundo != null ? ` sobre ${nombreCandidato(t.segundo, meta)} ${t.valorSegundo.toFixed(1)}% (+${t.diferencia.toFixed(1)} pp)` : ''}`;
-};
-export const TitularVoto = ({ ronda, meta, anterior = null }) => {
-  const esc1 = ronda?.escenarios?.[0];
-  if (!esc1) return <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', margin: '0 0 10px' }}>Sin escenarios de voto en esta ronda.</p>;
-  const t = titularEscenario(esc1.valores, meta);
-  if (!t) return null;
-  const d = t.destacado;
-  const esc1Ant = anterior?.escenarios?.find(e => e.id === esc1.id);
-  const tAnt = esc1Ant ? titularEscenario(esc1Ant.valores, meta) : null;
-  return (
-    <div data-titular-voto style={{ border: '1px solid var(--border)', borderLeft: '4px solid #0D47A1', borderRadius: '10px', padding: '10px 14px', margin: '0 0 12px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid', breakAfter: 'avoid' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px', marginBottom: '4px', fontSize: '11px', color: 'var(--text-tertiary)' }}>
-        <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{tituloCorto(esc1.nombre, esc1.orden)}</span>
-      </div>
-      <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
-        {!t.empate && <MarcaPosicion texto="1°" />}{linea(t, meta)}
-      </div>
-      {d && !d.esPrimero && !t.empate && (
-        <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D47A1', marginTop: '2px' }}>{nombreCandidato(d.clave, meta)}: {d.ordinal}</div>
-      )}
-      {tAnt && (
-        <div style={{ fontSize: '11.5px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
-          Antes, {formatearFecha(anterior.fecha)}: {tAnt.empate ? '' : '1° '}{linea(tAnt, meta)}.
-        </div>
-      )}
-    </div>
-  );
-};
-
 // Lista de candidatos que componen el escenario (qué cambia de un escenario a otro).
 const ChipsCandidatos = ({ claves, meta }) => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '10px' }}>
@@ -256,7 +220,6 @@ export const SeccionIntencionVoto = ({ encuesta, meta, umbral = 2.5, vista = 're
       {titulo}
       {aclaracion && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>{aclaracion}</div>}
       <CabeceraRondaIV rondas={comparar && iA !== iB ? [opciones.x, opciones.y] : [comparar ? rondaB : rondaUnica]} fechaActual={fechaActualEncuesta} />
-      <TitularVoto ronda={comparar ? opciones.y : rondaUnica} meta={meta} anterior={comparar && iA !== iB ? opciones.x : null} />
       {avisoRonda && <Aviso>{avisoRonda}</Aviso>}
       {vista === 'comparativo' && rondas.length < 2 && <Aviso>La intención de voto se relevó en una sola ronda ({formatearFecha(rondas[0].fecha)}): no hay con qué comparar. Se muestra esa ronda.</Aviso>}
       {comparar && (
