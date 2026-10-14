@@ -1621,6 +1621,8 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
   });
   const mostradas = seleccionarRondas(rondas, fechas);
   const ultimaMostrada = mostradas[mostradas.length - 1].fecha;
+  // Intención de voto solo se compara si al menos 2 de las rondas elegidas la relevaron (si no, mostraría un aviso de "una sola ronda").
+  const ivEnVentana = useMemo(() => escenariosDeEncuesta(encuesta, metadata?.escenarios_gobernador).rondas.filter(r => mostradas.some(m => m.fecha === r.fecha)).length, [encuesta, metadata, fechas]);
   const umbral = metadata?.umbral_variacion_pp ?? 2.5;
 
   return (
@@ -1631,7 +1633,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
 
       {metadata?.escenarios_gobernador && (
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-          <SeccionIntencionVoto encuesta={encuesta} meta={metadata.escenarios_gobernador} umbral={umbral} vista={mostradas.length > 1 ? 'comparativo' : 'resumen'} fechaRonda={ultimaMostrada} />
+          <SeccionIntencionVoto encuesta={encuesta} meta={metadata.escenarios_gobernador} umbral={umbral} vista={ivEnVentana >= 2 ? 'comparativo' : 'resumen'} fechaRonda={ultimaMostrada} />
         </div>
       )}
     </div>

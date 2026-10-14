@@ -12,8 +12,8 @@
 // crearRegistroSecciones(D) recibe de pages/index.js los componentes y helpers que no
 // pueden importarse directamente (viven en ese archivo): D = { ui: {...}, fn: {...} }.
 
-import { escenariosDeEncuesta, NOTA_SIN_CONNOTACION as NOTA_SIN_CONNOTACION_IV, notaNumeracion, ACLARACION_ESCENARIOS } from '../../lib/intencionVoto';
-import { EscenarioRonda, EscenarioComparativo, TitularVoto } from '../IntencionVotoGobernador';
+import { escenariosDeEncuesta, alinearComparativo } from '../../lib/intencionVoto';
+import { EscenarioRonda, EscenarioComparativo, TitularVoto, CabeceraRondaIV, PieIntencionVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
 import { ResumenRondaActual } from '../ResumenRondaActual';
 import { fechaRondaActual } from '../../lib/lecturaRondas';
@@ -133,7 +133,7 @@ export function crearRegistroSecciones(D) {
       .filter(f => f.iv.rondas.length > 0).sort((a, b) => compararMapkey(a.d.CircuitoKey, b.d.CircuitoKey));
     const aviso = '<div class="rp-aviso" style="color:#0d47a1;background:#e8f1fb;border-color:#b6d0ee">La intención de voto para Gobernador se relevó circuito por circuito: <strong>no hay un dato agregado de Capital</strong> y no se promedian circuitos. Para ver los porcentajes, generá el reporte desde un circuito.</div>';
     if (!filas.length) return aviso + sectorTexto('Ningún circuito tiene intención de voto relevada.');
-    return `${aviso}<table class="rp-tabla rp-compacta"><thead><tr><th>Circuito</th><th class="fecha">Ronda</th><th class="num">n</th><th class="num">Escenarios</th></tr></thead><tbody>${filas.flatMap(({ d, iv }) => iv.rondas.map(r => `<tr><td><strong>${esc(d.CircuitoKey)}</strong> ${esc(d.cirn_nom || '')}</td><td class="fecha">${formatearFecha(r.fecha)}</td><td class="num">${r.casos ?? '—'}</td><td class="num">${r.escenarios.length}</td></tr>`)).join('')}</tbody></table>`;
+    return `${aviso}<table class="rp-tabla rp-compacta"><thead><tr><th>Circuito</th><th class="fecha">Ronda</th><th class="num">Escenarios</th></tr></thead><tbody>${filas.flatMap(({ d, iv }) => iv.rondas.map(r => `<tr><td><strong>${esc(d.CircuitoKey)}</strong> ${esc(d.cirn_nom || '')}</td><td class="fecha">${formatearFecha(r.fecha)}</td><td class="num">${r.escenarios.length}</td></tr>`)).join('')}</tbody></table>`;
   }
 
   function renderIntencion(ctx, opciones, T) {
@@ -158,31 +158,31 @@ export function crearRegistroSecciones(D) {
       if (ia === ib) ia = Math.max(ib - 1, 0);
       if (ia > ib) [ia, ib] = [ib, ia];
       const A = rondas[ia], B = rondas[ib];
-      partes.push(T.md(<TitularVoto ronda={B} meta={meta} fechaActual={fechaActualEnc} anterior={A} />));
-      partes.push(`<p class="rp-nota" style="break-after:avoid;page-break-after:avoid">${esc(ACLARACION_ESCENARIOS)}</p>`);
+      partes.push(T.md(<CabeceraRondaIV rondas={[A, B]} fechaActual={fechaActualEnc} />));
+      partes.push(T.md(<TitularVoto ronda={B} meta={meta} anterior={A} />));
       if (B.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(B.fecha)}.</p>`);
       const enB = B.escenarios.filter(e => !elegidos || elegidos.has(e.id));
       const comunes = enB.filter(e => A.escenarios.some(x => x.id === e.id));
       const excluidos = enB.filter(e => !comunes.includes(e));
       if (!comunes.length) partes.push(`<div class="rp-aviso">Ningún escenario elegido está en las dos rondas (${formatearFecha(A.fecha)} y ${formatearFecha(B.fecha)}), así que no se puede comparar.</div>`);
-      const nn = notaNumeracion([A.fecha, B.fecha], meta, formatearFecha);
-      if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
       comunes.forEach(e => {
-        partes.push(`<div class="rp-evitar" style="margin-top:12px">${T.md(<EscenarioComparativo rondaA={A} rondaB={B} escenario={e.id} meta={meta} umbral={umbral} conTitulo conNota={false} fechaActual={fechaActualEnc} sufijo={`Comparativo ${formatearFecha(A.fecha)} → ${formatearFecha(B.fecha)}`} />)}</div>`);
+        partes.push(`<div class="rp-evitar" style="margin-top:12px">${T.md(<EscenarioComparativo rondaA={A} rondaB={B} escenario={e.id} meta={meta} umbral={umbral} conTitulo sufijo={`Comparativo ${formatearFecha(A.fecha)} → ${formatearFecha(B.fecha)}`} />)}</div>`);
       });
-      if (comunes.length) partes.push(`<p class="rp-nota">${esc(NOTA_SIN_CONNOTACION_IV)} "Estable" = cambio menor a ${umbral} pp. "—" indica que el candidato no figuraba en esa ronda (no es 0%).</p>`);
+      if (comunes.length) {
+        const hayAusentes = comunes.some(e => alinearComparativo(A.escenarios.find(x => x.id === e.id).valores, e.valores, meta).some(f => f.a == null || f.b == null));
+        partes.push(T.md(<PieIntencionVoto escenarios={comunes} meta={meta} fechas={[A.fecha, B.fecha]} comparativo umbral={umbral} hayAusentes={hayAusentes} />));
+      }
       if (excluidos.length) partes.push(`<p class="rp-nota">No se comparan por no estar en la ronda del ${formatearFecha(A.fecha)}: ${excluidos.map(e => esc(e.nombre)).join('; ')}.</p>`);
     } else {
       const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
-      partes.push(T.md(<TitularVoto ronda={R} meta={meta} fechaActual={fechaActualEnc} />));
-      partes.push(`<p class="rp-nota" style="break-after:avoid;page-break-after:avoid">${esc(ACLARACION_ESCENARIOS)}</p>`);
+      partes.push(T.md(<CabeceraRondaIV rondas={[R]} fechaActual={fechaActualEnc} />));
+      partes.push(T.md(<TitularVoto ronda={R} meta={meta} />));
       if (R.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(R.fecha)}.</p>`);
       // Dos escenarios por fila y modo compacto: entran 4 escenarios por hoja (6 escenarios = 2 hojas).
-const nn = notaNumeracion([R.fecha], meta, formatearFecha);
-      if (nn) partes.push(`<p class="rp-nota">${esc(nn)}</p>`);
       const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
-        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo compacto fechaActual={fechaActualEnc} />)}</div>`);
+        `<div class="rp-evitar" style="min-width:0">${T.md(<EscenarioRonda ronda={R} escenario={e.id} meta={meta} conTitulo compacto />)}</div>`);
       partes.push(`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px 16px;align-items:start;margin-top:10px">${celdas.join('')}</div>`);
+      partes.push(T.md(<PieIntencionVoto escenarios={R.escenarios.filter(e => !elegidos || elegidos.has(e.id))} meta={meta} fechas={[R.fecha]} />));
     }
     return partes.join('');
   }
