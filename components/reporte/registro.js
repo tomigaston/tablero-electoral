@@ -13,7 +13,7 @@
 // pueden importarse directamente (viven en ese archivo): D = { ui: {...}, fn: {...} }.
 
 import { escenariosDeEncuesta, alinearComparativo } from '../../lib/intencionVoto';
-import { EscenarioRonda, EscenarioComparativo, TitularVoto, CabeceraRondaIV, PieIntencionVoto } from '../IntencionVotoGobernador';
+import { EscenarioRonda, EscenarioComparativo, CabeceraRondaIV, PieIntencionVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
 import { ResumenRondaActual } from '../ResumenRondaActual';
 import { fechaRondaActual, ultimoEscalar } from '../../lib/encuestasBloque';
@@ -163,7 +163,6 @@ export function crearRegistroSecciones(D) {
       if (ia > ib) [ia, ib] = [ib, ia];
       const A = rondas[ia], B = rondas[ib];
       partes.push(T.md(<CabeceraRondaIV rondas={[A, B]} fechaActual={fechaActualEnc} />));
-      partes.push(T.md(<TitularVoto ronda={B} meta={meta} anterior={A} />));
       if (B.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(B.fecha)}.</p>`);
       const enB = B.escenarios.filter(e => !elegidos || elegidos.has(e.id));
       const comunes = enB.filter(e => A.escenarios.some(x => x.id === e.id));
@@ -180,7 +179,6 @@ export function crearRegistroSecciones(D) {
     } else {
       const R = rondas[clamp(o.rondaIdx, rondas.length - 1)];
       partes.push(T.md(<CabeceraRondaIV rondas={[R]} fechaActual={fechaActualEnc} />));
-      partes.push(T.md(<TitularVoto ronda={R} meta={meta} />));
       if (R.fecha !== fechaActualEnc) partes.push(`<p class="rp-nota">La ronda actual (${formatearFecha(fechaActualEnc)}) no incluyó intención de voto: lo que sigue es del ${formatearFecha(R.fecha)}.</p>`);
       // Dos escenarios por fila y modo compacto: entran 4 escenarios por hoja (6 escenarios = 2 hojas).
       const celdas = R.escenarios.filter(e => !elegidos || elegidos.has(e.id)).map(e =>
