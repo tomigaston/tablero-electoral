@@ -116,7 +116,7 @@ export function crearRegistroSecciones(D) {
     // Si el dato no existe en ninguna ronda del circuito: "No se preguntó" (nunca 0 ni "—").
     const celda = (rondas, pregunta, cat) => {
       const u = ultimoEscalar(rondas, pregunta, cat);
-      return u ? `<strong>${u.texto}</strong><div style="font-size:9px;color:#666">${formatearFecha(u.fecha)}</div>` : '<span style="color:#666">No se preguntó</span>';
+      return u ? `<strong>${u.texto}</strong><div style="font-size:11px;font-weight:700;color:#333">${formatearFecha(u.fecha)}</div>` : '<span style="color:#666">No se preguntó</span>';
     };
     return `<p class="rp-sub">${filas.length} de ${ctx.datos.length} circuitos con encuesta. Cada dato lleva la fecha de su ronda.</p>
     <table class="rp-tabla rp-compacta"><thead><tr><th>Circuito</th><th class="fecha">Última ronda</th><th class="num">Rondas</th><th class="num">Gestión Gob. (positiva)</th><th class="num">Aprobación Gob.</th></tr></thead><tbody>${filas.map(({ d, enc }) => {

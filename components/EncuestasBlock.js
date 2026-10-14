@@ -24,12 +24,12 @@ const CSS = `
 .eb-col{flex:1 1 0;min-width:0;text-align:center}
 .eb-num{font-size:26px;font-weight:700;line-height:1.1}
 .eb-sd{font-size:13px;font-weight:600;color:${TENUE};line-height:1.3;padding:5px 2px 4px}
-.eb-fecha{font-size:11px;color:${TENUE};margin-top:3px;white-space:nowrap}
+.eb-fecha{font-size:12.5px;font-weight:700;color:#333;margin-top:3px;white-space:nowrap}
 .eb-fl{flex:0 0 92px;text-align:center;padding-top:1px;color:${NEUTRO}}
 .eb-fl-d{font-size:12px;font-weight:700;min-height:16px;white-space:nowrap}
 .eb-fl-a{font-size:22px;line-height:1;margin-top:2px}
 .eb-fila{display:flex;align-items:flex-start;gap:10px;margin:0 0 5px}
-.eb-lbl{flex:0 0 150px;font-size:11px;color:${TENUE};line-height:28px}
+.eb-lbl{flex:0 0 150px;font-size:12.5px;font-weight:700;color:#333;line-height:28px}
 .eb-barra{display:flex;height:26px;border-radius:4px;overflow:hidden;border:1px solid #9e9e9e;background:#fff}
 .eb-bw{flex:1 1 0;min-width:0}
 .eb-seg{display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:11px;font-weight:600;border-left:1px solid #fff;white-space:nowrap}
@@ -52,7 +52,7 @@ const CSS = `
 .eb-rk-f{height:13px;border-radius:2px;flex:0 0 auto}
 .eb-rk-v{font-size:12px;font-weight:700;white-space:nowrap}
 .eb-rk-sd{font-size:11px;font-weight:600;color:${TENUE}}
-.eb-rk-ley{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 6px;font-size:11px;color:${NEUTRO}}
+.eb-rk-ley{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 6px;font-size:12.5px;font-weight:700;color:#333}
 @container (max-width:520px){
   .eb-tl{flex-direction:column;align-items:stretch}
   .eb-fl{flex:0 0 auto;padding:6px 0}

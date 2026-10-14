@@ -13,7 +13,7 @@ import { escenariosDeEncuesta, titularEscenario, nombreCandidato } from '../lib/
 const fila = { display: 'flex', gap: '10px', alignItems: 'baseline', padding: '3px 0' };
 const rotulo = { width: '128px', flexShrink: 0, fontSize: '11px', color: 'var(--text-tertiary)' };
 const valorEstilo = { flex: 1, minWidth: 0, fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.35 };
-const fechaEstilo = { flexShrink: 0, fontSize: '11px', color: 'var(--text-tertiary)', whiteSpace: 'nowrap' };
+const fechaEstilo = { flexShrink: 0, fontSize: '12px', fontWeight: 700, color: '#333', whiteSpace: 'nowrap' };
 const NEUTRO = '#444';
 
 const Fila = ({ rotulo: r, fecha, children }) => (
@@ -43,7 +43,7 @@ export const ResumenRondaActual = ({ encuesta, meta, conTitulo = true }) => {
     <div data-resumen-ronda-actual style={{ border: '1px solid var(--border)', borderLeft: '4px solid #1976D2', borderRadius: '10px', padding: '10px 14px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '4px 10px', marginBottom: '4px' }}>
         {conTitulo && <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>Resumen de la ronda actual</span>}
-        <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{formatearFecha(fechaActual)}</span>
+        <span style={{ fontSize: '12px', fontWeight: 700, color: '#333' }}>{formatearFecha(fechaActual)}</span>
       </div>
 
       <Fila rotulo="Voto a Gobernador" fecha={tit ? rondaIV.fecha : null}>
