@@ -16,7 +16,7 @@ import { escenariosDeEncuesta, alinearComparativo } from '../../lib/intencionVot
 import { EscenarioRonda, EscenarioComparativo, TitularVoto, CabeceraRondaIV, PieIntencionVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
 import { ResumenRondaActual } from '../ResumenRondaActual';
-import { fechaRondaActual } from '../../lib/encuestasBloque';
+import { fechaRondaActual, ultimoEscalar } from '../../lib/encuestasBloque';
 import { htmlEncuestasCuerpo } from './encuestasHtml';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
@@ -112,12 +112,16 @@ export function crearRegistroSecciones(D) {
     const filas = (ctx.datos || []).map(d => ({ d, enc: buscarEncuestaCircuito(ctx.encuestasData, d.CircuitoKey) }))
       .filter(f => f.enc && f.enc.rondas?.length).sort((a, b) => compararMapkey(a.d.CircuitoKey, b.d.CircuitoKey));
     if (!filas.length) return sectorTexto('Sin encuestas relevadas.');
-    const ultimaDe = (rondas, pregunta, cat) => { for (let i = rondas.length - 1; i >= 0; i--) { const v = rondas[i].preguntas?.[pregunta]?.[cat]; if (v != null) return v; } return null; };
-    const pct = (v) => v != null ? `${v.toFixed(1)}%` : '—';
-    return `<p class="rp-sub">${filas.length} de ${ctx.datos.length} circuitos con encuesta. Por circuito: última ronda y último dato disponible de cada indicador.</p>
-    <table class="rp-tabla rp-compacta"><thead><tr><th>Circuito</th><th class="fecha">Última ronda</th><th class="num">n</th><th class="num">Rondas</th><th class="num">Gestión Gob. (positiva)</th><th class="num">Aprobación Gob.</th></tr></thead><tbody>${filas.map(({ d, enc }) => {
-      const ult = enc.rondas[enc.rondas.length - 1];
-      return `<tr><td><strong>${esc(d.CircuitoKey)}</strong> ${esc(d.cirn_nom || '')}</td><td class="fecha">${formatearFecha(ult.fecha)}</td><td class="num">${ult.casos ?? '—'}</td><td class="num">${enc.rondas.length}</td><td class="num">${pct(ultimaDe(enc.rondas, 'Gestión del Gobernador', 'Positiva'))}</td><td class="num">${pct(ultimaDe(enc.rondas, 'Aprobación Gobernador', 'Apruebo'))}</td></tr>`;
+    // Cada dato lleva la fecha de SU ronda (misma regla que el bloque Encuestas): sin "último dato" anónimo, sin n.
+    // Si el dato no existe en ninguna ronda del circuito: "No se preguntó" (nunca 0 ni "—").
+    const celda = (rondas, pregunta, cat) => {
+      const u = ultimoEscalar(rondas, pregunta, cat);
+      return u ? `<strong>${u.texto}</strong><div style="font-size:9px;color:#666">${formatearFecha(u.fecha)}</div>` : '<span style="color:#666">No se preguntó</span>';
+    };
+    return `<p class="rp-sub">${filas.length} de ${ctx.datos.length} circuitos con encuesta. Cada dato lleva la fecha de su ronda.</p>
+    <table class="rp-tabla rp-compacta"><thead><tr><th>Circuito</th><th class="fecha">Última ronda</th><th class="num">Rondas</th><th class="num">Gestión Gob. (positiva)</th><th class="num">Aprobación Gob.</th></tr></thead><tbody>${filas.map(({ d, enc }) => {
+      const rondas = enc.rondas;
+      return `<tr><td><strong>${esc(d.CircuitoKey)}</strong> ${esc(d.cirn_nom || '')}</td><td class="fecha">${formatearFecha(fechaRondaActual(rondas))}</td><td class="num">${rondas.length}</td><td class="num">${celda(rondas, 'Gestión del Gobernador', 'Positiva')}</td><td class="num">${celda(rondas, 'Aprobación Gobernador', 'Apruebo')}</td></tr>`;
     }).join('')}</tbody></table>`;
   }
 
