@@ -17,7 +17,7 @@ import { EscenarioRonda, EscenarioComparativo, TitularVoto } from '../IntencionV
 import { ChipRonda } from '../ChipRonda';
 import { ResumenRondaActual } from '../ResumenRondaActual';
 import { fechaRondaActual } from '../../lib/lecturaRondas';
-import { htmlEncuestasCuerpo, seleccionEncuestas, rondasMostradas, pieDatosEncuestas } from './encuestasHtml';
+import { htmlEncuestasCuerpo, seleccionEncuestas, rondasMostradas } from './encuestasHtml';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
 
@@ -28,13 +28,13 @@ export function crearRegistroSecciones(D) {
   const { ui, fn } = D;
   const {
     SolapaResumen, SolapaEvolucion, SolapaPartidos, SolapaComparativas, SolapaTerritorio, SolapaResumenBarrio,
-    SolapaTerritorioBarrio, SolapaEscuelasBarrio, ResumenEncuesta, ComparativoEncuesta,
+    SolapaTerritorioBarrio, SolapaEscuelasBarrio,
     CabeceraCapital, ResultadosCapital, Badge, COLORES_CATEGORIA,
   } = ui;
   const {
     formatearFecha, normalizarNombreBarrio, buscarEncuestaCircuito, resolverCircuitoPrincipalDeBarrio,
     compararMapkey, estadoMostradoPauta, obtenerPautasDeBarrio, unificarVisitasPDF, visitasCircuitoPDF,
-    htmlPautaPDF, htmlPautaCircuitoPDF, pautaCircuitoPDF, htmlObrasPDF, htmlBarraCategoriasPDF, htmlMejoraPDF,
+    htmlPautaPDF, htmlPautaCircuitoPDF, pautaCircuitoPDF, htmlObrasPDF,
     formatPct,
   } = fn;
   const noop = () => {};
@@ -100,12 +100,10 @@ export function crearRegistroSecciones(D) {
   function renderEncuestas(ctx, opciones, T) {
     const { encuesta, heredada, circuito } = encuestaDeContexto(ctx);
     const rondas = encuesta?.rondas || [];
-    const umbral = ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5;
     const partes = [];
     if (heredada) partes.push(`<div class="rp-aviso" style="color:#0d47a1;background:#e8f1fb;border-color:#b6d0ee"><strong>Encuesta del circuito ${esc(circuito?.CircuitoKey)} — ${esc(circuito?.cirn_nom || '')}.</strong> Las encuestas se relevan por circuito, no por barrio: estos datos corresponden al circuito al que pertenece ${esc(ctx.nombreBarrio)}.</div>`);
     partes.push(...htmlEncuestasCuerpo({
-      rondas, opciones: opciones?.encuestas || {}, umbral, metadata: ctx.encuestasMetadata, T,
-      ui: { ResumenEncuesta, ComparativoEncuesta }, fn: { htmlBarraCategoriasPDF, htmlMejoraPDF, formatearFecha },
+      rondas, opciones: opciones?.encuestas || {}, T,
     }));
     return partes.join('');
   }
@@ -394,7 +392,7 @@ const nn = notaNumeracion([R.fecha], meta, formatearFecha);
       paginas: () => 0.3,
     },
     {
-      id: 'encuestas', grupo: 'Opinión pública', label: 'Encuestas', descripcion: 'Una ronda, comparativo entre rondas o evolución',
+      id: 'encuestas', grupo: 'Opinión pública', label: 'Encuestas', descripcion: 'Hasta 3 rondas, de la más vieja a la más nueva',
       tieneOpciones: true,
       // En un barrio la encuesta es la de su circuito principal: el título del PDF lo dice para que no se lea como dato del barrio.
       tituloImpreso: (ctx) => {
@@ -408,12 +406,9 @@ const nn = notaNumeracion([R.fecha], meta, formatearFecha);
       },
       render: (ctx, o, T) => ctx.tipo === 'capital' ? renderEncuestasCapital(ctx) : renderEncuestas(ctx, o, T),
       ultimoDato: (ctx) => ctx.tipo === 'capital' ? maxFecha(Object.values(ctx.encuestasData || {}).flatMap(e => (e.rondas || []).map(r => r.fecha))) : maxFecha(rondasDe(ctx).map(r => r.fecha)),
-      datosAl: (ctx, o) => ctx.tipo === 'capital' ? undefined : pieDatosEncuestas(rondasDe(ctx), o?.encuestas, formatearFecha),
-      paginas: (ctx, o) => {
-        if (ctx.tipo === 'capital') return 3;
-        const e = o?.encuestas || {};
-        return (e.comparativo ? 2 : 0) + ((e.ronda || !e.comparativo) ? 1.5 : 0.5);
-      },
+      // Cada indicador lleva la fecha de sus rondas: no hace falta pie "Datos al …" (Capital conserva el suyo).
+      datosAl: (ctx) => ctx.tipo === 'capital' ? undefined : null,
+      paginas: (ctx) => ctx.tipo === 'capital' ? 3 : 2.5,
     },
     {
       id: 'intencion_gobernador', grupo: 'Opinión pública', label: 'Intención de voto — Gobernador', descripcion: 'Escenarios de la encuesta: una ronda o comparativo',
