@@ -39,9 +39,10 @@ const EncabezadoTabla = ({ fecha, compacto }) => (fecha ? (
   <div style={{ marginBottom: compacto ? '5px' : '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>{formatearFecha(fecha)}</div>
 ) : null);
 
-// Marca de puntero: "1°" para quien va primero (sea quien sea). Llaryora, cuando no es el primero, lleva su lugar ("2°").
+// Posición ("1°", "2°"): etiqueta discreta, texto chico en gris antes del nombre, sin caja ni fondo. La jerarquía la dan la
+// negrita (primero) y la franja (Llaryora). "1°" para quien va primero; Llaryora, si no es el primero, lleva su lugar.
 const MarcaPosicion = ({ texto }) => (
-  <span style={{ display: 'inline-block', marginRight: '7px', padding: '0 5px', fontSize: '10.5px', fontWeight: 800, lineHeight: '15px', color: '#1a1a1a', border: '1px solid #1a1a1a', borderRadius: '4px', verticalAlign: 'middle' }}>{texto}</span>
+  <span style={{ marginRight: '6px', fontSize: '11px', fontWeight: 600, color: '#666' }}>{texto}</span>
 );
 
 // Una tabla: filas = candidatos. filas: [{ clave, valor, variacion? }]. conVariacion agrega la columna Δ pp.
@@ -125,12 +126,11 @@ export const TitularVoto = ({ ronda, meta, anterior = null }) => {
         <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{tituloCorto(esc1.nombre, esc1.orden)}</span>
       </div>
       <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
-        {t.empate ? '' : '1° '}{linea(t, meta)}
+        {!t.empate && <MarcaPosicion texto="1°" />}{linea(t, meta)}
       </div>
       {d && !d.esPrimero && !t.empate && (
-        <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D47A1', marginTop: '2px' }}>{nombreCandidato(d.clave, meta)} va {d.ordinal} con {d.valor.toFixed(1)}%.</div>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D47A1', marginTop: '2px' }}>{nombreCandidato(d.clave, meta)}: {d.ordinal}</div>
       )}
-      {d && d.esPrimero && !t.empate && <div style={{ fontSize: '12px', color: '#0D47A1', marginTop: '2px' }}>{nombreCandidato(d.clave, meta)} va primero.</div>}
       {tAnt && (
         <div style={{ fontSize: '11.5px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
           Antes, {formatearFecha(anterior.fecha)}: {tAnt.empate ? '' : '1° '}{linea(tAnt, meta)}.
