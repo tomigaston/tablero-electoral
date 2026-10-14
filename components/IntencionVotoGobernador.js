@@ -6,7 +6,7 @@ import {
 } from '../lib/intencionVoto';
 import { formatearFecha } from '../lib/formatearFecha';
 import { ChipRonda } from './ChipRonda';
-import { fechaRondaActual } from '../lib/lecturaRondas';
+import { fechaRondaActual } from '../lib/encuestasBloque';
 
 // Intención de voto — Gobernador. Componentes puros (sirven igual en pantalla y en el reporte
 // PDF, que los renderiza a HTML estático) + SeccionIntencionVoto, que agrega los selectores.

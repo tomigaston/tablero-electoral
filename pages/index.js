@@ -8,7 +8,6 @@ import { descargarExcelEventos } from '../lib/exportarEventosExcel';
 import ModalReporte from '../components/reporte/ModalReporte';
 import { SeccionIntencionVoto } from '../components/IntencionVotoGobernador';
 import { escenariosDeEncuesta } from '../lib/intencionVoto';
-import { fechaRondaActual } from '../lib/lecturaRondas';
 import { EncuestasBlock, SelectorRondas, fechasPorDefecto } from '../components/EncuestasBlock';
 import { seleccionarRondas, MAX_RONDAS, problemasDeCircuito, TEXTO_SIN_RONDAS, TEXTO_SIN_PROBLEMAS } from '../lib/encuestasBloque';
 import { ResumenRondaActual } from '../components/ResumenRondaActual';
@@ -1621,7 +1620,7 @@ const SolapaEncuestas = ({ encuesta, metadata, fechaRondaInicial }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} umbral={umbral} ventanaHasta={ultimaMostrada} />
+      <ResumenRondaActual encuesta={encuesta} meta={metadata?.escenarios_gobernador} />
       {rondas.length > 1 && <SelectorRondas rondas={rondas} seleccion={fechas} onChange={setFechas} />}
       <EncuestasBlock rondas={rondas} fechas={fechas} />
 
@@ -3740,13 +3739,11 @@ function htmlTendenciasCircuitoPDF(datos) {
 // Resumen de la ronda actual (con el titular de voto) arriba.
 function htmlEncuestasFichaPDF({ encuestaCircuito, encuestasMetadata, fechas, T }) {
   const titulo = (t) => `<h3>${t}</h3>`;
-  if (!encuestaCircuito || !(encuestaCircuito.cantidad_rondas > 0)) {
-    return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">Sin encuestas registradas para este circuito.</p></div>`;
+  const rondas = encuestaCircuito?.rondas || [];
+  if (!rondas.length) {
+    return `<div class="section">${titulo('Encuestas')}<p style="color:#999;font-size:12px">${TEXTO_SIN_RONDAS}</p></div>`;
   }
-  const rondas = encuestaCircuito.rondas;
-  const umbral = encuestasMetadata?.umbral_variacion_pp ?? 2.5;
-  const mostradas = seleccionarRondas(rondas, fechas);
-  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} umbral={umbral} conTitulo={false} ventanaHasta={fechaRondaActual(mostradas)} />);
+  const resumen = T.md(<ResumenRondaActual encuesta={encuestaCircuito} meta={encuestasMetadata?.escenarios_gobernador} conTitulo={false} />);
   const cuerpo = htmlEncuestasCuerpo({ rondas, opciones: { fechas }, T }).join('');
   return `<div class="section es-enc">${titulo('Resumen de la ronda actual')}${resumen}</div><div class="section es-enc">${titulo('Encuestas')}${cuerpo}</div>`;
 }

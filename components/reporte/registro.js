@@ -16,8 +16,8 @@ import { escenariosDeEncuesta, alinearComparativo } from '../../lib/intencionVot
 import { EscenarioRonda, EscenarioComparativo, TitularVoto, CabeceraRondaIV, PieIntencionVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
 import { ResumenRondaActual } from '../ResumenRondaActual';
-import { fechaRondaActual } from '../../lib/lecturaRondas';
-import { htmlEncuestasCuerpo, seleccionEncuestas, rondasMostradas } from './encuestasHtml';
+import { fechaRondaActual } from '../../lib/encuestasBloque';
+import { htmlEncuestasCuerpo } from './encuestasHtml';
 
 export const GRUPOS_REPORTE = ['Resumen', 'Territorio', 'Electoral', 'Comunicación y gestión', 'Opinión pública'];
 
@@ -382,11 +382,7 @@ export function crearRegistroSecciones(D) {
       },
       render: (ctx, o, T) => {
         const { encuesta } = encuestaDeContexto(ctx);
-        // Si Encuestas también va en el reporte y su ventana no llega a la última ronda del circuito, el resumen lo aclara.
-        const rondas = encuesta?.rondas || [];
-        const ventanaHasta = T.ids?.includes('encuestas') && rondas.length
-          ? fechaRondaActual(rondasMostradas(rondas, seleccionEncuestas(rondas, o?.encuestas || {}))) : null;
-        return T.md(<ResumenRondaActual encuesta={encuesta} meta={metaIV(ctx)} umbral={ctx.encuestasMetadata?.umbral_variacion_pp ?? 2.5} conTitulo={false} ventanaHasta={ventanaHasta} />);
+        return T.md(<ResumenRondaActual encuesta={encuesta} meta={metaIV(ctx)} conTitulo={false} />);
       },
       datosAl: () => null,
       paginas: () => 0.3,

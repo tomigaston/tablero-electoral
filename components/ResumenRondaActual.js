@@ -1,124 +1,76 @@
 import { formatearFecha } from '../lib/formatearFecha';
-import { ChipRonda } from './ChipRonda';
-import {
-  fechaRondaActual, ordenarRondas, resolverIndicador, etiquetaExtremos, bloquesNoMedidos, calcularBloqueProblemas,
-} from '../lib/lecturaRondas';
+import { fechaRondaActual, ultimoEscalar, problemasDeCircuito } from '../lib/encuestasBloque';
 import { escenariosDeEncuesta, titularEscenario, nombreCandidato } from '../lib/intencionVoto';
 
-// Resumen de la ronda actual: caja compacta de 3-4 líneas que se lee en 10 segundos. Es un RESUMEN: no vuelve a
-// dibujar las tarjetas completas (Indicadores, Calificación, Problemas) ni cuenta como un indicador repetido.
-//   · ronda actual = la más reciente de la encuesta del circuito (fecha + n)
+// Resumen de la ronda actual: caja compacta de 3 líneas que se lee en 10 segundos. Es un RESUMEN: no vuelve a dibujar
+// el bloque Encuestas. Habla el mismo idioma que el bloque: cada dato lleva SU PROPIA fecha (gris, a la derecha), sin
+// chips, sin n, sin atenuado ni avisos; el cambio es un delta neutro con signo (▲/▼ +x.x pp).
 //   · voto principal: Escenario 1 — quién va 1°, su % y la diferencia con el 2° (aunque no sea Llaryora)
-//   · aprobación del Gobernador y su dirección
-//   · problema principal (con su fecha real si es arrastre)
-//   · avisos: bloques que la ronda actual no midió
-// Aprobación: subir es buena noticia (verde), bajar es mala (rojo). Mismos tonos que el resto del tablero.
-const COLOR_SUBE_BUENO = '#2E7D32';
-const COLOR_BAJA_MALO = '#C62828';
+//   · aprobación del Gobernador y su cambio contra la medición anterior
+//   · problema principal
+// "No se preguntó" cuando el dato no existe en ninguna ronda del circuito (S/D nunca se muestra como 0).
 
 const fila = { display: 'flex', gap: '10px', alignItems: 'baseline', padding: '3px 0' };
 const rotulo = { width: '128px', flexShrink: 0, fontSize: '11px', color: 'var(--text-tertiary)' };
 const valorEstilo = { flex: 1, minWidth: 0, fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.35 };
-const tenue = { color: 'var(--text-tertiary)' };
+const fechaEstilo = { flexShrink: 0, fontSize: '11px', color: 'var(--text-tertiary)', whiteSpace: 'nowrap' };
+const NEUTRO = '#444';
 
-const Fila = ({ rotulo: r, children, atenuada }) => (
+const Fila = ({ rotulo: r, fecha, children }) => (
   <div style={fila}>
     <div style={rotulo}>{r}</div>
-    <div style={{ ...valorEstilo, ...(atenuada ? tenue : {}) }}>{children}</div>
+    <div style={valorEstilo}>{children}</div>
+    {fecha && <div style={fechaEstilo}>{formatearFecha(fecha)}</div>}
   </div>
 );
 
-// conTitulo=false en el reporte: la sección ya trae su propio título.
-// Agrupa los bloques no medidos por la fecha de su último dato.
-const gruposNoMedidos = (lista) => {
-  const m = new Map();
-  lista.forEach(b => { if (!m.has(b.ultimaFecha)) m.set(b.ultimaFecha, []); m.get(b.ultimaFecha).push(b.nombre); });
-  return [...m.entries()].map(([fecha, nombres]) => ({ fecha, nombres }));
-};
-
-// ventanaHasta (opcional): fecha de la ronda más reciente que muestra el detalle de abajo; si es anterior a la última
-// del circuito, el encabezado aclara que el resumen refleja la última ronda aunque el detalle no la incluya.
-export const ResumenRondaActual = ({ encuesta, meta, umbral = 2.5, conTitulo = true, ventanaHasta = null }) => {
-  const rondas = ordenarRondas(encuesta?.rondas);
-  if (!rondas.length) return null;
+// conTitulo=false en el reporte y la ficha: la sección ya trae su propio título.
+export const ResumenRondaActual = ({ encuesta, meta, conTitulo = true }) => {
+  const rondas = encuesta?.rondas || [];
   const fechaActual = fechaRondaActual(rondas);
-  const actual = rondas[rondas.length - 1];
+  if (!fechaActual) return null;
 
-  // Voto
+  // Voto: la ronda más reciente que trae escenarios.
   const iv = escenariosDeEncuesta(encuesta, meta).rondas;
   const rondaIV = iv.length ? iv[iv.length - 1] : null;
   const tit = rondaIV?.escenarios?.[0] ? titularEscenario(rondaIV.escenarios[0].valores, meta) : null;
-  const ivArrastre = rondaIV && rondaIV.fecha !== fechaActual;
 
-  // Aprobación del Gobernador
-  const apr = resolverIndicador(rondas, fechaActual, r => r.preguntas?.['Aprobación Gobernador']?.Apruebo, umbral);
-  const [ea, eb] = apr?.fechaAnterior ? etiquetaExtremos(apr.fechaAnterior, apr.fechaActual) : [null, null];
-
-  // Problema principal
-  const prob = calcularBloqueProblemas(rondas, umbral, fechaActual);
-  const top = prob?.filas?.[0];
-
-  const noMedidos = bloquesNoMedidos(rondas, fechaActual);
+  const apr = ultimoEscalar(rondas, 'Aprobación Gobernador', 'Apruebo');
+  const prob = problemasDeCircuito(rondas, 1);
+  const top = prob.estado === 'ok' ? prob.items[0] : null;
 
   return (
     <div data-resumen-ronda-actual style={{ border: '1px solid var(--border)', borderLeft: '4px solid #1976D2', borderRadius: '10px', padding: '10px 14px', backgroundColor: 'var(--bg-primary)', breakInside: 'avoid' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 10px', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '4px 10px', marginBottom: '4px' }}>
         {conTitulo && <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>Resumen de la ronda actual</span>}
-        <ChipRonda fecha={actual.fecha} casos={actual.casos} actual />
+        <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{formatearFecha(fechaActual)}</span>
       </div>
-      {ventanaHasta && ventanaHasta < actual.fecha && (
-        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', margin: '0 0 4px' }}>
-          Refleja la última ronda del circuito ({formatearFecha(actual.fecha)}), aunque el detalle de más abajo llega solo hasta el {formatearFecha(ventanaHasta)}.
-        </div>
-      )}
 
-      <Fila rotulo="Voto a Gobernador" atenuada={ivArrastre}>
-        {!rondaIV && 'Sin escenarios de voto en esta ronda.'}
-        {rondaIV && !tit && 'Sin escenarios de voto en esta ronda.'}
+      <Fila rotulo="Voto a Gobernador" fecha={tit ? rondaIV.fecha : null}>
+        {!tit && 'No se preguntó'}
         {tit && (
           <>
             <strong>Escenario 1: {tit.empate ? `empate entre ${nombreCandidato(tit.primero, meta)} y ${nombreCandidato(tit.segundo, meta)}, ${tit.valorPrimero.toFixed(1)}%` : `1° ${nombreCandidato(tit.primero, meta)} ${tit.valorPrimero.toFixed(1)}%`}</strong>
             {!tit.empate && tit.segundo != null && <> sobre {nombreCandidato(tit.segundo, meta)} {tit.valorSegundo.toFixed(1)}% (+{tit.diferencia.toFixed(1)} pp)</>}
             {tit.destacado && !tit.destacado.esPrimero && !tit.empate && <> · {nombreCandidato(tit.destacado.clave, meta)} va {tit.destacado.ordinal}</>}
-            {ivArrastre && <> · sin escenarios en la ronda actual, último dato: {formatearFecha(rondaIV.fecha)}{rondaIV.casos != null ? ` · n=${rondaIV.casos}` : ''}</>}
           </>
         )}
       </Fila>
 
-      <Fila rotulo="Aprobación Gobernador" atenuada={apr?.esArrastre}>
-        {!apr && 'Sin dato.'}
+      <Fila rotulo="Aprobación Gobernador" fecha={apr ? apr.fecha : null}>
+        {!apr && 'No se preguntó'}
         {apr && (
           <>
-            <strong>{apr.actual.toFixed(1)}%</strong>
-            {apr.estado && (
-              <> <span style={{ fontWeight: 700, color: apr.esArrastre || apr.estado === 'estable' ? 'var(--text-tertiary)' : (apr.estado === 'sube' ? COLOR_SUBE_BUENO : COLOR_BAJA_MALO), whiteSpace: 'nowrap' }}>
-                {apr.estado === 'estable' ? '· Estable' : `${apr.estado === 'sube' ? '▲' : '▼'} ${apr.delta > 0 ? '+' : '−'}${Math.abs(apr.delta).toFixed(1)} pp`}
-              </span> <span style={tenue}>({ea} {apr.anterior.toFixed(1)}% → {eb} {apr.actual.toFixed(1)}%)</span></>
-            )}
-            {apr.esArrastre && <> · sin dato en la ronda actual, último: {formatearFecha(apr.fechaActual)}{apr.actualCasos != null ? ` · n=${apr.actualCasos}` : ''}</>}
+            <strong>{apr.texto}</strong>
+            {apr.previo && <> <span style={{ fontWeight: 700, color: NEUTRO, whiteSpace: 'nowrap' }}>{apr.signo} {apr.deltaTexto} pp</span> <span style={{ color: 'var(--text-tertiary)' }}>(vs {formatearFecha(apr.previo.fecha)}: {apr.previo.texto})</span></>}
           </>
         )}
       </Fila>
 
-      <Fila rotulo="Problema principal" atenuada={prob?.esArrastre}>
-        {!top && 'Sin dato de problemas.'}
-        {top && (
-          <>
-            <strong>{top.cat === 'Otro' ? 'Otros problemas no listados' : top.cat} {top.valor.toFixed(1)}%</strong>
-            {prob.esArrastre ? <> · medición del {formatearFecha(prob.ultima.fecha)}{prob.ultima.casos != null ? ` · n=${prob.ultima.casos}` : ''} (la ronda actual no lo relevó)</> : null}
-          </>
-        )}
+      <Fila rotulo="Problema principal" fecha={top ? prob.fecha : null}>
+        {!top && 'No se preguntó'}
+        {top && <strong>{/^otr[oa]s?$/i.test(top.cat) ? 'Otros problemas no listados' : top.cat} {top.texto}</strong>}
       </Fila>
-
-      {noMedidos.length > 0 && (
-        <Fila rotulo="Avisos">
-          {noMedidos.length > 0 && (
-            <div style={tenue}>
-              No se midió en esta ronda (se muestra su último dato, más viejo): {gruposNoMedidos(noMedidos).map(g => `${g.nombres.join(', ')} (último: ${formatearFecha(g.fecha)})`).join('; ')}.
-            </div>
-          )}
-        </Fila>
-      )}
     </div>
   );
 };

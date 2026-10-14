@@ -4,11 +4,6 @@
 //   opciones = { fechas?: string[] }  → rondas elegidas (ISO). Siempre máx. 3, las más recientes, de la más vieja a la más nueva.
 
 import { EncuestasBlock } from '../EncuestasBlock';
-import { seleccionarRondas } from '../../lib/encuestasBloque';
-
-/** Rondas que entran según las opciones. Mantiene el nombre/forma que usa registro.js para el Resumen de ronda. */
-export const seleccionEncuestas = (rondas, o = {}) => ({ mostradas: seleccionarRondas(rondas, o?.fechas) });
-export const rondasMostradas = (rondas, sel) => sel.mostradas;
 
 /** Devuelve un array de fragmentos HTML (hoy, uno: el bloque). T.md renderiza JSX a HTML estático. */
 export function htmlEncuestasCuerpo({ rondas, opciones, T }) {
