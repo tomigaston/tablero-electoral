@@ -17,7 +17,7 @@ const CSS = `
 .eb-root{container-type:inline-size;font-size:12px;color:var(--text-primary,#1a1a1a)}
 .eb-root *{box-sizing:border-box}
 .eb-grupo{margin:0 0 18px}
-.eb-grupo-t{font-size:12px;font-weight:700;color:var(--text-secondary,#555);text-transform:uppercase;letter-spacing:.4px;margin:0 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border,#d9d9d9);break-after:avoid;page-break-after:avoid}
+.eb-grupo-t{text-align:center;font-size:12px;font-weight:700;color:var(--text-secondary,#555);text-transform:uppercase;letter-spacing:.4px;margin:0 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border,#d9d9d9);break-after:avoid;page-break-after:avoid}
 .eb-ind{margin:0 0 14px;break-inside:avoid;page-break-inside:avoid}
 .eb-ind-t{font-size:13px;font-weight:600;margin:0 0 6px}
 .eb-tl{display:flex;align-items:flex-start;gap:0}
@@ -40,10 +40,10 @@ const CSS = `
 .eb-co-i.eb-ini{transform:none}.eb-co-i.eb-ini:before{left:0}
 .eb-co-i.eb-fin{transform:translateX(-100%)}.eb-co-i.eb-fin:before{left:100%}
 .eb-ceros{margin:-2px 0 5px 160px;font-size:11px;color:${TENUE}}
-.eb-ley{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0 0 160px;font-size:11px;color:${NEUTRO}}
+.eb-ley{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin:6px 0 0 160px;font-size:11px;color:${NEUTRO}}
 .eb-ley-i{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .eb-sw{width:11px;height:11px;border:1px solid #757575;border-radius:2px;display:inline-block}
-.eb-dl{margin:3px 0 0 160px;font-size:11px;color:${NEUTRO}}
+.eb-dl{text-align:center;margin:3px 0 0 160px;font-size:11px;color:${NEUTRO}}
 .eb-dl b{font-weight:700}
 .eb-rk{display:flex;align-items:flex-start;gap:10px;margin:0 0 6px}
 .eb-rk-l{flex:0 0 190px;font-size:12px;line-height:1.25;padding-top:2px}
@@ -65,7 +65,7 @@ const CSS = `
 }
 `;
 
-const Sd = () => <div className="eb-sd">S/D — no se encuestó</div>;
+const Sd = () => <div className="eb-sd">No se preguntó</div>;
 
 /** Familia A — escalar: una fila, una columna por ronda; entre rondas una flecha con el cambio en pp encima. */
 export function TimelineRow({ item }) {
