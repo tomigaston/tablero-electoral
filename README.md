@@ -20,8 +20,7 @@ Aplicación web para análisis electoral de los 119 circuitos de Córdoba Capita
    - Click en "New Project"
    - Importar el repositorio de GitHub
    - Configurar variables de entorno:
-     - `AUTH_USER`: usuario para acceder
-     - `AUTH_PASS`: contraseña segura
+     - `AUTH_USERS`: usuarios y claves, formato `usuario1:clave1,usuario2:clave2`
    - Click en "Deploy"
 
 ### Opción 2: Deploy con Vercel CLI
@@ -39,8 +38,7 @@ Aplicación web para análisis electoral de los 119 circuitos de Córdoba Capita
 
 3. **Configurar variables de entorno en producción**
    ```bash
-   vercel env add AUTH_USER
-   vercel env add AUTH_PASS
+   vercel env add AUTH_USERS
    ```
 
 4. **Deploy a producción**
@@ -50,11 +48,13 @@ Aplicación web para análisis electoral de los 119 circuitos de Córdoba Capita
 
 ## 🔒 Seguridad
 
-La aplicación usa Basic Auth para proteger el acceso. Configurar las variables de entorno:
+La aplicación usa Basic Auth para proteger el acceso, con varios usuarios del mismo nivel. Configurar las variables de entorno (solo en Vercel, nunca en el repo):
 
-- `AUTH_USER`: Usuario (default: admin)
-- `AUTH_PASS`: Contraseña (default: cordoba2026)
+- `AUTH_USERS`: lista `usuario:clave` separada por comas (las claves no pueden llevar comas). No hay credenciales por defecto: sin esta variable el sitio responde 401.
+- `AUTH_USER` / `AUTH_PASS`: esquema anterior de un solo usuario, aceptado como compatibilidad temporal.
 - `DISABLE_AUTH`: Poner en "true" para desarrollo local sin auth
+
+El auth también cubre `/data/*` (los JSON y xlsx de `public/data/`). Para sumar o quitar un usuario: editar `AUTH_USERS` en Vercel y redeployar.
 
 ## 📁 Estructura del proyecto
 
