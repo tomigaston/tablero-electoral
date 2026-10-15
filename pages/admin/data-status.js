@@ -5,7 +5,7 @@ import Head from 'next/head';
 import dataManifest from '../../lib/data-manifest';
 
 // Protegida por el mismo Basic Auth del resto del sitio (middleware.js aplica a
-// todas las rutas salvo _next/static, _next/image, favicon.ico y /data/ — esta
+// todas las rutas salvo _next/static, _next/image y favicon.ico; /data/ también está protegido — esta
 // página cae dentro del set protegido, no necesita lógica propia de auth).
 
 const GITHUB_REPO = 'tomigaston/tablero-electoral';
