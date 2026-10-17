@@ -1,13 +1,17 @@
-// /planificador — Planificador Estratégico Territorial (piloto, rama feature/planificador).
+// /planificador — Planificador territorial (piloto, rama feature/planificador).
+// Dos hojas: Resumen (foto general navegable) y Circuitos (lista + ficha con decisión y seguimiento).
 // Vista nueva y separada: NO modifica pages/index.js ni ninguna ruta existente.
 // Lógica en lib/planificador/, componentes en components/planificador/. Ver docs/planificador.md.
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import Head from 'next/head';
 import { enriquecerObrasConCircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre } from '../lib/obrasCercanas';
-import { construirPlanificador, calcularKpis } from '../lib/planificador';
+import { construirPlanificador } from '../lib/planificador';
+import { calcularAgregados, calcularSeguimiento } from '../lib/planificador/agregados';
+import { FILTRO_VACIO } from '../lib/planificador/filtros';
+import { cargarFichas, enviarOperacion } from '../lib/planificador/fichasApi';
 import { parsearParte } from '../lib/parteObras';
-import VistaPlanificador from '../components/planificador/VistaPlanificador';
-import FichaEstrategica from '../components/planificador/FichaEstrategica';
+import HojaResumen from '../components/planificador/HojaResumen';
+import HojaCircuitos from '../components/planificador/HojaCircuitos';
 import { Boton } from '../components/planificador/ui';
 
 const ARCHIVOS = {
@@ -20,41 +24,60 @@ const ARCHIVOS = {
   barriosGeoData: 'barrios_geo.json',
   obrasData: 'obras_capital.json',
 };
-const LS_AGENDA = 'planificador.agenda';
 const LS_PARTE = 'planificador.parte';
+const REFRESCO_FICHAS_MS = 60000;
 
-const CSS_IMPRESION = `
+const CSS = `
 @page{size:A4 portrait;margin:12mm}
+.plan-fila:hover{background:#1976D211 !important}
+.plan-solo-movil{display:none}
+@media (max-width:900px){
+  .plan-circuitos{grid-template-columns:1fr !important}
+  .plan-lista{position:static !important}
+  .plan-lista-con-ficha{display:none}
+  .plan-solo-movil{display:inline}
+  .plan-grilla-resumen{grid-template-columns:1fr !important}
+}
 @media print{
   html,body{background:#fff !important}
   .plan-no-print{display:none !important}
   .plan-solo-print{display:block !important}
   .plan-raiz{padding:0 !important;max-width:none !important}
-  .plan-ficha *{background:transparent !important;color:#000 !important;box-shadow:none !important}
-  .plan-ficha .plan-seccion{border:1px solid #888 !important;break-inside:avoid;page-break-inside:avoid}
-  .plan-ficha svg polyline{stroke:#000 !important}
+  .plan-circuitos{display:block !important}
+  .plan-lista{display:none !important}
+  .plan-raiz *{box-shadow:none !important}
+  .plan-raiz .plan-seccion{border:1px solid #888 !important;break-inside:avoid;page-break-inside:avoid;background:#fff !important}
+  .plan-raiz .plan-seccion *{background:transparent !important;color:#000 !important}
+  .plan-grilla-resumen{display:block !important}
+  .plan-grilla-resumen .plan-seccion{margin-bottom:10px}
 }
-.plan-fila:hover{background:#1976D211}
 `;
 
-// Panel del Parte de Obras diario: pegar el texto del día (o leerlo de /data/parte_obras.txt).
-function PanelParte({ texto, setTexto, parte, estado }) {
+// "#/circuitos/14M" · "#/resumen" · (compatibilidad con el piloto anterior) "#14M"
+function leerHash() {
+  const h = window.location.hash.replace(/^#\/?/, '');
+  const [a, b] = h.split('/');
+  if (a === 'resumen') return { hoja: 'resumen', seleccion: null };
+  if (a === 'circuitos') return { hoja: 'circuitos', seleccion: b || null };
+  if (a) return { hoja: 'circuitos', seleccion: a };
+  return { hoja: 'resumen', seleccion: null };
+}
+
+function PanelParte({ texto, setTexto, parte }) {
   const [abierto, setAbierto] = useState(false);
-  const finalizadas = parte?.items?.filter((i) => /^FINALIZ|^TERMINAD/.test(i.estadoNorm)).length ?? 0;
+  const fin = parte?.items?.filter((i) => /^FINALIZ|^TERMINAD/.test(i.estadoNorm)).length ?? 0;
   return (
-    <div style={{ marginBottom: 10, fontSize: 12.5 }}>
+    <div className="plan-no-print" style={{ marginTop: 10, fontSize: 12.5 }}>
       <button onClick={() => setAbierto(!abierto)} style={{ border: 'none', background: 'none', color: '#1565C0', cursor: 'pointer', padding: 0, fontSize: 12.5 }}>
-        {abierto ? '▾' : '▸'} Parte de Obras del día {parte?.items?.length ? `(cargado: ${parte.meta.fecha || 's/f'}, ${parte.items.length} ítems, ${finalizadas} finalizadas)` : '(no cargado — las obras salen de obras_capital.json)'}
+        {abierto ? '▾' : '▸'} Parte de Obras del día {parte?.items?.length ? `(cargado: ${parte.meta.fecha || 's/f'} · ${parte.items.length} ítems · ${fin} finalizadas)` : '(no cargado: las obras salen de obras_capital.json)'}
       </button>
       {abierto && (
         <div style={{ marginTop: 6 }}>
           <textarea value={texto} onChange={(e) => setTexto(e.target.value)} rows={7} placeholder="Pegá acá el texto de la lista de difusión del día…"
             style={{ width: '100%', fontFamily: 'monospace', fontSize: 12, padding: 8, borderRadius: 6, border: '1px solid var(--border)' }} />
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4, flexWrap: 'wrap' }}>
             <Boton onClick={() => setTexto('')}>Quitar parte</Boton>
-            <span style={{ color: 'var(--text-secondary)' }}>
-              Con parte cargado, las obras inaugurables de cada circuito salen de las filas “Finalizadas” del parte; si el parte no trae ninguna para el circuito, se usa obras_capital.json. {estado}
-            </span>
+            <span style={{ color: 'var(--text-secondary)' }}>Con parte cargado, las obras listas de cada circuito se marcan “confirmada por el parte” cuando el parte las trae como finalizadas. Se guarda solo en este navegador.</span>
           </div>
         </div>
       )}
@@ -65,11 +88,13 @@ function PanelParte({ texto, setTexto, parte, estado }) {
 export default function Planificador() {
   const [crudo, setCrudo] = useState(null);
   const [error, setError] = useState(null);
-  const [seleccion, setSeleccion] = useState(null);
-  const [agenda, setAgenda] = useState(() => new Set());
+  const [nav, setNav] = useState({ hoja: 'resumen', seleccion: null });
+  const [filtro, setFiltro] = useState(FILTRO_VACIO);
   const [textoParte, setTextoParte] = useState('');
+  const [fichas, setFichas] = useState({});
+  const [persistencia, setPersistencia] = useState({ disponible: false, cargando: true, mensaje: null, usuario: null });
 
-  // ---- carga de datos (mismos JSON que el tablero, vía /data/) ----
+  // ---- datos del tablero (mismos JSON, vía /data/) ----
   useEffect(() => {
     let vivo = true;
     (async () => {
@@ -85,7 +110,7 @@ export default function Planificador() {
     return () => { vivo = false; };
   }, []);
 
-  // ---- parte de obras: texto del repo (opcional) o pegado en la vista ----
+  // ---- parte de obras: texto en el repo (opcional) o pegado en la vista ----
   useEffect(() => {
     let guardado = null;
     try { guardado = window.localStorage.getItem(LS_PARTE); } catch (e) { /* sin storage */ }
@@ -96,77 +121,95 @@ export default function Planificador() {
     try { if (textoParte) window.localStorage.setItem(LS_PARTE, textoParte); else window.localStorage.removeItem(LS_PARTE); } catch (e) { /* sin storage */ }
   }, [textoParte]);
 
-  // ---- agenda (piloto: marcar/listar, guardado local del navegador) ----
-  useEffect(() => {
-    try { const g = JSON.parse(window.localStorage.getItem(LS_AGENDA) || '[]'); if (Array.isArray(g)) setAgenda(new Set(g)); } catch (e) { /* ignorar */ }
+  // ---- fichas compartidas (notas, decisiones, seguimiento): base de datos real ----
+  const refrescarFichas = useCallback(async () => {
+    try {
+      const r = await cargarFichas();
+      setFichas(r.fichas || {});
+      setPersistencia({ disponible: true, cargando: false, mensaje: null, usuario: r.usuario, modo: r.modo });
+    } catch (e) {
+      setPersistencia((p) => ({ ...p, disponible: false, cargando: false, mensaje: e.codigo === 'sin_base' ? 'falta configurar la base de datos (KV_REST_API_URL / KV_REST_API_TOKEN)' : e.message }));
+    }
   }, []);
-  const toggleAgenda = useCallback((key) => {
-    setAgenda((prev) => {
-      const sig = new Set(prev);
-      if (sig.has(key)) sig.delete(key); else sig.add(key);
-      try { window.localStorage.setItem(LS_AGENDA, JSON.stringify([...sig])); } catch (e) { /* ignorar */ }
-      return sig;
-    });
+  useEffect(() => {
+    refrescarFichas();
+    const t = setInterval(refrescarFichas, REFRESCO_FICHAS_MS);
+    const alVolver = () => { if (document.visibilityState === 'visible') refrescarFichas(); };
+    document.addEventListener('visibilitychange', alVolver);
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', alVolver); };
+  }, [refrescarFichas]);
+
+  const operar = useCallback(async (circuito, op) => {
+    const r = await enviarOperacion(circuito, op);
+    setFichas((prev) => ({ ...prev, [circuito.toUpperCase()]: r.ficha }));
   }, []);
 
-  // ---- selección sincronizada con el hash (#14M) para poder compartir / volver con "atrás" ----
+  // ---- navegación por hash ----
   useEffect(() => {
-    const leer = () => setSeleccion(window.location.hash.replace(/^#/, '') || null);
+    const leer = () => setNav(leerHash());
     leer();
     window.addEventListener('hashchange', leer);
     return () => window.removeEventListener('hashchange', leer);
   }, []);
-  const seleccionar = useCallback((key) => {
-    if (key) window.location.hash = key;
-    else { window.history.pushState(null, '', window.location.pathname); setSeleccion(null); }
+  const irA = useCallback((hoja, seleccion = null) => {
+    window.location.hash = hoja === 'resumen' ? '/resumen' : `/circuitos${seleccion ? `/${seleccion}` : ''}`;
   }, []);
+  const seleccionar = useCallback((key) => irA('circuitos', key), [irA]);
+
+  // Resumen -> Circuitos: filtra por el conjunto (o entra directo si es un solo circuito).
+  const irConConjunto = useCallback((claves, etiqueta, directo = false) => {
+    if (directo && claves.length === 1) { irA('circuitos', claves[0]); return; }
+    setFiltro({ ...FILTRO_VACIO, claves, etiqueta });
+    irA('circuitos');
+  }, [irA]);
 
   const parte = useMemo(() => {
     if (!textoParte.trim()) return null;
     try { return parsearParte(textoParte); } catch (e) { return null; }
   }, [textoParte]);
 
-  const { filas, kpis } = useMemo(() => {
-    if (!crudo) return { filas: [], kpis: null };
-    const indiceBarrio = construirIndiceBarrioCircuito(crudo.cruceData);
-    const indiceNombre = construirIndiceMapkeyNombre(crudo.cruceData);
-    const obrasEnriquecidas = enriquecerObrasConCircuito(crudo.obrasData, indiceBarrio, indiceNombre);
-    const { filas: fs } = construirPlanificador({ ...crudo, obrasEnriquecidas, parte });
-    return { filas: fs, kpis: calcularKpis(fs) };
+  const { filas, pautaDerivada } = useMemo(() => {
+    if (!crudo) return { filas: [], pautaDerivada: null };
+    const obrasEnriquecidas = enriquecerObrasConCircuito(crudo.obrasData, construirIndiceBarrioCircuito(crudo.cruceData), construirIndiceMapkeyNombre(crudo.cruceData));
+    return construirPlanificador({ ...crudo, obrasEnriquecidas, parte });
   }, [crudo, parte]);
-
-  const fila = useMemo(() => filas.find((f) => f.key.toLowerCase() === String(seleccion || '').toLowerCase()), [filas, seleccion]);
+  const agregados = useMemo(() => (filas.length ? calcularAgregados(filas, pautaDerivada) : null), [filas, pautaDerivada]);
+  const seguimiento = useMemo(() => calcularSeguimiento(fichas), [fichas]);
   const hoyTexto = new Date().toLocaleDateString('es-AR');
+
+  const Tab = ({ id, children }) => (
+    <button onClick={() => irA(id)} aria-current={nav.hoja === id}
+      style={{ padding: '8px 18px', border: 'none', borderBottom: nav.hoja === id ? '3px solid #1976D2' : '3px solid transparent', background: 'none', fontSize: 14, fontWeight: nav.hoja === id ? 700 : 500, color: nav.hoja === id ? '#1565C0' : 'var(--text-secondary)', cursor: 'pointer' }}>{children}</button>
+  );
 
   return (
     <>
       <Head>
-        <title>Planificador estratégico · Tablero electoral</title>
+        <title>Planificador territorial · Tablero electoral</title>
         <meta name="robots" content="noindex" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <style>{CSS_IMPRESION}</style>
-      <div className="plan-raiz" style={{ padding: '16px 20px', maxWidth: 1500, margin: '0 auto' }}>
-        <div className="plan-no-print" style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700 }}>Planificador estratégico territorial</h1>
-          <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 10, background: '#FFCA2833', color: '#F57F17', fontWeight: 600 }}>PILOTO</span>
-          <a href="/" style={{ marginLeft: 'auto', fontSize: 13, color: '#1565C0' }}>← Tablero</a>
+      <style>{CSS}</style>
+      <div className="plan-raiz" style={{ padding: '14px 20px', maxWidth: 1600, margin: '0 auto' }}>
+        <div className="plan-no-print plan-nav" style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap', borderBottom: '1px solid var(--border)', marginBottom: 14 }}>
+          <h1 style={{ fontSize: 19, fontWeight: 700 }}>Planificador territorial</h1>
+          <span style={{ fontSize: 11.5, padding: '2px 8px', borderRadius: 10, background: '#FFCA2833', color: '#F57F17', fontWeight: 600 }}>PILOTO</span>
+          <nav style={{ display: 'flex', marginLeft: 8 }}><Tab id="resumen">Resumen</Tab><Tab id="circuitos">Circuitos</Tab></nav>
+          <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--text-secondary)' }}>{persistencia.usuario ? `Sesión: ${persistencia.usuario} · ` : ''}{hoyTexto}</span>
+          <a href="/" style={{ fontSize: 13, color: '#1565C0' }}>← Tablero</a>
         </div>
 
         {error && <div style={{ padding: 16, border: '1px solid #C62828', borderRadius: 8, color: '#B71C1C' }}>Error cargando datos: {error}</div>}
         {!error && !crudo && <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-secondary)' }}>Cargando datos…</div>}
 
-        {crudo && !fila && (
-          <VistaPlanificador
-            filas={filas} kpis={kpis} onSelect={seleccionar} agenda={agenda} onToggleAgenda={toggleAgenda} hoyTexto={hoyTexto}
-            parteUI={<PanelParte texto={textoParte} setTexto={setTextoParte} parte={parte} estado="" />}
-          />
+        {crudo && agregados && nav.hoja === 'resumen' && (
+          <HojaResumen agregados={agregados} seguimiento={seguimiento} persistencia={persistencia} onIr={irConConjunto} hoyTexto={hoyTexto} />
         )}
-        {crudo && fila && (
-          <FichaEstrategica f={fila} onVolver={() => seleccionar(null)} enAgenda={agenda.has(fila.key)} onToggleAgenda={() => toggleAgenda(fila.key)} />
+        {crudo && agregados && nav.hoja === 'circuitos' && (
+          <HojaCircuitos filas={filas} fichas={fichas} filtro={filtro} setFiltro={setFiltro} seleccion={nav.seleccion} onSelect={seleccionar}
+            persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} />
         )}
-        {crudo && seleccion && !fila && (
-          <p style={{ marginTop: 12, fontSize: 13 }}>No existe el circuito “{seleccion}”. <button onClick={() => seleccionar(null)} style={{ border: 'none', background: 'none', color: '#1565C0', cursor: 'pointer' }}>Volver a la tabla</button></p>
-        )}
+        {crudo && <PanelParte texto={textoParte} setTexto={setTextoParte} parte={parte} />}
       </div>
     </>
   );

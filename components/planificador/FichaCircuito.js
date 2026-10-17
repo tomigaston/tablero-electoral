@@ -1,0 +1,145 @@
+// Ficha de un circuito (derecha de la hoja Circuitos). Bloques: encabezado · electoral ·
+// encuesta · 3 problemas + cobertura · qué se hizo · lectura · decisión y seguimiento.
+import React from 'react';
+import { DESCRIPCION_CATEGORIA, LABEL_PRIORIDAD } from '../../lib/planificador/config';
+import { formatPct, num1, mesAnio, periodoEntre, fmtDeltaPP } from '../../lib/planificador/base';
+import { apruebaDe, reeleccionDe } from '../../lib/planificador/tendencia';
+import { formatearFecha } from '../../lib/formatearFecha';
+import { ChipCategoria, PuntoPrioridad, Boton } from './ui';
+import BloqueQueSeHizo from './BloqueQueSeHizo';
+import BloqueDecision from './BloqueDecision';
+
+const Seccion = ({ n, titulo, children }) => (
+  <section className="plan-seccion" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+    <h2 style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{n ? `${n}. ` : ''}{titulo}</h2>
+    {children}
+  </section>
+);
+
+const ESTADO_COBERTURA = {
+  cubierto: { icono: '✓', color: '#2E7D32', texto: 'Cubierto' },
+  planificado: { icono: '◔', color: '#F57F17', texto: 'Solo planificado' },
+  descubierto: { icono: '✗', color: '#C62828', texto: 'Descubierto' },
+  sin_palanca: { icono: '⊘', color: '#C62828', texto: 'Sin palanca' },
+};
+
+// 45,3% (abr 2026) → 39,5% (sep 2026) · −5,8 pp en 5 meses — siempre con fechas y período.
+function Aprobacion({ f }) {
+  const t = f.tendencia;
+  if (t.estado === 'sin_medir') return <p style={{ fontSize: 14 }}>Este circuito <strong>nunca fue medido</strong>: sin dato de aprobación.</p>;
+  const serie = t.serie;
+  if (!serie.length) return <p style={{ fontSize: 14 }}>Hay {f.rondas.length === 1 ? 'una medición' : 'mediciones'} pero sin dato de aprobación del Gobernador.</p>;
+  const ultima = serie[serie.length - 1];
+  const prev = serie.length >= 2 ? serie[serie.length - 2] : null;
+  const colorTend = t.estado === 'mejora' ? '#2E7D32' : t.estado === 'empeora' ? '#C62828' : t.estado === 'estable' ? '#F57F17' : 'var(--text-secondary)';
+  const flecha = t.estado === 'mejora' ? '↑' : t.estado === 'empeora' ? '↓' : t.estado === 'estable' ? '→' : '';
+  return (
+    <>
+      <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.4 }}>
+        {prev ? (
+          <>
+            {num1(prev.apruebo)}% <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-secondary)' }}>({mesAnio(prev.fecha)})</span>
+            {' → '}
+            {num1(ultima.apruebo)}% <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-secondary)' }}>({mesAnio(ultima.fecha)})</span>
+            <span style={{ color: colorTend, fontSize: 16, marginLeft: 10 }}>{flecha} {fmtDeltaPP(t.delta)} en {periodoEntre(prev.fecha, ultima.fecha)}</span>
+          </>
+        ) : (
+          <>{num1(ultima.apruebo)}% <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-secondary)' }}>({mesAnio(ultima.fecha)}) · una sola medición</span></>
+        )}
+      </div>
+      {serie.length >= 3 && (
+        <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', marginTop: 4 }}>
+          Serie completa: {serie.map((p) => `${num1(p.apruebo)}% (${mesAnio(p.fecha)})`).join(' → ')}
+        </div>
+      )}
+      {f.vsRef && (
+        <div style={{ fontSize: 13.5, marginTop: 8 }}>
+          Meta (Gobernador 2023): <strong>{formatPct(f.shareG23)}</strong> — la aprobación está <strong>{num1(Math.abs(f.vsRef.diff) * 100)} pp {f.vsRef.porEncima ? 'por encima' : 'por debajo'}</strong>.
+        </div>
+      )}
+      {(() => {
+        const r = [...f.rondas].reverse().find((x) => reeleccionDe(x) != null);
+        return r ? <div style={{ fontSize: 13.5, marginTop: 4 }}>Reelección Llaryora (sí): <strong>{num1(reeleccionDe(r))}%</strong> <span style={{ color: 'var(--text-secondary)' }}>({mesAnio(r.fecha)})</span></div> : null;
+      })()}
+    </>
+  );
+}
+
+export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hayParte, onVolver }) {
+  const hoy = new Date().toLocaleDateString('es-AR');
+  return (
+    <div className="plan-ficha">
+      <div className="plan-no-print" style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        {onVolver && <span className="plan-solo-movil"><Boton onClick={onVolver}>← Lista</Boton></span>}
+        <Boton onClick={() => window.print()} titulo="Imprime la ficha en A4; desde el diálogo se puede guardar como PDF">Imprimir / exportar ficha</Boton>
+      </div>
+
+      {/* 1. Encabezado + 2. Electoral */}
+      <header className="plan-seccion" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 280px' }}>
+            <h1 style={{ fontSize: 21, fontWeight: 700 }}>{f.key} · {f.nombre}</h1>
+            <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <ChipCategoria categoria={f.categoria} tamano={12} />
+              <span style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>Padrón {f.padron != null ? f.padron.toLocaleString('es-AR') : '—'}</span>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 5 }}><PuntoPrioridad nivel={f.prioridad.nivel} tamano={10} />Prioridad {LABEL_PRIORIDAD[f.prioridad.nivel]}</span>
+            </div>
+            <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>{DESCRIPCION_CATEGORIA[f.categoria] || ''}</p>
+          </div>
+          <div style={{ display: 'flex', gap: 22 }}>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Llaryora · Intendente 2019</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-secondary)' }}>{formatPct(f.shareInt19)}</div>
+            </div>
+            <div style={{ borderLeft: '3px solid #1976D2', paddingLeft: 12 }}>
+              <div style={{ fontSize: 11, color: '#1565C0', fontWeight: 700 }}>META · Gobernador 2023</div>
+              <div style={{ fontSize: 26, fontWeight: 700 }}>{formatPct(f.shareG23)}</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <Seccion n={3} titulo="Encuesta · aprobación del gobernador"><Aprobacion f={f} /></Seccion>
+
+      <Seccion n={4} titulo="Los 3 problemas principales y su cobertura">
+        {f.problemas.items.length === 0 ? (
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{f.problemas.estado === 'sin_rondas' ? 'Sin encuestas registradas para este circuito.' : 'Sin dato de problemas en las encuestas de este circuito.'}</p>
+        ) : (
+          <div style={{ display: 'grid', gap: 7 }}>
+            {f.cobertura.map((c, i) => {
+              const e = ESTADO_COBERTURA[c.estado];
+              const alerta = c.estado === 'descubierto' || c.estado === 'sin_palanca';
+              return (
+                <div key={c.cat} style={{ display: 'flex', gap: 10, alignItems: 'baseline', padding: '7px 10px', borderRadius: 6, borderLeft: `4px solid ${alerta ? '#C62828' : 'var(--border)'}`, background: alerta ? '#C6282810' : 'var(--bg-secondary)' }}>
+                  <strong style={{ minWidth: 22 }}>#{i + 1}</strong>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600 }}>{c.cat} <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>· {num1(c.valor)}%</span></div>
+                    <div style={{ fontSize: 12.5, color: e.color }}>{e.icono} {c.estado === 'sin_palanca' || c.detalle === 'Sin cobertura' ? c.detalle : `${e.texto} — ${c.detalle}`}</div>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Ronda del {formatearFecha(f.problemas.fecha)}. La pauta cubre “Seguridad” (eje SEGURIDAD); una obra cubre calles, pavimento, iluminación o plazas solo si está Finalizada o En ejecución; residuos, cloacas, agua y transporte no tienen palanca.</div>
+          </div>
+        )}
+      </Seccion>
+
+      <Seccion n={5} titulo="Qué se hizo">
+        <div className="plan-no-print"><BloqueQueSeHizo key={f.key} f={f} hayParte={hayParte} /></div>
+        <div className="plan-solo-print" style={{ display: 'none', fontSize: 12.5 }}>
+          {f.piezasPauta.length} pautas · {f.senales.nVisitas} visitas · {f.inaugurables.length} obras listas · {f.obras.length} obras totales
+          {f.inaugurables.slice(0, 8).map((o, i) => <div key={i}>• {o.nombre_obra || 'Obra'}{o.tipo_obra ? ` (${o.tipo_obra})` : ''}{o.barrio ? ` — ${o.barrio}` : ''}</div>)}
+        </div>
+      </Seccion>
+
+      <Seccion titulo="Lectura">
+        <div style={{ fontSize: 13.5, lineHeight: 1.55, display: 'grid', gap: 6 }}>{f.lectura.map((p, i) => <p key={i}>{p}</p>)}</div>
+      </Seccion>
+
+      <Seccion n={7} titulo="Tu decisión y seguimiento">
+        <BloqueDecision circuito={f.key} ficha={ficha} persistencia={persistencia} onOperacion={onOperacion} />
+      </Seccion>
+      <div className="plan-solo-print" style={{ display: 'none', fontSize: 10, color: '#555' }}>Planificador territorial · {f.key} {f.nombre} · generado el {hoy}</div>
+    </div>
+  );
+}
