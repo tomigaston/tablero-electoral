@@ -15,6 +15,7 @@
 import { escenariosDeEncuesta, alinearComparativo } from '../../lib/intencionVoto';
 import { EscenarioRonda, EscenarioComparativo, CabeceraRondaIV, PieIntencionVoto } from '../IntencionVotoGobernador';
 import { ChipRonda } from '../ChipRonda';
+import { pautaEstaVigente, hoyLocal } from '../../lib/estadoPauta';
 import { ResumenRondaActual } from '../ResumenRondaActual';
 import { fechaRondaActual, ultimoEscalar } from '../../lib/encuestasBloque';
 import { htmlEncuestasCuerpo } from './encuestasHtml';
@@ -91,7 +92,7 @@ export function crearRegistroSecciones(D) {
       ${kpi('Circuitos con encuesta', `${conEncuesta.length}/${ctx.datos.length}`, ultimaRonda ? `última ronda ${formatearFecha(ultimaRonda)}` : '')}
       ${kpi('Visitas del Gobernador', visitas.length, visitas[0] ? `última ${formatearFecha(visitas[0].fecha)}` : '')}
       ${kpi('Obras registradas', (ctx.obrasEnriquecidas || []).length, '')}
-      ${kpi('Piezas de pauta activas', pautas.filter(p => estadoMostradoPauta(p) === 'ACTIVO').length, `${pautas.length} registradas`)}
+      ${kpi('Piezas de pauta activas', pautas.filter(p => pautaEstaVigente(p, hoyLocal())).length, `${pautas.length} registradas`)}
     </div>`;
   }
 
@@ -206,7 +207,7 @@ export function crearRegistroSecciones(D) {
     const totalCapital = todaCapital.length;
     const recientes = [...todaCapital].sort((a, b) => (b.fin || '').localeCompare(a.fin || '')).slice(0, 12);
     const kpi = (k, v, s) => `<div class="rp-kpi"><div class="k">${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
-    return `<div class="rp-kpis" style="grid-template-columns:repeat(3,1fr)">${kpi('Piezas registradas', pautas.length)}${kpi('Activas hoy', pautas.filter(p => estadoMostradoPauta(p) === 'ACTIVO').length)}${kpi('Alcance toda Capital', ctx.pautasBarriosData?.toda_capital?.total_pautas ?? 0, 'piezas sin barrio ni circuito')}</div>
+    return `<div class="rp-kpis" style="grid-template-columns:repeat(3,1fr)">${kpi('Piezas registradas', pautas.length)}${kpi('Activas hoy', pautas.filter(p => pautaEstaVigente(p, hoyLocal())).length)}${kpi('Alcance toda Capital', ctx.pautasBarriosData?.toda_capital?.total_pautas ?? 0, 'piezas sin barrio ni circuito')}</div>
       <div class="rp-h3">Piezas por plataforma</div><table class="rp-tabla"><thead><tr><th>Plataforma</th><th class="num">Piezas</th></tr></thead><tbody>${Object.entries(porPlat).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<tr><td>${esc(k)}</td><td class="num">${n}</td></tr>`).join('')}</tbody></table>
       <div class="rp-h3">Pauta de alcance a toda la Capital</div>${conClaseTabla(htmlPautaPDF(recientes))}<p class="rp-nota">Se muestran las 12 piezas de alcance a toda la Capital con vigencia más reciente (de ${totalCapital} registradas).</p>`;
   }

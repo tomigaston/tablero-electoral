@@ -88,12 +88,12 @@ function crearIconoPautaEstrella() {
 
 // pautas_barrios.json (esquema campañas 2026) trae la vigencia como inicio / fin en
 // formato "YYYY-MM-DD" — NO fecha_creacion/fecha_finalizacion (esquema Meta Ads viejo,
-// ya no existe). El parseo de fecha y el cálculo de vigencia (fin >= hoy) viven ahora en
-// lib/estadoPauta.js (parsearFechaISOPauta / pautaEstaVigente) — antes duplicados acá,
+// ya no existe). El parseo de fecha y el predicado de activa (estado Vigente e INICIO <= hoy <= FIN)
+// viven en lib/estadoPauta.js (parsearFechaISOPauta / pautaEstaVigente) — antes duplicados acá,
 // centralizado para poder aplicar ahí el override temporal de la reunión (ver comentario
 // al tope de ese archivo).
 
-// Anota cada pauta con _activa (fin >= hoy, según `hoy`) y ordena por inicio (arranque
+// Anota cada pauta con _activa (predicado único pautaEstaVigente, según `hoy`) y ordena por inicio (arranque
 // de vigencia) descendente — la más reciente primero. Sin inicio parseable, se manda al
 // final (no rompe el orden del resto). Extraído a nivel de módulo (antes vivía inline en
 // el useMemo de pautaBarrioMarkers) para reusarlo también en pautaCapitalMarkers — mismo

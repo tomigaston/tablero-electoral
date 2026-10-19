@@ -16,7 +16,7 @@ import { crearRegistroSecciones, infoEncuestasContexto, infoIntencionContexto } 
 import { generarReporte as armarReporte } from '../components/reporte/generar';
 import { imprimirReporte } from '../components/reporte/imprimir';
 import { estilosReporte } from '../components/reporte/estilos';
-import { pautaEstaVigente, estadoMostradoPauta, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
+import { pautaEstaVigente, estadoMostradoPauta, hoyLocal, parsearFechaISOPauta, esObraPautaMesaCapital } from '../lib/estadoPauta';
 import MetricCardMini from '../components/MetricCardMini';
 import ResumenPautaGlobal, { MiniTarjetaPautaCircuito } from '../components/ResumenPauta';
 import { derivarPautaPorCircuito, normalizarCircuitoKey } from '../lib/pautaPorCircuito';
@@ -383,22 +383,15 @@ function obtenerPautasCircuitoSinBarrio(pautasBarriosData, circuitoKey) {
   return pautasBarriosData?.circuitos_sin_barrio?.[String(circuitoKey)]?.pautas || [];
 }
 
-// pautas_barrios.json trae la vigencia como inicio/fin en "YYYY-MM-DD" (esquema
-// campañas 2026). El parseo de fecha y el cálculo de vigencia (fin >= hoy) viven ahora en
-// lib/estadoPauta.js (parsearFechaISOPauta / pautaEstaVigente) — antes duplicados acá y en
-// components/MapaCircuitos.js, centralizado para poder aplicar ahí el override temporal
-// de la reunión (ver comentario al tope de ese archivo).
-// 'activa' si tiene al menos una pauta vigente, 'finalizada' si tiene pautas pero
-// ninguna vigente, 'sin_pauta' si no hay ninguna registrada. Nota: esto es independiente
-// del campo `estado` (ACTIVO/INACTIVO) de cada pauta individual — calcularCoberturaBarrio
-// usa este resumen por vigencia de fecha, mismo criterio que ya tenía antes del cambio de
-// esquema.
+// pautas_barrios.json trae la vigencia como inicio/fin en "YYYY-MM-DD". El parseo de fecha y
+// el predicado de "activa" viven en lib/estadoPauta.js (parsearFechaISOPauta / pautaEstaVigente):
+// estado Vigente e INICIO <= hoy <= FIN, único para todas las pantallas.
+// 'activa' si tiene al menos una pauta activa, 'finalizada' si tiene pautas pero ninguna
+// activa, 'sin_pauta' si no hay ninguna registrada.
 function estadoPautaBarrio(nombreBarrio, pautasBarriosData) {
   const pautas = obtenerPautasDeBarrio(pautasBarriosData, nombreBarrio);
   if (pautas.length === 0) return 'sin_pauta';
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const tieneActiva = pautas.some(p => pautaEstaVigente(p, hoy));
+  const tieneActiva = pautas.some(p => pautaEstaVigente(p, hoyLocal()));
   return tieneActiva ? 'activa' : 'finalizada';
 }
 
@@ -1217,7 +1210,8 @@ const MaterialPautaLinks = ({ material }) => {
 const FilaPauta = ({ pauta, mostrarBarrio }) => {
   const etiquetas = etiquetasMetricasPauta(pauta.plataforma);
   const m = pauta.metricas_ejecutadas || {};
-  const inactiva = estadoMostradoPauta(pauta) === 'INACTIVO';
+  const estado = estadoMostradoPauta(pauta);
+  const inactiva = estado !== 'Vigente';
   return (
     <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '4px', opacity: inactiva ? 0.65 : 1 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
@@ -1226,7 +1220,7 @@ const FilaPauta = ({ pauta, mostrarBarrio }) => {
           <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{pauta.campania || '—'}</div>
         </div>
         <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: inactiva ? '#9E9E9E22' : '#2E7D3222', color: inactiva ? '#757575' : '#2E7D32', whiteSpace: 'nowrap' }}>
-          {inactiva ? 'Inactivo' : 'Activo'}
+          {estado}
         </span>
       </div>
       {mostrarBarrio && (
@@ -1283,7 +1277,7 @@ const FilaPautaMesaCapital = ({ obra }) => (
 // Reutilizado tanto por SolapaPautaBarrio (ficha de barrio) como por SolapaTerritorio
 // (ficha de circuito, que no tiene solapa Pauta propia — vive dentro de Territorio).
 //
-// Filtra a VIGENTES (pautaEstaVigente, fin >= hoy) — mismo criterio que ya usa la
+// Filtra a ACTIVAS (pautaEstaVigente: estado Vigente e INICIO <= hoy <= FIN) — mismo criterio que usa la
 // estrella del mapa (pautaCapitalMarkers/tieneActiva en components/MapaCircuitos.js) para
 // decidir si pintar la estrella de alcance Capital en un circuito. Antes este bloque
 // mostraba TODAS las piezas de toda_capital (vigentes y finalizadas mezcladas, con un
@@ -1297,8 +1291,7 @@ const FilaPautaMesaCapital = ({ obra }) => (
 const BloqueAlcanceCapital = ({ pautasBarriosData }) => {
   const [abierto, setAbierto] = useState(false);
   const pautasVigentes = useMemo(() => {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+    const hoy = hoyLocal();
     return (pautasBarriosData?.toda_capital?.pautas || []).filter(p => pautaEstaVigente(p, hoy));
   }, [pautasBarriosData]);
   if (pautasVigentes.length === 0) return null;
@@ -3205,12 +3198,13 @@ const DetalleEventoCobertura = ({ evento }) => {
   // observaciones NO se muestra acá (uso interno de auditoría, esquema campañas 2026).
   const etiquetas = etiquetasMetricasPauta(evento.detalle.plataforma);
   const m = evento.detalle.metricas_ejecutadas || {};
-  const inactiva = estadoMostradoPauta(evento.detalle) === 'INACTIVO';
+  const estadoEvento = estadoMostradoPauta(evento.detalle);
+  const inactiva = estadoEvento !== 'Vigente';
   return (
     <>
       <div style={{ color: 'var(--text-primary)', fontWeight: 500, marginBottom: '2px' }}>
         {evento.detalle.titulo_pieza || '—'}
-        {inactiva && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#9E9E9E22', color: '#757575' }}>Inactivo</span>}
+        {inactiva && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '5px', backgroundColor: '#9E9E9E22', color: '#757575' }}>{estadoEvento}</span>}
       </div>
       <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Barrio: {evento.detalle.barrio || 'Sin barrio asignado'}</div>
       <div style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Vigencia: {formatearFecha(evento.detalle.inicio)} → {formatearFecha(evento.detalle.fin)}</div>
@@ -3538,16 +3532,17 @@ function htmlMaterialPauta(material) {
 // pdfBadgeEstadoPauta (más abajo), que resume la vigencia por fecha de TODAS las
 // pautas de un barrio para la tabla "Barrios del circuito".
 function pdfBadgeEstadoPautaItem(estado) {
-  if (estado === 'ACTIVO') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#2E7D3222;color:#2E7D32;white-space:nowrap">Activo</span>`;
-  if (estado === 'INACTIVO') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#9E9E9E22;color:#757575;white-space:nowrap">Inactivo</span>`;
-  return `<span style="color:#ccc">—</span>`;
+  if (estado === 'Vigente') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#2E7D3222;color:#2E7D32;white-space:nowrap">Vigente</span>`;
+  if (estado === 'Finalizada') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#9E9E9E22;color:#757575;white-space:nowrap">Finalizada</span>`;
+  if (estado === 'Observada' || estado === 'Programada') return `<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:#F57F1722;color:#E65100;white-space:nowrap">${estado}</span>`;
+  return `<span style="color:#ccc">${estado && estado !== 'S/D' ? estado : '—'}</span>`;
 }
 // Filtro + orden de piezas de pauta para las tablas de PDF de ficha (circuito y barrio,
 // htmlPautaPDF/htmlPautaCircuitoPDF) — evita listas larguísimas dominadas por piezas
 // inactivas cuando hay poca actividad, sin ponerle techo a circuitos/barrios con mucha
 // pauta activa (ej. campañas toda_capital que impactan a todos). Basado en la cantidad de
-// piezas ACTIVAS (estadoMostradoPauta — dato sucio fuera de ACTIVO/INACTIVO cuenta como
-// inactiva, no se descarta):
+// piezas ACTIVAS según el predicado único (pautaEstaVigente: estado Vigente e INICIO <= hoy <= FIN).
+// Observada, Programada, Finalizada, S/D y las sin fechas cuentan como inactivas, no se descartan:
 //   0 activas   -> últimas 6 inactivas
 //   1-5 activas -> todas las activas + inactivas hasta completar 6 filas
 //   6+ activas  -> todas las activas, ninguna inactiva (sin límite superior)
@@ -3565,9 +3560,9 @@ function ordenarPautasPorFinDescendente(pautas) {
     return 0;
   });
 }
-function filtrarYOrdenarPautasPDF(pautas) {
-  const activas = ordenarPautasPorFinDescendente((pautas || []).filter(p => estadoMostradoPauta(p) === 'ACTIVO'));
-  const inactivas = ordenarPautasPorFinDescendente((pautas || []).filter(p => estadoMostradoPauta(p) !== 'ACTIVO'));
+function filtrarYOrdenarPautasPDF(pautas, hoy = hoyLocal()) {
+  const activas = ordenarPautasPorFinDescendente((pautas || []).filter(p => pautaEstaVigente(p, hoy)));
+  const inactivas = ordenarPautasPorFinDescendente((pautas || []).filter(p => !pautaEstaVigente(p, hoy)));
   if (activas.length === 0) return inactivas.slice(0, 6);
   if (activas.length < 6) return [...activas, ...inactivas.slice(0, 6 - activas.length)];
   return activas;
@@ -3585,7 +3580,7 @@ function htmlPautaPDF(pautasSinFiltrar) {
     const et = etiquetasMetricasPauta(p.plataforma);
     const m = p.metricas_ejecutadas || {};
     const estadoMostrado = estadoMostradoPauta(p);
-    return `<tr${estadoMostrado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
+    return `<tr${estadoMostrado !== 'Vigente' ? ' style="opacity:0.6"' : ''}>
       <td><strong>${p.titulo_pieza || '—'}</strong><br><span style="font-size:10px;color:#999">${p.campania || '—'} · ${p.plataforma || '—'} · ${p.objetivo_campana || '—'} · ${p.tipo_pauta || '—'}</span></td>
       <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
       <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
@@ -3646,7 +3641,7 @@ function htmlPautaCircuitoPDF(pautasSinFiltrar) {
     const et = etiquetasMetricasPauta(p.plataforma);
     const m = p.metricas_ejecutadas || {};
     const estadoMostrado = estadoMostradoPauta(p);
-    return `<tr${estadoMostrado === 'INACTIVO' ? ' style="opacity:0.6"' : ''}>
+    return `<tr${estadoMostrado !== 'Vigente' ? ' style="opacity:0.6"' : ''}>
       <td><strong>${p.titulo_pieza || '—'}</strong><br><span style="font-size:10px;color:#999">${p.campania || '—'} · ${p.plataforma || '—'} · ${p.tipo_pauta || '—'}</span></td>
       <td style="white-space:nowrap">${formatearFecha(p.inicio)} → ${formatearFecha(p.fin)}</td>
       <td class="text-center">${pdfBadgeEstadoPautaItem(estadoMostrado)}</td>
@@ -4852,7 +4847,7 @@ export default function Home() {
                           </p>
                         </div>
                         {/* Parte 2: badge "PAUTA ACTIVA" + acceso directo a la solapa Pauta — mismo
-                            criterio de vigencia que estadoPautaBarrio/pautaEstaVigente (map/badges),
+                            predicado de activa que estadoPautaBarrio/pautaEstaVigente (map/badges),
                             combinado en Mesa de Capital vía tienePautaActivaBarrio. Clickeable (mismo
                             patrón que el chip "📊 Tiene encuesta" del header de circuito, más abajo):
                             hace de badge Y de "Ir a Pauta" a la vez, en vez de dos controles separados. */}

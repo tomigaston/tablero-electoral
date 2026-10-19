@@ -81,19 +81,22 @@ const BadgePlataforma = ({ plataforma }) => {
   return <span style={{ padding: '2px 7px', borderRadius: '5px', fontSize: '10px', fontWeight: 700, backgroundColor: google ? '#E6510022' : '#1976D222', color: google ? '#BF360C' : '#1565C0' }}>{plataforma || '—'}</span>;
 };
 
-// Estado tal como viene del dato (estadoMostradoPauta), sin corregirlo contra las fechas.
+// Estado tal como viene del dato (estadoMostradoPauta): Vigente / Finalizada / Observada /
+// Programada / S/D (o el valor del crudo si es otro). `vigente` es el predicado único de
+// activa (estado Vigente e INICIO <= hoy <= FIN): si el estado dice Vigente pero la pieza está
+// fuera de fechas se marca "≠ fechas".
 const BadgeEstado = ({ pauta, vigente }) => {
   const estado = estadoMostradoPauta(pauta);
-  const conocido = estado === 'ACTIVO' || estado === 'INACTIVO';
-  const activo = estado === 'ACTIVO';
-  const contradice = conocido && activo !== vigente;
+  const esVigente = estado === 'Vigente';
+  const llamativo = estado === 'Observada' || estado === 'Programada';
+  const contradice = esVigente && !vigente;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: !conocido ? '#9E9E9E22' : activo ? '#2E7D3222' : '#9E9E9E22', color: !conocido ? '#757575' : activo ? '#2E7D32' : '#757575', whiteSpace: 'nowrap' }}>
-        {!conocido ? 'Estado —' : activo ? 'Activo' : 'Inactivo'}
+      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 7px', borderRadius: '5px', backgroundColor: esVigente ? '#2E7D3222' : llamativo ? '#F57F1722' : '#9E9E9E22', color: esVigente ? '#2E7D32' : llamativo ? '#E65100' : '#757575', whiteSpace: 'nowrap' }}>
+        {estado}
       </span>
       {contradice && (
-        <span title={`Estado de la plataforma tal como viene (${estado}); las fechas indican ${vigente ? 'vigente' : 'no vigente'}.`} style={{ fontSize: '10px', color: 'var(--text-tertiary)', cursor: 'help' }}>≠ fechas</span>
+        <span title={`Estado de la plataforma: ${estado}; fuera de las fechas de la pieza (INICIO a FIN), por eso no cuenta como activa.`} style={{ fontSize: '10px', color: 'var(--text-tertiary)', cursor: 'help' }}>≠ fechas</span>
       )}
     </span>
   );
