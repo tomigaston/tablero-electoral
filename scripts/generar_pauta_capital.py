@@ -563,6 +563,8 @@ def main(argv=None):
     ap.add_argument("--crudo", required=True, help="Pauta RRSS_GLOBAL.xlsx")
     ap.add_argument("--salida", help="ruta del JSON a escribir (sin esto, solo verifica)")
     ap.add_argument("--previo", default=str(DATA / "pautas_barrios.json"), help="JSON anterior para el freno de bajas")
+    ap.add_argument("--aceptar-bajas", action="store_true",
+                    help="continuar aunque desaparezcan códigos del JSON anterior (solo si el área confirmó las bajas)")
     ap.add_argument("--hoy", default=date.today().isoformat())
     args = ap.parse_args(argv)
 
@@ -604,7 +606,10 @@ def main(argv=None):
             print(f"Códigos dados de baja respecto al JSON anterior: {len(bajas)}")
             if bajas:
                 print("Detalle:", bajas)
-                raise SystemExit("Aparecieron bajas respecto al JSON anterior. Se detiene la corrida sin escribir: podría ser una pérdida de datos no esperada.")
+                if args.aceptar_bajas:
+                    print("--aceptar-bajas: se continúa (las bajas quedan registradas arriba).")
+                else:
+                    raise SystemExit("Aparecieron bajas respecto al JSON anterior. Se detiene la corrida sin escribir: podría ser una pérdida de datos no esperada. Si el área confirmó las bajas, repetir con --aceptar-bajas.")
 
     if args.salida:
         with open(args.salida, "w", encoding="utf8") as f:
