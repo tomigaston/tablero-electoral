@@ -37,6 +37,7 @@ const CSS = `
   .plan-lista-con-ficha{display:none}
   .plan-solo-movil{display:inline}
   .plan-grilla-resumen{grid-template-columns:1fr !important}
+  .plan-mapa-col{position:static !important}
 }
 @media print{
   html,body{background:#fff !important}
@@ -163,6 +164,12 @@ export default function Planificador() {
     irA('circuitos');
   }, [irA]);
 
+  // Resumen (clic en un circuito del mapa) -> su ficha; si había un filtro activo en el Resumen, la lista de Circuitos lo conserva.
+  const abrirDesdeResumen = useCallback((key, claves, etiqueta) => {
+    if (claves) setFiltro({ ...FILTRO_VACIO, claves, etiqueta });
+    irA('circuitos', key);
+  }, [irA]);
+
   const parte = useMemo(() => {
     if (!textoParte.trim()) return null;
     try { return parsearParte(textoParte); } catch (e) { return null; }
@@ -203,7 +210,8 @@ export default function Planificador() {
         {!error && !crudo && <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-secondary)' }}>Cargando datos…</div>}
 
         {crudo && agregados && nav.hoja === 'resumen' && (
-          <HojaResumen agregados={agregados} seguimiento={seguimiento} persistencia={persistencia} onIr={irConConjunto} hoyTexto={hoyTexto} />
+          <HojaResumen filas={filas} pautaDerivada={pautaDerivada} agregados={agregados} seguimiento={seguimiento} persistencia={persistencia}
+            onIr={irConConjunto} onAbrir={abrirDesdeResumen} hoyTexto={hoyTexto} />
         )}
         {crudo && agregados && nav.hoja === 'circuitos' && (
           <HojaCircuitos filas={filas} fichas={fichas} filtro={filtro} setFiltro={setFiltro} seleccion={nav.seleccion} onSelect={seleccionar}
