@@ -1,0 +1,11 @@
+{
+  "_comentario": "Decisiones puntuales sobre filas del crudo que el generador no puede resolver solo. Cada regla identifica la fila por texto (no por número de fila: el crudo cambia). 'destino' puede ser excluido, pendiente o toda_capital. Toda regla lleva motivo y fecha de la decisión.",
+  "reglas": [
+    {
+      "coincide": { "audiencia_empieza_con": "Pautar a barrios:" },
+      "destino": "excluido",
+      "motivo": "Fuera de Capital: audiencia = localidades fuera de Capital",
+      "decidido_el": "2026-10-08"
+    }
+  ]
+}
