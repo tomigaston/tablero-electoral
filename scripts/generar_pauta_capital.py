@@ -42,6 +42,8 @@ CONFIG = Path(__file__).resolve().parent / "config_pauta"
 CODIGO_CIRCUITO_RE = re.compile(r"^\d{3,4}[A-Za-z]?\s*-")  # igual que el interior
 ITEM_CIRCUITO_RE = re.compile(r"^\s*(\d{1,2})\s*([A-Za-z])?\s+(\S.*?)\s*$")
 TODAS = "TODAS LAS LOCALIDADES"
+# Los 26 departamentos de la provincia (normalizados); se usan para reconocer cuando una audiencia nombra otro.
+DEPARTAMENTOS_CORDOBA = ['CALAMUCHITA', 'CAPITAL', 'COLON', 'CRUZ DEL EJE', 'GENERAL ROCA', 'GENERAL SAN MARTIN', 'ISCHILIN', 'JUAREZ CELMAN', 'MARCOS JUAREZ', 'MINAS', 'POCHO', 'PRESIDENTE ROQUE SAENZ PENA', 'PUNILLA', 'RIO CUARTO', 'RIO PRIMERO', 'RIO SECO', 'RIO SEGUNDO', 'SAN ALBERTO', 'SAN JAVIER', 'SAN JUSTO', 'SANTA MARIA', 'SOBREMONTE', 'TERCERO ARRIBA', 'TOTORAL', 'TULUMBA', 'UNION']
 ESTADOS_MAPEADOS = {"Vigente", "Finalizada", "Observada", "Programada", "S/D"}
 
 
@@ -250,7 +252,9 @@ def segmentos_sin_match(aud, ref):
     partes = [p.strip() for p in re.split(r"[\r\n]+|,", str(aud)) if p.strip()]
     if len(partes) < 3:
         return []
-    return [p for p in partes if len(p.split()) <= 6 and not re.search(r"\d|A[ÑN]OS|ADVANTAGE|\bKM\b", normalizar(p)) and not extraer_barrios(p, ref)]
+    ruido = {"CORDOBA", "CORDOBA CAPITAL", "CAPITAL", "ARGENTINA", "PROVINCIA DE CORDOBA", "DEPARTAMENTO CAPITAL"}
+    return [p for p in partes if len(p.split()) <= 6 and normalizar(p) not in ruido
+            and not re.search(r"\d|A[ÑN]OS|ADVANTAGE|\bKM\b", normalizar(p)) and not extraer_barrios(p, ref)]
 
 
 def menciona_barrio(aud):
@@ -259,8 +263,12 @@ def menciona_barrio(aud):
 
 
 def menciona_otro_departamento(aud):
-    """Nombra un departamento que no es Capital (por ejemplo 'Departamento Punilla')."""
-    return any(not re.match(r"CAPITAL\b", normalizar(m.group(1))) for m in re.finditer(r"\bDEPARTAMENTO\s+(?:DE\s+)?([A-ZÁÉÍÓÚÑ ]+)", normalizar(aud).replace("DEPATAMENTO", "DEPARTAMENTO")))
+    """Nombra un departamento de Córdoba que no es Capital (por ejemplo 'Departamento Punilla')."""
+    t = normalizar(aud).replace("DEPATAMENTO", "DEPARTAMENTO")
+    for d in DEPARTAMENTOS_CORDOBA:
+        if d != "CAPITAL" and re.search(r"\bDEPARTAMENTO\s+(?:DE\s+)?" + re.escape(d) + r"\b", t):
+            return True
+    return False
 
 
 def _dividir_items(aud):
@@ -400,8 +408,6 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
                         continue
                     if barrio:
                         entradas.append({"destino": "barrio", "circuito": circuito, "barrio": barrio})
-                    elif normalizar_sin_puntos(nombre) == ref["circuito_nombre_np"][circuito]:
-                        entradas.append({"destino": "circuito_sin_barrio", "circuito": circuito, "barrio": None})
                     else:
                         res["avisos"].append(aviso_sin_match(nombre, ref))
                 res["entradas"] = entradas
