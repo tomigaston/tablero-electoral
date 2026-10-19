@@ -91,6 +91,7 @@ export default function Planificador() {
   const [error, setError] = useState(null);
   const [nav, setNav] = useState({ hoja: 'resumen', seleccion: null });
   const [filtro, setFiltro] = useState(FILTRO_VACIO);
+  const [filtrosResumen, setFiltrosResumen] = useState([]); // filtros del Resumen: se conservan al ir y volver de Circuitos
   const [textoParte, setTextoParte] = useState('');
   const [fichas, setFichas] = useState({});
   const [persistencia, setPersistencia] = useState({ disponible: false, cargando: true, mensaje: null, usuario: null });
@@ -211,7 +212,7 @@ export default function Planificador() {
 
         {crudo && agregados && nav.hoja === 'resumen' && (
           <HojaResumen filas={filas} pautaDerivada={pautaDerivada} agregados={agregados} seguimiento={seguimiento} persistencia={persistencia}
-            onIr={irConConjunto} onAbrir={abrirDesdeResumen} hoyTexto={hoyTexto} />
+            filtros={filtrosResumen} setFiltros={setFiltrosResumen} onIr={irConConjunto} onAbrir={abrirDesdeResumen} hoyTexto={hoyTexto} />
         )}
         {crudo && agregados && nav.hoja === 'circuitos' && (
           <HojaCircuitos filas={filas} fichas={fichas} filtro={filtro} setFiltro={setFiltro} seleccion={nav.seleccion} onSelect={seleccionar}
