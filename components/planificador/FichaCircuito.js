@@ -1,11 +1,11 @@
 // Ficha de un circuito (derecha de la hoja Circuitos). Bloques: encabezado · electoral ·
 // encuesta · 3 problemas + cobertura · qué se hizo · lectura · decisión y seguimiento.
 import React from 'react';
-import { DESCRIPCION_CATEGORIA, LABEL_PRIORIDAD } from '../../lib/planificador/config';
+import { DESCRIPCION_CATEGORIA, LABEL_PRIORIDAD, COLOR_PRIORIDAD } from '../../lib/planificador/config';
 import { formatPct, num1, mesAnio, periodoEntre, fmtDeltaPP } from '../../lib/planificador/base';
-import { apruebaDe, reeleccionDe } from '../../lib/planificador/tendencia';
+import { reeleccionDe } from '../../lib/planificador/tendencia';
 import { formatearFecha } from '../../lib/formatearFecha';
-import { ChipCategoria, PuntoPrioridad, Boton } from './ui';
+import { ChipCategoria, Boton } from './ui';
 import BloqueQueSeHizo from './BloqueQueSeHizo';
 import BloqueDecision from './BloqueDecision';
 
@@ -23,7 +23,38 @@ const ESTADO_COBERTURA = {
   sin_palanca: { icono: '⊘', color: '#C62828', texto: 'Sin palanca' },
 };
 
-// 45,3% (abr 2026) → 39,5% (sep 2026) · −5,8 pp en 5 meses — siempre con fechas y período.
+// Prioridad bien visible: chip con el color del semáforo + la palabra.
+const ChipPrioridad = ({ nivel, porque }) => {
+  const c = COLOR_PRIORIDAD[nivel] || '#9E9E9E';
+  return (
+    <span title={porque} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', borderRadius: 18, border: `2px solid ${c}`, background: `${c}22`, color: 'var(--text-primary)', fontSize: 15, fontWeight: 700 }}>
+      <span style={{ width: 12, height: 12, borderRadius: '50%', background: c }} />
+      Prioridad {LABEL_PRIORIDAD[nivel] || ''}
+    </span>
+  );
+};
+
+// Una línea simple (sin ejes ni etiquetas) con la evolución de la aprobación; x proporcional a la fecha.
+function Sparkline({ serie, color }) {
+  if (serie.length < 2) return null;
+  const w = 130; const h = 34; const pad = 4;
+  const ts = serie.map((p) => new Date(String(p.fecha).slice(0, 10)).getTime());
+  const vs = serie.map((p) => p.apruebo);
+  const t0 = Math.min(...ts); const t1 = Math.max(...ts);
+  const v0 = Math.min(...vs); const v1 = Math.max(...vs);
+  const x = (t) => pad + (t1 === t0 ? 0 : ((t - t0) / (t1 - t0)) * (w - 2 * pad));
+  const y = (v) => (v1 === v0 ? h / 2 : h - pad - ((v - v0) / (v1 - v0)) * (h - 2 * pad));
+  const puntos = serie.map((p, i) => `${x(ts[i]).toFixed(1)},${y(vs[i]).toFixed(1)}`).join(' ');
+  const u = serie.length - 1;
+  return (
+    <svg width={w} height={h} role="img" aria-label="Evolución de la aprobación" style={{ flexShrink: 0 }}>
+      <polyline points={puntos} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={x(ts[u])} cy={y(vs[u])} r="3" fill={color} />
+    </svg>
+  );
+}
+
+// 39,5% grande + chip de tendencia; debajo, secundario: desde (fecha) → hasta (fecha) · Δpp en N meses; luego la meta.
 function Aprobacion({ f }) {
   const t = f.tendencia;
   if (t.estado === 'sin_medir') return <p style={{ fontSize: 14 }}>Este circuito <strong>nunca fue medido</strong>: sin dato de aprobación.</p>;
@@ -35,18 +66,22 @@ function Aprobacion({ f }) {
   const flecha = t.estado === 'mejora' ? '↑' : t.estado === 'empeora' ? '↓' : t.estado === 'estable' ? '→' : '';
   return (
     <>
-      <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 38, fontWeight: 700, lineHeight: 1 }}>{num1(ultima.apruebo)}%</span>
         {prev ? (
-          <>
-            {num1(prev.apruebo)}% <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-secondary)' }}>({mesAnio(prev.fecha)})</span>
-            {' → '}
-            {num1(ultima.apruebo)}% <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-secondary)' }}>({mesAnio(ultima.fecha)})</span>
-            <span style={{ color: colorTend, fontSize: 16, marginLeft: 10 }}>{flecha} {fmtDeltaPP(t.delta)} en {periodoEntre(prev.fecha, ultima.fecha)}</span>
-          </>
+          <span style={{ fontSize: 15, fontWeight: 700, padding: '3px 11px', borderRadius: 14, background: `${colorTend}1A`, color: colorTend, whiteSpace: 'nowrap' }}>
+            {flecha} {t.estado === 'estable' ? 'estable · ' : ''}{fmtDeltaPP(t.delta)}
+          </span>
         ) : (
-          <>{num1(ultima.apruebo)}% <span style={{ fontWeight: 400, fontSize: 14, color: 'var(--text-secondary)' }}>({mesAnio(ultima.fecha)}) · una sola medición</span></>
+          <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>una sola medición ({mesAnio(ultima.fecha)})</span>
         )}
+        <Sparkline serie={serie} color={colorTend} />
       </div>
+      {prev && (
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 6 }}>
+          desde {mesAnio(prev.fecha)} ({num1(prev.apruebo)}%) → {mesAnio(ultima.fecha)} ({num1(ultima.apruebo)}%) · {fmtDeltaPP(t.delta)} en {periodoEntre(prev.fecha, ultima.fecha)}
+        </div>
+      )}
       {serie.length >= 3 && (
         <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', marginTop: 4 }}>
           Serie completa: {serie.map((p) => `${num1(p.apruebo)}% (${mesAnio(p.fecha)})`).join(' → ')}
@@ -54,7 +89,7 @@ function Aprobacion({ f }) {
       )}
       {f.vsRef && (
         <div style={{ fontSize: 13.5, marginTop: 8 }}>
-          Meta (Gobernador 2023): <strong>{formatPct(f.shareG23)}</strong> — la aprobación está <strong>{num1(Math.abs(f.vsRef.diff) * 100)} pp {f.vsRef.porEncima ? 'por encima' : 'por debajo'}</strong>.
+          Meta (Gobernador 2023): <strong>{formatPct(f.shareG23)}</strong> — la aprobación está a <strong>{num1(Math.abs(f.vsRef.diff) * 100)} pp {f.vsRef.porEncima ? 'por encima' : 'por debajo'}</strong>.
         </div>
       )}
       {(() => {
@@ -79,15 +114,19 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 280px' }}>
             <h1 style={{ fontSize: 21, fontWeight: 700 }}>{f.key} · {f.nombre}</h1>
-            <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <ChipPrioridad nivel={f.prioridad.nivel} porque={f.prioridad.porque} />
               <ChipCategoria categoria={f.categoria} tamano={12} />
-              <span style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>Padrón {f.padron != null ? f.padron.toLocaleString('es-AR') : '—'}</span>
-              <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 5 }}><PuntoPrioridad nivel={f.prioridad.nivel} tamano={10} />Prioridad {LABEL_PRIORIDAD[f.prioridad.nivel]}</span>
             </div>
+            {f.prioridad.porque && <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>{f.prioridad.porque}</div>}
             <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>{DESCRIPCION_CATEGORIA[f.categoria] || ''}</p>
           </div>
-          <div style={{ display: 'flex', gap: 22 }}>
+          <div style={{ display: 'flex', gap: 22, flexWrap: 'wrap' }}>
             <div>
+              <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Padrón (habitantes)</div>
+              <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15 }}>{f.padron != null ? f.padron.toLocaleString('es-AR') : '—'}</div>
+            </div>
+            <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: 18 }}>
               <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Llaryora · Intendente 2019</div>
               <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-secondary)' }}>{formatPct(f.shareInt19)}</div>
             </div>

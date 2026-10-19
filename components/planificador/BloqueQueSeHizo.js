@@ -1,71 +1,85 @@
-// Bloque 5 de la ficha — "Qué se hizo": drill-down progresivo resumen → agrupado → unidad.
-//   Pauta : campañas agrupadas → pieza por pieza (métricas reales + link al material)
-//   Visitas: listado
-//   Obras  : listas para inaugurar (con marca del parte del día) y totales
+// Bloque 5 de la ficha — "Qué se hizo": la secuencia cronológica real de lo que pasó en el circuito
+// (encuesta · visita · pauta ×5 · visita ×2 · …), con los eventos consecutivos del mismo tipo colapsados.
+// Cada grupo se abre y baja hasta la unidad:
+//   pauta → pieza por pieza (métricas reales + link al material) · visita → detalle · encuesta → ronda · obra → ficha de la obra
+// Los eventos vienen ordenados por fecha de construirEventos (lib/planificador/eventos.js).
 import React, { useMemo, useState } from 'react';
 import { formatearFecha } from '../../lib/formatearFecha';
 import { metricasParaMostrar, esUrlHttp } from '../../lib/pautaPorCircuito';
-import { agruparPorCampania } from '../../lib/planificador/pautas';
+import { COLOR_TIPO_EVENTO } from '../../lib/planificador/config';
+import { apruebaDe } from '../../lib/planificador/tendencia';
+import { num1 } from '../../lib/planificador/base';
 import { Boton } from './ui';
 
-const peso = (n) => (n == null ? '—' : `$ ${Math.round(n).toLocaleString('es-AR')}`);
+const ETIQUETA_TIPO = { medicion: 'encuesta', visita: 'visita', pauta: 'pauta', obra: 'obra lista' };
+
 const Etiqueta = ({ k, v }) => (v == null || v === '' ? null : <span style={{ marginRight: 14, display: 'inline-block' }}><span style={{ color: 'var(--text-tertiary)' }}>{k} </span>{v}</span>);
 const Enlace = ({ href, children }) => (esUrlHttp(href) ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#1565C0' }}>{children}</a> : null);
 const Caja = ({ children }) => <div style={{ marginTop: 10, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-secondary)' }}>{children}</div>;
 
-function PanelPauta({ f }) {
-  const campanias = useMemo(() => agruparPorCampania(f.piezasPauta), [f.piezasPauta]);
-  const [abierta, setAbierta] = useState(null);
-  if (!campanias.length) return <Caja>Sin pautas registradas para este circuito.</Caja>;
+// Colapsa los eventos consecutivos del mismo tipo: [pauta, pauta, visita] -> [{pauta ×2}, {visita ×1}].
+export function colapsarEventos(eventos) {
+  const grupos = [];
+  (eventos || []).forEach((e) => {
+    const ultimo = grupos[grupos.length - 1];
+    if (ultimo && ultimo.tipo === e.tipo) ultimo.eventos.push(e);
+    else grupos.push({ tipo: e.tipo, eventos: [e] });
+  });
+  return grupos;
+}
+
+const peso = (n) => (n == null ? '—' : `$ ${Math.round(n).toLocaleString('es-AR')}`);
+
+function PanelPauta({ eventos }) {
   return (
     <Caja>
-      {campanias.map((c) => {
-        const k = `${c.campania}||${c.eje}`.toLowerCase();
-        const abre = abierta === k;
-        return (
-          <div key={k} style={{ borderBottom: '1px solid var(--border)', padding: '6px 0' }}>
-            <button onClick={() => setAbierta(abre ? null : k)} style={{ all: 'unset', cursor: 'pointer', display: 'block', width: '100%' }} aria-expanded={abre}>
-              <div style={{ fontWeight: 600, fontSize: 13.5 }}>{abre ? '▾' : '▸'} {c.campania}{c.eje ? <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}> · {c.eje}</span> : null}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 14 }}>
-                {c.piezas.length} {c.piezas.length === 1 ? 'pieza' : 'piezas'} · {formatearFecha(c.desde)} → {formatearFecha(c.hasta)} · {peso(c.inversion)} · {c.plataformas.join(' / ') || '—'}{c.vigentes ? ` · ${c.vigentes} vigente${c.vigentes === 1 ? '' : 's'}` : ''}
+      <div style={{ display: 'grid', gap: 6 }}>
+        {eventos.map((e, i) => {
+          const pa = e.detalle;
+          return (
+            <div key={i} style={{ padding: '6px 8px', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 12.5 }}>
+              <div style={{ fontWeight: 600 }}>{pa.titulo_pieza || 'Sin título'}</div>
+              <div style={{ color: 'var(--text-secondary)' }}>
+                <Etiqueta k="" v={[pa.campania, pa.eje].filter(Boolean).join(' · ')} />
+                <Etiqueta k="" v={`${pa.plataforma || '—'}${pa.tipo_pauta ? ` · ${pa.tipo_pauta}` : ''}`} />
+                <Etiqueta k="" v={`${formatearFecha(pa.inicio)} → ${formatearFecha(pa.fin)}`} />
+                <Etiqueta k="Estado" v={pa.estado} />
+                {e.vigente && <span style={{ fontSize: 10.5, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: '#2E7D3222', color: '#2E7D32' }}>vigente</span>}
               </div>
-            </button>
-            {abre && (
-              <div style={{ margin: '6px 0 4px 14px', display: 'grid', gap: 6 }}>
-                {c.piezasOrdenadas.map((p, i) => {
-                  const pa = p.pauta;
-                  return (
-                    <div key={i} style={{ padding: '6px 8px', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 12.5 }}>
-                      <div style={{ fontWeight: 600 }}>{pa.titulo_pieza || 'Sin título'}</div>
-                      <div style={{ color: 'var(--text-secondary)' }}>
-                        <Etiqueta k="" v={`${pa.plataforma || '—'}${pa.tipo_pauta ? ` · ${pa.tipo_pauta}` : ''}`} />
-                        <Etiqueta k="" v={`${formatearFecha(pa.inicio)} → ${formatearFecha(pa.fin)}`} />
-                        <Etiqueta k="Estado" v={pa.estado} />
-                      </div>
-                      <div>{metricasParaMostrar(pa).map((m) => <Etiqueta key={m.label} k={m.label} v={m.valor} />)}{esUrlHttp(pa.material?.link) && <Enlace href={pa.material.link}>Ver material</Enlace>}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      })}
+              <div>{metricasParaMostrar(pa).map((m) => <Etiqueta key={m.label} k={m.label} v={m.valor} />)}{esUrlHttp(pa.material?.link) && <Enlace href={pa.material.link}>Ver material</Enlace>}</div>
+            </div>
+          );
+        })}
+      </div>
     </Caja>
   );
 }
 
-function PanelVisitas({ f }) {
-  const visitas = f.eventos.filter((e) => e.tipo === 'visita').sort((a, b) => b.fecha.localeCompare(a.fecha));
-  if (!visitas.length) return <Caja>Sin visitas registradas para este circuito.</Caja>;
+function PanelVisitas({ eventos }) {
   return (
     <Caja>
-      {visitas.map((e, i) => (
-        <div key={i} style={{ padding: '5px 0', borderBottom: i < visitas.length - 1 ? '1px solid var(--border)' : 'none', fontSize: 13 }}>
+      {eventos.map((e, i) => (
+        <div key={i} style={{ padding: '5px 0', borderBottom: i < eventos.length - 1 ? '1px solid var(--border)' : 'none', fontSize: 13 }}>
           <strong>{formatearFecha(e.fecha)}</strong> · {e.detalle.tipo_visita || '—'}{e.detalle.barrio ? ` · ${e.detalle.barrio}` : ''}
           <div style={{ color: 'var(--text-secondary)' }}>{e.detalle.info || 'Sin detalle'} {esUrlHttp(e.detalle.link) && <Enlace href={e.detalle.link}>Ver nota</Enlace>}</div>
         </div>
       ))}
+    </Caja>
+  );
+}
+
+function PanelEncuestas({ eventos }) {
+  return (
+    <Caja>
+      {eventos.map((e, i) => {
+        const ap = apruebaDe(e.detalle.datos);
+        return (
+          <div key={i} style={{ padding: '5px 0', borderBottom: i < eventos.length - 1 ? '1px solid var(--border)' : 'none', fontSize: 13 }}>
+            <strong>{formatearFecha(e.fecha)}</strong> · ronda {e.detalle.ronda} de {e.detalle.totalRondas}
+            <span style={{ color: 'var(--text-secondary)' }}>{e.detalle.casos != null ? ` · ${e.detalle.casos} casos` : ''}{ap != null ? ` · aprobación ${num1(ap)}%` : ''}</span>
+          </div>
+        );
+      })}
     </Caja>
   );
 }
@@ -102,26 +116,64 @@ function PanelObras({ items, vacio, hayParte, limite = 40 }) {
   );
 }
 
+const claveObra = (o) => `${o?.nombre_obra || ''}|${o?.barrio || ''}`;
+
 export default function BloqueQueSeHizo({ f, hayParte }) {
-  const [abierto, setAbierto] = useState(null);
+  const grupos = useMemo(() => colapsarEventos(f.eventos), [f.eventos]);
+  const [abierto, setAbierto] = useState(null); // índice del grupo abierto en la secuencia
+  const [verTotales, setVerTotales] = useState(false);
+
+  // Las obras de la secuencia traen la marca del parte que calculó obrasInaugurablesDeCircuito.
+  const marcadas = useMemo(() => new Map(f.inaugurables.map((o) => [claveObra(o), o])), [f.inaugurables]);
+  const nObrasEnSecuencia = f.eventos.filter((e) => e.tipo === 'obra').length;
+  const nObrasSinFecha = f.inaugurables.length - nObrasEnSecuencia;
+
   const nPautas = f.piezasPauta.length;
   const nVisitas = f.senales.nVisitas;
-  const botones = [
-    { id: 'pautas', label: `${nPautas} ${nPautas === 1 ? 'pauta' : 'pautas'}`, n: nPautas },
-    { id: 'visitas', label: `${nVisitas} ${nVisitas === 1 ? 'visita' : 'visitas'}`, n: nVisitas },
-    { id: 'listas', label: `${f.inaugurables.length} ${f.inaugurables.length === 1 ? 'obra lista' : 'obras listas'}`, n: f.inaugurables.length },
-    { id: 'totales', label: `${f.obras.length} ${f.obras.length === 1 ? 'obra total' : 'obras totales'}`, n: f.obras.length },
-  ];
+  const nListas = f.inaugurables.length;
+  const totales = [
+    `${nPautas} ${nPautas === 1 ? 'pauta' : 'pautas'}`,
+    `${nVisitas} ${nVisitas === 1 ? 'visita' : 'visitas'}`,
+    `${nListas} ${nListas === 1 ? 'obra lista' : 'obras listas'}`,
+  ].join(' · ');
+
+  const grupo = abierto != null ? grupos[abierto] : null;
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {botones.map((b) => <Boton key={b.id} activo={abierto === b.id} onClick={() => setAbierto(abierto === b.id ? null : b.id)} disabled={false}>{b.label}</Boton>)}
+      {!grupos.length ? (
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Sin actividad con fecha registrada en este circuito.</p>
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', rowGap: 8 }}>
+          {grupos.map((g, i) => {
+            const t = COLOR_TIPO_EVENTO[g.tipo];
+            const activo = abierto === i;
+            return (
+              <React.Fragment key={i}>
+                {i > 0 && <span aria-hidden="true" style={{ color: 'var(--text-tertiary)' }}>·</span>}
+                <button onClick={() => setAbierto(activo ? null : i)} aria-expanded={activo} title={`${t.label}: ver detalle`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 11px', borderRadius: 16, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: `1px solid ${t.color}`, background: activo ? t.color : `${t.color}1A`, color: activo ? '#fff' : 'var(--text-primary)' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: activo ? '#fff' : t.color }} />
+                  {ETIQUETA_TIPO[g.tipo]}{g.eventos.length > 1 ? ` ×${g.eventos.length}` : ''}
+                </button>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      )}
+
+      {grupo && grupo.tipo === 'pauta' && <PanelPauta eventos={grupo.eventos} />}
+      {grupo && grupo.tipo === 'visita' && <PanelVisitas eventos={grupo.eventos} />}
+      {grupo && grupo.tipo === 'medicion' && <PanelEncuestas eventos={grupo.eventos} />}
+      {grupo && grupo.tipo === 'obra' && <PanelObras items={grupo.eventos.map((e) => marcadas.get(claveObra(e.detalle)) || e.detalle)} vacio="Sin obras." hayParte={hayParte} />}
+
+      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 10, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <span>{totales}</span>
+        <Boton activo={verTotales} onClick={() => setVerTotales(!verTotales)} style={{ padding: '2px 9px', fontSize: 11.5 }}>{f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</Boton>
       </div>
-      {f.senales.nPautas !== f.piezasPauta.length && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{f.piezasPauta.length - f.senales.nPautas} pieza(s) sin fecha de inicio válida no entran en las comparaciones temporales.</div>}
-      {abierto === 'pautas' && <PanelPauta f={f} />}
-      {abierto === 'visitas' && <PanelVisitas f={f} />}
-      {abierto === 'listas' && <PanelObras items={f.inaugurables} vacio="Sin obras listas para inaugurar en este circuito." hayParte={hayParte} />}
-      {abierto === 'totales' && <PanelObras items={[...f.obras].sort((a, b) => String(a.estado).localeCompare(String(b.estado)))} vacio="Sin obras registradas en este circuito." hayParte={false} />}
+      {verTotales && <PanelObras items={[...f.obras].sort((a, b) => String(a.estado).localeCompare(String(b.estado)))} vacio="Sin obras registradas en este circuito." hayParte={false} />}
+
+      {f.senales.nPautas !== f.piezasPauta.length && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{f.piezasPauta.length - f.senales.nPautas} pieza(s) sin fecha de inicio válida no entran en la secuencia ni en las comparaciones temporales.</div>}
+      {nObrasSinFecha > 0 && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{nObrasSinFecha} obra(s) lista(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
     </div>
   );
 }
