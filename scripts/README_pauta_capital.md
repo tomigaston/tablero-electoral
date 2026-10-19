@@ -13,6 +13,9 @@ python3 scripts/generar_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx"
 # Archivo de verificación fila por fila (una fila por cada fila real del crudo)
 python3 scripts/verificacion_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida Verificacion_pauta_capital.xlsx
 
+# Lo que quedó afuera y el área tiene que confirmar (Excel)
+python3 scripts/pendientes_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida Pendientes_de_confirmacion.xlsx
+
 # Conteos de control con fechas fijas
 node scripts/control_pauta_capital.mjs 2026-10-14 2026-10-15
 
@@ -22,7 +25,7 @@ node scripts/test_estado_pauta.mjs
 ```
 
 ## Archivos de decisiones (versionados)
-- `scripts/config_pauta/alias_barrios.json`: correcciones de nombres de barrio de la columna AUDIENCIA y barrios a descartar. El generador no adivina nada que no esté acá.
+- `scripts/config_pauta/alias_barrios.json`: correcciones de nombres de barrio de la columna AUDIENCIA. `alias` = confirmados (se aplican); `pendientes_de_confirmar` = NO se aplican, solo se sugieren en el aviso. También los barrios a descartar. **Política: solo lo confirmado; lo que no se entiende queda afuera.**
 - `scripts/config_pauta/decisiones_filas.json`: decisiones puntuales sobre filas (por texto, no por número de fila).
 
 ## Qué frena y qué avisa

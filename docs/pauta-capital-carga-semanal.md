@@ -4,6 +4,9 @@ Reemplaza a la skill `procesar-pauta-cordoba-capital` y al maestro `BASE_PAUTA_R
 
 Reglas completas: manual metodológico "Pauta Digital, Córdoba Capital". Código: `scripts/generar_pauta_capital.py`. Decisiones versionadas: `scripts/config_pauta/`.
 
+## Política: solo lo confirmado; lo que no se entiende queda afuera
+El área confirma las reglas. Mientras una regla no esté confirmada, el generador **no adivina**: si algo no se entiende o no respeta la regla, queda afuera (la fila pasa a `pendiente`, o el ítem de la audiencia se omite) y se informa en la corrida. No hay coincidencia aproximada de nombres ni alias sin confirmar. Cada semana se le pasa al área la lista de lo que quedó afuera (`Pendientes_de_confirmacion.xlsx`, paso 3) y, cuando confirma, se agrega la regla o el alias y se vuelve a generar.
+
 ## Antes de empezar
 - Tener el crudo vigente: `Pauta RRSS_GLOBAL.xlsx`, hoja `GLOBAL_ImportRange` (77 columnas, encabezados en la fila 1). **No se versiona** en este repo; guardarlo fuera del repo y anotar su fecha de carga.
 - Python 3 con `pandas` y `openpyxl`; Node para los controles.
@@ -20,7 +23,12 @@ Reglas completas: manual metodológico "Pauta Digital, Córdoba Capital". Códig
    python3 scripts/generar_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx"
    ```
    Leer el resumen con la tabla de señales de abajo.
-3. **Resolver lo que avisa** (ver tabla). Un alias nuevo o una decisión por fila es un cambio de **código**: va en su propio commit, con un caso en `scripts/test_pauta_capital.py`, antes del commit de datos.
+3. **Lista para el área.** Genera el Excel con lo que quedó afuera: alias pendientes con cuántos ítems afectarían, ítems de audiencia sin resolver, filas pendientes y reglas a confirmar:
+   ```bash
+   python3 scripts/pendientes_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida Pendientes_de_confirmacion.xlsx
+   ```
+   El área completa las columnas "¿Se confirma?" y "Barrio correcto".
+   **Resolver lo que avisa** (ver tabla). Un alias nuevo o una decisión por fila es un cambio de **código**: va en su propio commit, con un caso en `scripts/test_pauta_capital.py`, antes del commit de datos.
 4. **Generar el JSON.**
    ```bash
    python3 scripts/generar_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida public/data/pautas_barrios.json
@@ -44,8 +52,8 @@ Reglas completas: manual metodológico "Pauta Digital, Córdoba Capital". Códig
 | Señal | Qué significa | Qué hacer |
 |---|---|---|
 | `Códigos dados de baja: N` (y la corrida frena) | Desaparecieron códigos que estaban en el JSON anterior | No seguir. Pedir al área que explique. Con confirmación, `--aceptar-bajas` |
-| `AVISO: N ítems de audiencia sin resolver` | Un barrio de la audiencia no se encontró; la fila entra igual con los demás y la nota queda en `observaciones` | Si es un error de tipeo o un nombre alternativo, pedir al área el barrio correcto y agregarlo a `alias_barrios.json` (commit de código + caso de test) |
-| `Filas por destino: pendiente` creció | Hay filas "TODAS LAS LOCALIDADES / Provincia" cuya audiencia no dice dónde llega | Pedir al área que complete la audiencia; no se carga hasta que digan |
+| `AVISO: N ítems de audiencia sin resolver` | Un barrio de la audiencia no se encontró; **ese ítem queda afuera**, la fila entra con los demás y la nota queda en `observaciones` | Pasarlo al área en `Pendientes_de_confirmacion.xlsx`. Si confirman un alias, pasarlo de `pendientes_de_confirmar` a `alias` en `alias_barrios.json` (commit de código + caso de test) |
+| `Filas por destino: pendiente` creció | Hay filas cuyo alcance no se puede decidir (audiencia sin referencia geográfica, que nombra otro departamento o un barrio que no se resuelve) | Pedir al área que complete la audiencia; quedan afuera hasta que lo hagan |
 | `AVISO: estados fuera de …` | Llegó un ESTADO nuevo (no ACTIVO, INACTIVO, OBSERVADO, PROGRAMADO ni vacío) | Se muestra tal cual. Avisar al área para que confirme que es intencional |
 | `Entradas sin INICIO o sin FIN válidos` subió | Fechas escritas como texto, con un espacio o como número suelto | Pedir al área que las corrija en la planilla; el tablero no las interpreta |
 | `colapsadas por dedup` subió mucho | Más filas con el mismo código, campaña, título y destino | Normal si se repiten piezas por conjunto de anuncios; revisar si coincide con una carga duplicada |
@@ -62,7 +70,8 @@ Reglas completas: manual metodológico "Pauta Digital, Córdoba Capital". Códig
 | Regla | Archivo |
 |---|---|
 | Fila real, estado, fechas, geografía de Capital, barrios, duplicados, freno de bajas | `scripts/generar_pauta_capital.py` |
-| Alias de barrios y barrios a descartar | `scripts/config_pauta/alias_barrios.json` |
+| Alias de barrios (confirmados y pendientes de confirmar) y barrios a descartar | `scripts/config_pauta/alias_barrios.json` |
+| Lista de pendientes para el área | `scripts/pendientes_pauta_capital.py` |
 | Decisiones puntuales por fila | `scripts/config_pauta/decisiones_filas.json` |
 | "Activa" (único predicado), estados, cobertura dirigida | `lib/estadoPauta.js` |
 | Piezas únicas por circuito, tarjetas y mapa | `lib/pautaPorCircuito.js`, `lib/pautaResumen.js`, `lib/pautaMapa.js` |
