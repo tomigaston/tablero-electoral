@@ -66,6 +66,22 @@ export default function MapaResumen({ filas, claves, onAbrir, alto = 'clamp(380p
     }
   }, [topo]);
 
+  // Encuadre inicial: que entren todos los circuitos en el primer zoom ([[sur, oeste], [norte, este]]).
+  const limites = useMemo(() => {
+    if (!geoJsonData) return null;
+    let sur = 90; let oeste = 180; let norte = -90; let este = -180;
+    const recorrer = (c) => {
+      if (typeof c[0] === 'number') {
+        if (c[1] < sur) sur = c[1];
+        if (c[1] > norte) norte = c[1];
+        if (c[0] < oeste) oeste = c[0];
+        if (c[0] > este) este = c[0];
+      } else c.forEach(recorrer);
+    };
+    geoJsonData.features.forEach((ft) => { if (ft.geometry) recorrer(ft.geometry.coordinates); });
+    return norte > sur ? [[sur, oeste], [norte, este]] : null;
+  }, [geoJsonData]);
+
   const porMapkey = useMemo(() => new Map(filas.map((f) => [String(f.mapkey), f])), [filas]);
   const set = useMemo(() => (claves ? new Set(claves) : null), [claves]);
 
@@ -103,7 +119,7 @@ export default function MapaResumen({ filas, claves, onAbrir, alto = 'clamp(380p
   return (
     <div>
       <div style={{ height: alto, borderRadius: 8, overflow: 'hidden' }}>
-        <MapContainer center={[-31.42, -64.18]} zoom={12} style={{ height: '100%', width: '100%' }} zoomControl scrollWheelZoom>
+        <MapContainer center={[-31.42, -64.18]} zoom={11} bounds={limites || undefined} boundsOptions={{ padding: [6, 6] }} zoomSnap={0.25} style={{ height: '100%', width: '100%' }} zoomControl scrollWheelZoom>
           <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <GeoJSON ref={geoRef} data={geoJsonData} style={(feature) => estiloDe(feature, actual.current.porMapkey, actual.current.set)} onEachFeature={onEachFeature} />
         </MapContainer>
