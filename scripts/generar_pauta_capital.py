@@ -25,7 +25,6 @@ Reglas (ver docs/pauta-capital-reglas.md cuando exista, y el manual metodológic
     métricas completas (no se prorratean).
 """
 import argparse
-import difflib
 import json
 import re
 import sys
@@ -40,7 +39,6 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "public" / "data"
 CONFIG = Path(__file__).resolve().parent / "config_pauta"
 
-FUZZY_CUTOFF_BARRIO = 0.85  # mismo criterio conservador que usa el interior para nombres cortos
 CODIGO_CIRCUITO_RE = re.compile(r"^\d{3,4}[A-Za-z]?\s*-")  # igual que el interior
 ITEM_CIRCUITO_RE = re.compile(r"^\s*(\d{1,2})\s*([A-Za-z])?\s+(\S.*?)\s*$")
 TODAS = "TODAS LAS LOCALIDADES"
@@ -175,12 +173,16 @@ def cargar_referencias(data_dir=DATA, config_dir=CONFIG):
     for destino in alias.values():
         if normalizar_sin_puntos(destino) not in por_norm:
             raise SystemExit(f"alias_barrios.json: '{destino}' no es un barrio oficial de barrios_geo.json")
+    pendientes = {normalizar_sin_puntos(k): v for k, v in alias_cfg.get("pendientes_de_confirmar", {}).items()}
+    for destino in pendientes.values():
+        if normalizar_sin_puntos(destino) not in por_norm:
+            raise SystemExit(f"alias_barrios.json (pendientes): '{destino}' no es un barrio oficial de barrios_geo.json")
     descartar = {normalizar_sin_puntos(x) for x in alias_cfg.get("descartar", [])}
 
     reglas = json.load(open(config_dir / "decisiones_filas.json", encoding="utf8"))["reglas"]
     return {
         "oficiales": oficiales, "por_norm": por_norm, "circuito_nombre": circuito_nombre,
-        "nombre_a_circuito": nombre_a_circuito, "circuito_nombre_np": circuito_nombre_np, "alias": alias, "descartar": descartar, "reglas": reglas,
+        "nombre_a_circuito": nombre_a_circuito, "circuito_nombre_np": circuito_nombre_np, "alias": alias, "alias_pendientes": pendientes, "descartar": descartar, "reglas": reglas,
     }
 
 
@@ -222,8 +224,8 @@ def extraer_barrios(texto, ref):
 
 
 def resolver_nombre_barrio(nombre, ref):
-    """Un ítem de una lista -> barrio oficial, o None. Orden: oficial exacto, alias,
-    coincidencia aproximada (cutoff conservador)."""
+    """Un ítem de una lista -> barrio oficial, o None. Orden: barrio oficial exacto, alias
+    CONFIRMADO. No hay coincidencia aproximada: lo que no se entiende queda afuera."""
     n = normalizar_sin_puntos(nombre)
     if n in ref["descartar"]:
         return "__DESCARTAR__"
@@ -231,8 +233,34 @@ def resolver_nombre_barrio(nombre, ref):
         return ref["por_norm"][n]
     if n in ref["alias"]:
         return ref["alias"][n]
-    cercano = difflib.get_close_matches(n, list(ref["por_norm"].keys()), n=1, cutoff=FUZZY_CUTOFF_BARRIO)
-    return ref["por_norm"][cercano[0]] if cercano else None
+    return None
+
+
+def aviso_sin_match(nombre, ref):
+    """Texto del aviso de un ítem que quedó afuera; sugiere el alias pendiente si existe."""
+    n = normalizar_sin_puntos(nombre)
+    sugerido = ref["alias_pendientes"].get(n)
+    extra = f" (alias pendiente de confirmar: {sugerido})" if sugerido else ""
+    return f"Sin match: {nombre}{extra}"
+
+
+def segmentos_sin_match(aud, ref):
+    """Audiencia en forma de lista (3 o más segmentos separados por coma o salto de línea):
+    segmentos cortos sin ningún barrio reconocido. Se informan; no se asignan."""
+    partes = [p.strip() for p in re.split(r"[\r\n]+|,", str(aud)) if p.strip()]
+    if len(partes) < 3:
+        return []
+    return [p for p in partes if len(p.split()) <= 6 and not re.search(r"\d|A[ÑN]OS|ADVANTAGE|\bKM\b", normalizar(p)) and not extraer_barrios(p, ref)]
+
+
+def menciona_barrio(aud):
+    """La audiencia habla de 'barrio/barrios' explícitamente."""
+    return bool(re.search(r"\bBARRIOS?\b", normalizar(aud)))
+
+
+def menciona_otro_departamento(aud):
+    """Nombra un departamento que no es Capital (por ejemplo 'Departamento Punilla')."""
+    return any(not re.match(r"CAPITAL\b", normalizar(m.group(1))) for m in re.finditer(r"\bDEPARTAMENTO\s+(?:DE\s+)?([A-ZÁÉÍÓÚÑ ]+)", normalizar(aud).replace("DEPATAMENTO", "DEPARTAMENTO")))
 
 
 def _dividir_items(aud):
@@ -293,7 +321,11 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
          -> decide AUDIENCIA (menciona Córdoba/Capital/Provincia -> toda_capital; nombra
          otro departamento -> excluido; sin referencia geográfica -> pendiente).
       4) 'CÓRDOBA CAPITAL, DEPARTAMENTO CAPITAL…': decide AUDIENCIA (lista con números de
-         circuito, barrios nombrados, o toda_capital).
+         circuito, barrios nombrados, o toda_capital). Si la audiencia nombra otro
+         departamento o un barrio que no se pudo resolver -> pendiente (queda afuera).
+    Política: solo se aplica lo confirmado por el área. Lo que no se entiende o no respeta la
+    regla queda afuera (pendiente o ítem omitido) y se informa en la corrida; no hay
+    coincidencia aproximada ni alias sin confirmar.
       5) Cualquier otra localidad -> excluido.
     """
     res = {"destino": None, "motivo": None, "entradas": [], "avisos": []}
@@ -314,9 +346,14 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
         circuito = normalizar_circuito(loc.split("-")[0])
         # Muchas filas traen en AUDIENCIA el texto de LOCALIDAD repetido ("007B - ALTA CORDOBA,
         # CÓRDOBA CAPITAL, ARGENTINA sin advantage+…"): ese nombre es el del circuito, no un barrio.
-        barrios = extraer_barrios(re.sub(re.escape(loc), " ", aud, flags=re.IGNORECASE), ref)
+        aud_sin_loc = re.sub(re.escape(loc), " ", aud, flags=re.IGNORECASE)
+        barrios = extraer_barrios(aud_sin_loc, ref)
         if barrios:
             res["entradas"] = [{"destino": "barrio", "circuito": circuito, "barrio": b} for b in barrios]
+            res["avisos"] += [aviso_sin_match(x, ref) for x in segmentos_sin_match(aud_sin_loc, ref)]
+        elif menciona_barrio(aud_sin_loc):
+            res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra un barrio que no se pudo resolver ({aud_sin_loc.strip()})")
+            return res
         else:
             res["entradas"] = [{"destino": "circuito_sin_barrio", "circuito": circuito, "barrio": None}]
         res["destino"] = "entradas"
@@ -366,7 +403,7 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
                     elif normalizar_sin_puntos(nombre) == ref["circuito_nombre_np"][circuito]:
                         entradas.append({"destino": "circuito_sin_barrio", "circuito": circuito, "barrio": None})
                     else:
-                        res["avisos"].append(f"Sin match: {nombre}")
+                        res["avisos"].append(aviso_sin_match(nombre, ref))
                 res["entradas"] = entradas
                 res["destino"] = "entradas" if entradas else "pendiente"
                 if not entradas:
@@ -375,7 +412,12 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
             barrios = extraer_barrios(aud, ref)
             if barrios:
                 res["entradas"] = [{"destino": "barrio", "circuito": None, "barrio": b} for b in barrios]
+                res["avisos"] += [aviso_sin_match(x, ref) for x in segmentos_sin_match(aud, ref)]
                 res["destino"] = "entradas"
+            elif menciona_otro_departamento(aud):
+                res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra otro departamento ({aud})")
+            elif menciona_barrio(aud):
+                res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra un barrio que no se pudo resolver ({aud})")
             else:
                 res["destino"] = "toda_capital"
             return res

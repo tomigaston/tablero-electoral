@@ -1,5 +1,5 @@
 {
-  "_comentario": "Correcciones de nombres de barrio de la columna AUDIENCIA hacia el nombre oficial de barrios_geo.json. Clave: texto normalizado (mayúsculas, sin tildes, sin puntos). Valor: nombre oficial. Fuente: diccionario confirmado de la skill procesar-pauta-cordoba-capital (SKILL.md:74-89) y correcciones observadas en el maestro del 8/10/2026. Agregar acá cualquier corrección nueva; el generador NO adivina. Los alias marcados como 'derivados del maestro 8/10' no estaban en la skill: salen de comparar el maestro clasificado en Claude.ai con el crudo y el área debe confirmarlos.",
+  "_comentario": "POLÍTICA: solo se aplica lo que el área confirmó. Lo que no se entiende o no respeta la regla queda AFUERA (con aviso en la corrida). 'alias' = correcciones confirmadas (diccionario de la skill procesar-pauta-cordoba-capital, SKILL.md:74-89). 'pendientes_de_confirmar' = correcciones que se dedujeron al comparar el trabajo anterior con el crudo: NO se aplican; el generador solo las sugiere en el aviso. Para confirmar una, pasarla a 'alias' (commit de código con un caso de test). Clave: texto normalizado (mayúsculas, sin tildes, sin puntos). Valor: nombre oficial de barrios_geo.json.",
   "alias": {
     "ARENALES": "GENERAL ARENALES",
     "VILLA ASPACIA": "VILLA ASPASIA",
@@ -8,7 +8,9 @@
     "PARQUE HORIZONTE": "HORIZONTE",
     "VILLA EL CHAPARRAL": "GUEMES",
     "JORGE NEWBERY": "PARQUE JORGE NEWBERY",
-    "LOS MOLINOS": "PARQUE LOS MOLINOS",
+    "LOS MOLINOS": "PARQUE LOS MOLINOS"
+  },
+  "pendientes_de_confirmar": {
     "GRAL PAZ": "GENERAL PAZ",
     "PUEYRREDON": "GENERAL PUEYRREDON",
     "QUINTAS DE SANTA ANA": "QUINTA SANTA ANA",
