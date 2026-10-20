@@ -7,3 +7,8 @@ node_modules/
 * [0-9].*
 * [0-9]
 .Rhistory
+
+# Pauta de Capital: archivos que se generan en cada carga (el crudo Contexto/Pauta RRSS_GLOBAL.xlsx SÍ se versiona, como en el interior)
+Contexto/Verificacion_pauta_capital.xlsx
+Contexto/Pendientes_de_confirmacion.xlsx
+__pycache__/

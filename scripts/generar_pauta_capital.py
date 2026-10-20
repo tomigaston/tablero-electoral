@@ -5,11 +5,17 @@ crudo Pauta RRSS_GLOBAL.xlsx (hoja GLOBAL_ImportRange). Mismo modelo que el
 tablero del interior (Tablero comunicacion/scripts/generar_datos.py): un script
 versionado, reproceso siempre completo desde el crudo, sin maestro intermedio.
 
-Uso:
-    python3 scripts/generar_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx"
-        [--salida public/data/pautas_barrios.json]   # sin --salida no escribe nada
-        [--previo public/data/pautas_barrios.json]   # JSON anterior, para el freno de bajas
-        [--hoy AAAA-MM-DD]                           # solo para la verificación impresa
+Uso (igual que en el tablero del interior: se pisa el crudo y se corre):
+    1) Copiar el crudo nuevo a  Contexto/Pauta RRSS_GLOBAL.xlsx  (pisa el anterior).
+    2) python3 scripts/generar_pauta_capital.py
+       Lee Contexto/Pauta RRSS_GLOBAL.xlsx y escribe public/data/pautas_barrios.json.
+
+Opciones:
+    --solo-verificar        imprime la verificación sin escribir el JSON
+    --crudo <ruta>          otro crudo (por defecto Contexto/Pauta RRSS_GLOBAL.xlsx)
+    --salida <ruta>         otro destino (por defecto public/data/pautas_barrios.json)
+    --previo <ruta>         JSON anterior para el freno de bajas (por defecto, el mismo que se pisa)
+    --aceptar-bajas         continuar aunque desaparezcan códigos (solo con confirmación)
 
 Reglas (ver docs/pauta-capital-reglas.md cuando exista, y el manual metodológico):
   - Fila real: CAMPAÑA o TITULO DE LA PIEZA no vacíos (igual que el interior).
@@ -37,6 +43,8 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "public" / "data"
+CRUDO_DEFECTO = ROOT / "Contexto" / "Pauta RRSS_GLOBAL.xlsx"
+SALIDA_DEFECTO = DATA / "pautas_barrios.json"
 CONFIG = Path(__file__).resolve().parent / "config_pauta"
 
 CODIGO_CIRCUITO_RE = re.compile(r"^\d{3,4}[A-Za-z]?\s*-")  # igual que el interior
@@ -608,9 +616,10 @@ def entradas_de(salida):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--crudo", required=True, help="Pauta RRSS_GLOBAL.xlsx")
-    ap.add_argument("--salida", help="ruta del JSON a escribir (sin esto, solo verifica)")
-    ap.add_argument("--previo", default=str(DATA / "pautas_barrios.json"), help="JSON anterior para el freno de bajas")
+    ap.add_argument("--crudo", default=str(CRUDO_DEFECTO), help="Pauta RRSS_GLOBAL.xlsx (por defecto Contexto/Pauta RRSS_GLOBAL.xlsx)")
+    ap.add_argument("--salida", default=str(SALIDA_DEFECTO), help="JSON a escribir (por defecto public/data/pautas_barrios.json)")
+    ap.add_argument("--solo-verificar", action="store_true", help="imprime la verificación y no escribe el JSON")
+    ap.add_argument("--previo", default=None, help="JSON anterior para el freno de bajas (por defecto, el que se va a pisar)")
     ap.add_argument("--aceptar-bajas", action="store_true",
                     help="continuar aunque desaparezcan códigos del JSON anterior (solo si el área confirmó las bajas)")
     ap.add_argument("--hoy", default=date.today().isoformat())
@@ -642,7 +651,7 @@ def main(argv=None):
     print(f"Entradas sin INICIO o sin FIN válidos: {sin_dato}")
 
     # Freno de bajas: un COD. CONTENIDO que estaba en el JSON anterior y ya no está
-    previo = Path(args.previo)
+    previo = Path(args.previo or args.salida)
     if previo.exists():
         anterior = json.load(open(previo, encoding="utf8"))
         cods_previos = {p.get("cod_contenido") for _, _, p in entradas_de(anterior) if p.get("cod_contenido") is not None}
@@ -659,12 +668,12 @@ def main(argv=None):
                 else:
                     raise SystemExit("Aparecieron bajas respecto al JSON anterior. Se detiene la corrida sin escribir: podría ser una pérdida de datos no esperada. Si el área confirmó las bajas, repetir con --aceptar-bajas.")
 
-    if args.salida:
+    if args.solo_verificar:
+        print("(--solo-verificar: no se escribió ningún archivo)")
+    else:
         with open(args.salida, "w", encoding="utf8") as f:
             f.write(json.dumps(salida, ensure_ascii=False, indent=2))
         print(f"Escrito: {args.salida}")
-    else:
-        print("(sin --salida: no se escribió ningún archivo)")
 
 
 if __name__ == "__main__":

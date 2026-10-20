@@ -59,8 +59,8 @@ def activa(p, fecha):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--crudo", required=True)
-    ap.add_argument("--salida", required=True)
+    ap.add_argument("--crudo", default=str(g.CRUDO_DEFECTO), help="por defecto Contexto/Pauta RRSS_GLOBAL.xlsx")
+    ap.add_argument("--salida", default=str(g.ROOT / "Contexto" / "Verificacion_pauta_capital.xlsx"), help="por defecto Contexto/Verificacion_pauta_capital.xlsx (no se versiona)")
     ap.add_argument("--fechas", nargs="+", default=["2026-10-14", "2026-10-15"])
     args = ap.parse_args(argv)
 
