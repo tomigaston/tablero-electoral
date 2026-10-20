@@ -9,6 +9,7 @@ import { metricasParaMostrar, esUrlHttp } from '../../lib/pautaPorCircuito';
 import { COLOR_TIPO_EVENTO } from '../../lib/planificador/config';
 import { apruebaDe } from '../../lib/planificador/tendencia';
 import { num1 } from '../../lib/planificador/base';
+import { esObraFinalizada, fechaListaObra } from '../../lib/planificador/obras';
 import { Boton } from './ui';
 
 const ETIQUETA_TIPO = {
@@ -140,6 +141,46 @@ function PanelObras({ items, vacio, hayParte, limite = 40 }) {
   );
 }
 
+// ---- Obras totales agrupadas por situación, con una "celda combinada" a la derecha por grupo ----
+// obras_capital.json no trae un campo de inauguración efectiva: "listas e inauguradas" son las finalizadas
+// (Finalizada o 100 %). Para inaugurar = todavía no finalizadas pero con fecha disponible para inaugurar.
+const GRUPOS_OBRA = [
+  { id: 'listas', label: 'Listas e inauguradas', color: '#2E7D32' },
+  { id: 'para_inaugurar', label: 'Para inaugurar', color: '#1565C0' },
+  { id: 'en_ejecucion', label: 'En ejecución', color: '#E65100' },
+  { id: 'planificadas', label: 'Planificadas', color: '#78909C' },
+];
+function grupoDeObra(o) {
+  if (esObraFinalizada(o)) return 'listas';
+  if (o.fecha_disponible_inaugurar) return 'para_inaugurar';
+  if (o.estado === 'En ejecución') return 'en_ejecucion';
+  return 'planificadas';
+}
+
+function PanelObrasPorEstado({ items }) {
+  if (!items.length) return <Caja>Sin obras registradas en este circuito.</Caja>;
+  const grupos = GRUPOS_OBRA.map((g) => ({
+    ...g,
+    obras: items.filter((o) => grupoDeObra(o) === g.id)
+      .sort((a, b) => (fechaListaObra(b) || '').localeCompare(fechaListaObra(a) || '') || String(a.nombre_obra || '').localeCompare(String(b.nombre_obra || ''), 'es')),
+  })).filter((g) => g.obras.length);
+  return (
+    <Caja>
+      {grupos.map((g, i) => (
+        <div key={g.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(104px, 150px)', gap: 10, marginBottom: i < grupos.length - 1 ? 12 : 0 }}>
+          <div>{g.obras.map((o, j) => <Obra key={j} o={o} hayParte={false} />)}</div>
+          {/* Celda combinada: ocupa todo el alto del grupo. */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 2, padding: 8, borderRadius: 8, background: `${g.color}1A`, border: `1px solid ${g.color}66`, color: g.color }}>
+            <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.25 }}>{g.label}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.1 }}>{g.obras.length}</div>
+            <div style={{ fontSize: 11 }}>{g.obras.length === 1 ? 'obra' : 'obras'}</div>
+          </div>
+        </div>
+      ))}
+    </Caja>
+  );
+}
+
 const claveObra = (o) => `${o?.nombre_obra || ''}|${o?.barrio || ''}`;
 
 export default function BloqueQueSeHizo({ f, hayParte }) {
@@ -200,7 +241,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
         <span>{totales}</span>
         <Boton activo={verTotales} onClick={() => setVerTotales(!verTotales)} style={{ padding: '2px 9px', fontSize: 11.5 }}>{f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</Boton>
       </div>
-      {verTotales && <PanelObras items={[...f.obras].sort((a, b) => String(a.estado).localeCompare(String(b.estado)))} vacio="Sin obras registradas en este circuito." hayParte={false} />}
+      {verTotales && <PanelObrasPorEstado items={f.obras} />}
 
       {f.senales.nPautas !== f.piezasPauta.length && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{f.piezasPauta.length - f.senales.nPautas} pieza(s) sin fecha de inicio válida no entran en la secuencia ni en las comparaciones temporales.</div>}
       {nObrasSinFecha > 0 && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{nObrasSinFecha} obra(s) lista(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
