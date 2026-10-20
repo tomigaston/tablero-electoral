@@ -104,7 +104,7 @@ export default function BloqueEncuesta({ f }) {
       </div>
       {f.vsRef && (
         <div style={{ fontSize: 17, lineHeight: 1.45, marginTop: 10 }}>
-          Meta (Gobernador 2023): <strong style={{ fontSize: 19 }}>{formatPct(f.shareG23)}</strong> — la aprobación actual está a{' '}
+          Meta (Gobernador 2023): <strong style={{ fontSize: 19 }}>{formatPct(f.shareG23)}</strong> — la aprobación actual está{' '}
           <strong style={{ fontSize: 19, color: f.vsRef.porEncima ? COLOR_SUBE : COLOR_BAJA }}>{num1(Math.abs(f.vsRef.diff) * 100)} pp {f.vsRef.porEncima ? 'por encima' : 'por debajo'}</strong>.
         </div>
       )}
