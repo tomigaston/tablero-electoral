@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import { TIERS, COLOR_PRIORIDAD, LABEL_PRIORIDAD } from '../../lib/planificador/config';
 import {
   agregadosDeSubconjunto, distribucionPrioridad, fmtPctPadron,
-  combinarFiltros, etiquetaFiltros, alternarFiltro, padronDe,
+  combinarFiltros, etiquetaFiltros, alternarFiltro, padronDe, problemasTop,
 } from '../../lib/planificador/resumenMapa';
 import { Boton } from './ui';
 
@@ -93,7 +93,7 @@ function Leyenda({ items, activos, onClick }) {
             <button key={d.nivel} onClick={(e) => onClick(d, e)} disabled={!d.claves.length} aria-pressed={activa}
               style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 8, padding: '3px 6px', borderRadius: 4, cursor: d.claves.length ? 'pointer' : 'default', fontSize: 13, opacity: activos.length && !activa ? 0.5 : 1, boxShadow: activa ? 'inset 0 0 0 1.5px #1976D2' : 'none' }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: COLOR_PRIORIDAD[d.nivel], flexShrink: 0 }} />
-              <span style={{ fontWeight: 600, minWidth: 100 }}>Prioridad {LABEL_PRIORIDAD[d.nivel]}</span>
+              <span style={{ fontWeight: 600, minWidth: 150 }}>{LABEL_PRIORIDAD[d.nivel]}</span>
               <span style={{ color: 'var(--text-secondary)' }}>{d.n} {d.n === 1 ? 'circuito' : 'circuitos'} · <strong style={{ color: 'var(--text-primary)' }}>{fmtPctPadron(d.pctPadron)}</strong> del padrón</span>
             </button>
           );
@@ -153,6 +153,10 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, seg
   const aClima = aDe('clima');
   const aProb = aDe('problema1');
   const aObras = aDe('obras');
+  // Top de problemas: se calcula sobre los circuitos que dejan pasar los filtros de las OTRAS tarjetas.
+  const clavesProb = combinarFiltros(filtros, 'problemas');
+  const topProblemas = problemasTop(clavesProb ? filas.filter((f) => clavesProb.includes(f.key)) : filas, 10);
+  const conEncuestaProb = (clavesProb ? filas.filter((f) => clavesProb.includes(f.key)) : filas).filter((f) => f.problemas.items.length > 0).length;
 
   return (
     <div>
@@ -198,9 +202,9 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, seg
 
       <div className="plan-grilla-resumen" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(340px, 1fr)', gap: 12, alignItems: 'start' }}>
         <div className="plan-mapa-col" style={{ position: 'sticky', top: 8 }}>
-          <Tarjeta titulo="Córdoba Capital · prioridad por circuito" subtitulo={`${k.total} circuitos pintados según su prioridad (semáforo).`}>
+          <Tarjeta titulo="Córdoba Capital · situación por circuito" subtitulo={`${k.total} circuitos. Azul: sin medir · rojo: tendencia negativa · amarillo: estable o leve baja (hasta −3 pp) · verde: mejora. Se compara contra la encuesta anterior o, con una sola, contra Gobernación 2023.`}>
             <MapaResumen filas={filas} claves={clavesTodas} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
-            <Leyenda items={leyenda} activos={activosDe('prioridad')} onClick={(d, e) => filtrar('prioridad')({ id: d.nivel, etiqueta: `Prioridad ${LABEL_PRIORIDAD[d.nivel]}`, claves: d.claves }, e)} />
+            <Leyenda items={leyenda} activos={activosDe('prioridad')} onClick={(d, e) => filtrar('prioridad')({ id: d.nivel, etiqueta: LABEL_PRIORIDAD[d.nivel], claves: d.claves }, e)} />
           </Tarjeta>
         </div>
 
@@ -224,6 +228,12 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, seg
           <Tarjeta titulo="Clima electoral" filtrada={enFiltro('clima')} subtitulo="Circuitos por tier de diagnóstico">
             <Barras items={aClima.tiers.map((t) => ({ id: t.tier, label: TIERS[t.tier].label, valor: t.n, claves: t.claves, color: COLOR_TIER[t.tier], etiqueta: `Clima ${TIERS[t.tier].label}` }))}
               max={aClima.kpis.total} activos={activosDe('clima')} onClick={filtrar('clima')} />
+          </Tarjeta>
+
+          <Tarjeta titulo="Top 10 problemas reportados" filtrada={enFiltro('problemas')} subtitulo={`En cuántos de los ${conEncuestaProb} circuitos con encuesta figura entre los 3 principales (última encuesta, sin “Otro”). Tocá uno para ver dónde.`}>
+            <Barras
+              items={topProblemas.map((p) => ({ id: p.cat, label: p.cat, valor: p.n, texto: `${p.n} · #1 en ${p.n1}`, claves: p.claves, etiqueta: `Problema reportado: ${p.cat}`, tooltip: `${p.cat}: entre los 3 principales en ${p.n} circuitos (#1 en ${p.n1}) · promedio ${p.promedio.toFixed(1).replace('.', ',')}% de menciones donde aparece` }))}
+              max={conEncuestaProb || 1} activos={activosDe('problemas')} onClick={filtrar('problemas')} />
           </Tarjeta>
 
           <Tarjeta titulo="Problema #1 sin cobertura" filtrada={enFiltro('problema1')} subtitulo="Circuitos donde el problema principal no tiene pauta ni obra (finalizada o en ejecución) que lo atienda">

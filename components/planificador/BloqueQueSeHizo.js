@@ -11,7 +11,31 @@ import { apruebaDe } from '../../lib/planificador/tendencia';
 import { num1 } from '../../lib/planificador/base';
 import { Boton } from './ui';
 
-const ETIQUETA_TIPO = { medicion: 'encuesta', visita: 'visita', pauta: 'pauta', obra: 'obra lista' };
+const ETIQUETA_TIPO = {
+  medicion: ['encuesta', 'encuestas'],
+  visita: ['visita', 'visitas'],
+  pauta: ['pauta', 'pautas'],
+  obra: ['obra lista', 'obras listas'],
+};
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+// "pauta" · "10 pautas"
+const etiquetaGrupo = (g) => {
+  const [uno, varios] = ETIQUETA_TIPO[g.tipo];
+  return g.eventos.length === 1 ? uno : `${g.eventos.length} ${varios}`;
+};
+
+// Mes (o rango de meses) del grupo, y su año: "febrero – agosto" / "2026". Los eventos vienen ordenados por fecha.
+function periodoDe(g) {
+  const desde = g.eventos[0].fecha;
+  const hasta = g.eventos[g.eventos.length - 1].fecha;
+  const mes = (f) => MESES[Number(f.slice(5, 7)) - 1] || '';
+  const anio = (f) => f.slice(0, 4);
+  return {
+    meses: desde.slice(0, 7) === hasta.slice(0, 7) ? mes(desde) : `${mes(desde)} – ${mes(hasta)}`,
+    anios: anio(desde) === anio(hasta) ? anio(desde) : `${anio(desde)} – ${anio(hasta)}`,
+  };
+}
 
 const Etiqueta = ({ k, v }) => (v == null || v === '' ? null : <span style={{ marginRight: 14, display: 'inline-block' }}><span style={{ color: 'var(--text-tertiary)' }}>{k} </span>{v}</span>);
 const Enlace = ({ href, children }) => (esUrlHttp(href) ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#1565C0' }}>{children}</a> : null);
@@ -143,19 +167,25 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
       {!grupos.length ? (
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Sin actividad con fecha registrada en este circuito.</p>
       ) : (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', rowGap: 8 }}>
+        // Línea de tiempo: una columna por grupo, con el mes (o rango de meses) arriba y el tipo de evento debajo.
+        <div style={{ display: 'flex', alignItems: 'flex-start', overflowX: 'auto', paddingBottom: 6 }} role="list" aria-label="Línea de tiempo de lo que se hizo">
           {grupos.map((g, i) => {
             const t = COLOR_TIPO_EVENTO[g.tipo];
             const activo = abierto === i;
+            const per = periodoDe(g);
             return (
-              <React.Fragment key={i}>
-                {i > 0 && <span aria-hidden="true" style={{ color: 'var(--text-tertiary)' }}>·</span>}
+              <div key={i} role="listitem" style={{ flex: '0 0 auto', minWidth: 112, textAlign: 'center', padding: '0 2px' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>{per.meses}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--text-tertiary)', whiteSpace: 'nowrap' }}>{per.anios}</div>
+                <div style={{ position: 'relative', height: 16, margin: '4px 0 6px' }} aria-hidden="true">
+                  <div style={{ position: 'absolute', left: 0, right: 0, top: 7, height: 2, background: 'var(--border)' }} />
+                  <div style={{ position: 'absolute', left: '50%', top: 2, width: 12, height: 12, marginLeft: -6, borderRadius: '50%', background: t.color, border: '2px solid var(--bg-primary)', boxSizing: 'content-box' }} />
+                </div>
                 <button onClick={() => setAbierto(activo ? null : i)} aria-expanded={activo} title={`${t.label}: ver detalle`}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 11px', borderRadius: 16, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: `1px solid ${t.color}`, background: activo ? t.color : `${t.color}1A`, color: activo ? '#fff' : 'var(--text-primary)' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: activo ? '#fff' : t.color }} />
-                  {ETIQUETA_TIPO[g.tipo]}{g.eventos.length > 1 ? ` ×${g.eventos.length}` : ''}
+                  style={{ display: 'inline-block', padding: '4px 11px', borderRadius: 14, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', border: `1px solid ${t.color}`, background: activo ? t.color : `${t.color}1A`, color: activo ? '#fff' : 'var(--text-primary)' }}>
+                  {etiquetaGrupo(g)}
                 </button>
-              </React.Fragment>
+              </div>
             );
           })}
         </div>

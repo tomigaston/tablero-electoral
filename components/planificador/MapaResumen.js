@@ -22,7 +22,7 @@ function tooltipDe(f) {
   const aprob = f.tendencia.aprobacion != null ? `${num1(f.tendencia.aprobacion)}%` : 'sin dato';
   return `<div style="font-family: -apple-system, sans-serif; padding: 4px 6px;">
     <strong style="font-size: 13px;">${esc(f.key)} · ${esc(f.nombre)}</strong>
-    <div style="font-size: 12px; margin-top: 3px;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${COLOR_PRIORIDAD[f.prioridad.nivel]};margin-right:5px;"></span>Prioridad ${esc(LABEL_PRIORIDAD[f.prioridad.nivel])}</div>
+    <div style="font-size: 12px; margin-top: 3px;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${COLOR_PRIORIDAD[f.prioridad.nivel]};margin-right:5px;"></span>${esc(LABEL_PRIORIDAD[f.prioridad.nivel])}</div>
     <div style="font-size: 12px; color: #555; margin-top: 2px;">Aprobación ${aprob} · ${esc(textoTendencia(f.tendencia))}</div>
   </div>`;
 }

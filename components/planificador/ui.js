@@ -14,8 +14,9 @@ export const ChipCategoria = ({ categoria, tamano = 11 }) => {
   );
 };
 
+// Punto del semáforo: azul no medido · rojo tendencia negativa · amarillo estable/leve baja · verde mejora.
 export const PuntoPrioridad = ({ nivel, tamano = 12 }) => (
-  <span title={`Prioridad ${LABEL_PRIORIDAD[nivel] || ''}`} style={{ display: 'inline-block', width: tamano, height: tamano, borderRadius: '50%', backgroundColor: COLOR_PRIORIDAD[nivel] || '#9E9E9E', flexShrink: 0 }} />
+  <span title={LABEL_PRIORIDAD[nivel] || ''} style={{ display: 'inline-block', width: tamano, height: tamano, borderRadius: '50%', backgroundColor: COLOR_PRIORIDAD[nivel] || '#9E9E9E', flexShrink: 0 }} />
 );
 
 // Verde / ámbar / rojo de texto ya presentes en el tablero (categorías + IconoTendencia).
