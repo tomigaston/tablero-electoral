@@ -1,5 +1,7 @@
 # Pauta por circuito — notas de exploración (Paso 0)
 
+> **Nota (19/10/2026):** esta es una nota de exploración del 10/10, anterior a la migración de la pauta de Capital al generador `scripts/generar_pauta_capital.py`. Los números y varias reglas quedaron desactualizados: "activa" ahora tiene una sola definición (estado Vigente e INICIO ≤ hoy ≤ FIN), los estados son Vigente/Finalizada/Observada/Programada/S/D y el JSON se genera desde el crudo. Vigente: `docs/pauta-capital-carga-semanal.md` y el manual metodológico.
+
 Hallazgos verificados contra los archivos reales (no contra notas), 2026-10-10.
 
 ## Navegación y sistema visual

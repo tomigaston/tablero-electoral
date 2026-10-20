@@ -1,5 +1,7 @@
 # Capa Pauta del mapa — criterio y notas (2026-10-10)
 
+> **Nota (19/10/2026):** esta es una nota de exploración del 10/10, anterior a la migración de la pauta de Capital al generador `scripts/generar_pauta_capital.py`. Los números y varias reglas quedaron desactualizados: "activa" ahora tiene una sola definición (estado Vigente e INICIO ≤ hoy ≤ FIN), los estados son Vigente/Finalizada/Observada/Programada/S/D y el JSON se genera desde el crudo. Vigente: `docs/pauta-capital-carga-semanal.md` y el manual metodológico.
+
 Regla: una estrella = "acá hay pauta PROPIA ACTIVA" (de barrio o de circuito). Sale de la misma
 derivación que las tarjetas y la pestaña (`derivarPautaPorCircuito` -> `pieza.vigente`, o sea
 `pautaEstaVigente`). Lo general (`toda_capital`) y lo inactivo NO van al mapa.

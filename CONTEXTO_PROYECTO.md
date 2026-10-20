@@ -72,7 +72,7 @@ Resumen (ver `lib/data-manifest.js` para el detalle completo por archivo):
 | `escuelas_capital.json` | Catálogo de 1.438 escuelas de Capital (IDECOR), con lat/lon y, si `es_centro_votacion: true`, votos/pct_peronismo/confianza | Sin clave de cruce para la capa del mapa (cada escuela trae su propia lat/lon). Ver sección 13. |
 | `votos_escuelas_por_circuito.json` | Escuelas-centro-de-votación agrupadas por circuito, pre-ordenadas por `pct_peronismo` | Clave: **`Mapkey`** (4 caracteres con cero), no el `CircuitoKey` sin cero. 84 de 119 circuitos con al menos una escuela. |
 | `votos_escuelas_por_barrio.json` | Mismo dato, agrupado por barrio | Clave: nombre IDECOR normalizado con `normalizarNombreBarrio()`. 236 de 236 barrios con datos, 68 sin match contra `barrios_geo.json`. |
-| *(reservado, sin archivo aún)* `pauta_*.json` | Pauta publicitaria por circuito — tercer tipo de evento de cobertura, todavía sin datos. La arquitectura de `construirEventosPorCircuito` (sección 11) ya contempla este tipo. |
+| `pautas_barrios.json` | Pauta digital de Capital (Meta y Google), generada por `scripts/generar_pauta_capital.py` desde el crudo `Contexto/Pauta RRSS_GLOBAL.xlsx`. Tres buckets: `barrios`, `circuitos_sin_barrio`, `toda_capital`. Proceso de carga: `docs/pauta-capital-carga-semanal.md`. Tercer tipo de evento de cobertura (`construirEventosPorCircuito`, sección 11). |
 
 ## 7. Estructura del código
 
@@ -124,7 +124,7 @@ Panel de Capas (checkboxes, overlay flotante arriba a la derecha del mapa). Esta
 
 ## 11. Cobertura territorial (encuestas + visitas)
 
-Sistema para cruzar el diagnóstico electoral con actividad de campaña real: encuestas propias y visitas del Gobernador (y a futuro, pauta publicitaria).
+Sistema para cruzar el diagnóstico electoral con actividad de campaña real: encuestas propias y visitas del Gobernador (y pauta publicitaria digital).
 
 ### 11.1 Por circuito (badge + rondas) — derivado en runtime desde `encuestas_circuitos.json`
 En `ResumenCircuitoMini` (panel chico, y reutilizado dentro del tab Barrio) y en `SolapaResumen` (ficha completa): badge **"✓ Encuestado"** (verde) / **"○ Sin encuestar"** (gris), y si fue encuestado, cantidad de rondas + lista de fechas.
@@ -139,7 +139,7 @@ Barra siempre visible debajo del header (y del listado "Circuitos con encuesta" 
 
 **Diseño deliberadamente NO es un Gantt con eje temporal compartido.** Es una tabla donde cada fila es un circuito y cada celda es el N-ésimo evento cronológico de esa fila (columnas "Evento 1", "Evento 2"... hasta el máximo de eventos entre todas las filas visibles).
 
-- **Tipos de evento:** `medicion` (verde, derivado de `encuestas_circuitos.json` vía `coberturaDesdeEncuesta`), `visita` (azul, de `recorridos_barrios.json` cruzado por circuito), `pauta` (naranja, reservado — sin datos, ver sección 6).
+- **Tipos de evento:** `medicion` (verde, derivado de `encuestas_circuitos.json` vía `coberturaDesdeEncuesta`), `visita` (azul, de `recorridos_barrios.json` cruzado por circuito), `pauta` (naranja, de `pautas_barrios.json`, ver sección 6).
 - **Atribución de visitas a circuito:** un circuito **solo** hereda las visitas del/los barrio(s) donde ese circuito tiene `orden_importancia: 1` en `circuito_to_barrios`. Máximo real: **25 eventos** (circuito `0001 · Seccional Primera`), promedio ~1.7, 48 de 119 circuitos en 0 eventos.
 - **Filtros, en este orden de aplicación:** (1) tipo de evento (pills toggle, los 3 activos por defecto), (2) rango temporal por año (pills dinámicas + "Todo", default = año más reciente con datos).
 - **Orden de filas:** por defecto, ID de circuito ascendente vía `compararMapkey`. Alternativa: por fecha del evento más reciente visible.
@@ -201,7 +201,7 @@ El tablero está funcional, con:
 
 ## 17. Próximas tareas (lo que se viene)
 
-- **Pauta publicitaria:** cuando exista el dataset, sumarlo como tercer tipo de evento en `construirEventosPorCircuito` (ya reservado, `pautaData` en `null`).
+- **Pauta publicitaria:** ya integrada (`pautas_barrios.json`). Pendiente: que el área confirme los alias de barrios y las reglas listadas en `Pendientes_de_confirmacion.xlsx` (se genera con `scripts/pendientes_pauta_capital.py`).
 - **Ficha completa de barrio:** hoy el barrio solo tiene el panel chico (`PanelMiniBarrio`); no existe un equivalente a las solapas de circuito.
 - **`cobertura_circuitos.json`:** decidir si se elimina definitivamente ahora que no tiene consumidores (ver sección 6/15) — si se borra, corregir también las referencias que queden en este documento.
 - **Huecos de datos de Escuelas (sección 13):** decidir si vale la pena investigar más `007D Cofico`, `0002 Seccional Segunda`, o los 68 barrios sin match de `votos_escuelas_por_barrio.json`, o dejarlos como están (documentados, no bloqueantes).

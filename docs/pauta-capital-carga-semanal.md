@@ -1,79 +1,148 @@
-# Carga semanal de la pauta de Capital (runbook)
+# Cómo se actualiza la pauta de Capital (de ahora en más)
 
-Reemplaza a la skill `procesar-pauta-cordoba-capital` y al maestro `BASE_PAUTA_RRSS_CORDOBA_CAPITAL.xlsx`. Mismo modelo que la carga semanal del tablero del interior (`Tablero comunicacion`): un script versionado lee el crudo y genera el JSON; nada se edita a mano.
+Este es el proceso completo para actualizar la pauta digital de Córdoba Capital. Es igual al del tablero del interior: **se pisa el crudo, se corre un comando y se sube el resultado.** No hay skill, no hay Claude.ai en el medio y no hay maestro intermedio.
 
-Reglas completas: manual metodológico "Pauta Digital, Córdoba Capital". Código: `scripts/generar_pauta_capital.py`. Decisiones versionadas: `scripts/config_pauta/`.
+## En una línea
+Pisar `Contexto/Pauta RRSS_GLOBAL.xlsx` → `python3 scripts/generar_pauta_capital.py` → mirar el resumen → commit de datos → push.
 
-## Política: solo lo confirmado; lo que no se entiende queda afuera
-El área confirma las reglas. Mientras una regla no esté confirmada, el generador **no adivina**: si algo no se entiende o no respeta la regla, queda afuera (la fila pasa a `pendiente`, o el ítem de la audiencia se omite) y se informa en la corrida. No hay coincidencia aproximada de nombres ni alias sin confirmar. Cada semana se le pasa al área la lista de lo que quedó afuera (`Pendientes_de_confirmacion.xlsx`, paso 3) y, cuando confirma, se agrega la regla o el alias y se vuelve a generar.
-
-## Antes de empezar
-- Tener el crudo vigente: `Pauta RRSS_GLOBAL.xlsx`, hoja `GLOBAL_ImportRange` (77 columnas, encabezados en la fila 1). **No se versiona** en este repo; guardarlo fuera del repo y anotar su fecha de carga.
-- Python 3 con `pandas` y `openpyxl`; Node para los controles.
-- Una rama de trabajo desde `main` actualizada. Las cargas de datos van a `preview-testing` (nunca directo a `main`): antes, `git log --oneline preview-testing..main`; si `main` tiene commits que `preview-testing` no, ponerla al día primero.
-
-## Pasos
-1. **Tests.** Tienen que pasar antes de cargar nada.
-   ```bash
-   python3 scripts/test_pauta_capital.py
-   node scripts/test_estado_pauta.mjs
-   ```
-2. **Corrida de verificación** (no escribe nada):
-   ```bash
-   python3 scripts/generar_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx"
-   ```
-   Leer el resumen con la tabla de señales de abajo.
-3. **Lista para el área.** Genera el Excel con lo que quedó afuera: alias pendientes con cuántos ítems afectarían, ítems de audiencia sin resolver, filas pendientes y reglas a confirmar:
-   ```bash
-   python3 scripts/pendientes_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida Pendientes_de_confirmacion.xlsx
-   ```
-   El área completa las columnas "¿Se confirma?" y "Barrio correcto".
-   **Resolver lo que avisa** (ver tabla). Un alias nuevo o una decisión por fila es un cambio de **código**: va en su propio commit, con un caso en `scripts/test_pauta_capital.py`, antes del commit de datos.
-4. **Generar el JSON.**
-   ```bash
-   python3 scripts/generar_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida public/data/pautas_barrios.json
-   ```
-   Si frena por bajas de `COD. CONTENIDO`, **no seguir**: mostrar la lista al área. Solo si confirman que las bajas son legítimas, repetir con `--aceptar-bajas`.
-5. **Conteos de control** con fechas fijas (usar siempre las mismas fechas para comparar con la carga anterior):
-   ```bash
-   node scripts/control_pauta_capital.mjs 2026-10-14 2026-10-15
-   ```
-6. **Archivo de verificación** (una fila por cada fila real del crudo; sirve para cotejar cualquier número fila por fila):
-   ```bash
-   python3 scripts/verificacion_pauta_capital.py --crudo "<ruta>/Pauta RRSS_GLOBAL.xlsx" --salida Verificacion_pauta_capital.xlsx --fechas 2026-10-14 2026-10-15
-   ```
-   Los totales de su hoja `Resumen` tienen que coincidir con los del paso 5.
-7. **Build:** `npm run build`. Si falla, no commitear.
-8. **Commit de datos, solo el JSON** (los de código van aparte). Formato del mensaje:
-   `data(pautas_barrios.json): regenerado completo, N entradas — fuente: Pauta RRSS_GLOBAL.xlsx (carga del DD/MM)`, con en el cuerpo: sha256 del crudo, filas reales, entradas por bucket, por estado y por plataforma, y qué barrios aparecen o desaparecen.
-9. **Push a la rama de preview, revisar el deploy y recién después pedir el OK para el merge.** El sitio tiene Basic Auth: la revisión visual la hace una persona con credenciales (mirar una ficha de barrio, la pestaña "Pauta por circuito" y el mapa con la capa Pauta).
-
-## Qué mirar en la corrida de verificación
-| Señal | Qué significa | Qué hacer |
-|---|---|---|
-| `Códigos dados de baja: N` (y la corrida frena) | Desaparecieron códigos que estaban en el JSON anterior | No seguir. Pedir al área que explique. Con confirmación, `--aceptar-bajas` |
-| `AVISO: N ítems de audiencia sin resolver` | Un barrio de la audiencia no se encontró; **ese ítem queda afuera**, la fila entra con los demás y la nota queda en `observaciones` | Pasarlo al área en `Pendientes_de_confirmacion.xlsx`. Si confirman un alias, pasarlo de `pendientes_de_confirmar` a `alias` en `alias_barrios.json` (commit de código + caso de test) |
-| `Filas por destino: pendiente` creció | Hay filas cuyo alcance no se puede decidir (audiencia sin referencia geográfica, que nombra otro departamento o un barrio que no se resuelve) | Pedir al área que complete la audiencia; quedan afuera hasta que lo hagan |
-| `AVISO: estados fuera de …` | Llegó un ESTADO nuevo (no ACTIVO, INACTIVO, OBSERVADO, PROGRAMADO ni vacío) | Se muestra tal cual. Avisar al área para que confirme que es intencional |
-| `Entradas sin INICIO o sin FIN válidos` subió | Fechas escritas como texto, con un espacio o como número suelto | Pedir al área que las corrija en la planilla; el tablero no las interpreta |
-| `colapsadas por dedup` subió mucho | Más filas con el mismo código, campaña, título y destino | Normal si se repiten piezas por conjunto de anuncios; revisar si coincide con una carga duplicada |
-| `descartadas como basura` cambió mucho | Cambió la cantidad de renglones con formato sin datos, o la planilla perdió filas | Revisar el crudo antes de seguir |
-| Un encabezado dejó de coincidir (error `KeyError`) | Renombraron o borraron una columna | Parar y avisar: el generador lee por nombre exacto (con espacios finales, `INICIO `, `Inversión ejecutada `, `UTM´S`) |
-
-## Qué no se hace
-- No se edita `pautas_barrios.json` a mano ni se mezcla un fragmento: siempre se regenera completo.
-- No se versiona el crudo ni se vuelve a usar el maestro xlsx (queda como archivo histórico).
-- No se cambia una regla sin test: cualquier cambio a la geografía, el estado, las fechas o los duplicados necesita un caso en `scripts/test_pauta_capital.py` o `scripts/test_estado_pauta.mjs`.
-- No se hace merge ni push a `main` sin la aprobación explícita de quien dirige el proyecto.
-
-## Dónde vive cada regla
-| Regla | Archivo |
+## Qué cambió respecto del proceso anterior
+| Antes | Ahora |
 |---|---|
-| Fila real, estado, fechas, geografía de Capital, barrios, duplicados, freno de bajas | `scripts/generar_pauta_capital.py` |
-| Alias de barrios (confirmados y pendientes de confirmar) y barrios a descartar | `scripts/config_pauta/alias_barrios.json` |
-| Lista de pendientes para el área | `scripts/pendientes_pauta_capital.py` |
+| Se subía el crudo y el maestro a Claude.ai y la skill `procesar-pauta-cordoba-capital` armaba un maestro nuevo y el JSON | Un script del repo (`scripts/generar_pauta_capital.py`) lee el crudo y genera el JSON. La skill se eliminó |
+| El maestro `BASE_PAUTA_RRSS_CORDOBA_CAPITAL.xlsx` se acumulaba y era la entrada | **No hay maestro.** El crudo es la única entrada. El maestro viejo quedó archivado en `Contexto/historico/` solo como referencia |
+| El crudo se guardaba fuera del repo | El crudo se guarda en `Contexto/Pauta RRSS_GLOBAL.xlsx` y **se versiona**, igual que en el interior |
+| Se agregaban solo las filas nuevas y se refrescaban algunas | Se regenera **todo** desde el crudo, cada vez |
+| Las reglas vivían en la skill y en las decisiones de la conversación | Las reglas están en el código, con tests, y en el manual metodológico |
+
+## El crudo trae lo viejo y lo nuevo (confirmado)
+`Pauta RRSS_GLOBAL.xlsx` es un acumulado: cada versión incluye las filas de las cargas anteriores. Se verificó el 19/10 contra el maestro del 8/10: de sus 1.955 códigos, 1.945 están en el crudo del 17/10 (los 10 que faltan eran códigos de relleno `1` a `10` de filas del maestro que ya no existen) y el crudo agrega 744 códigos nuevos. La pieza más vieja empieza el mismo día en los dos (03/07/2026).
+
+Por eso se **pisa todo**: no hay nada que "sumar" a lo anterior. Lo que el crudo no traiga, no está en el tablero. Para que eso no pase sin que nadie se entere, el generador **frena** si desaparece algún código del JSON anterior (ver "Frenos").
+
+**¿Para qué queda el control entonces?** El maestro acumulado ya no existe, y su función de control la cumple el **archivo de verificación**: un Excel con una fila por cada fila del crudo (su geografía, su destino, si entra y por qué no, entradas, estado y si está activa), que se regenera completo en cada carga. Está en `Contexto/Verificacion_pauta_capital.xlsx` y no se versiona.
+
+## Antes de empezar (una sola vez)
+- Repo: `/Users/tomasgaston/dev/tablero-electoral`, en `main` y actualizado (`git checkout main && git pull`).
+- Python 3 con `pandas` y `openpyxl`, y Node (los mismos que ya están instalados).
+- Las cargas de datos van en commits aparte de los cambios de código.
+
+## Paso a paso (la carga de la semana que viene)
+
+### 1. Pisar el crudo
+Descargar el crudo nuevo (hoja `GLOBAL_ImportRange`, encabezados en la fila 1) y guardarlo **con este nombre exacto**, pisando el anterior:
+
+```
+Contexto/Pauta RRSS_GLOBAL.xlsx
+```
+
+El crudo se toma **tal como viene**. Si una fila tiene problemas, no es un problema de la carga: queda afuera y se puede ver el motivo en el archivo de verificación. Lo único que se exige es que el crudo respete las reglas del manual metodológico (encabezados con su nombre exacto, fechas reales, `TODAS LAS LOCALIDADES` en mayúsculas, etc.).
+
+### 2. Tests (solo si se tocó código o alias)
+```bash
+python3 scripts/test_pauta_capital.py
+node scripts/test_estado_pauta.mjs
+```
+Tienen que dar `61/61 casos OK` (o más, si se agregaron) y `18 casos OK`.
+
+### 3. Verificar sin escribir nada
+```bash
+python3 scripts/generar_pauta_capital.py --solo-verificar
+```
+Lee el resumen y compará con la tabla "Cómo leer el resumen" (más abajo). Si algo llama la atención, resolverlo antes de seguir.
+
+### 4. Generar el JSON
+```bash
+python3 scripts/generar_pauta_capital.py
+```
+Lee `Contexto/Pauta RRSS_GLOBAL.xlsx` y pisa `public/data/pautas_barrios.json`. Si frena por bajas de código, ver "Frenos".
+
+### 5. Control con fechas fijas
+```bash
+node scripts/control_pauta_capital.mjs 2026-10-14 2026-10-15
+python3 scripts/verificacion_pauta_capital.py --fechas 2026-10-14 2026-10-15
+```
+El primero imprime las tarjetas con el código real del tablero. El segundo arma `Contexto/Verificacion_pauta_capital.xlsx`. Los totales de su hoja `Resumen` tienen que coincidir con los del primero. Conviene usar siempre las mismas dos fechas para poder comparar de una semana a la otra.
+
+### 6. Lista para el área (solo si hay algo para confirmar)
+```bash
+python3 scripts/pendientes_pauta_capital.py
+```
+Genera `Contexto/Pendientes_de_confirmacion.xlsx` con tres hojas: alias de barrios pendientes, nombres de audiencia que no se reconocieron y reglas a confirmar. **Las filas pendientes no se le piden al área**: el crudo se toma como viene. Si el área confirma algo, ver "Cómo incorporar lo que confirma el área".
+
+### 7. Build
+```bash
+npm run build
+```
+Tiene que compilar. Si falla, no seguir.
+
+### 8. Commit de datos
+Un solo commit con el crudo y el JSON (son los dos datos de la carga). Formato del mensaje, igual que en el interior:
+
+```
+data(pauta): carga semanal con crudo del DD/MM (N filas reales, N entradas)
+
+Crudo: Contexto/Pauta RRSS_GLOBAL.xlsx, sha256 <hash>
+Entradas: barrios N en N barrios, circuitos_sin_barrio N, toda_capital N
+Estado: Vigente N, Finalizada N, Observada N, S/D N, Programada N
+Bajas de código respecto de la carga anterior: N
+```
+
+```bash
+git add "Contexto/Pauta RRSS_GLOBAL.xlsx" public/data/pautas_barrios.json
+git commit
+```
+El hash sale de `shasum -a 256 "Contexto/Pauta RRSS_GLOBAL.xlsx"`.
+
+### 9. Push y chequeo del deploy
+```bash
+git push origin main
+```
+Vercel publica solo. Esperar a que figure "Ready" (`vercel ls tablero-electoral`) y mirar tres cosas en el tablero: la tarjeta "Pauta activa" (tiene que coincidir con el número del paso 5), una ficha de barrio con pauta y el mapa con la capa Pauta encendida.
+
+## Cómo leer el resumen del paso 3
+| Línea | Qué significa | Qué hacer |
+|---|---|---|
+| `Filas del crudo / descartadas / reales` | Renglones de la hoja, renglones sin CAMPAÑA ni TITULO (arrastre de fórmulas) y filas reales | Las reales deberían crecer o mantenerse. Si bajan mucho, revisar el crudo antes de seguir |
+| `Filas por destino` | `entradas` (barrio o circuito), `toda_capital`, `excluido` (otro departamento) y `pendiente` (alcance que el crudo no deja decidir) | Un salto grande de `pendiente` o `excluido` merece mirar el archivo de verificación |
+| `Entradas por estado` | Cuántas entradas hay en cada estado | `Programada` y estados nuevos pueden aparecer; se muestran tal cual |
+| `AVISO: N ítems de audiencia sin resolver` | Nombres de barrio de las audiencias que no se reconocieron; **quedan afuera**, la fila entra con los demás | Normal. Van a la hoja "Ítems sin resolver" del paso 6 |
+| `Entradas sin INICIO o sin FIN válidos` | Fechas vacías, escritas como texto o como número suelto | Normal si es parecido a la carga anterior; si sube mucho, el crudo cambió |
+| `Códigos dados de baja: N` | Desaparecieron códigos que estaban en el JSON anterior | Ver "Frenos" |
+| Error `KeyError` con un nombre de columna | Renombraron o borraron una columna del crudo | Parar. El generador lee por nombre exacto (incluidos los espacios finales de `INICIO ` y de `Inversión ejecutada `, y el acento de `UTM´S`) |
+
+### Números de referencia (carga del 17/10, para comparar)
+Filas del crudo 4.336, reales 4.104; destinos: 609 filas con entradas, 340 toda_capital, 3.065 excluidas, 90 pendientes; 4.942 entradas (barrios 4.083 en 184 barrios, circuitos sin barrio 534, toda_capital 325); estados Finalizada 4.702, Vigente 130, S/D 59, Observada 51; con las fechas 14 y 15/10: 121 piezas únicas activas, 46 circuitos y 11 barrios cubiertos.
+
+## Frenos
+- **Bajas de código.** Si un `COD. CONTENIDO` que estaba en el JSON anterior ya no está en el crudo, el generador se detiene **sin escribir** y muestra la lista. Como el crudo es acumulado, una baja no es normal: avisar al área para que explique por qué desaparecieron esas piezas. Si confirman que es correcto (o si las bajas son consecuencia de una regla nueva que vos decidiste), repetir con `python3 scripts/generar_pauta_capital.py --aceptar-bajas` y dejar la lista de códigos en el mensaje del commit.
+- **Alias que apunta a un barrio inexistente.** El generador se detiene al arrancar: corregir `scripts/config_pauta/alias_barrios.json`.
+
+## Cómo incorporar lo que confirma el área
+1. **Un alias de barrio confirmado:** en `scripts/config_pauta/alias_barrios.json`, pasarlo de `pendientes_de_confirmar` a `alias`. Agregar un caso en `scripts/test_pauta_capital.py` y correr los tests. Commit de **código** aparte.
+2. **Un nombre que el área indica a qué barrio corresponde** (hoja "Ítems sin resolver"): se agrega como alias confirmado, igual que arriba.
+3. **Una regla confirmada o cambiada:** se cambia el código (`scripts/generar_pauta_capital.py`), se agrega el test y se actualiza el manual. Commit de código aparte.
+4. Después se repiten los pasos 4 a 9 y el commit de datos queda separado del de código.
+
+Mientras el área no confirme, el alias o la regla **no se aplica** y el ítem queda afuera. No se adivina.
+
+## Lo que no se hace
+- No se edita `pautas_barrios.json` a mano ni se mezcla un fragmento: siempre se regenera completo.
+- No se agrega el maestro a la carga ni se usa la skill (ya no existe).
+- No se cambia una regla sin test y sin actualizar el manual.
+- No se mezclan cambios de código y de datos en el mismo commit.
+
+## Dónde vive cada cosa
+| Qué | Dónde |
+|---|---|
+| Crudo (se pisa en cada carga, se versiona) | `Contexto/Pauta RRSS_GLOBAL.xlsx` |
+| Generador (reglas) | `scripts/generar_pauta_capital.py` |
+| Alias de barrios (confirmados y pendientes) y barrios a descartar | `scripts/config_pauta/alias_barrios.json` |
 | Decisiones puntuales por fila | `scripts/config_pauta/decisiones_filas.json` |
-| "Activa" (único predicado), estados, cobertura dirigida | `lib/estadoPauta.js` |
-| Piezas únicas por circuito, tarjetas y mapa | `lib/pautaPorCircuito.js`, `lib/pautaResumen.js`, `lib/pautaMapa.js` |
+| Tests | `scripts/test_pauta_capital.py`, `scripts/test_estado_pauta.mjs` |
 | Conteos de control | `scripts/control_pauta_capital.mjs` |
-| Verificación fila por fila | `scripts/verificacion_pauta_capital.py` |
+| Archivo de verificación (se regenera, no se versiona) | `scripts/verificacion_pauta_capital.py` → `Contexto/Verificacion_pauta_capital.xlsx` |
+| Lista para el área (se regenera, no se versiona) | `scripts/pendientes_pauta_capital.py` → `Contexto/Pendientes_de_confirmacion.xlsx` |
+| "Activa", estados y cobertura dirigida (pantallas) | `lib/estadoPauta.js` |
+| Salida | `public/data/pautas_barrios.json` |
+| Maestro viejo (solo referencia histórica) | `Contexto/historico/BASE_PAUTA_RRSS_CORDOBA_CAPITAL_2026-10-08.xlsx` |
+| Manual para quienes cargan la planilla | "Manual metodológico — Pauta Digital, Córdoba Capital" |
