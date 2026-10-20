@@ -34,8 +34,8 @@ const Cambio = ({ delta, contra }) => {
 };
 
 const Dato = ({ titulo, valor, delta, contra, tamano = 32, destacado }) => (
-  <div style={destacado ? { marginTop: 8, padding: '8px 10px', borderRadius: 8, background: `${COLOR_ENCUESTA}12`, border: `1px solid ${COLOR_ENCUESTA}33` } : undefined}>
-    <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-secondary)' }}>{titulo}</div>
+  <div style={destacado ? { marginTop: 8, padding: '5px 9px', borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' } : undefined}>
+    <div style={{ fontSize: destacado ? 11.5 : 12.5, fontWeight: 600, color: 'var(--text-secondary)' }}>{titulo}</div>
     {valor != null ? (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <span style={{ fontSize: tamano, fontWeight: 700, lineHeight: 1.15 }}>{num1(valor)}%</span>
@@ -97,7 +97,7 @@ export default function BloqueEncuesta({ f }) {
             {i > 0 && <div aria-hidden="true" style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', fontSize: 22, color: 'var(--text-secondary)' }}>→</div>}
             <Paso color={COLOR_ENCUESTA} titulo={`Encuesta de ${mesDe(p.r.fecha)}`} subtitulo={fechaCorta(p.r.fecha)}>
               <Dato titulo="Aprobación del Gobernador" valor={p.ap} delta={p.dAp} contra={p.contraAp} />
-              <Dato titulo="Reelección Llaryora (Sí)" valor={p.re} delta={p.dRe} contra="vs. encuesta anterior" tamano={28} destacado />
+              <Dato titulo="Reelección Llaryora (Sí)" valor={p.re} delta={p.dRe} contra="vs. encuesta anterior" tamano={21} destacado />
             </Paso>
           </React.Fragment>
         ))}
