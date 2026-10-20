@@ -1,141 +1,112 @@
-// Bloque 3 de la ficha — Encuesta. De arriba abajo:
-//  1) gráfico de línea: parte del resultado de Gobernación 2023 y sigue con la aprobación del Gobernador de cada encuesta;
-//  2) una tarjeta por par de encuestas (Intendente / Gobernador / Presidente: valor y fecha → valor y fecha, con la variación);
-//  3) una tarjeta destacada de reelección (Llaryora y Milei) con las dos últimas encuestas.
+// Bloque 3 de la ficha — Encuesta, en orden cronológico: primero una tarjeta de otro color con el resultado de
+// Gobernación 2023 (la meta), un poco más a la derecha las encuestas (de abril → agosto → octubre, por fecha).
+// Cada encuesta muestra solo lo de Llaryora: aprobación del Gobernador y reelección, con la variación contra
+// el dato anterior (la primera encuesta, contra Gobernación 2023).
 // Los porcentajes de las encuestas están en puntos (53 = 53 %); Share_G23 viene en 0..1.
 import React from 'react';
 import { formatPct, num1, fmtDeltaPP } from '../../lib/planificador/base';
 
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const mesDe = (iso) => MESES[Number(String(iso).slice(5, 7)) - 1] || '';
 const fechaCorta = (iso) => {
   if (!iso) return '';
   const [y, m, d] = String(iso).slice(0, 10).split('-');
   return `${d}-${m}-${y}`;
 };
 const numero = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
-const aprueba = (ronda, pregunta) => numero(ronda?.preguntas?.[pregunta]?.Apruebo);
-const reeligeSi = (ronda, pregunta) => numero(ronda?.preguntas?.[pregunta]?.Si);
+const aprueba = (ronda) => numero(ronda?.preguntas?.['Aprobación Gobernador']?.Apruebo);
+const reelige = (ronda) => numero(ronda?.preguntas?.['Reelección Llaryora']?.Si);
 
-const COLOR_LINEA = '#1976D2';
-const COLOR_REF = '#78909C';
+const COLOR_ENCUESTA = '#1976D2';
+const COLOR_GOB2023 = '#6A1B9A'; // otro color a propósito: es un resultado electoral, no una encuesta
 const COLOR_SUBE = '#2E7D32';
 const COLOR_BAJA = '#C62828';
 
-// ---- 1) Gráfico de línea ----
-function LineaAprobacion({ f }) {
-  const serie = f.tendencia.serie;
-  const puntos = [];
-  if (f.shareG23 != null) puntos.push({ etiqueta: 'Gob. 2023', v: f.shareG23 * 100, ref: true });
-  serie.forEach((p) => puntos.push({ etiqueta: fechaCorta(p.fecha), v: p.apruebo }));
-  if (!puntos.length) return null;
-
-  const W = 560; const H = 190; const padL = 44; const padR = 44; const padT = 26; const padB = 36;
-  const vs = puntos.map((p) => p.v);
-  const vmin = Math.max(0, Math.floor((Math.min(...vs) - 8) / 10) * 10);
-  const vmax = Math.min(100, Math.ceil((Math.max(...vs) + 8) / 10) * 10);
-  const x = (i) => (puntos.length === 1 ? W / 2 : padL + (i / (puntos.length - 1)) * (W - padL - padR));
-  const y = (v) => padT + (1 - (v - vmin) / (vmax - vmin || 1)) * (H - padT - padB);
-  const guias = [vmin, (vmin + vmax) / 2, vmax];
-  const tramo = (a, b, dash) => (
-    <line key={`${a}-${b}`} x1={x(a)} y1={y(puntos[a].v)} x2={x(b)} y2={y(puntos[b].v)} stroke={COLOR_LINEA} strokeWidth="2.5" strokeLinecap="round" strokeDasharray={dash ? '5 5' : undefined} />
-  );
-
+// Variación en pp contra el dato anterior.
+const Cambio = ({ delta, contra }) => {
+  if (delta == null) return null;
+  const c = delta >= 0 ? COLOR_SUBE : COLOR_BAJA;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: 720, display: 'block' }} role="img" aria-label="Evolución de la aprobación del Gobernador desde Gobernación 2023">
-      {guias.map((g) => (
-        <g key={g}>
-          <line x1={padL - 8} x2={W - padR + 8} y1={y(g)} y2={y(g)} stroke="var(--border)" strokeWidth="1" />
-          <text x={padL - 12} y={y(g) + 4} textAnchor="end" fontSize="10.5" fill="var(--text-tertiary)">{Math.round(g)}%</text>
-        </g>
-      ))}
-      {puntos.slice(1).map((_, i) => tramo(i, i + 1, puntos[i].ref))}
-      {puntos.map((p, i) => (
-        <g key={i}>
-          <circle cx={x(i)} cy={y(p.v)} r="5" fill={p.ref ? 'var(--bg-primary)' : COLOR_LINEA} stroke={p.ref ? COLOR_REF : COLOR_LINEA} strokeWidth="2.5" />
-          <text x={x(i)} y={y(p.v) - 11} textAnchor="middle" fontSize="12.5" fontWeight="700" fill={p.ref ? COLOR_REF : 'var(--text-primary)'}>{num1(p.v)}%</text>
-          <text x={x(i)} y={H - 12} textAnchor="middle" fontSize="11" fontWeight={p.ref ? 700 : 400} fill="var(--text-secondary)">{p.etiqueta}</text>
-        </g>
-      ))}
-    </svg>
+    <span title={`Variación ${contra}`} style={{ display: 'inline-block', fontSize: 12.5, fontWeight: 700, padding: '2px 9px', borderRadius: 12, background: `${c}1A`, color: c, whiteSpace: 'nowrap' }}>
+      {delta >= 0 ? '▲' : '▼'} {fmtDeltaPP(delta)}
+    </span>
   );
-}
+};
 
-// ---- 2) y 3) Tarjetas ----
-const Valor = ({ v, fecha, vacio }) => (
-  <div>
-    {v != null
-      ? <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.1 }}>{num1(v)}%</div>
-      : <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', padding: '7px 0' }}>{vacio}</div>}
-    {fecha && <div style={{ fontSize: 12.5, fontWeight: 700 }}>{fechaCorta(fecha)}</div>}
+const Dato = ({ titulo, valor, delta, contra, tamano = 32, destacado }) => (
+  <div style={destacado ? { marginTop: 8, padding: '8px 10px', borderRadius: 8, background: `${COLOR_ENCUESTA}12`, border: `1px solid ${COLOR_ENCUESTA}33` } : undefined}>
+    <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-secondary)' }}>{titulo}</div>
+    {valor != null ? (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: tamano, fontWeight: 700, lineHeight: 1.15 }}>{num1(valor)}%</span>
+        <Cambio delta={delta} contra={contra} />
+      </div>
+    ) : <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', padding: '6px 0' }}>No se preguntó</div>}
+    {delta != null && <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{contra}</div>}
   </div>
 );
 
-function Fila({ titulo, a, b, fa, fb, sinSegunda }) {
-  const delta = a != null && b != null ? b - a : null;
-  return (
-    <div style={{ padding: '8px 0' }}>
-      <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 2 }}>{titulo}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 8, textAlign: 'center' }}>
-        <Valor v={a} fecha={fa} vacio="No se preguntó" />
-        <div style={{ minWidth: 76 }}>
-          {delta != null && <div style={{ fontSize: 12.5, fontWeight: 700, color: delta >= 0 ? COLOR_SUBE : COLOR_BAJA, whiteSpace: 'nowrap' }}>{delta >= 0 ? '▲' : '▼'} {fmtDeltaPP(delta)}</div>}
-          <div style={{ fontSize: 22, color: 'var(--text-secondary)', lineHeight: 1 }}>→</div>
-        </div>
-        <Valor v={b} fecha={sinSegunda ? null : fb} vacio={sinSegunda ? 'Sin nueva medición' : 'No se preguntó'} />
-      </div>
-    </div>
-  );
-}
-
-const Tarjeta = ({ titulo, destacada, children }) => (
-  <div style={{ border: destacada ? '2px solid #1976D2' : '1px solid var(--border)', background: destacada ? '#1976D20D' : 'var(--bg-secondary)', borderRadius: 10, padding: '10px 14px' }}>
-    {titulo && <div style={{ fontSize: destacada ? 12 : 12.5, fontWeight: 700, color: destacada ? '#1565C0' : 'var(--text-secondary)', textTransform: destacada ? 'uppercase' : 'none', letterSpacing: destacada ? 0.8 : 0, textAlign: destacada ? 'center' : 'left', marginBottom: 2 }}>{titulo}</div>}
-    <div style={{ display: 'grid' }}>{children}</div>
+const Paso = ({ color, titulo, subtitulo, children }) => (
+  <div style={{ flex: '0 0 auto', width: 232, boxSizing: 'border-box', borderRadius: 10, border: `1px solid ${color}44`, borderTop: `5px solid ${color}`, background: `${color}0D`, padding: '10px 14px 12px' }}>
+    <div style={{ fontSize: 14, fontWeight: 700, color }}>{titulo}</div>
+    <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{subtitulo}</div>
+    {children}
   </div>
 );
 
 export default function BloqueEncuesta({ f }) {
-  const t = f.tendencia;
-  if (t.estado === 'sin_medir' || !f.rondas.length) return <p style={{ fontSize: 14 }}>Este circuito <strong>nunca fue medido</strong>: sin dato de aprobación.</p>;
+  if (f.tendencia.estado === 'sin_medir' || !f.rondas.length) return <p style={{ fontSize: 14 }}>Este circuito <strong>nunca fue medido</strong>: sin dato de aprobación.</p>;
 
-  const rondas = f.rondas;
-  const unaSola = rondas.length === 1;
-  const ultima = rondas[rondas.length - 1];
-  const previa = unaSola ? null : rondas[rondas.length - 2];
-  // Pares de encuestas consecutivos, de la más nueva a la más vieja (con una sola, esa única medición).
-  const pares = unaSola ? [{ a: ultima, b: null }] : rondas.slice(1).map((r, i) => ({ a: rondas[i], b: r })).reverse();
+  const gob2023 = f.shareG23 != null ? f.shareG23 * 100 : null;
+
+  // En orden cronológico; cada dato se compara con el anterior que exista (el primero, con Gobernación 2023).
+  let prevAprob = gob2023;
+  let origenAprob = 'vs. Gobernación 2023';
+  let prevRee = null;
+  const pasos = f.rondas.map((r) => {
+    const ap = aprueba(r);
+    const re = reelige(r);
+    const paso = {
+      r, ap, re,
+      dAp: ap != null && prevAprob != null ? ap - prevAprob : null, contraAp: origenAprob,
+      dRe: re != null && prevRee != null ? re - prevRee : null,
+    };
+    if (ap != null) { prevAprob = ap; origenAprob = 'vs. encuesta anterior'; }
+    if (re != null) prevRee = re;
+    return paso;
+  });
 
   return (
-    <div style={{ display: 'grid', gap: 14 }}>
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Aprobación del Gobernador</div>
-        {t.serie.length ? <LineaAprobacion f={f} /> : <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Hay mediciones pero ninguna con dato de aprobación del Gobernador.</p>}
-        <div style={{ fontSize: 11.5, color: 'var(--text-tertiary)', marginTop: 2 }}>El punto inicial es el resultado de Gobernación 2023 (voto, línea punteada): es la referencia de partida, no una aprobación.</div>
-        {f.vsRef && (
-          <div style={{ fontSize: 13.5, marginTop: 8 }}>
-            Meta (Gobernador 2023): <strong>{formatPct(f.shareG23)}</strong> — la aprobación actual está a <strong>{num1(Math.abs(f.vsRef.diff) * 100)} pp {f.vsRef.porEncima ? 'por encima' : 'por debajo'}</strong>.
-          </div>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, overflowX: 'auto', paddingBottom: 8 }}>
+        {gob2023 != null && (
+          <>
+            <Paso color={COLOR_GOB2023} titulo="Gobernación 2023" subtitulo="Resultado electoral (voto)">
+              <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-secondary)' }}>Llaryora</div>
+              <div style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.15, color: COLOR_GOB2023 }}>{formatPct(f.shareG23)}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Meta de partida</div>
+            </Paso>
+            {/* Un poco de aire: lo electoral queda a la izquierda y las encuestas empiezan más a la derecha. */}
+            <div aria-hidden="true" style={{ flex: '0 0 auto', width: 30, display: 'flex', justifyContent: 'center' }}>
+              <div style={{ borderLeft: '2px dashed var(--border)' }} />
+            </div>
+          </>
         )}
-      </div>
-
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Cómo fue cambiando, encuesta por encuesta</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: 10 }}>
-          {pares.map(({ a, b }, i) => (
-            <Tarjeta key={i} titulo={b ? `Encuesta ${fechaCorta(a.fecha)} → ${fechaCorta(b.fecha)}` : `Encuesta ${fechaCorta(a.fecha)} (única medición)`}>
-              {[['Aprobación del Intendente', 'Aprobación Intendente'], ['Aprobación del Gobernador', 'Aprobación Gobernador'], ['Aprobación del Presidente', 'Aprobación Presidente']].map(([titulo, p]) => (
-                <Fila key={p} titulo={titulo} a={aprueba(a, p)} b={b ? aprueba(b, p) : null} fa={a.fecha} fb={b?.fecha} sinSegunda={!b} />
-              ))}
-            </Tarjeta>
-          ))}
-        </div>
-      </div>
-
-      <Tarjeta titulo="Reelección" destacada>
-        {[['Reelección Llaryora (Gobernador)', 'Reelección Llaryora'], ['Reelección Milei (Presidente)', 'Reelección Milei']].map(([titulo, p]) => (
-          <Fila key={p} titulo={titulo} a={reeligeSi(previa || ultima, p)} b={previa ? reeligeSi(ultima, p) : null} fa={(previa || ultima).fecha} fb={ultima.fecha} sinSegunda={!previa} />
+        {pasos.map((p, i) => (
+          <React.Fragment key={p.r.fecha + i}>
+            {i > 0 && <div aria-hidden="true" style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', fontSize: 22, color: 'var(--text-secondary)' }}>→</div>}
+            <Paso color={COLOR_ENCUESTA} titulo={`Encuesta de ${mesDe(p.r.fecha)}`} subtitulo={fechaCorta(p.r.fecha)}>
+              <Dato titulo="Aprobación del Gobernador" valor={p.ap} delta={p.dAp} contra={p.contraAp} />
+              <Dato titulo="Reelección Llaryora (Sí)" valor={p.re} delta={p.dRe} contra="vs. encuesta anterior" tamano={28} destacado />
+            </Paso>
+          </React.Fragment>
         ))}
-        <div style={{ fontSize: 11, color: 'var(--text-tertiary)', textAlign: 'center' }}>Porcentaje que respondió “Sí” a la reelección.</div>
-      </Tarjeta>
+      </div>
+      {f.vsRef && (
+        <div style={{ fontSize: 13.5, marginTop: 6 }}>
+          Meta (Gobernador 2023): <strong>{formatPct(f.shareG23)}</strong> — la aprobación actual está a <strong>{num1(Math.abs(f.vsRef.diff) * 100)} pp {f.vsRef.porEncima ? 'por encima' : 'por debajo'}</strong>.
+        </div>
+      )}
     </div>
   );
 }
