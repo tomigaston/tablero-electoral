@@ -153,7 +153,7 @@ export default function Planificador() {
   // operaciones de un mismo circuito van en cola, de a una; si el servidor rechaza alguna, se vuelve a leer lo guardado.
   const operar = useCallback((circuito, op) => {
     const key = circuito.toUpperCase();
-    const opFinal = op.op === 'agregarAccion' && !op.id ? { ...op, id: nuevoIdAccion() } : op; // el mismo id en pantalla y en la base
+    const opFinal = (op.op === 'agregarAccion' || op.op === 'agregarEtapa') && !op.id ? { ...op, id: nuevoIdAccion() } : op; // el mismo id en pantalla y en la base
     let optimista;
     try { optimista = aplicarOperacion(fichasRef.current[key], opFinal, usuarioRef.current, new Date().toISOString()); } catch (e) { return Promise.reject(e); }
     fichasRef.current = { ...fichasRef.current, [key]: optimista };
