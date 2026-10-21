@@ -43,6 +43,9 @@ html,body{background:#F5F7FA !important}
 .plan-raiz .plan-seccion > h2{display:flex;align-items:center;gap:10px;font-weight:700}
 .plan-raiz .plan-seccion > h2::before{content:'';flex:0 0 auto;width:5px;height:18px;border-radius:3px;background:linear-gradient(180deg,#6CAEE5,#3478B5)}
 .plan-fila:hover{background:#6CAEE51F !important}
+.plan-raiz .plan-campo{outline:none;transition:box-shadow .15s,border-color .15s,background .15s}
+.plan-raiz .plan-campo:focus{box-shadow:0 0 0 3px #6CAEE555;border-color:#6CAEE5 !important;background:#fff !important}
+.plan-raiz .plan-kpi:hover:not(:disabled){transform:translateY(-2px)}
 .plan-solo-movil{display:none}
 @media (max-width:900px){
   .plan-circuitos{grid-template-columns:1fr !important}
@@ -69,10 +72,20 @@ html,body{background:#F5F7FA !important}
   .plan-raiz .plan-seccion:hover{box-shadow:none !important}
   .plan-linea-tiempo,.plan-encuesta-fila{overflow:visible !important;flex-wrap:wrap !important}
   .plan-lista-scroll{max-height:none !important;overflow:visible !important}
-  .plan-hoja-resumen{page:resumen}
-  .plan-hoja-resumen .plan-grilla-resumen{display:grid !important;grid-template-columns:1.2fr 1fr !important;gap:10px !important}
+  /* Resumen: hoja apaisada, un poco más compacta, con el mapa y las primeras tarjetas juntos en la primera página. */
+  .plan-hoja-resumen{page:resumen;zoom:.8}
+  .plan-hoja-resumen .plan-grilla-resumen{display:grid !important;grid-template-columns:1.1fr 1fr !important;gap:10px !important;align-items:start !important}
   .plan-hoja-resumen .plan-mapa-col{position:static !important}
   .plan-hoja-resumen .plan-grilla-resumen > div{margin-bottom:0}
+  /* Tarjetas de números: siempre de a cuatro en una fila (nunca una sola estirada abajo). */
+  .plan-kpis{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:8px !important;margin-bottom:10px !important}
+  .plan-kpis > *{flex:none !important;min-width:0 !important}
+  .plan-raiz .plan-kpi{padding:12px 14px 10px !important;border-radius:14px !important}
+  /* Ficha: encuestas y línea de tiempo se comprimen para entrar en una fila. */
+  .plan-encuesta-fila{flex-wrap:nowrap !important;gap:6px !important;zoom:.8}
+  .plan-paso{flex:1 1 0 !important;width:auto !important;min-width:0 !important;padding:8px 10px 10px !important}
+  .plan-linea-tiempo{zoom:.82;flex-wrap:wrap !important}
+  .plan-col-tiempo{flex:1 1 96px !important;min-width:96px !important}
 }
 `;
 
