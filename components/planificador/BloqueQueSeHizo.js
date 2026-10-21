@@ -51,7 +51,7 @@ function periodoDe(g) {
 }
 
 const Etiqueta = ({ k, v }) => (v == null || v === '' ? null : <span style={{ marginRight: 14, display: 'inline-block' }}><span style={{ color: 'var(--text-tertiary)' }}>{k} </span>{v}</span>);
-const Enlace = ({ href, children }) => (esUrlHttp(href) ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#1565C0' }}>{children}</a> : null);
+const Enlace = ({ href, children }) => (esUrlHttp(href) ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#2A6296' }}>{children}</a> : null);
 const Caja = ({ children }) => <div className="plan-no-print" style={{ marginTop: 10, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-secondary)' }}>{children}</div>;
 
 // Colapsa los eventos consecutivos del mismo tipo: [pauta, pauta, visita] -> [{pauta ×2}, {visita ×1}].
@@ -148,7 +148,7 @@ function PanelObras({ items, vacio, hayParte, limite = 40 }) {
   return (
     <Caja>
       {visibles.map((o, i) => <Obra key={i} o={o} hayParte={hayParte} />)}
-      {items.length > limite && !todas && <button onClick={() => setTodas(true)} style={{ marginTop: 8, border: 'none', background: 'none', color: '#1565C0', cursor: 'pointer' }}>Ver las {items.length - limite} restantes</button>}
+      {items.length > limite && !todas && <button onClick={() => setTodas(true)} style={{ marginTop: 8, border: 'none', background: 'none', color: '#2A6296', cursor: 'pointer' }}>Ver las {items.length - limite} restantes</button>}
     </Caja>
   );
 }
@@ -158,8 +158,8 @@ function PanelObras({ items, vacio, hayParte, limite = 40 }) {
 // (Finalizada o 100 %). Para inaugurar = todavía no finalizadas pero con fecha disponible para inaugurar.
 const GRUPOS_OBRA = [
   { id: 'listas', label: 'Listas e inauguradas', color: '#2E7D32' },
-  { id: 'para_inaugurar', label: 'Para inaugurar', color: '#1565C0' },
-  { id: 'en_ejecucion', label: 'En ejecución', color: '#E65100' },
+  { id: 'para_inaugurar', label: 'Para inaugurar', color: '#2A6296' },
+  { id: 'en_ejecucion', label: 'En ejecución', color: '#B07F2A' },
   { id: 'planificadas', label: 'Planificadas', color: '#78909C' },
 ];
 function grupoDeObra(o) {

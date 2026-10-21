@@ -17,6 +17,7 @@ import {
 import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas } from '../../lib/planificador/acciones';
 import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
 import { Boton, PuntoPrioridad } from './ui';
+import { CabeceraImpresion, PieImpresion } from './Marca';
 
 // Leaflet necesita el navegador: mismo criterio que MapaCircuitos en pages/index.js.
 const MapaResumen = dynamic(() => import('./MapaResumen'), {
@@ -24,7 +25,7 @@ const MapaResumen = dynamic(() => import('./MapaResumen'), {
   loading: () => <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)', borderRadius: 8, color: 'var(--text-tertiary)' }}>Cargando mapa…</div>,
 });
 
-const COLOR_BARRA = '#1976D2';
+const COLOR_BARRA = '#3478B5';
 // Colores de las categorías del tablero, usados acá solo para el clima electoral (semántico).
 const COLOR_TIER = { favorable: '#2E7D32', intermedio: '#26A69A', desfavorable: '#FF7043', adverso: '#EF5350' };
 
@@ -32,7 +33,7 @@ const Tarjeta = ({ titulo, subtitulo, children, filtrada }) => (
   <section className="plan-seccion" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
     <h2 style={{ fontSize: 15, fontWeight: 700 }}>
       {titulo}
-      {filtrada && <span style={{ marginLeft: 8, fontSize: 10.5, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: '#1976D218', color: '#1565C0', verticalAlign: 'middle' }}>en el filtro</span>}
+      {filtrada && <span style={{ marginLeft: 8, fontSize: 10.5, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: '#3478B518', color: '#2A6296', verticalAlign: 'middle' }}>en el filtro</span>}
     </h2>
     {subtitulo && <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '2px 0 10px' }}>{subtitulo}</p>}
     {!subtitulo && <div style={{ height: 8 }} />}
@@ -53,10 +54,10 @@ function Barras({ items, max, onClick, activos = [], formato = (v) => String(v) 
         const atenuada = hayActivos && !activa;
         return (
           <button key={it.id} onClick={clic} disabled={!clic} aria-pressed={activa} title={it.tooltip || `${it.label}: ${formato(it.valor)}`}
-            style={{ all: 'unset', boxSizing: 'border-box', display: 'grid', gridTemplateColumns: 'minmax(110px, 38%) 1fr auto', gap: 8, alignItems: 'center', cursor: clic ? 'pointer' : 'default', padding: '2px 4px', borderRadius: 4, opacity: atenuada ? 0.45 : 1, boxShadow: activa ? 'inset 0 0 0 1.5px #1976D2' : 'none' }}>
+            style={{ all: 'unset', boxSizing: 'border-box', display: 'grid', gridTemplateColumns: 'minmax(110px, 38%) 1fr auto', gap: 8, alignItems: 'center', cursor: clic ? 'pointer' : 'default', padding: '2px 4px', borderRadius: 4, opacity: atenuada ? 0.45 : 1, boxShadow: activa ? 'inset 0 0 0 1.5px #3478B5' : 'none' }}>
             <span style={{ fontSize: 12.5, fontWeight: activa ? 700 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.label}</span>
-            <span style={{ height: 14, background: 'var(--bg-secondary)', borderRadius: 3, overflow: 'hidden' }}>
-              <span style={{ display: 'block', height: '100%', width: `${Math.max(2, (it.valor / tope) * 100)}%`, background: it.color || COLOR_BARRA, borderRadius: 3 }} />
+            <span style={{ height: 16, background: 'var(--bg-secondary)', borderRadius: 8, overflow: 'hidden' }}>
+              <span style={{ display: 'block', height: '100%', width: `${Math.max(2, (it.valor / tope) * 100)}%`, background: it.color || COLOR_BARRA, borderRadius: 8 }} />
             </span>
             <span style={{ fontSize: 12.5, fontWeight: 600, minWidth: 54, textAlign: 'right' }}>{it.texto ?? formato(it.valor)}</span>
           </button>
@@ -68,16 +69,17 @@ function Barras({ items, max, onClick, activos = [], formato = (v) => String(v) 
 
 // KPI de arriba: número grande, etiqueta, barra de proporción y acento de color. Si filtra, se resalta.
 const Kpi = ({ valor, de, label, extra, proporcion, color = COLOR_BARRA, activo, onClick }) => (
-  <button onClick={onClick} disabled={!onClick} aria-pressed={onClick ? !!activo : undefined}
-    style={{ flex: '1 1 210px', textAlign: 'left', padding: '12px 16px 10px', borderRadius: 10, border: '1px solid var(--border)', borderLeft: `5px solid ${color}`, background: activo ? `${color}14` : 'var(--bg-primary)', color: 'var(--text-primary)', cursor: onClick ? 'pointer' : 'default', boxShadow: activo ? `0 0 0 2px ${color}55` : '0 1px 2px rgba(0,0,0,0.06)', transition: 'box-shadow .15s, background .15s' }}>
+  <button onClick={onClick} disabled={!onClick} aria-pressed={onClick ? !!activo : undefined} className="plan-kpi"
+    style={{ position: 'relative', overflow: 'hidden', flex: '1 1 210px', textAlign: 'left', padding: '18px 20px 14px', borderRadius: 18, border: '1px solid var(--border)', background: activo ? `${color}12` : 'var(--bg-primary)', color: 'var(--text-primary)', cursor: onClick ? 'pointer' : 'default', boxShadow: activo ? `0 0 0 2px ${color}66, 0 6px 20px ${color}22` : '0 2px 14px rgba(16,24,40,0.06)', transition: 'box-shadow .18s, background .18s, transform .18s' }}>
+    <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 5, background: color }} />
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-      <span style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.1 }}>{valor}</span>
-      {de != null && <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>de {de}</span>}
+      <span style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.02em' }}>{valor}</span>
+      {de != null && <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>de {de}</span>}
     </div>
-    <div style={{ fontSize: 13.5, fontWeight: 600, marginTop: 2 }}>{label}</div>
+    <div style={{ fontSize: 13.5, fontWeight: 600, marginTop: 3 }}>{label}</div>
     {extra && <div style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 2 }}>{extra}</div>}
     {proporcion != null && (
-      <div style={{ height: 5, borderRadius: 3, background: 'var(--bg-secondary)', marginTop: 8, overflow: 'hidden' }} aria-hidden="true">
+      <div style={{ height: 6, borderRadius: 3, background: 'var(--bg-secondary)', marginTop: 12, overflow: 'hidden' }} aria-hidden="true">
         <div style={{ height: '100%', width: `${Math.max(2, Math.min(100, proporcion))}%`, background: color, borderRadius: 3 }} />
       </div>
     )}
@@ -96,7 +98,7 @@ function Leyenda({ items, activos, onClick }) {
           const activa = activos.includes(d.nivel);
           return (
             <button key={d.nivel} onClick={(e) => onClick(d, e)} disabled={!d.claves.length} aria-pressed={activa}
-              style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 8, padding: '3px 6px', borderRadius: 4, cursor: d.claves.length ? 'pointer' : 'default', fontSize: 13, opacity: activos.length && !activa ? 0.5 : 1, boxShadow: activa ? 'inset 0 0 0 1.5px #1976D2' : 'none' }}>
+              style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 8, padding: '3px 6px', borderRadius: 4, cursor: d.claves.length ? 'pointer' : 'default', fontSize: 13, opacity: activos.length && !activa ? 0.5 : 1, boxShadow: activa ? 'inset 0 0 0 1.5px #3478B5' : 'none' }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: COLOR_PRIORIDAD[d.nivel], flexShrink: 0 }} />
               <span style={{ fontWeight: 600, minWidth: 150 }}>{LABEL_PRIORIDAD[d.nivel]}</span>
               <span style={{ color: 'var(--text-secondary)' }}>{d.n} {d.n === 1 ? 'circuito' : 'circuitos'} · <strong style={{ color: 'var(--text-primary)' }}>{fmtPctPadron(d.pctPadron)}</strong> del padrón</span>
@@ -114,9 +116,9 @@ const nombreEje = (e) => e.charAt(0) + e.slice(1).toLowerCase();
 
 // KPIs filtrables (cada uno es su propio "origen": entre KPIs y tarjetas se cruzan).
 const KPIS = [
-  { origen: 'kpi:sinMedir', campo: 'sinMedir', label: 'sin medir', etiqueta: 'Sin medir', color: '#C62828', extra: (k) => `+ ${k.unaRonda.n} con una sola ronda` },
+  { origen: 'kpi:sinMedir', campo: 'sinMedir', label: 'sin medir', etiqueta: 'Sin medir', color: '#BC1734', extra: (k) => `+ ${k.unaRonda.n} con una sola ronda` },
   { origen: 'kpi:conObra', campo: 'conObra', label: 'con obra lista', etiqueta: 'Con obra lista para inaugurar', color: '#2E7D32' },
-  { origen: 'kpi:pautaSinMed', campo: 'pautaSinMed', label: 'con pauta sin medición posterior', etiqueta: 'Pauta sin medición posterior', color: '#E65100' },
+  { origen: 'kpi:pautaSinMed', campo: 'pautaSinMed', label: 'con pauta sin medición posterior', etiqueta: 'Pauta sin medición posterior', color: '#B07F2A' },
 ];
 
 // Exportar un listado por tipo de tarea (p. ej. todos los circuitos a "Mandar a medir") a PDF o Excel.
@@ -234,12 +236,12 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
       ) : (
         <>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-            <Kpi valor={rK.total} label="recomendaciones cargadas" color="#1976D2" />
+            <Kpi valor={rK.total} label="recomendaciones cargadas" color="#3478B5" />
             {kpiEstado('pendiente', 'Pendiente')}
             {kpiEstado('en_curso', 'En ejecución')}
             {kpiEstado('hecha', 'Cumplido')}
             <Kpi valor={fmtN(rK.pctCumplidas)} label="cumplidas" color={COLOR_ESTADO_REC.hecha} extra={`${rK.porEstado.hecha} de ${rK.total}`} proporcion={rK.pctCumplidas} />
-            <Kpi valor={rK.conRecomendacion} de={nAlcance} label="subcircuitos con recomendación" color="#1976D2" activo={activosDe('seg:con').length > 0}
+            <Kpi valor={rK.conRecomendacion} de={nAlcance} label="subcircuitos con recomendación" color="#3478B5" activo={activosDe('seg:con').length > 0}
               onClick={conClaves.length ? (e) => filtrar('seg:con')({ id: 'con', etiqueta: 'Con recomendación', claves: conClaves }, e) : undefined} />
             <Kpi valor={rK.sinRecomendacion} de={nAlcance} label="subcircuitos sin ninguna" color="#78909C" activo={activosDe('seg:sin').length > 0}
               onClick={sinClaves.length ? (e) => filtrar('seg:sin')({ id: 'sin', etiqueta: 'Sin recomendación', claves: sinClaves }, e) : undefined} />
@@ -351,7 +353,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
   const conEncuestaProb = (clavesProb ? filas.filter((f) => clavesProb.includes(f.key)) : filas).filter((f) => f.problemas.items.length > 0).length;
 
   return (
-    <div>
+    <div className="plan-hoja-resumen">
       <div className="plan-no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Tocá un número, una barra o un color para filtrar todo. <strong>Ctrl + clic</strong> suma más filtros. Tocá un circuito del mapa para abrir su ficha.</span>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -360,13 +362,11 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
           <Boton onClick={() => window.print()} style={{ padding: '5px 12px', fontSize: 12.5 }}>Imprimir / PDF</Boton>
         </div>
       </div>
-      <div className="plan-solo-print" style={{ display: 'none', marginBottom: 10, paddingBottom: 6, borderBottom: '2px solid #1976D2' }}>
-        <div style={{ fontSize: 17, fontWeight: 700 }}>Planificador territorial · Resumen</div>
-        <div style={{ fontSize: 11, color: '#444' }}>Generado el {hoyTexto} · {filtros.length ? `Filtro: ${etiqueta} (${clavesTodas.length} ${clavesTodas.length === 1 ? 'circuito' : 'circuitos'})` : 'Todos los circuitos'}</div>
-      </div>
+      <CabeceraImpresion titulo="Planificador territorial · Resumen" subtitulo="Tablero diagnóstico · Córdoba Capital"
+        detalle={<><div>Generado el {hoyTexto}</div><div>{filtros.length ? `Filtro: ${etiqueta} (${clavesTodas.length} ${clavesTodas.length === 1 ? 'circuito' : 'circuitos'})` : 'Todos los circuitos'}</div></>} />
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-        <Kpi valor={clavesTodas ? clavesTodas.length : k.total} de={clavesTodas ? k.total : null} label="circuitos" color="#1976D2"
+        <Kpi valor={clavesTodas ? clavesTodas.length : k.total} de={clavesTodas ? k.total : null} label="circuitos" color="#3478B5"
           extra={`${fmtPctPadron(padronTotal ? (padronFiltrado / padronTotal) * 100 : 0)} del padrón de la ciudad`} proporcion={padronTotal ? (padronFiltrado / padronTotal) * 100 : 0} />
         {KPIS.map((d) => {
           const a = aDe(d.origen).kpis;
@@ -381,11 +381,11 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
       </div>
 
       {filtros.length > 0 && (
-        <div className="plan-no-print" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 13, padding: '7px 12px', marginBottom: 12, borderRadius: 8, background: '#1976D218', color: '#1565C0' }}>
+        <div className="plan-no-print" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 13, padding: '7px 12px', marginBottom: 12, borderRadius: 8, background: '#3478B518', color: '#2A6296' }}>
           <span><strong>{clavesTodas.length}</strong> {clavesTodas.length === 1 ? 'circuito' : 'circuitos'} en el filtro:</span>
           <span style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1 }}>
             {filtros.map((f) => (
-              <span key={`${f.origen}|${f.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 4px 2px 10px', borderRadius: 12, background: '#1976D226', fontSize: 12.5 }}>
+              <span key={`${f.origen}|${f.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 4px 2px 10px', borderRadius: 12, background: '#3478B526', fontSize: 12.5 }}>
                 {f.etiqueta}
                 <button onClick={() => quitar(f)} aria-label={`Quitar ${f.etiqueta}`} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'inherit', padding: '0 4px', fontSize: 13 }}>✕</button>
               </span>
@@ -417,7 +417,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
           </Tarjeta>
 
           <Tarjeta titulo="¿Dónde estamos a ciegas?" filtrada={enFiltro('ciegos')} subtitulo="Circuitos según cantidad de rondas de encuesta">
-            <Barras items={aCiegos.ciegos.distribucion.map((d) => ({ id: d.id, label: d.label, valor: d.n, claves: d.claves, etiqueta: d.label, color: d.id === 'sin_medir' ? '#C62828' : undefined }))}
+            <Barras items={aCiegos.ciegos.distribucion.map((d) => ({ id: d.id, label: d.label, valor: d.n, claves: d.claves, etiqueta: d.label, color: d.id === 'sin_medir' ? '#BC1734' : undefined }))}
               max={aCiegos.kpis.total} activos={activosDe('ciegos')} onClick={filtrar('ciegos')} />
           </Tarjeta>
 
@@ -435,7 +435,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
           <Tarjeta titulo="Problema #1 sin cobertura" filtrada={enFiltro('problema1')} subtitulo="Circuitos donde el problema principal no tiene pauta ni obra (finalizada o en ejecución) que lo atienda">
             <button onClick={(e) => filtrar('problema1')({ id: 'total', etiqueta: 'Problema #1 sin cobertura', claves: aProb.problema1.claves }, e)} disabled={!aProb.problema1.claves.length}
               aria-pressed={activosDe('problema1').includes('total')}
-              style={{ all: 'unset', cursor: aProb.problema1.claves.length ? 'pointer' : 'default', fontSize: 28, fontWeight: 700, display: 'block', marginBottom: 6, borderRadius: 4, boxShadow: activosDe('problema1').includes('total') ? 'inset 0 0 0 1.5px #1976D2' : 'none', padding: '0 4px' }}>
+              style={{ all: 'unset', cursor: aProb.problema1.claves.length ? 'pointer' : 'default', fontSize: 28, fontWeight: 700, display: 'block', marginBottom: 6, borderRadius: 4, boxShadow: activosDe('problema1').includes('total') ? 'inset 0 0 0 1.5px #3478B5' : 'none', padding: '0 4px' }}>
               {aProb.problema1.total} <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>de {aProb.kpis.total - aProb.kpis.sinMedir.n} circuitos con encuesta</span>
             </button>
             <Barras items={aProb.problema1.porTipo.map((p) => ({ id: p.cat, label: p.cat, valor: p.n, claves: p.claves, etiqueta: `Problema #1 sin cobertura: ${p.cat}` }))}
@@ -443,7 +443,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
           </Tarjeta>
 
           <Tarjeta titulo="Obras listas para inaugurar" filtrada={enFiltro('obras')} subtitulo={`${aObras.obras.totalObras} obras en espera, por antigüedad desde que están disponibles`}>
-            <Barras items={aObras.obras.buckets.filter((b) => b.obras > 0).map((b) => ({ id: b.id, label: b.label, valor: b.obras, texto: `${b.obras} · ${b.claves.length} circ.`, claves: b.claves, etiqueta: `Obras listas: ${b.label}`, color: b.id === '180+' || b.id === '91-180' ? '#E65100' : undefined, tooltip: `${b.label}: ${b.obras} obras en ${b.claves.length} circuitos` }))}
+            <Barras items={aObras.obras.buckets.filter((b) => b.obras > 0).map((b) => ({ id: b.id, label: b.label, valor: b.obras, texto: `${b.obras} · ${b.claves.length} circ.`, claves: b.claves, etiqueta: `Obras listas: ${b.label}`, color: b.id === '180+' || b.id === '91-180' ? '#B07F2A' : undefined, tooltip: `${b.label}: ${b.obras} obras en ${b.claves.length} circuitos` }))}
               activos={activosDe('obras')} onClick={filtrar('obras')} />
             <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 8 }}>Se refresca con el parte diario cuando está cargado; sin parte, sale de obras_capital.json.</p>
           </Tarjeta>
@@ -454,6 +454,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
         <SeguimientoRecomendaciones recs={recs} filas={filas} filtros={filtros} filtrar={filtrar} activosDe={activosDe}
           persistencia={persistencia} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
       </div>
+      <PieImpresion leyenda={`Planificador territorial · Resumen · generado el ${hoyTexto}`} />
     </div>
   );
 }

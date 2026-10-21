@@ -17,10 +17,10 @@ const numero = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 const aprueba = (ronda) => numero(ronda?.preguntas?.['Aprobación Gobernador']?.Apruebo);
 const reelige = (ronda) => numero(ronda?.preguntas?.['Reelección Llaryora']?.Si);
 
-const COLOR_ENCUESTA = '#1976D2';
+const COLOR_ENCUESTA = '#3478B5';
 const COLOR_GOB2023 = '#6A1B9A'; // otro color a propósito: es un resultado electoral, no una encuesta
 const COLOR_SUBE = '#2E7D32';
-const COLOR_BAJA = '#C62828';
+const COLOR_BAJA = '#BC1734';
 
 // Variación en pp contra el dato anterior.
 const Cambio = ({ delta, contra }) => {
@@ -47,7 +47,7 @@ const Dato = ({ titulo, valor, delta, contra, tamano = 32, destacado }) => (
 );
 
 const Paso = ({ color, titulo, subtitulo, children }) => (
-  <div style={{ flex: '0 0 auto', width: 232, boxSizing: 'border-box', borderRadius: 10, border: `1px solid ${color}44`, borderTop: `5px solid ${color}`, background: `${color}0D`, padding: '10px 14px 12px' }}>
+  <div style={{ flex: '0 0 auto', width: 232, boxSizing: 'border-box', borderRadius: 16, border: `1px solid ${color}44`, borderTop: `5px solid ${color}`, background: `${color}0D`, padding: '10px 14px 12px' }}>
     <div style={{ fontSize: 14, fontWeight: 700, color }}>{titulo}</div>
     <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{subtitulo}</div>
     {children}

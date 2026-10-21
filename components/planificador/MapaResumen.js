@@ -131,7 +131,7 @@ export default function MapaResumen({ filas, claves, onAbrir, alto = 'clamp(380p
     return { ancho: (este - oeste) * k, alto: norte - sur, trazos: geoJsonData.features.map((ft) => ({ ft, d: trazo(ft.geometry) })) };
   }, [geoJsonData, limites]);
 
-  if (error) return <div style={{ height: alto, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B71C1C', border: '1px solid #C62828', borderRadius: 8, padding: 16 }}>No se pudo cargar el mapa: {error}</div>;
+  if (error) return <div style={{ height: alto, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B71C1C', border: '1px solid #BC1734', borderRadius: 8, padding: 16 }}>No se pudo cargar el mapa: {error}</div>;
   if (!geoJsonData) return <div style={{ height: alto, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)', borderRadius: 8, color: 'var(--text-tertiary)' }}>Cargando mapa…</div>;
 
   return (
@@ -147,7 +147,7 @@ export default function MapaResumen({ filas, claves, onAbrir, alto = 'clamp(380p
           </svg>
         </div>
       )}
-      <div className="plan-no-print" style={{ height: alto, borderRadius: 8, overflow: 'hidden' }}>
+      <div className="plan-no-print" style={{ height: alto, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--border)' }}>
         <MapContainer center={[-31.42, -64.18]} zoom={11} bounds={limites || undefined} boundsOptions={{ padding: [6, 6] }} zoomSnap={0.25} style={{ height: '100%', width: '100%' }} zoomControl scrollWheelZoom>
           <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <GeoJSON ref={geoRef} data={geoJsonData} style={(feature) => estiloDe(feature, actual.current.porMapkey, actual.current.set)} onEachFeature={onEachFeature} />

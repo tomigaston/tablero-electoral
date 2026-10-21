@@ -20,7 +20,7 @@ export const PuntoPrioridad = ({ nivel, tamano = 12 }) => (
 );
 
 // Verde / ámbar / rojo de texto ya presentes en el tablero (categorías + IconoTendencia).
-const COLOR_TEND = { mejora: '#2E7D32', estable: '#F57F17', empeora: '#C62828', neutro: '#757575' };
+const COLOR_TEND = { mejora: '#2E7D32', estable: '#F57F17', empeora: '#BC1734', neutro: '#757575' };
 
 // Flecha + número. Nada de gráficos en la tabla.
 export const Tendencia = ({ t, grande = false }) => {
@@ -42,10 +42,10 @@ export const Boton = ({ children, onClick, primario, activo, disabled, titulo, s
     disabled={disabled}
     title={titulo}
     style={{
-      padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1,
-      border: primario ? '1px solid #1976D2' : '1px solid var(--border)',
-      backgroundColor: primario ? '#1976D2' : activo ? '#1976D222' : 'var(--bg-primary)',
-      color: primario ? '#fff' : activo ? '#1565C0' : 'var(--text-primary)',
+      padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1, transition: 'background .15s, box-shadow .15s',
+      border: primario ? '1px solid #3478B5' : '1px solid var(--border)',
+      backgroundColor: primario ? '#3478B5' : activo ? '#3478B522' : 'var(--bg-primary)',
+      color: primario ? '#fff' : activo ? '#2A6296' : 'var(--text-primary)',
       ...style,
     }}
   >

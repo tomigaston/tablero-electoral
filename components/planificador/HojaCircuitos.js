@@ -7,10 +7,10 @@ import { fmtDeltaPP } from '../../lib/planificador/base';
 import { PuntoPrioridad, Boton } from './ui';
 import FichaCircuito from './FichaCircuito';
 
-const COLOR_TEND = { mejora: '#2E7D32', estable: '#F57F17', empeora: '#C62828' };
+const COLOR_TEND = { mejora: '#2E7D32', estable: '#F57F17', empeora: '#BC1734' };
 
 const IndicadorTendencia = ({ t }) => {
-  if (t.estado === 'sin_medir') return <span style={{ color: '#C62828', fontStyle: 'italic' }}>sin medir</span>;
+  if (t.estado === 'sin_medir') return <span style={{ color: '#BC1734', fontStyle: 'italic' }}>sin medir</span>;
   if (t.estado === 'sin_tendencia') return <span style={{ color: 'var(--text-tertiary)' }}>1 ronda</span>;
   const flecha = t.estado === 'mejora' ? '↑' : t.estado === 'empeora' ? '↓' : '→';
   return <span style={{ color: COLOR_TEND[t.estado], fontWeight: 600 }}>{flecha} {t.estado === 'estable' ? 'estable' : fmtDeltaPP(t.delta)}</span>;
@@ -27,13 +27,13 @@ function FilaLista({ f, activa, ficha, onSelect }) {
   const pend = acciones.filter(esAccionPendiente).length;
   return (
     <button onClick={() => onSelect(f.key)} aria-current={activa} className="plan-fila"
-      style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--border)', background: activa ? '#1976D218' : 'transparent', borderLeft: activa ? '3px solid #1976D2' : '3px solid transparent' }}>
+      style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--border)', background: activa ? '#3478B518' : 'transparent', borderLeft: activa ? '3px solid #3478B5' : '3px solid transparent' }}>
       <PuntoPrioridad nivel={f.prioridad.nivel} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.key} <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>· {f.nombre}</span></div>
         <div style={{ fontSize: 11.5, color: 'var(--text-secondary)' }}><IndicadorTendencia t={f.tendencia} /> · padrón {f.padron != null ? f.padron.toLocaleString('es-AR') : '—'}</div>
       </div>
-      {pend > 0 && <span title={`${pend} acción(es) pendiente(s) o en curso`} style={{ fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 10, background: '#F57F1722', color: '#E65100' }}>{pend}</span>}
+      {pend > 0 && <span title={`${pend} acción(es) pendiente(s) o en curso`} style={{ fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 10, background: '#F57F1722', color: '#B07F2A' }}>{pend}</span>}
       {pend === 0 && acciones.length > 0 && <span title="Decisión tomada" style={{ fontSize: 13, color: '#2E7D32' }}>✓</span>}
     </button>
   );
@@ -46,7 +46,7 @@ export default function HojaCircuitos({ filas, fichas, filtro, setFiltro, selecc
 
   return (
     <div className="plan-circuitos" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 380px) 1fr', gap: 14, alignItems: 'start' }}>
-      <aside className={`plan-no-print plan-lista ${fila ? 'plan-lista-con-ficha' : ''}`} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', position: 'sticky', top: 8 }}>
+      <aside className={`plan-no-print plan-lista ${fila ? 'plan-lista-con-ficha' : ''}`} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden', position: 'sticky', top: 8, boxShadow: '0 2px 14px rgba(16,24,40,0.06)' }}>
         <div style={{ padding: 10, display: 'grid', gap: 6, borderBottom: '1px solid var(--border)' }}>
           <input value={filtro.q} onChange={(e) => set('q')(e.target.value)} placeholder="Buscar circuito (ID o nombre)" aria-label="Buscar circuito" style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -56,7 +56,7 @@ export default function HojaCircuitos({ filas, fichas, filtro, setFiltro, selecc
             <Select titulo="Orden" valor={filtro.orden} onChange={set('orden')} opciones={[['prioridad', 'Orden: prioridad'], ['padron', 'Orden: padrón'], ['alfa', 'Orden: alfabético']]} />
           </div>
           {filtro.etiqueta && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '4px 8px', borderRadius: 6, background: '#1976D218', color: '#1565C0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '4px 8px', borderRadius: 6, background: '#3478B518', color: '#2A6296' }}>
               <span style={{ flex: 1 }}>Desde el resumen: <strong>{filtro.etiqueta}</strong></span>
               <button onClick={() => setFiltro({ ...filtro, claves: null, etiqueta: null })} aria-label="Quitar filtro del resumen" style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'inherit' }}>✕</button>
             </div>

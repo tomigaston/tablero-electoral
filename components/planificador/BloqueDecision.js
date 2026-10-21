@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TIPOS_ACCION, ESTADOS_ACCION, ETIQUETA_ESTADO, ETAPAS_SUGERIDAS, ordenarEtapas, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
 
 // Pendiente ámbar · En ejecución azul · Cumplido verde.
-const COLOR_ESTADO = { pendiente: { bg: '#F59E0B26', fg: '#B45309' }, en_curso: { bg: '#1976D222', fg: '#1565C0' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
+const COLOR_ESTADO = { pendiente: { bg: '#CFA55B26', fg: '#B45309' }, en_curso: { bg: '#3478B522', fg: '#2A6296' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
 const cuando = (iso) => { try { return new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 
 const dosDigitos = (n) => String(n).padStart(2, '0');
@@ -37,7 +37,7 @@ function Etapas({ a, deshabilitado, ejecutar }) {
         </div>
       )}
       <button onClick={() => setAbierta(!abierta)} aria-expanded={abierta} className="plan-no-print"
-        style={{ all: 'unset', cursor: 'pointer', fontSize: 12.5, color: '#1565C0' }}>
+        style={{ all: 'unset', cursor: 'pointer', fontSize: 12.5, color: '#2A6296' }}>
         {abierta ? '▾' : '▸'} {etapas.length ? `${etapas.length} ${etapas.length === 1 ? 'etapa' : 'etapas'}` : 'Agregar etapas'}
         {!abierta && ultima && <span style={{ color: 'var(--text-secondary)' }}> · Última: {fechaLarga(ultima.fecha)} — {ultima.texto}</span>}
       </button>
@@ -47,7 +47,7 @@ function Etapas({ a, deshabilitado, ejecutar }) {
             <div style={{ borderLeft: '2px solid var(--border)', marginLeft: 4, paddingLeft: 12, display: 'grid', gap: 8 }}>
               {etapas.map((e) => (
                 <div key={e.id} style={{ position: 'relative', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                  <span aria-hidden="true" style={{ position: 'absolute', left: -19, top: 5, width: 10, height: 10, borderRadius: '50%', background: '#1976D2', border: '2px solid var(--bg-secondary)', boxSizing: 'content-box' }} />
+                  <span aria-hidden="true" style={{ position: 'absolute', left: -19, top: 5, width: 10, height: 10, borderRadius: '50%', background: '#3478B5', border: '2px solid var(--bg-secondary)', boxSizing: 'content-box' }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12.5 }}><strong>{fechaLarga(e.fecha)}</strong> · {e.texto}</div>
                     <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Cargada el {cuando(e.creada_en)}</div>
@@ -73,7 +73,7 @@ function Etapas({ a, deshabilitado, ejecutar }) {
               <input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={MAX_TEXTO_ACCION} disabled={deshabilitado} placeholder="Qué pasó en esta etapa…"
                 style={{ flex: '1 1 200px', padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
               <button type="submit" disabled={deshabilitado || !texto.trim()}
-                style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #1976D2', background: '#1976D2', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !texto.trim() ? 0.5 : 1 }}>Agregar etapa</button>
+                style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #3478B5', background: '#3478B5', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !texto.trim() ? 0.5 : 1 }}>Agregar etapa</button>
             </div>
           </form>
         </div>
@@ -137,7 +137,7 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
         <form onSubmit={(e) => { e.preventDefault(); if (otra.trim()) { ejecutar({ op: 'agregarAccion', tipo: 'otra', texto: otra }); setOtra(''); } }} style={{ display: 'flex', gap: 6, marginTop: 8 }}>
           <input value={otra} onChange={(e) => setOtra(e.target.value)} maxLength={MAX_TEXTO_ACCION} placeholder="Otra acción…" disabled={deshabilitado}
             style={{ flex: 1, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
-          <button type="submit" disabled={deshabilitado || !otra.trim()} style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #1976D2', background: '#1976D2', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !otra.trim() ? 0.5 : 1 }}>Recomendar</button>
+          <button type="submit" disabled={deshabilitado || !otra.trim()} style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #3478B5', background: '#3478B5', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !otra.trim() ? 0.5 : 1 }}>Recomendar</button>
         </form>
       </div>
 
