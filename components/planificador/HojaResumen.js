@@ -12,7 +12,7 @@ import {
   combinarFiltros, etiquetaFiltros, alternarFiltro, padronDe, problemasTop,
 } from '../../lib/planificador/resumenMapa';
 import {
-  listarRecomendaciones, resumenRecomendaciones, pendientesPorHacer, circuitosDe, ESTADOS_REC, COLOR_ESTADO_REC,
+  listarRecomendaciones, resumenRecomendaciones, ordenarRecomendaciones, circuitosDe, ESTADOS_REC, COLOR_ESTADO_REC,
 } from '../../lib/planificador/recomendaciones';
 import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas } from '../../lib/planificador/acciones';
 import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
@@ -190,7 +190,6 @@ const SubTitulo =({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, m
 // Seguimiento de recomendaciones del equipo: qué se pidió en las fichas y cuánto se ejecutó. Lee de las mismas fichas
 // (KV). Tocar un número o una barra pinta en el mapa los circuitos con esa recomendación (mismo filtro compartido).
 function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, persistencia, onAbrir }) {
-  const [verTodas, setVerTodas] = useState(false);
   if (!persistencia.disponible) {
     return (
       <Tarjeta titulo="Seguimiento de recomendaciones">
@@ -212,8 +211,8 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
   const rK = resumenRecomendaciones(recsBase.filter((r) => porEstadoSel(r) && porTipoSel(r)), nAlcance);
   const rEstado = resumenRecomendaciones(recsBase.filter(porTipoSel), nAlcance);
   const rTipo = resumenRecomendaciones(recsBase.filter(porEstadoSel), nAlcance);
-  const lista = pendientesPorHacer(recsBase.filter(porTipoSel));
-  const visibles = verTodas ? lista : lista.slice(0, 12);
+  // Visor rápido de TODO lo recomendado: respeta los filtros de circuito (mapa y tarjetas) y las barras de estado y de acciones.
+  const lista = ordenarRecomendaciones(recsBase.filter((r) => porEstadoSel(r) && porTipoSel(r)));
 
   // Circuitos de cada criterio sobre TODAS las recomendaciones (lo que se filtra en el mapa).
   const claveEstado = (e) => circuitosDe(recs, (r) => r.estado === e);
@@ -272,17 +271,17 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
             </div>
 
             <div>
-              <SubTitulo>Pendientes por hacer <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>({lista.length}, primero los circuitos en rojo y sin medir)</span></SubTitulo>
-              {lista.length === 0 ? <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>No hay recomendaciones pendientes o en ejecución{clavesCircuito || tiposSel.length ? ' en este filtro' : ''}.</p> : (
-                <div style={{ display: 'grid', gap: 0 }}>
-                  {visibles.map((r) => (
+              <SubTitulo>Recomendaciones <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>({lista.length}{lista.length === recs.length ? '' : ` de ${recs.length}`}) · se filtran con las barras de estado y de acciones</span></SubTitulo>
+              {lista.length === 0 ? <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>No hay recomendaciones{clavesCircuito || tiposSel.length || estadosSel.length ? ' en este filtro' : ''}.</p> : (
+                <div style={{ display: 'grid', gap: 0, maxHeight: 640, overflowY: 'auto', borderTop: '1px solid var(--border)' }}>
+                  {lista.map((r) => (
                     <button key={`${r.circuito}|${r.id}`} onClick={() => onAbrir(r.circuito)} title="Abrir la ficha de este circuito"
                       style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 4px', borderBottom: '1px solid var(--border)', cursor: 'pointer' }}>
                       <span style={{ paddingTop: 4 }}><PuntoPrioridad nivel={r.fila.prioridad.nivel} tamano={11} /></span>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: 'block', fontSize: 13, fontWeight: 700 }}>{r.fila.key} · {r.fila.nombre}</span>
-                        <span style={{ display: 'block', fontSize: 13 }}>{r.texto}</span>
-                        <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendada el {cuando(r.creada_en)}</span>
+                        <span style={{ display: 'block', fontSize: 13, textDecoration: r.estado === 'hecha' ? 'line-through' : 'none', color: r.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{r.texto}</span>
+                        <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendada el {cuando(r.creada_en)}{r.estado === 'hecha' && r.hecha_en ? ` · Cumplida el ${cuando(r.hecha_en)}` : ''}</span>
                         {(r.etapas || []).length > 0 && (() => {
                           const e = ordenarEtapas(r.etapas).pop();
                           return <span style={{ display: 'block', fontSize: 11.5, color: 'var(--text-secondary)' }}>Última etapa ({r.etapas.length}): {fechaDMY(e.fecha)} — {e.texto}</span>;
@@ -293,7 +292,6 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
                   ))}
                 </div>
               )}
-              {lista.length > 12 && <Boton onClick={() => setVerTodas(!verTodas)} style={{ marginTop: 8, padding: '4px 12px', fontSize: 12 }}>{verTodas ? 'Ver menos' : `Ver las ${lista.length - 12} restantes`}</Boton>}
             </div>
           </div>
         </>
