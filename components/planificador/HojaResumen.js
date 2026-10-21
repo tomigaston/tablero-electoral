@@ -11,7 +11,11 @@ import {
   agregadosDeSubconjunto, distribucionPrioridad, fmtPctPadron,
   combinarFiltros, etiquetaFiltros, alternarFiltro, padronDe, problemasTop,
 } from '../../lib/planificador/resumenMapa';
-import { Boton } from './ui';
+import {
+  listarRecomendaciones, resumenRecomendaciones, pendientesPorHacer, circuitosDe, ESTADOS_REC, COLOR_ESTADO_REC,
+} from '../../lib/planificador/recomendaciones';
+import { ETIQUETA_ESTADO } from '../../lib/planificador/acciones';
+import { Boton, PuntoPrioridad } from './ui';
 
 // Leaflet necesita el navegador: mismo criterio que MapaCircuitos en pages/index.js.
 const MapaResumen = dynamic(() => import('./MapaResumen'), {
@@ -114,10 +118,135 @@ const KPIS = [
   { origen: 'kpi:pautaSinMed', campo: 'pautaSinMed', label: 'con pauta sin medición posterior', etiqueta: 'Pauta sin medición posterior', color: '#E65100' },
 ];
 
-export default function HojaResumen({ filas, pautaDerivada, agregados: base, seguimiento, persistencia, filtros, setFiltros, onIr, onAbrir, hoyTexto }) {
+const fmtN = (v) => `${v.toFixed(1).replace('.', ',')}%`;
+const cuando = (iso) => { try { return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }); } catch (e) { return ''; } };
+const SubTitulo = ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 6px' }}>{children}</h3>;
+
+// Seguimiento de recomendaciones del equipo: qué se pidió en las fichas y cuánto se ejecutó. Lee de las mismas fichas
+// (KV). Tocar un número o una barra pinta en el mapa los circuitos con esa recomendación (mismo filtro compartido).
+function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, persistencia, onAbrir }) {
+  const [verTodas, setVerTodas] = useState(false);
+  if (!persistencia.disponible) {
+    return (
+      <Tarjeta titulo="Seguimiento de recomendaciones">
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{persistencia.cargando ? 'Cargando…' : `Sin datos de seguimiento: ${persistencia.mensaje || 'base de datos no disponible'}.`}</p>
+      </Tarjeta>
+    );
+  }
+
+  // Alcance: filtros de circuito (mapa y otras tarjetas); los de estado/tipo de esta sección se aplican sobre las recomendaciones.
+  const clavesCircuito = combinarFiltros(filtros.filter((f) => !String(f.origen).startsWith('rec:')));
+  const setCircuito = clavesCircuito ? new Set(clavesCircuito) : null;
+  const recsBase = setCircuito ? recs.filter((r) => setCircuito.has(r.circuito)) : recs;
+  const nAlcance = setCircuito ? setCircuito.size : filas.length;
+  const estadosSel = activosDe('rec:estado');
+  const tiposSel = activosDe('rec:tipo');
+  const porEstadoSel = (r) => !estadosSel.length || estadosSel.includes(r.estado);
+  const porTipoSel = (r) => !tiposSel.length || tiposSel.includes(r.tipo);
+
+  const rK = resumenRecomendaciones(recsBase.filter((r) => porEstadoSel(r) && porTipoSel(r)), nAlcance);
+  const rEstado = resumenRecomendaciones(recsBase.filter(porTipoSel), nAlcance);
+  const rTipo = resumenRecomendaciones(recsBase.filter(porEstadoSel), nAlcance);
+  const lista = pendientesPorHacer(recsBase.filter(porTipoSel));
+  const visibles = verTodas ? lista : lista.slice(0, 12);
+
+  // Circuitos de cada criterio sobre TODAS las recomendaciones (lo que se filtra en el mapa).
+  const claveEstado = (e) => circuitosDe(recs, (r) => r.estado === e);
+  const claveTipo = (t) => circuitosDe(recs, (r) => r.tipo === t);
+  const conClaves = circuitosDe(recs);
+  const conSet = new Set(conClaves);
+  const sinClaves = filas.filter((f) => !conSet.has(f.key)).map((f) => f.key);
+
+  const kpiEstado = (estado, label) => (
+    <Kpi key={estado} valor={rK.porEstado[estado]} label={label} color={COLOR_ESTADO_REC[estado]} activo={estadosSel.includes(estado)}
+      proporcion={rK.total ? (rK.porEstado[estado] / rK.total) * 100 : 0}
+      onClick={claveEstado(estado).length ? (e) => filtrar('rec:estado')({ id: estado, etiqueta: `Recomendación ${label}`, claves: claveEstado(estado) }, e) : undefined} />
+  );
+
+  return (
+    <Tarjeta titulo="Seguimiento de recomendaciones" subtitulo="Lo que recomendó el equipo en las fichas y cuánto se ejecutó. Tocá un número o una barra para ver esos circuitos en el mapa.">
+      {recs.length === 0 ? (
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Todavía no hay recomendaciones cargadas. Se agregan desde la ficha de cada circuito, en “Decisión y seguimiento”.</p>
+      ) : (
+        <>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+            <Kpi valor={rK.total} label="recomendaciones cargadas" color="#1976D2" />
+            {kpiEstado('pendiente', 'Pendiente')}
+            {kpiEstado('en_curso', 'En ejecución')}
+            {kpiEstado('hecha', 'Cumplido')}
+            <Kpi valor={fmtN(rK.pctCumplidas)} label="cumplidas" color={COLOR_ESTADO_REC.hecha} extra={`${rK.porEstado.hecha} de ${rK.total}`} proporcion={rK.pctCumplidas} />
+            <Kpi valor={rK.conRecomendacion} de={nAlcance} label="subcircuitos con recomendación" color="#1976D2" activo={activosDe('seg:con').length > 0}
+              onClick={conClaves.length ? (e) => filtrar('seg:con')({ id: 'con', etiqueta: 'Con recomendación', claves: conClaves }, e) : undefined} />
+            <Kpi valor={rK.sinRecomendacion} de={nAlcance} label="subcircuitos sin ninguna" color="#78909C" activo={activosDe('seg:sin').length > 0}
+              onClick={sinClaves.length ? (e) => filtrar('seg:sin')({ id: 'sin', etiqueta: 'Sin recomendación', claves: sinClaves }, e) : undefined} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 18, alignItems: 'start' }}>
+            <div style={{ display: 'grid', gap: 18 }}>
+              <div>
+                <SubTitulo>Por estado</SubTitulo>
+                <div style={{ display: 'flex', height: 12, borderRadius: 6, overflow: 'hidden', background: 'var(--bg-secondary)', marginBottom: 8 }} aria-hidden="true">
+                  {ESTADOS_REC.map((e) => <div key={e} style={{ width: `${rEstado.total ? (rEstado.porEstado[e] / rEstado.total) * 100 : 0}%`, background: COLOR_ESTADO_REC[e] }} />)}
+                </div>
+                <Barras items={ESTADOS_REC.map((e) => ({ id: e, label: ETIQUETA_ESTADO[e], valor: rEstado.porEstado[e], texto: `${rEstado.porEstado[e]}${rEstado.total ? ` · ${fmtN((rEstado.porEstado[e] / rEstado.total) * 100)}` : ''}`, color: COLOR_ESTADO_REC[e], claves: claveEstado(e), etiqueta: `Recomendación ${ETIQUETA_ESTADO[e]}` }))}
+                  max={rEstado.total || 1} activos={estadosSel} onClick={filtrar('rec:estado')} />
+              </div>
+
+              <div>
+                <SubTitulo>Principales acciones recomendadas</SubTitulo>
+                <Barras items={rTipo.porTipo.map((t) => ({ id: t.tipo, label: t.label, valor: t.n, claves: claveTipo(t.tipo), etiqueta: `Acción: ${t.label}` }))}
+                  max={Math.max(1, ...rTipo.porTipo.map((t) => t.n))} activos={tiposSel} onClick={filtrar('rec:tipo')} />
+              </div>
+
+              <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+                <div>
+                  <SubTitulo>Ritmo</SubTitulo>
+                  <div style={{ fontSize: 13 }}>Cumplidas en los últimos 7 días: <strong>{rK.cumplidas7}</strong></div>
+                  <div style={{ fontSize: 13 }}>Cumplidas en los últimos 30 días: <strong>{rK.cumplidas30}</strong></div>
+                </div>
+                {rK.usuarios.length > 0 && (
+                  <div>
+                    <SubTitulo>Actividad del equipo</SubTitulo>
+                    {rK.usuarios.slice(0, 6).map((u) => (
+                      <div key={u.usuario} style={{ fontSize: 13 }}><strong>{u.usuario}</strong> · recomendó {u.recomendo} · cumplió {u.cumplio}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <SubTitulo>Pendientes por hacer <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>({lista.length}, primero los circuitos en rojo y sin medir)</span></SubTitulo>
+              {lista.length === 0 ? <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>No hay recomendaciones pendientes o en ejecución{clavesCircuito || tiposSel.length ? ' en este filtro' : ''}.</p> : (
+                <div style={{ display: 'grid', gap: 0 }}>
+                  {visibles.map((r) => (
+                    <button key={`${r.circuito}|${r.id}`} onClick={() => onAbrir(r.circuito)} title="Abrir la ficha de este circuito"
+                      style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 4px', borderBottom: '1px solid var(--border)', cursor: 'pointer' }}>
+                      <span style={{ paddingTop: 4 }}><PuntoPrioridad nivel={r.fila.prioridad.nivel} tamano={11} /></span>
+                      <span style={{ flex: 1, minWidth: 0 }}>
+                        <span style={{ display: 'block', fontSize: 13, fontWeight: 700 }}>{r.fila.key} · {r.fila.nombre}</span>
+                        <span style={{ display: 'block', fontSize: 13 }}>{r.texto}</span>
+                        <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendó {r.creada_por} · {cuando(r.creada_en)}</span>
+                      </span>
+                      <span style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 700, padding: '2px 9px', borderRadius: 10, background: `${COLOR_ESTADO_REC[r.estado]}26`, color: COLOR_ESTADO_REC[r.estado] }}>{ETIQUETA_ESTADO[r.estado]}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {lista.length > 12 && <Boton onClick={() => setVerTodas(!verTodas)} style={{ marginTop: 8, padding: '4px 12px', fontSize: 12 }}>{verTodas ? 'Ver menos' : `Ver las ${lista.length - 12} restantes`}</Boton>}
+            </div>
+          </div>
+        </>
+      )}
+    </Tarjeta>
+  );
+}
+
+export default function HojaResumen({ filas, pautaDerivada, agregados: base, fichas, persistencia, filtros, setFiltros, onIr, onAbrir, hoyTexto }) {
   const [medida, setMedida] = useState('piezas'); // piezas | inversion
   const [combinar, setCombinar] = useState(false); // para pantallas táctiles (sin Ctrl)
   const k = base.kpis;
+  const recs = useMemo(() => listarRecomendaciones(fichas, filas), [fichas, filas]);
 
   const clavesTodas = useMemo(() => combinarFiltros(filtros), [filtros]);
   const etiqueta = useMemo(() => etiquetaFiltros(filtros), [filtros]);
@@ -255,29 +384,8 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, seg
       </div>
 
       <div style={{ marginTop: 12 }}>
-        <Tarjeta titulo="Seguimiento del equipo" subtitulo="Decisiones y acciones cargadas en las fichas (tocá para filtrar el mapa)">
-          {persistencia.disponible ? (
-            <>
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
-                {[['pendiente', 'Pendientes'], ['en_curso', 'En curso'], ['hecha', 'Hechas']].map(([id, label]) => (
-                  <div key={id} style={{ flex: '1 1 80px', textAlign: 'center', padding: 8, borderRadius: 8, background: 'var(--bg-secondary)' }}>
-                    <div style={{ fontSize: 24, fontWeight: 700 }}>{seguimiento[id]}</div><div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{label}</div>
-                  </div>
-                ))}
-              </div>
-              {[['seg:decision', 'decision', seguimiento.conDecision, 'Con decisión tomada', (n) => <><strong>{n}</strong> de {k.total} circuitos ya tienen una decisión</>],
-                ['seg:pendientes', 'pendientes', seguimiento.conPendientes, 'Con acciones pendientes o en curso', (n) => <><strong>{n}</strong> con acciones pendientes o en curso</>]].map(([origen, id, claves, etq, texto]) => {
-                const activo = activosDe(origen).length > 0;
-                return (
-                  <button key={origen} onClick={(e) => filtrar(origen)({ id, etiqueta: etq, claves }, e)} disabled={!claves.length} aria-pressed={activo}
-                    style={{ all: 'unset', cursor: claves.length ? 'pointer' : 'default', fontSize: 13.5, display: 'block', marginTop: 4, padding: '2px 6px', borderRadius: 4, boxShadow: activo ? 'inset 0 0 0 1.5px #1976D2' : 'none' }}>
-                    {texto(claves.length)}
-                  </button>
-                );
-              })}
-            </>
-          ) : <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{persistencia.cargando ? 'Cargando…' : `Sin datos de seguimiento: ${persistencia.mensaje || 'base de datos no disponible'}.`}</p>}
-        </Tarjeta>
+        <SeguimientoRecomendaciones recs={recs} filas={filas} filtros={filtros} filtrar={filtrar} activosDe={activosDe}
+          persistencia={persistencia} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
       </div>
     </div>
   );

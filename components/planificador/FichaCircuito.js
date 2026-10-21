@@ -110,7 +110,7 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
         <div style={{ fontSize: 13.5, lineHeight: 1.55, display: 'grid', gap: 6 }}>{f.lectura.map((p, i) => <p key={i}>{p}</p>)}</div>
       </Seccion>
 
-      <Seccion n={7} titulo="Tu decisión y seguimiento">
+      <Seccion n={7} titulo="Decisión y seguimiento">
         <BloqueDecision circuito={f.key} ficha={ficha} persistencia={persistencia} onOperacion={onOperacion} />
       </Seccion>
       <div className="plan-solo-print" style={{ display: 'none', fontSize: 10, color: '#555' }}>Planificador territorial · {f.key} {f.nombre} · generado el {hoy}</div>

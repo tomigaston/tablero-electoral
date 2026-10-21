@@ -1,9 +1,12 @@
-// Bloque 7 de la ficha — "Tu decisión y seguimiento": menú de decisiones, estado
-// pendiente → en curso → hecha con quién/cuándo, y notas libres con autosave.
+// Bloque 7 de la ficha — "Decisión y seguimiento": cualquiera que lee la ficha puede recomendar una acción
+// (menú de opciones + "otra acción" libre); cada recomendación avanza Pendiente → En ejecución → Cumplido,
+// con quién la recomendó y cuándo, y quién la cumplió y cuándo. Más las notas libres con autosave.
+// Los estados guardados siguen siendo pendiente / en_curso / hecha: solo cambian las etiquetas visibles.
 import React, { useEffect, useRef, useState } from 'react';
 import { TIPOS_ACCION, ETIQUETA_ESTADO, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
 
-const COLOR_ESTADO = { pendiente: { bg: '#F57F1722', fg: '#E65100' }, en_curso: { bg: '#1976D222', fg: '#1565C0' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
+// Pendiente ámbar · En ejecución azul · Cumplido verde.
+const COLOR_ESTADO = { pendiente: { bg: '#F59E0B26', fg: '#B45309' }, en_curso: { bg: '#1976D222', fg: '#1565C0' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
 const cuando = (iso) => { try { return new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 
 export default function BloqueDecision({ circuito, ficha, persistencia, onOperacion }) {
@@ -47,12 +50,12 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
     <div>
       {!persistencia.disponible && (
         <div className="plan-no-print" style={{ padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #F57F17', background: '#FFCA2822', fontSize: 12.5 }}>
-          {persistencia.cargando ? 'Cargando decisiones…' : `Las decisiones y notas no se pueden guardar: ${persistencia.mensaje || 'base de datos no disponible'}.`}
+          {persistencia.cargando ? 'Cargando recomendaciones…' : `Las recomendaciones y notas no se pueden guardar: ${persistencia.mensaje || 'base de datos no disponible'}.`}
         </div>
       )}
 
       <div className="plan-no-print">
-        <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>Agregá una acción:</div>
+        <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 6 }}>Recomendar una acción</div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {Object.entries(TIPOS_ACCION).filter(([k]) => k !== 'otra').map(([k, label]) => (
             <button key={k} disabled={deshabilitado} onClick={() => ejecutar({ op: 'agregarAccion', tipo: k })}
@@ -62,27 +65,29 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
         <form onSubmit={(e) => { e.preventDefault(); if (otra.trim()) { ejecutar({ op: 'agregarAccion', tipo: 'otra', texto: otra }); setOtra(''); } }} style={{ display: 'flex', gap: 6, marginTop: 8 }}>
           <input value={otra} onChange={(e) => setOtra(e.target.value)} maxLength={MAX_TEXTO_ACCION} placeholder="Otra acción…" disabled={deshabilitado}
             style={{ flex: 1, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
-          <button type="submit" disabled={deshabilitado || !otra.trim()} style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #1976D2', background: '#1976D2', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !otra.trim() ? 0.5 : 1 }}>Agregar</button>
+          <button type="submit" disabled={deshabilitado || !otra.trim()} style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #1976D2', background: '#1976D2', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !otra.trim() ? 0.5 : 1 }}>Recomendar</button>
         </form>
       </div>
 
       {error && <div style={{ marginTop: 8, fontSize: 12.5, color: '#B71C1C' }}>{error}</div>}
 
-      <div style={{ marginTop: 12 }}>
-        {acciones.length === 0 ? <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Todavía no se tomó ninguna decisión sobre este circuito.</div> : acciones.map((a) => {
-          const c = COLOR_ESTADO[a.estado];
+      <div style={{ marginTop: 16 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 2 }}>Acciones recomendadas{acciones.length ? ` (${acciones.length})` : ''}</div>
+        {acciones.length === 0 ? <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Todavía no se recomendó ninguna acción para este circuito.</div> : acciones.map((a) => {
+          const c = COLOR_ESTADO[a.estado] || COLOR_ESTADO.pendiente;
           return (
             <div key={a.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <button className="plan-boton-estado" disabled={deshabilitado} onClick={() => ejecutar({ op: 'cambiarEstado', id: a.id })} title="Cambiar estado: pendiente → en curso → hecha"
-                style={{ flexShrink: 0, minWidth: 82, padding: '4px 8px', borderRadius: 12, border: 'none', background: c.bg, color: c.fg, fontWeight: 700, fontSize: 12, cursor: deshabilitado ? 'default' : 'pointer' }}>{ETIQUETA_ESTADO[a.estado]}</button>
+              <button className="plan-boton-estado" disabled={deshabilitado} onClick={() => ejecutar({ op: 'cambiarEstado', id: a.id })} title="Tocá para avanzar: Pendiente → En ejecución → Cumplido"
+                style={{ flexShrink: 0, minWidth: 98, padding: '4px 8px', borderRadius: 12, border: 'none', background: c.bg, color: c.fg, fontWeight: 700, fontSize: 12, cursor: deshabilitado ? 'default' : 'pointer' }}>{ETIQUETA_ESTADO[a.estado] || a.estado}</button>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13.5, textDecoration: a.estado === 'hecha' ? 'line-through' : 'none', color: a.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{a.texto}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
-                  Creada por {a.creada_por} · {cuando(a.creada_en)}
-                  {a.estado !== 'pendiente' && ` · ${a.estado === 'hecha' ? 'Hecha' : 'En curso'} por ${a.estado_por} · ${cuando(a.estado_en)}`}
+                  Recomendada por {a.creada_por} · {cuando(a.creada_en)}
+                  {a.estado === 'en_curso' && ` · En ejecución desde ${cuando(a.estado_en)} (${a.estado_por})`}
+                  {a.estado === 'hecha' && ` · Cumplida por ${a.hecha_por || a.estado_por} · ${cuando(a.hecha_en || a.estado_en)}`}
                 </div>
               </div>
-              <button className="plan-no-print" disabled={deshabilitado} onClick={() => { if (window.confirm('¿Borrar esta acción?')) ejecutar({ op: 'borrarAccion', id: a.id }); }} title="Borrar" aria-label="Borrar acción"
+              <button className="plan-no-print" disabled={deshabilitado} onClick={() => { if (window.confirm('¿Borrar esta recomendación?')) ejecutar({ op: 'borrarAccion', id: a.id }); }} title="Borrar" aria-label="Borrar recomendación"
                 style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', fontSize: 15 }}>✕</button>
             </div>
           );
