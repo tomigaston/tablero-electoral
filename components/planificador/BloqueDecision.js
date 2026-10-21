@@ -3,11 +3,77 @@
 // con quién la recomendó y cuándo, y quién la cumplió y cuándo. Más las notas libres con autosave.
 // Los estados guardados siguen siendo pendiente / en_curso / hecha: solo cambian las etiquetas visibles.
 import React, { useEffect, useRef, useState } from 'react';
-import { TIPOS_ACCION, ESTADOS_ACCION, ETIQUETA_ESTADO, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
+import { TIPOS_ACCION, ESTADOS_ACCION, ETIQUETA_ESTADO, ETAPAS_SUGERIDAS, ordenarEtapas, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
 
 // Pendiente ámbar · En ejecución azul · Cumplido verde.
 const COLOR_ESTADO = { pendiente: { bg: '#F59E0B26', fg: '#B45309' }, en_curso: { bg: '#1976D222', fg: '#1565C0' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
 const cuando = (iso) => { try { return new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
+
+const dosDigitos = (n) => String(n).padStart(2, '0');
+const hoyISO = () => { const d = new Date(); return `${d.getFullYear()}-${dosDigitos(d.getMonth() + 1)}-${dosDigitos(d.getDate())}`; };
+const fechaLarga = (iso) => { const [y, m, d] = String(iso).slice(0, 10).split('-'); return d && m && y ? `${d}/${m}/${y}` : ''; };
+
+// Etapas de una recomendación: el historial con fechas, como una ficha médica (visita pedida → respondieron fecha → …).
+function Etapas({ a, deshabilitado, ejecutar }) {
+  const [abierta, setAbierta] = useState(false);
+  const [texto, setTexto] = useState('');
+  const [fecha, setFecha] = useState(hoyISO());
+  const etapas = ordenarEtapas(a.etapas);
+  const ultima = etapas[etapas.length - 1];
+  const sugeridas = ETAPAS_SUGERIDAS[a.tipo] || [];
+  const agregar = (e) => {
+    e.preventDefault();
+    if (!texto.trim()) return;
+    ejecutar({ op: 'agregarEtapa', accionId: a.id, texto, fecha });
+    setTexto('');
+  };
+  return (
+    <div style={{ marginTop: 4 }}>
+      <button onClick={() => setAbierta(!abierta)} aria-expanded={abierta} className="plan-no-print"
+        style={{ all: 'unset', cursor: 'pointer', fontSize: 12.5, color: '#1565C0' }}>
+        {abierta ? '▾' : '▸'} {etapas.length ? `${etapas.length} ${etapas.length === 1 ? 'etapa' : 'etapas'}` : 'Agregar etapas'}
+        {!abierta && ultima && <span style={{ color: 'var(--text-secondary)' }}> · Última: {fechaLarga(ultima.fecha)} — {ultima.texto}</span>}
+      </button>
+      {abierta && (
+        <div style={{ marginTop: 6, padding: '8px 10px', borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+          {etapas.length === 0 ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>Todavía no hay etapas. Cargá cada paso con su fecha, por ejemplo cuándo se pidió y cuándo respondieron.</div> : (
+            <div style={{ borderLeft: '2px solid var(--border)', marginLeft: 4, paddingLeft: 12, display: 'grid', gap: 8 }}>
+              {etapas.map((e) => (
+                <div key={e.id} style={{ position: 'relative', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                  <span aria-hidden="true" style={{ position: 'absolute', left: -19, top: 5, width: 10, height: 10, borderRadius: '50%', background: '#1976D2', border: '2px solid var(--bg-secondary)', boxSizing: 'content-box' }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12.5 }}><strong>{fechaLarga(e.fecha)}</strong> · {e.texto}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Cargada por {e.creada_por} · {cuando(e.creada_en)}</div>
+                  </div>
+                  <button className="plan-no-print" disabled={deshabilitado} onClick={() => { if (window.confirm('¿Borrar esta etapa?')) ejecutar({ op: 'borrarEtapa', accionId: a.id, etapaId: e.id }); }} title="Borrar etapa" aria-label="Borrar etapa"
+                    style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', fontSize: 13 }}>✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <form className="plan-no-print" onSubmit={agregar} style={{ marginTop: 10, display: 'grid', gap: 6 }}>
+            {sugeridas.length > 0 && (
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                {sugeridas.map((s) => (
+                  <button key={s} type="button" disabled={deshabilitado} onClick={() => setTexto(s)}
+                    style={{ padding: '3px 9px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-primary)', fontSize: 11.5, cursor: 'pointer' }}>{s}</button>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} disabled={deshabilitado} aria-label="Fecha de la etapa"
+                style={{ padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
+              <input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={MAX_TEXTO_ACCION} disabled={deshabilitado} placeholder="Qué pasó en esta etapa…"
+                style={{ flex: '1 1 200px', padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
+              <button type="submit" disabled={deshabilitado || !texto.trim()}
+                style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #1976D2', background: '#1976D2', color: '#fff', fontWeight: 600, fontSize: 13, opacity: deshabilitado || !texto.trim() ? 0.5 : 1 }}>Agregar etapa</button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function BloqueDecision({ circuito, ficha, persistencia, onOperacion }) {
   const [otra, setOtra] = useState('');
@@ -89,6 +155,7 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
                   {a.estado === 'en_curso' && ` · En ejecución desde ${cuando(a.estado_en)} (${a.estado_por})`}
                   {a.estado === 'hecha' && ` · Cumplida por ${a.hecha_por || a.estado_por} · ${cuando(a.hecha_en || a.estado_en)}`}
                 </div>
+                <Etapas a={a} deshabilitado={deshabilitado} ejecutar={ejecutar} />
               </div>
               <button className="plan-no-print" disabled={deshabilitado} onClick={() => { if (window.confirm('¿Borrar esta recomendación?')) ejecutar({ op: 'borrarAccion', id: a.id }); }} title="Borrar" aria-label="Borrar recomendación"
                 style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', fontSize: 15 }}>✕</button>

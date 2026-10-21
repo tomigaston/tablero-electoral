@@ -14,7 +14,7 @@ import {
 import {
   listarRecomendaciones, resumenRecomendaciones, pendientesPorHacer, circuitosDe, ESTADOS_REC, COLOR_ESTADO_REC,
 } from '../../lib/planificador/recomendaciones';
-import { ETIQUETA_ESTADO, TIPOS_ACCION } from '../../lib/planificador/acciones';
+import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas } from '../../lib/planificador/acciones';
 import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
 import { Boton, PuntoPrioridad } from './ui';
 
@@ -157,7 +157,9 @@ function ExportarListado({ recs }) {
 
 const fmtN = (v) => `${v.toFixed(1).replace('.', ',')}%`;
 const cuando = (iso) => { try { return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }); } catch (e) { return ''; } };
-const SubTitulo = ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 6px' }}>{children}</h3>;
+// Fecha sin hora ("2026-10-28") a dd/mm: formateada a mano para que no se corra un día por la zona horaria.
+const fechaDMY = (f) => { const [y, m, d] = String(f).slice(0, 10).split('-'); return d && m ? `${d}/${m}/${y}` : ''; };
+const SubTitulo =({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 6px' }}>{children}</h3>;
 
 // Seguimiento de recomendaciones del equipo: qué se pidió en las fichas y cuánto se ejecutó. Lee de las mismas fichas
 // (KV). Tocar un número o una barra pinta en el mapa los circuitos con esa recomendación (mismo filtro compartido).
@@ -266,6 +268,10 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
                         <span style={{ display: 'block', fontSize: 13, fontWeight: 700 }}>{r.fila.key} · {r.fila.nombre}</span>
                         <span style={{ display: 'block', fontSize: 13 }}>{r.texto}</span>
                         <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendó {r.creada_por} · {cuando(r.creada_en)}</span>
+                        {(r.etapas || []).length > 0 && (() => {
+                          const e = ordenarEtapas(r.etapas).pop();
+                          return <span style={{ display: 'block', fontSize: 11.5, color: 'var(--text-secondary)' }}>Última etapa ({r.etapas.length}): {fechaDMY(e.fecha)} — {e.texto}</span>;
+                        })()}
                       </span>
                       <span style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 700, padding: '2px 9px', borderRadius: 10, background: `${COLOR_ESTADO_REC[r.estado]}26`, color: COLOR_ESTADO_REC[r.estado] }}>{ETIQUETA_ESTADO[r.estado]}</span>
                     </button>
