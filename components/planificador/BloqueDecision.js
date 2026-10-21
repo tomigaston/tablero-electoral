@@ -3,7 +3,7 @@
 // con quién la recomendó y cuándo, y quién la cumplió y cuándo. Más las notas libres con autosave.
 // Los estados guardados siguen siendo pendiente / en_curso / hecha: solo cambian las etiquetas visibles.
 import React, { useEffect, useRef, useState } from 'react';
-import { TIPOS_ACCION, ETIQUETA_ESTADO, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
+import { TIPOS_ACCION, ESTADOS_ACCION, ETIQUETA_ESTADO, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
 
 // Pendiente ámbar · En ejecución azul · Cumplido verde.
 const COLOR_ESTADO = { pendiente: { bg: '#F59E0B26', fg: '#B45309' }, en_curso: { bg: '#1976D222', fg: '#1565C0' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
@@ -77,8 +77,12 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
           const c = COLOR_ESTADO[a.estado] || COLOR_ESTADO.pendiente;
           return (
             <div key={a.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <button className="plan-boton-estado" disabled={deshabilitado} onClick={() => ejecutar({ op: 'cambiarEstado', id: a.id })} title="Tocá para avanzar: Pendiente → En ejecución → Cumplido"
-                style={{ flexShrink: 0, minWidth: 98, padding: '4px 8px', borderRadius: 12, border: 'none', background: c.bg, color: c.fg, fontWeight: 700, fontSize: 12, cursor: deshabilitado ? 'default' : 'pointer' }}>{ETIQUETA_ESTADO[a.estado] || a.estado}</button>
+              {/* Desplegable de estado: se puede pasar directo a cualquiera (también volver atrás). */}
+              <select className="plan-boton-estado" value={a.estado} disabled={deshabilitado} aria-label="Estado de la recomendación" title="Cambiar el estado"
+                onChange={(e) => ejecutar({ op: 'cambiarEstado', id: a.id, estado: e.target.value })}
+                style={{ flexShrink: 0, minWidth: 118, padding: '4px 6px', borderRadius: 12, border: `1px solid ${c.fg}55`, background: c.bg, color: c.fg, fontWeight: 700, fontSize: 12, cursor: deshabilitado ? 'default' : 'pointer' }}>
+                {ESTADOS_ACCION.map((e) => <option key={e} value={e}>{ETIQUETA_ESTADO[e]}</option>)}
+              </select>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13.5, textDecoration: a.estado === 'hecha' ? 'line-through' : 'none', color: a.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{a.texto}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
