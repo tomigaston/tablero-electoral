@@ -30,8 +30,8 @@ const COLOR_BARRA = '#3478B5';
 // Colores de las categorías del tablero, usados acá solo para el clima electoral (semántico).
 const COLOR_TIER = { favorable: '#2E7D32', intermedio: '#26A69A', desfavorable: '#FF7043', adverso: '#EF5350' };
 
-const Tarjeta = ({ titulo, subtitulo, children, filtrada }) => (
-  <section className="plan-seccion" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
+const Tarjeta = ({ titulo, subtitulo, children, filtrada, claveImp }) => (
+  <section className="plan-seccion" data-plan-card={claveImp} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px' }}>
     <h2 style={{ fontSize: 15, fontWeight: 700 }}>
       {titulo}
       {filtrada && <span style={{ marginLeft: 8, fontSize: 10.5, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: '#3478B518', color: '#2A6296', verticalAlign: 'middle' }}>en el filtro</span>}
@@ -236,7 +236,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Todavía no hay recomendaciones cargadas. Se agregan desde la ficha de cada circuito, en “Decisión y seguimiento”.</p>
       ) : (
         <>
-          <div className="plan-kpis" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+          <div className="plan-kpis plan-kpis-7" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
             <Kpi valor={rK.total} label="recomendaciones cargadas" color="#3478B5" />
             {kpiEstado('pendiente', 'Pendiente')}
             {kpiEstado('en_curso', 'En ejecución')}
@@ -414,7 +414,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
         </div>
 
         <div style={{ display: 'grid', gap: 12 }}>
-          <Tarjeta titulo="Foco temático de la pauta" filtrada={enFiltro('tema')} subtitulo={`Pauta por eje temático · ${aTema.tema.totalPiezas.toLocaleString('es-AR')} piezas · ${millones(aTema.tema.totalInversion)} de inversión`}>
+          <Tarjeta titulo="Foco temático de la pauta" claveImp="tema" filtrada={enFiltro('tema')} subtitulo={`Pauta por eje temático · ${aTema.tema.totalPiezas.toLocaleString('es-AR')} piezas · ${millones(aTema.tema.totalInversion)} de inversión`}>
             <div className="plan-no-print" style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
               <Boton activo={medida === 'piezas'} onClick={() => setMedida('piezas')} style={{ padding: '3px 10px', fontSize: 12 }}>Piezas</Boton>
               <Boton activo={medida === 'inversion'} onClick={() => setMedida('inversion')} style={{ padding: '3px 10px', fontSize: 12 }}>Inversión</Boton>
@@ -425,23 +425,23 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
               activos={activosDe('tema')} onClick={filtrar('tema')} />
           </Tarjeta>
 
-          <Tarjeta titulo="¿Dónde estamos a ciegas?" filtrada={enFiltro('ciegos')} subtitulo="Circuitos según cantidad de rondas de encuesta">
+          <Tarjeta titulo="¿Dónde estamos a ciegas?" claveImp="ciegos" filtrada={enFiltro('ciegos')} subtitulo="Circuitos según cantidad de rondas de encuesta">
             <Barras items={aCiegos.ciegos.distribucion.map((d) => ({ id: d.id, label: d.label, valor: d.n, claves: d.claves, etiqueta: d.label, color: d.id === 'sin_medir' ? '#BC1734' : undefined }))}
               max={aCiegos.kpis.total} activos={activosDe('ciegos')} onClick={filtrar('ciegos')} />
           </Tarjeta>
 
-          <Tarjeta titulo="Clima electoral" filtrada={enFiltro('clima')} subtitulo="Circuitos por tier de diagnóstico">
+          <Tarjeta titulo="Clima electoral" claveImp="clima" filtrada={enFiltro('clima')} subtitulo="Circuitos por tier de diagnóstico">
             <Barras items={aClima.tiers.map((t) => ({ id: t.tier, label: TIERS[t.tier].label, valor: t.n, claves: t.claves, color: COLOR_TIER[t.tier], etiqueta: `Clima ${TIERS[t.tier].label}` }))}
               max={aClima.kpis.total} activos={activosDe('clima')} onClick={filtrar('clima')} />
           </Tarjeta>
 
-          <Tarjeta titulo="Top 10 problemas reportados" filtrada={enFiltro('problemas')} subtitulo={`En cuántos de los ${conEncuestaProb} circuitos con encuesta figura entre los 3 principales (última encuesta, sin “Otro”). Tocá uno para ver dónde.`}>
+          <Tarjeta titulo="Top 10 problemas reportados" claveImp="top" filtrada={enFiltro('problemas')} subtitulo={`En cuántos de los ${conEncuestaProb} circuitos con encuesta figura entre los 3 principales (última encuesta, sin “Otro”). Tocá uno para ver dónde.`}>
             <Barras
               items={topProblemas.map((p) => ({ id: p.cat, label: p.cat, valor: p.n, texto: `${p.n} · #1 en ${p.n1}`, claves: p.claves, etiqueta: `Problema reportado: ${p.cat}`, tooltip: `${p.cat}: entre los 3 principales en ${p.n} circuitos (#1 en ${p.n1}) · promedio ${p.promedio.toFixed(1).replace('.', ',')}% de menciones donde aparece` }))}
               max={conEncuestaProb || 1} activos={activosDe('problemas')} onClick={filtrar('problemas')} />
           </Tarjeta>
 
-          <Tarjeta titulo="Problema #1 sin cobertura" filtrada={enFiltro('problema1')} subtitulo="Circuitos donde el problema principal no tiene pauta ni obra (finalizada o en ejecución) que lo atienda">
+          <Tarjeta titulo="Problema #1 sin cobertura" claveImp="problema1" filtrada={enFiltro('problema1')} subtitulo="Circuitos donde el problema principal no tiene pauta ni obra (finalizada o en ejecución) que lo atienda">
             <button onClick={(e) => filtrar('problema1')({ id: 'total', etiqueta: 'Problema #1 sin cobertura', claves: aProb.problema1.claves }, e)} disabled={!aProb.problema1.claves.length}
               aria-pressed={activosDe('problema1').includes('total')}
               style={{ all: 'unset', cursor: aProb.problema1.claves.length ? 'pointer' : 'default', fontSize: 28, fontWeight: 700, display: 'block', marginBottom: 6, borderRadius: 4, boxShadow: activosDe('problema1').includes('total') ? 'inset 0 0 0 1.5px #3478B5' : 'none', padding: '0 4px' }}>
@@ -451,7 +451,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
               activos={activosDe('problema1')} onClick={filtrar('problema1')} />
           </Tarjeta>
 
-          <Tarjeta titulo="Obras listas para inaugurar" filtrada={enFiltro('obras')} subtitulo={`${aObras.obras.totalObras} obras en espera, por antigüedad desde que están disponibles`}>
+          <Tarjeta titulo="Obras listas para inaugurar" claveImp="obras" filtrada={enFiltro('obras')} subtitulo={`${aObras.obras.totalObras} obras en espera, por antigüedad desde que están disponibles`}>
             <Barras items={aObras.obras.buckets.filter((b) => b.obras > 0).map((b) => ({ id: b.id, label: b.label, valor: b.obras, texto: `${b.obras} · ${b.claves.length} circ.`, claves: b.claves, etiqueta: `Obras listas: ${b.label}`, color: b.id === '180+' || b.id === '91-180' ? '#B07F2A' : undefined, tooltip: `${b.label}: ${b.obras} obras en ${b.claves.length} circuitos` }))}
               activos={activosDe('obras')} onClick={filtrar('obras')} />
             <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 8 }}>Se refresca con el parte diario cuando está cargado; sin parte, sale de obras_capital.json.</p>
