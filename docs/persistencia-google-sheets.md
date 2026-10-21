@@ -16,6 +16,7 @@ entorno. El repo es público: **ni la URL ni el token van en el código.**
   **"Planificador - Base de datos"** (código en `docs/planificador-db.gs`).
 - Hoja **Acciones**: una fila por recomendación (`circuito, id, tipo, texto, estado, creada_por, creada_en, estado_por, estado_en, hecha_por, hecha_en`).
   Los estados se guardan como `pendiente` / `en_curso` / `hecha` (en pantalla: Pendiente / En ejecución / Cumplido).
+- Hoja **Etapas**: una fila por etapa de cada recomendación (circuito, accion_id, id, fecha, texto, creada_por, creada_en): el historial con fechas (p. ej. visita pedida → respondieron fecha → confirmada).
 - Hoja **Notas**: una fila por circuito (`circuito, notas, actualizado_por, actualizado_en`).
 - Todo se guarda como texto. Se puede mirar, filtrar y exportar la planilla; si se edita a mano, no cambiar los títulos de las
   columnas ni los `id`. El tablero toma los cambios en su próxima actualización (cada 60 s).
