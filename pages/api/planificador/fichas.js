@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const usuario = usuarioDe(req);
   const m = modo();
-  if (!m) return res.status(503).json({ error: 'sin_base', mensaje: 'No hay base de datos configurada (falta KV_REST_API_URL / KV_REST_API_TOKEN).', usuario });
+  if (!m) return res.status(503).json({ error: 'sin_base', mensaje: 'No hay base de datos configurada (falta PLANIFICADOR_SHEETS_URL / PLANIFICADOR_SHEETS_TOKEN).', usuario });
 
   try {
     if (req.method === 'GET') return res.status(200).json({ modo: m, usuario, fichas: await leerTodas() });
