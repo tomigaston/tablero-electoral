@@ -3,7 +3,7 @@
 // con quién la recomendó y cuándo, y quién la cumplió y cuándo. Más las notas libres con autosave.
 // Los estados guardados siguen siendo pendiente / en_curso / hecha: solo cambian las etiquetas visibles.
 import React, { useEffect, useRef, useState } from 'react';
-import { TIPOS_ACCION, ESTADOS_ACCION, ETIQUETA_ESTADO, ETAPAS_SUGERIDAS, ordenarEtapas, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
+import { TIPOS_ACCION, ESTADOS_ACCION, ETIQUETA_ESTADO, ETAPAS_SUGERIDAS, ordenarEtapas, textoAccion, MAX_NOTAS, MAX_TEXTO_ACCION } from '../../lib/planificador/acciones';
 
 // Pendiente ámbar · En ejecución azul · Cumplido verde.
 const COLOR_ESTADO = { pendiente: { bg: '#CFA55B26', fg: '#B45309' }, en_curso: { bg: '#3478B522', fg: '#2A6296' }, hecha: { bg: '#2E7D3222', fg: '#2E7D32' } };
@@ -156,7 +156,7 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
                 {ESTADOS_ACCION.map((e) => <option key={e} value={e}>{ETIQUETA_ESTADO[e]}</option>)}
               </select>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13.5, textDecoration: a.estado === 'hecha' ? 'line-through' : 'none', color: a.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{a.texto}</div>
+                <div style={{ fontSize: 13.5, textDecoration: a.estado === 'hecha' ? 'line-through' : 'none', color: a.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{textoAccion(a)}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
                   Recomendada el {cuando(a.creada_en)}
                   {a.estado === 'en_curso' && ` · En ejecución desde ${cuando(a.estado_en)}`}

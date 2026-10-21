@@ -14,7 +14,7 @@ import {
 import {
   listarRecomendaciones, resumenRecomendaciones, ordenarRecomendaciones, circuitosDe, ESTADOS_REC, COLOR_ESTADO_REC,
 } from '../../lib/planificador/recomendaciones';
-import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas } from '../../lib/planificador/acciones';
+import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas, textoAccion } from '../../lib/planificador/acciones';
 import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
 import { Boton, PuntoPrioridad } from './ui';
 import { CabeceraImpresion, PieImpresion } from './Marca';
@@ -117,7 +117,7 @@ const nombreEje = (e) => e.charAt(0) + e.slice(1).toLowerCase();
 
 // KPIs filtrables (cada uno es su propio "origen": entre KPIs y tarjetas se cruzan).
 const KPIS = [
-  { origen: 'kpi:sinMedir', campo: 'sinMedir', label: 'sin medir', etiqueta: 'Sin medir', color: '#BC1734', extra: (k) => `+ ${k.unaRonda.n} con una sola ronda` },
+  { origen: 'kpi:sinMedir', campo: 'sinMedir', label: 'sin medir', etiqueta: 'Sin medir', color: '#808080', extra: (k) => `+ ${k.unaRonda.n} con una sola ronda` },
   { origen: 'kpi:conObra', campo: 'conObra', label: 'con obra lista', etiqueta: 'Con obra lista para inaugurar', color: '#2E7D32' },
   { origen: 'kpi:pautaSinMed', campo: 'pautaSinMed', label: 'con pauta sin medición posterior', etiqueta: 'Pauta sin medición posterior', color: '#B07F2A' },
 ];
@@ -283,7 +283,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
                       <span style={{ paddingTop: 4 }}><PuntoPrioridad nivel={r.fila.prioridad.nivel} tamano={11} /></span>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: 'block', fontSize: 13, fontWeight: 700 }}>{r.fila.key} · {r.fila.nombre}</span>
-                        <span style={{ display: 'block', fontSize: 13, textDecoration: r.estado === 'hecha' ? 'line-through' : 'none', color: r.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{r.texto}</span>
+                        <span style={{ display: 'block', fontSize: 13, textDecoration: r.estado === 'hecha' ? 'line-through' : 'none', color: r.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{textoAccion(r)}</span>
                         <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendada el {cuando(r.creada_en)}{r.estado === 'hecha' && r.hecha_en ? ` · Cumplida el ${cuando(r.hecha_en)}` : ''}</span>
                         {(r.etapas || []).length > 0 && (() => {
                           const e = ordenarEtapas(r.etapas).pop();
@@ -407,13 +407,23 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
 
       <div className="plan-grilla-resumen" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(340px, 1fr)', gap: 12, alignItems: 'start' }}>
         <div className="plan-mapa-col" style={{ position: 'sticky', top: 8 }}>
-          <Tarjeta titulo="Córdoba Capital · situación por circuito" subtitulo={`${k.total} circuitos. Azul: sin medir · rojo: tendencia negativa · amarillo: estable o leve baja (hasta −3 pp) · verde: mejora. Se compara contra la encuesta anterior o, con una sola, contra Gobernación 2023.`}>
+          <Tarjeta titulo="Córdoba Capital · situación por circuito" subtitulo={`${k.total} circuitos. Gris: sin medir · rojo: tendencia negativa · amarillo: estable o leve baja (hasta −3 pp) · verde: mejora. Se compara contra la encuesta anterior o, con una sola, contra Gobernación 2023.`}>
             <MapaResumen filas={filas} claves={clavesTodas} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
             <Leyenda items={leyenda} activos={activosDe('prioridad')} onClick={(d, e) => filtrar('prioridad')({ id: d.nivel, etiqueta: LABEL_PRIORIDAD[d.nivel], claves: d.claves }, e)} />
           </Tarjeta>
         </div>
 
         <div style={{ display: 'grid', gap: 12 }}>
+          <Tarjeta titulo="¿Dónde estamos a ciegas?" claveImp="ciegos" filtrada={enFiltro('ciegos')} subtitulo="Circuitos según cantidad de rondas de encuesta">
+            <Barras items={aCiegos.ciegos.distribucion.map((d) => ({ id: d.id, label: d.label, valor: d.n, claves: d.claves, etiqueta: d.label, color: d.id === 'sin_medir' ? '#808080' : undefined }))}
+              max={aCiegos.kpis.total} activos={activosDe('ciegos')} onClick={filtrar('ciegos')} />
+          </Tarjeta>
+
+          <Tarjeta titulo="Clima electoral" claveImp="clima" filtrada={enFiltro('clima')} subtitulo="Circuitos por tier de diagnóstico">
+            <Barras items={aClima.tiers.map((t) => ({ id: t.tier, label: TIERS[t.tier].label, valor: t.n, claves: t.claves, color: COLOR_TIER[t.tier], etiqueta: `Clima ${TIERS[t.tier].label}` }))}
+              max={aClima.kpis.total} activos={activosDe('clima')} onClick={filtrar('clima')} />
+          </Tarjeta>
+
           <Tarjeta titulo="Foco temático de la pauta" claveImp="tema" filtrada={enFiltro('tema')} subtitulo={`Pauta por eje temático · ${aTema.tema.totalPiezas.toLocaleString('es-AR')} piezas · ${millones(aTema.tema.totalInversion)} de inversión`}>
             <div className="plan-no-print" style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
               <Boton activo={medida === 'piezas'} onClick={() => setMedida('piezas')} style={{ padding: '3px 10px', fontSize: 12 }}>Piezas</Boton>
@@ -423,16 +433,6 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
             <Barras
               items={ejes.map((e) => ({ id: e.eje, label: nombreEje(e.eje), valor: e[medida], texto: `${pct(e[medida], total)}`, claves: e.claves, tooltip: `${nombreEje(e.eje)}: ${e.piezas.toLocaleString('es-AR')} piezas · ${millones(e.inversion)} · ${e.claves.length} circuitos`, etiqueta: `Pauta de eje ${nombreEje(e.eje)}` }))}
               activos={activosDe('tema')} onClick={filtrar('tema')} />
-          </Tarjeta>
-
-          <Tarjeta titulo="¿Dónde estamos a ciegas?" claveImp="ciegos" filtrada={enFiltro('ciegos')} subtitulo="Circuitos según cantidad de rondas de encuesta">
-            <Barras items={aCiegos.ciegos.distribucion.map((d) => ({ id: d.id, label: d.label, valor: d.n, claves: d.claves, etiqueta: d.label, color: d.id === 'sin_medir' ? '#BC1734' : undefined }))}
-              max={aCiegos.kpis.total} activos={activosDe('ciegos')} onClick={filtrar('ciegos')} />
-          </Tarjeta>
-
-          <Tarjeta titulo="Clima electoral" claveImp="clima" filtrada={enFiltro('clima')} subtitulo="Circuitos por tier de diagnóstico">
-            <Barras items={aClima.tiers.map((t) => ({ id: t.tier, label: TIERS[t.tier].label, valor: t.n, claves: t.claves, color: COLOR_TIER[t.tier], etiqueta: `Clima ${TIERS[t.tier].label}` }))}
-              max={aClima.kpis.total} activos={activosDe('clima')} onClick={filtrar('clima')} />
           </Tarjeta>
 
           <Tarjeta titulo="Top 10 problemas reportados" claveImp="top" filtrada={enFiltro('problemas')} subtitulo={`En cuántos de los ${conEncuestaProb} circuitos con encuesta figura entre los 3 principales (última encuesta, sin “Otro”). Tocá uno para ver dónde.`}>

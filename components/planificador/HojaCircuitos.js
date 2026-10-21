@@ -11,7 +11,7 @@ import FichaCircuito from './FichaCircuito';
 const COLOR_TEND = { mejora: '#2E7D32', estable: '#F57F17', empeora: '#BC1734' };
 
 const IndicadorTendencia = ({ t }) => {
-  if (t.estado === 'sin_medir') return <span style={{ color: '#BC1734', fontStyle: 'italic' }}>sin medir</span>;
+  if (t.estado === 'sin_medir') return <span style={{ color: '#808080', fontStyle: 'italic' }}>sin medir</span>;
   if (t.estado === 'sin_tendencia') return <span style={{ color: 'var(--text-tertiary)' }}>1 ronda</span>;
   const flecha = t.estado === 'mejora' ? '↑' : t.estado === 'empeora' ? '↓' : '→';
   return <span style={{ color: COLOR_TEND[t.estado], fontWeight: 600 }}>{flecha} {t.estado === 'estable' ? 'estable' : fmtDeltaPP(t.delta)}</span>;
