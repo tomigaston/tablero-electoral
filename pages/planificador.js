@@ -72,14 +72,25 @@ html,body{background:#F5F7FA !important}
   .plan-raiz .plan-seccion:hover{box-shadow:none !important}
   .plan-linea-tiempo,.plan-encuesta-fila{overflow:visible !important;flex-wrap:wrap !important}
   .plan-lista-scroll{max-height:none !important;overflow:visible !important}
-  /* Resumen: hoja apaisada, un poco más compacta, con el mapa y las primeras tarjetas juntos en la primera página. */
+  /* Resumen: hoja apaisada y compacta, en tres columnas. El mapa va a la izquierda (ocupa dos filas) y las tarjetas se acomodan
+     solas a su lado y debajo, en un orden pensado para que la primera hoja lleve el mapa y los primeros gráficos sin huecos. */
   .plan-hoja-resumen{page:resumen;zoom:.8}
-  .plan-hoja-resumen .plan-grilla-resumen{display:grid !important;grid-template-columns:1.1fr 1fr !important;gap:10px !important;align-items:start !important}
-  .plan-hoja-resumen .plan-mapa-col{position:static !important}
-  .plan-hoja-resumen .plan-grilla-resumen > div{margin-bottom:0}
+  .plan-hoja-resumen .plan-grilla-resumen{display:grid !important;grid-template-columns:.95fr 1fr 1fr !important;grid-auto-flow:row dense !important;gap:10px !important;align-items:stretch !important}
+  .plan-hoja-resumen .plan-grilla-resumen > div:last-child{display:contents !important}
+  .plan-hoja-resumen .plan-mapa-col{position:static !important;grid-column:1 !important;grid-row:1 / span 2 !important;order:0 !important}
+  .plan-hoja-resumen .plan-mapa-col .plan-seccion{height:100%;box-sizing:border-box}
+  .plan-hoja-resumen .plan-grilla-resumen .plan-seccion{margin-bottom:0 !important}
+  .plan-hoja-resumen [data-plan-card="tema"]{order:1}
+  .plan-hoja-resumen [data-plan-card="ciegos"]{order:2}
+  .plan-hoja-resumen [data-plan-card="clima"]{order:3}
+  .plan-hoja-resumen [data-plan-card="problema1"]{order:4}
+  .plan-hoja-resumen [data-plan-card="obras"]{order:5}
+  .plan-hoja-resumen [data-plan-card="top"]{order:6}
   /* Tarjetas de números: siempre de a cuatro en una fila (nunca una sola estirada abajo). */
   .plan-kpis{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:8px !important;margin-bottom:10px !important}
   .plan-kpis > *{flex:none !important;min-width:0 !important}
+  .plan-kpis-7{grid-template-columns:repeat(7,1fr) !important;gap:6px !important}
+  .plan-kpis-7 .plan-kpi{padding:10px 10px 8px !important}
   .plan-raiz .plan-kpi{padding:12px 14px 10px !important;border-radius:14px !important}
   /* Ficha: encuestas y línea de tiempo se comprimen para entrar en una fila. */
   .plan-encuesta-fila{flex-wrap:nowrap !important;gap:6px !important;zoom:.8}
