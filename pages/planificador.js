@@ -80,9 +80,9 @@ html,body{background:#F5F7FA !important}
   .plan-hoja-resumen .plan-mapa-col{position:static !important;grid-column:1 !important;grid-row:1 / span 2 !important;order:0 !important}
   .plan-hoja-resumen .plan-mapa-col .plan-seccion{height:100%;box-sizing:border-box}
   .plan-hoja-resumen .plan-grilla-resumen .plan-seccion{margin-bottom:0 !important}
-  .plan-hoja-resumen [data-plan-card="tema"]{order:1}
-  .plan-hoja-resumen [data-plan-card="ciegos"]{order:2}
-  .plan-hoja-resumen [data-plan-card="clima"]{order:3}
+  .plan-hoja-resumen [data-plan-card="ciegos"]{order:1}
+  .plan-hoja-resumen [data-plan-card="clima"]{order:2}
+  .plan-hoja-resumen [data-plan-card="tema"]{order:3}
   .plan-hoja-resumen [data-plan-card="problema1"]{order:4}
   .plan-hoja-resumen [data-plan-card="obras"]{order:5}
   .plan-hoja-resumen [data-plan-card="top"]{order:6}
