@@ -2,13 +2,14 @@
 // Dos hojas: Resumen (foto general navegable) y Circuitos (lista + ficha con decisión y seguimiento).
 // Vista nueva y separada: NO modifica pages/index.js ni ninguna ruta existente.
 // Lógica en lib/planificador/, componentes en components/planificador/. Ver docs/planificador.md.
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Head from 'next/head';
 import { enriquecerObrasConCircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre } from '../lib/obrasCercanas';
 import { construirPlanificador } from '../lib/planificador';
 import { calcularAgregados } from '../lib/planificador/agregados';
 import { FILTRO_VACIO } from '../lib/planificador/filtros';
 import { cargarFichas, enviarOperacion } from '../lib/planificador/fichasApi';
+import { aplicarOperacion, nuevoIdAccion } from '../lib/planificador/acciones';
 import { parsearParte } from '../lib/parteObras';
 import HojaResumen from '../components/planificador/HojaResumen';
 import HojaCircuitos from '../components/planificador/HojaCircuitos';
@@ -95,6 +96,10 @@ export default function Planificador() {
   const [textoParte, setTextoParte] = useState('');
   const [fichas, setFichas] = useState({});
   const [persistencia, setPersistencia] = useState({ disponible: false, cargando: true, mensaje: null, usuario: null });
+  const fichasRef = useRef({}); // última versión de las fichas (incluye lo aplicado en pantalla y aún sin confirmar)
+  const usuarioRef = useRef('local');
+  const colasRef = useRef({}); // cola de operaciones por circuito
+  const pendientesRef = useRef(0); // operaciones enviadas y todavía sin confirmar
 
   // ---- datos del tablero (mismos JSON, vía /data/) ----
   useEffect(() => {
@@ -127,7 +132,9 @@ export default function Planificador() {
   const refrescarFichas = useCallback(async () => {
     try {
       const r = await cargarFichas();
-      setFichas(r.fichas || {});
+      usuarioRef.current = r.usuario || 'local';
+      // Con operaciones en vuelo no se pisa lo que se ve en pantalla: la próxima lectura lo reconcilia.
+      if (pendientesRef.current === 0) { fichasRef.current = r.fichas || {}; setFichas(fichasRef.current); }
       setPersistencia({ disponible: true, cargando: false, mensaje: null, usuario: r.usuario, modo: r.modo });
     } catch (e) {
       setPersistencia((p) => ({ ...p, disponible: false, cargando: false, mensaje: e.codigo === 'sin_base' ? 'falta configurar la base de datos (PLANIFICADOR_SHEETS_URL / PLANIFICADOR_SHEETS_TOKEN)' : e.message }));
@@ -141,10 +148,32 @@ export default function Planificador() {
     return () => { clearInterval(t); document.removeEventListener('visibilitychange', alVolver); };
   }, [refrescarFichas]);
 
-  const operar = useCallback(async (circuito, op) => {
-    const r = await enviarOperacion(circuito, op);
-    setFichas((prev) => ({ ...prev, [circuito.toUpperCase()]: r.ficha }));
-  }, []);
+  // Operaciones (recomendar, cambiar estado, borrar, notas) con actualización INMEDIATA: se aplica enseguida en pantalla con
+  // el mismo reductor que usa el servidor y se confirma en segundo plano (la base en Google Sheets tarda 1-3 s). Las
+  // operaciones de un mismo circuito van en cola, de a una; si el servidor rechaza alguna, se vuelve a leer lo guardado.
+  const operar = useCallback((circuito, op) => {
+    const key = circuito.toUpperCase();
+    const opFinal = op.op === 'agregarAccion' && !op.id ? { ...op, id: nuevoIdAccion() } : op; // el mismo id en pantalla y en la base
+    let optimista;
+    try { optimista = aplicarOperacion(fichasRef.current[key], opFinal, usuarioRef.current, new Date().toISOString()); } catch (e) { return Promise.reject(e); }
+    fichasRef.current = { ...fichasRef.current, [key]: optimista };
+    setFichas(fichasRef.current);
+    pendientesRef.current += 1;
+    colasRef.current[key] = (colasRef.current[key] || Promise.resolve()).then(async () => {
+      try {
+        const r = await enviarOperacion(circuito, opFinal);
+        pendientesRef.current -= 1;
+        if (pendientesRef.current === 0) { fichasRef.current = { ...fichasRef.current, [key]: r.ficha }; setFichas(fichasRef.current); }
+      } catch (e) {
+        pendientesRef.current -= 1;
+        refrescarFichas();
+        throw e;
+      }
+    });
+    const tarea = colasRef.current[key];
+    colasRef.current[key] = tarea.catch(() => {}); // un error no frena las siguientes
+    return tarea;
+  }, [refrescarFichas]);
 
   // ---- navegación por hash ----
   useEffect(() => {
