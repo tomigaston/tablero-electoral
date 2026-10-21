@@ -130,7 +130,7 @@ export default function Planificador() {
       setFichas(r.fichas || {});
       setPersistencia({ disponible: true, cargando: false, mensaje: null, usuario: r.usuario, modo: r.modo });
     } catch (e) {
-      setPersistencia((p) => ({ ...p, disponible: false, cargando: false, mensaje: e.codigo === 'sin_base' ? 'falta configurar la base de datos (KV_REST_API_URL / KV_REST_API_TOKEN)' : e.message }));
+      setPersistencia((p) => ({ ...p, disponible: false, cargando: false, mensaje: e.codigo === 'sin_base' ? 'falta configurar la base de datos (PLANIFICADOR_SHEETS_URL / PLANIFICADOR_SHEETS_TOKEN)' : e.message }));
     }
   }, []);
   useEffect(() => {
