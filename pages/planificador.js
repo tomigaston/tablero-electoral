@@ -14,6 +14,8 @@ import { parsearParte } from '../lib/parteObras';
 import HojaResumen from '../components/planificador/HojaResumen';
 import HojaCircuitos from '../components/planificador/HojaCircuitos';
 import { Boton } from '../components/planificador/ui';
+import { CabeceraPantalla, PiePantalla } from '../components/planificador/Marca';
+import { MARCA, URL_FUENTE } from '../lib/planificador/marca';
 
 const ARCHIVOS = {
   datos: 'circuitos_completo.json',
@@ -29,8 +31,18 @@ const LS_PARTE = 'planificador.parte';
 const REFRESCO_FICHAS_MS = 60000;
 
 const CSS = `
-@page{size:A4 portrait;margin:12mm}
-.plan-fila:hover{background:#1976D211 !important}
+/* ---- Identidad de marca (Manual de marca del Gobierno de la Provincia de Córdoba) ---- */
+html,body{background:#F5F7FA !important}
+.plan-raiz{--bg-primary:#fff;--bg-secondary:#F2F5F9;--text-primary:#1F2933;--text-secondary:#5B6772;--text-tertiary:#8A94A0;--border:#E4E8EE;
+  font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;color:var(--text-primary);line-height:1.45}
+.plan-raiz h1,.plan-raiz h2,.plan-raiz h3{font-family:inherit;letter-spacing:-0.01em}
+.plan-raiz button,.plan-raiz input,.plan-raiz select,.plan-raiz textarea{font-family:inherit}
+/* Tarjetas modernas: esquinas amplias, sombra suave y un detalle de color en el título. */
+.plan-raiz .plan-seccion{border-radius:18px !important;border:1px solid var(--border) !important;box-shadow:0 2px 14px rgba(16,24,40,0.06) !important;padding:18px 22px !important;transition:box-shadow .18s ease}
+.plan-raiz .plan-seccion:hover{box-shadow:0 8px 26px rgba(16,24,40,0.10) !important}
+.plan-raiz .plan-seccion > h2{display:flex;align-items:center;gap:10px;font-weight:700}
+.plan-raiz .plan-seccion > h2::before{content:'';flex:0 0 auto;width:5px;height:18px;border-radius:3px;background:linear-gradient(180deg,#6CAEE5,#3478B5)}
+.plan-fila:hover{background:#6CAEE51F !important}
 .plan-solo-movil{display:none}
 @media (max-width:900px){
   .plan-circuitos{grid-template-columns:1fr !important}
@@ -40,6 +52,10 @@ const CSS = `
   .plan-grilla-resumen{grid-template-columns:1fr !important}
   .plan-mapa-col{position:static !important}
 }
+
+/* ---- Impresión / PDF: mismo diseño que la pantalla. El Resumen sale apaisado (mapa + tarjetas), la ficha vertical. ---- */
+@page{size:A4 portrait;margin:11mm 11mm 13mm}
+@page resumen{size:A4 landscape;margin:10mm 11mm 12mm}
 @media print{
   html,body{background:#fff !important}
   .plan-no-print{display:none !important}
@@ -47,17 +63,16 @@ const CSS = `
   .plan-raiz{padding:0 !important;max-width:none !important}
   .plan-circuitos{display:block !important}
   .plan-lista{display:none !important}
-  .plan-raiz *{box-shadow:none !important}
-  /* La impresión conserva el diseño del tablero: colores, barras, chips y tarjetas (antes se borraban los fondos).
-     Se fuerzan los colores del tema claro para que salga igual aunque se imprima desde modo oscuro. */
-  .plan-raiz{--bg-primary:#fff;--bg-secondary:#f3f5f8;--text-primary:#111;--text-secondary:#444;--text-tertiary:#666;--border:#d5dae1}
   .plan-raiz,.plan-raiz *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-  .plan-raiz .plan-seccion{break-inside:avoid;page-break-inside:avoid}
+  .plan-raiz *{box-shadow:none !important;transition:none !important}
+  .plan-raiz .plan-seccion{break-inside:avoid;page-break-inside:avoid;padding:14px 16px !important;margin-bottom:10px}
+  .plan-raiz .plan-seccion:hover{box-shadow:none !important}
   .plan-linea-tiempo,.plan-encuesta-fila{overflow:visible !important;flex-wrap:wrap !important}
   .plan-lista-scroll{max-height:none !important;overflow:visible !important}
-  .plan-grilla-resumen{display:block !important}
-  .plan-grilla-resumen > div{margin-bottom:10px}
-  .plan-grilla-resumen .plan-seccion{margin-bottom:10px}
+  .plan-hoja-resumen{page:resumen}
+  .plan-hoja-resumen .plan-grilla-resumen{display:grid !important;grid-template-columns:1.2fr 1fr !important;gap:10px !important}
+  .plan-hoja-resumen .plan-mapa-col{position:static !important}
+  .plan-hoja-resumen .plan-grilla-resumen > div{margin-bottom:0}
 }
 `;
 
@@ -76,7 +91,7 @@ function PanelParte({ texto, setTexto, parte }) {
   const fin = parte?.items?.filter((i) => /^FINALIZ|^TERMINAD/.test(i.estadoNorm)).length ?? 0;
   return (
     <div className="plan-no-print" style={{ marginTop: 10, fontSize: 12.5 }}>
-      <button onClick={() => setAbierto(!abierto)} style={{ border: 'none', background: 'none', color: '#1565C0', cursor: 'pointer', padding: 0, fontSize: 12.5 }}>
+      <button onClick={() => setAbierto(!abierto)} style={{ border: 'none', background: 'none', color: '#2A6296', cursor: 'pointer', padding: 0, fontSize: 12.5 }}>
         {abierto ? '▾' : '▸'} Parte de Obras del día {parte?.items?.length ? `(cargado: ${parte.meta.fecha || 's/f'} · ${parte.items.length} ítems · ${fin} finalizadas)` : '(no cargado: las obras salen de obras_capital.json)'}
       </button>
       {abierto && (
@@ -221,7 +236,7 @@ export default function Planificador() {
 
   const Tab = ({ id, children }) => (
     <button onClick={() => irA(id)} aria-current={nav.hoja === id}
-      style={{ padding: '8px 18px', border: 'none', borderBottom: nav.hoja === id ? '3px solid #1976D2' : '3px solid transparent', background: 'none', fontSize: 14, fontWeight: nav.hoja === id ? 700 : 500, color: nav.hoja === id ? '#1565C0' : 'var(--text-secondary)', cursor: 'pointer' }}>{children}</button>
+      style={{ padding: '8px 20px', border: 'none', borderRadius: 999, background: nav.hoja === id ? MARCA.rojo : 'transparent', fontSize: 13.5, fontWeight: 600, color: nav.hoja === id ? '#fff' : 'var(--text-secondary)', cursor: 'pointer', transition: 'background .15s' }}>{children}</button>
   );
 
   return (
@@ -230,18 +245,28 @@ export default function Planificador() {
         <title>Planificador territorial · Tablero electoral</title>
         <meta name="robots" content="noindex" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="stylesheet" href={URL_FUENTE} />
       </Head>
       <style>{CSS}</style>
       <div className="plan-raiz" style={{ padding: '14px 20px', maxWidth: 1600, margin: '0 auto' }}>
-        <div className="plan-no-print plan-nav" style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap', borderBottom: '1px solid var(--border)', marginBottom: 14 }}>
-          <h1 style={{ fontSize: 19, fontWeight: 700 }}>Planificador territorial</h1>
-          <span style={{ fontSize: 11.5, padding: '2px 8px', borderRadius: 10, background: '#FFCA2833', color: '#F57F17', fontWeight: 600 }}>PILOTO</span>
-          <nav style={{ display: 'flex', marginLeft: 8 }}><Tab id="resumen">Resumen</Tab><Tab id="circuitos">Circuitos</Tab></nav>
-          <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--text-secondary)' }}>{persistencia.usuario ? `Sesión: ${persistencia.usuario} · ` : ''}{hoyTexto}</span>
-          <a href="/" style={{ fontSize: 13, color: '#1565C0' }}>← Tablero</a>
-        </div>
+        <CabeceraPantalla
+          derecha={(
+            <div style={{ textAlign: 'right', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 11.5, color: 'var(--text-secondary)' }}>{persistencia.usuario ? `Sesión: ${persistencia.usuario} · ` : ''}{hoyTexto}</div>
+              <a href="/" style={{ fontSize: 12.5, fontWeight: 600, color: MARCA.azulTexto, textDecoration: 'none' }}>← Tablero</a>
+            </div>
+          )}>
+          <div>
+            <h1 style={{ fontSize: 21, fontWeight: 800, color: '#1F2933', lineHeight: 1.1 }}>Planificador territorial</h1>
+            <div style={{ fontSize: 11.5, color: MARCA.gris, fontWeight: 500 }}>Tablero diagnóstico · Córdoba Capital</div>
+          </div>
+          <span style={{ fontSize: 10.5, padding: '3px 10px', borderRadius: 12, background: `${MARCA.dorado}33`, color: MARCA.doradoOscuro, fontWeight: 700, letterSpacing: 0.6 }}>PILOTO</span>
+          <nav style={{ display: 'flex', gap: 4, marginLeft: 10 }}><Tab id="resumen">Resumen</Tab><Tab id="circuitos">Circuitos</Tab></nav>
+        </CabeceraPantalla>
 
-        {error && <div style={{ padding: 16, border: '1px solid #C62828', borderRadius: 8, color: '#B71C1C' }}>Error cargando datos: {error}</div>}
+        {error && <div style={{ padding: 16, border: '1px solid #BC1734', borderRadius: 8, color: '#B71C1C' }}>Error cargando datos: {error}</div>}
         {!error && !crudo && <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-secondary)' }}>Cargando datos…</div>}
 
         {crudo && agregados && nav.hoja === 'resumen' && (
@@ -253,6 +278,7 @@ export default function Planificador() {
             persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} />
         )}
         {crudo && <PanelParte texto={textoParte} setTexto={setTextoParte} parte={parte} />}
+        <PiePantalla />
       </div>
     </>
   );
