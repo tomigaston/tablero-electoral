@@ -268,14 +268,6 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
                   <div style={{ fontSize: 13 }}>Cumplidas en los últimos 7 días: <strong>{rK.cumplidas7}</strong></div>
                   <div style={{ fontSize: 13 }}>Cumplidas en los últimos 30 días: <strong>{rK.cumplidas30}</strong></div>
                 </div>
-                {rK.usuarios.some((u) => u.cumplio > 0) && (
-                  <div>
-                    <SubTitulo>Cumplidas por</SubTitulo>
-                    {rK.usuarios.filter((u) => u.cumplio > 0).sort((a, b) => b.cumplio - a.cumplio).slice(0, 6).map((u) => (
-                      <div key={u.usuario} style={{ fontSize: 13 }}><strong>{u.usuario}</strong> · {u.cumplio}</div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 

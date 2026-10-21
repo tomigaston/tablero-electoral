@@ -33,7 +33,7 @@ function Etapas({ a, deshabilitado, ejecutar }) {
       {etapas.length > 0 && (
         <div className="plan-solo-print" style={{ display: 'none', fontSize: 12, marginTop: 2 }}>
           <div style={{ fontWeight: 700 }}>Etapas:</div>
-          {etapas.map((e) => <div key={e.id} style={{ marginLeft: 12 }}>• {fechaLarga(e.fecha)} — {e.texto} ({e.creada_por})</div>)}
+          {etapas.map((e) => <div key={e.id} style={{ marginLeft: 12 }}>• {fechaLarga(e.fecha)} — {e.texto}</div>)}
         </div>
       )}
       <button onClick={() => setAbierta(!abierta)} aria-expanded={abierta} className="plan-no-print"
@@ -50,7 +50,7 @@ function Etapas({ a, deshabilitado, ejecutar }) {
                   <span aria-hidden="true" style={{ position: 'absolute', left: -19, top: 5, width: 10, height: 10, borderRadius: '50%', background: '#1976D2', border: '2px solid var(--bg-secondary)', boxSizing: 'content-box' }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12.5 }}><strong>{fechaLarga(e.fecha)}</strong> · {e.texto}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Cargada por {e.creada_por} · {cuando(e.creada_en)}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Cargada el {cuando(e.creada_en)}</div>
                   </div>
                   <button className="plan-no-print" disabled={deshabilitado} onClick={() => { if (window.confirm('¿Borrar esta etapa?')) ejecutar({ op: 'borrarEtapa', accionId: a.id, etapaId: e.id }); }} title="Borrar etapa" aria-label="Borrar etapa"
                     style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', fontSize: 13 }}>✕</button>
@@ -159,8 +159,8 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
                 <div style={{ fontSize: 13.5, textDecoration: a.estado === 'hecha' ? 'line-through' : 'none', color: a.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{a.texto}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
                   Recomendada el {cuando(a.creada_en)}
-                  {a.estado === 'en_curso' && ` · En ejecución desde ${cuando(a.estado_en)} (${a.estado_por})`}
-                  {a.estado === 'hecha' && ` · Cumplida por ${a.hecha_por || a.estado_por} · ${cuando(a.hecha_en || a.estado_en)}`}
+                  {a.estado === 'en_curso' && ` · En ejecución desde ${cuando(a.estado_en)}`}
+                  {a.estado === 'hecha' && ` · Cumplida el ${cuando(a.hecha_en || a.estado_en)}`}
                 </div>
                 <Etapas a={a} deshabilitado={deshabilitado} ejecutar={ejecutar} />
               </div>
@@ -174,7 +174,7 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
       <div style={{ marginTop: 14 }}>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4, display: 'flex', justifyContent: 'space-between' }}>
           <span>Notas del circuito</span>
-          <span className="plan-no-print">{estadoNotas || (ficha?.actualizado_por && ficha?.notas ? `Última edición: ${ficha.actualizado_por} · ${cuando(ficha.actualizado_en)}` : '')}</span>
+          <span className="plan-no-print">{estadoNotas || (ficha?.actualizado_en && ficha?.notas ? `Última edición: ${cuando(ficha.actualizado_en)}` : '')}</span>
         </div>
         <textarea className="plan-no-print" value={borrador} onChange={(e) => alEscribir(e.target.value)} disabled={!persistencia.disponible} rows={4} placeholder="Escribí tus notas… se guardan solas."
           style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid var(--border)', fontFamily: 'inherit', fontSize: 13.5, resize: 'vertical' }} />
