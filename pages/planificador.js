@@ -48,9 +48,15 @@ const CSS = `
   .plan-circuitos{display:block !important}
   .plan-lista{display:none !important}
   .plan-raiz *{box-shadow:none !important}
-  .plan-raiz .plan-seccion{border:1px solid #888 !important;break-inside:avoid;page-break-inside:avoid;background:#fff !important}
-  .plan-raiz .plan-seccion *{background:transparent !important;color:#000 !important}
+  /* La impresión conserva el diseño del tablero: colores, barras, chips y tarjetas (antes se borraban los fondos).
+     Se fuerzan los colores del tema claro para que salga igual aunque se imprima desde modo oscuro. */
+  .plan-raiz{--bg-primary:#fff;--bg-secondary:#f3f5f8;--text-primary:#111;--text-secondary:#444;--text-tertiary:#666;--border:#d5dae1}
+  .plan-raiz,.plan-raiz *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  .plan-raiz .plan-seccion{break-inside:avoid;page-break-inside:avoid}
+  .plan-linea-tiempo,.plan-encuesta-fila{overflow:visible !important;flex-wrap:wrap !important}
+  .plan-lista-scroll{max-height:none !important;overflow:visible !important}
   .plan-grilla-resumen{display:block !important}
+  .plan-grilla-resumen > div{margin-bottom:10px}
   .plan-grilla-resumen .plan-seccion{margin-bottom:10px}
 }
 `;
