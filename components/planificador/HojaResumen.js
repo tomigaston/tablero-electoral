@@ -157,6 +157,32 @@ function ExportarListado({ recs }) {
 
 const fmtN = (v) => `${v.toFixed(1).replace('.', ',')}%`;
 const cuando = (iso) => { try { return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }); } catch (e) { return ''; } };
+// Buscador de subcircuito: se escribe el número o el nombre y se elige de la lista; queda como filtro en el mapa y las tarjetas.
+function FiltroSubcircuito({ filas, onElegir }) {
+  const [q, setQ] = useState('');
+  const opciones = useMemo(
+    () => filas.map((f) => ({ fila: f, texto: `${f.key} · ${f.nombre}` })).sort((a, b) => a.fila.key.localeCompare(b.fila.key, 'es', { numeric: true })),
+    [filas],
+  );
+  const elegir = (valor, permitirParcial) => {
+    const v = valor.trim().toLowerCase();
+    if (!v) return;
+    const exacta = opciones.find((o) => o.texto.toLowerCase() === v);
+    const parciales = permitirParcial ? opciones.filter((o) => o.texto.toLowerCase().includes(v)) : [];
+    const o = exacta || (parciales.length === 1 ? parciales[0] : null);
+    if (o) { onElegir(o.fila); setQ(''); }
+  };
+  return (
+    <div className="plan-no-print" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      <input list="plan-lista-subcircuitos" value={q} aria-label="Filtrar por subcircuito" placeholder="Filtrar por subcircuito…"
+        onChange={(e) => { setQ(e.target.value); elegir(e.target.value, false); }}
+        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); elegir(q, true); } }}
+        style={{ width: 230, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 12.5, background: 'var(--bg-primary)', color: 'var(--text-primary)' }} />
+      <datalist id="plan-lista-subcircuitos">{opciones.map((o) => <option key={o.fila.key} value={o.texto} />)}</datalist>
+    </div>
+  );
+}
+
 // Fecha sin hora ("2026-10-28") a dd/mm: formateada a mano para que no se corra un día por la zona horaria.
 const fechaDMY = (f) => { const [y, m, d] = String(f).slice(0, 10).split('-'); return d && m ? `${d}/${m}/${y}` : ''; };
 const SubTitulo =({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 6px' }}>{children}</h3>;
@@ -226,9 +252,6 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
             <div style={{ display: 'grid', gap: 18 }}>
               <div>
                 <SubTitulo>Por estado</SubTitulo>
-                <div style={{ display: 'flex', height: 12, borderRadius: 6, overflow: 'hidden', background: 'var(--bg-secondary)', marginBottom: 8 }} aria-hidden="true">
-                  {ESTADOS_REC.map((e) => <div key={e} style={{ width: `${rEstado.total ? (rEstado.porEstado[e] / rEstado.total) * 100 : 0}%`, background: COLOR_ESTADO_REC[e] }} />)}
-                </div>
                 <Barras items={ESTADOS_REC.map((e) => ({ id: e, label: ETIQUETA_ESTADO[e], valor: rEstado.porEstado[e], texto: `${rEstado.porEstado[e]}${rEstado.total ? ` · ${fmtN((rEstado.porEstado[e] / rEstado.total) * 100)}` : ''}`, color: COLOR_ESTADO_REC[e], claves: claveEstado(e), etiqueta: `Recomendación ${ETIQUETA_ESTADO[e]}` }))}
                   max={rEstado.total || 1} activos={estadosSel} onClick={filtrar('rec:estado')} />
               </div>
@@ -319,6 +342,11 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
   const padronTotal = useMemo(() => padronDe(filas), [filas]);
   const padronFiltrado = useMemo(() => padronDe(filas, clavesTodas), [filas, clavesTodas]);
 
+  // Filtro por subcircuito (circuito): se suma a los demás filtros; varios subcircuitos se suman entre sí (o).
+  const agregarCircuito = (fila) => setFiltros((prev) => (prev.some((f) => f.origen === 'circuito' && f.id === fila.key)
+    ? prev
+    : [...prev, { origen: 'circuito', id: fila.key, etiqueta: `Subcircuito ${fila.key} · ${fila.nombre}`, claves: [fila.key] }]));
+
   const aTema = aDe('tema');
   const total = medida === 'piezas' ? aTema.tema.totalPiezas : aTema.tema.totalInversion;
   const ejes = [...aTema.tema.ejes].sort((x, y) => y[medida] - x[medida]);
@@ -336,7 +364,8 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
     <div>
       <div className="plan-no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Tocá un número, una barra o un color para filtrar todo. <strong>Ctrl + clic</strong> suma más filtros. Tocá un circuito del mapa para abrir su ficha.</span>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+          <FiltroSubcircuito filas={filas} onElegir={agregarCircuito} />
           <Boton activo={combinar} onClick={() => setCombinar(!combinar)} titulo="Cada toque suma un filtro en vez de reemplazar (para pantallas táctiles, sin tecla Ctrl)" style={{ padding: '5px 12px', fontSize: 12.5 }}>Combinar filtros</Boton>
           <Boton onClick={() => window.print()} style={{ padding: '5px 12px', fontSize: 12.5 }}>Imprimir / PDF</Boton>
         </div>

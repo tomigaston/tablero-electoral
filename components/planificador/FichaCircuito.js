@@ -39,6 +39,11 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
   const hoy = new Date().toLocaleDateString('es-AR');
   return (
     <div className="plan-ficha">
+      {/* Encabezado de la hoja impresa / exportada a PDF (en pantalla no se ve). */}
+      <div className="plan-solo-print" style={{ display: 'none', marginBottom: 8, paddingBottom: 6, borderBottom: '2px solid #000' }}>
+        <div style={{ fontSize: 16, fontWeight: 700 }}>Planificador territorial · Ficha del circuito {f.key} · {f.nombre}</div>
+        <div style={{ fontSize: 11 }}>Generada el {hoy} · {LABEL_PRIORIDAD[f.prioridad.nivel]} · Padrón {f.padron != null ? f.padron.toLocaleString('es-AR') : '—'}</div>
+      </div>
       <div className="plan-no-print" style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
         {onVolver && <span className="plan-solo-movil"><Boton onClick={onVolver}>← Lista</Boton></span>}
         <Boton onClick={() => window.print()} titulo="Imprime la ficha en A4; desde el diálogo se puede guardar como PDF">Imprimir / exportar ficha</Boton>
@@ -99,11 +104,7 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
       </Seccion>
 
       <Seccion n={5} titulo="Qué se hizo">
-        <div className="plan-no-print"><BloqueQueSeHizo key={f.key} f={f} hayParte={hayParte} /></div>
-        <div className="plan-solo-print" style={{ display: 'none', fontSize: 12.5 }}>
-          {f.piezasPauta.length} pautas · {f.senales.nVisitas} visitas · {f.inaugurables.length} obras listas · {f.obras.length} obras totales
-          {f.inaugurables.slice(0, 8).map((o, i) => <div key={i}>• {o.nombre_obra || 'Obra'}{o.tipo_obra ? ` (${o.tipo_obra})` : ''}{o.barrio ? ` — ${o.barrio}` : ''}</div>)}
-        </div>
+        <BloqueQueSeHizo key={f.key} f={f} hayParte={hayParte} />
       </Seccion>
 
       <Seccion titulo="Lectura">

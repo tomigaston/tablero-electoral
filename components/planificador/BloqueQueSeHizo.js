@@ -26,6 +26,18 @@ const etiquetaGrupo = (g) => {
   return g.eventos.length === 1 ? uno : `${g.eventos.length} ${varios}`;
 };
 
+// Una línea de texto por evento (para la versión impresa).
+function lineaEvento(e) {
+  const d = e.detalle || {};
+  if (e.tipo === 'pauta') return [formatearFecha(d.inicio), d.titulo_pieza || 'Pieza sin título', [d.campania, d.eje].filter(Boolean).join(' · '), d.plataforma, d.fin ? `hasta ${formatearFecha(d.fin)}` : ''].filter(Boolean).join(' · ');
+  if (e.tipo === 'visita') return [formatearFecha(e.fecha), d.tipo_visita, d.barrio, d.info].filter(Boolean).join(' · ');
+  if (e.tipo === 'medicion') {
+    const ap = apruebaDe(d.datos);
+    return [formatearFecha(e.fecha), `Encuesta, ronda ${d.ronda} de ${d.totalRondas}`, d.casos != null ? `${d.casos} casos` : '', ap != null ? `aprobación ${num1(ap)}%` : ''].filter(Boolean).join(' · ');
+  }
+  return [formatearFecha(e.fecha), d.nombre_obra || 'Obra', d.tipo_obra, d.barrio, d.estado].filter(Boolean).join(' · ');
+}
+
 // Mes (o rango de meses) del grupo, y su año: "febrero – agosto" / "2026". Los eventos vienen ordenados por fecha.
 function periodoDe(g) {
   const desde = g.eventos[0].fecha;
@@ -205,6 +217,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
   const grupo = abierto != null ? grupos[abierto] : null;
   return (
     <div>
+      <div className="plan-no-print">
       {!grupos.length ? (
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Sin actividad con fecha registrada en este circuito.</p>
       ) : (
@@ -245,6 +258,23 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
 
       {f.senales.nPautas !== f.piezasPauta.length && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{f.piezasPauta.length - f.senales.nPautas} pieza(s) sin fecha de inicio válida no entran en la secuencia ni en las comparaciones temporales.</div>}
       {nObrasSinFecha > 0 && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{nObrasSinFecha} obra(s) lista(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
+      </div>
+
+      {/* Versión para imprimir / exportar a PDF: la línea de tiempo completa, con los meses y el detalle de cada grupo. */}
+      <div className="plan-solo-print" style={{ display: 'none', fontSize: 12.5 }}>
+        <div style={{ marginBottom: 4 }}>{totales} · {f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</div>
+        {!grupos.length && <div>Sin actividad con fecha registrada en este circuito.</div>}
+        {grupos.map((g, i) => {
+          const per = periodoDe(g);
+          return (
+            <div key={i} style={{ marginTop: 6, breakInside: 'avoid' }}>
+              <div style={{ fontWeight: 700 }}>{per.meses} {per.anios} — {etiquetaGrupo(g)}</div>
+              {g.eventos.map((e, j) => <div key={j} style={{ marginLeft: 14 }}>• {lineaEvento(e)}</div>)}
+            </div>
+          );
+        })}
+        {nObrasSinFecha > 0 && <div style={{ marginTop: 6 }}>{nObrasSinFecha} obra(s) lista(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
+      </div>
     </div>
   );
 }

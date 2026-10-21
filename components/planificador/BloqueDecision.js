@@ -29,13 +29,20 @@ function Etapas({ a, deshabilitado, ejecutar }) {
   };
   return (
     <div style={{ marginTop: 4 }}>
+      {/* Al imprimir se ven siempre todas las etapas, con su fecha. */}
+      {etapas.length > 0 && (
+        <div className="plan-solo-print" style={{ display: 'none', fontSize: 12, marginTop: 2 }}>
+          <div style={{ fontWeight: 700 }}>Etapas:</div>
+          {etapas.map((e) => <div key={e.id} style={{ marginLeft: 12 }}>• {fechaLarga(e.fecha)} — {e.texto} ({e.creada_por})</div>)}
+        </div>
+      )}
       <button onClick={() => setAbierta(!abierta)} aria-expanded={abierta} className="plan-no-print"
         style={{ all: 'unset', cursor: 'pointer', fontSize: 12.5, color: '#1565C0' }}>
         {abierta ? '▾' : '▸'} {etapas.length ? `${etapas.length} ${etapas.length === 1 ? 'etapa' : 'etapas'}` : 'Agregar etapas'}
         {!abierta && ultima && <span style={{ color: 'var(--text-secondary)' }}> · Última: {fechaLarga(ultima.fecha)} — {ultima.texto}</span>}
       </button>
       {abierta && (
-        <div style={{ marginTop: 6, padding: '8px 10px', borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+        <div className="plan-no-print" style={{ marginTop: 6, padding: '8px 10px', borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
           {etapas.length === 0 ? <div style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>Todavía no hay etapas. Cargá cada paso con su fecha, por ejemplo cuándo se pidió y cuándo respondieron.</div> : (
             <div style={{ borderLeft: '2px solid var(--border)', marginLeft: 4, paddingLeft: 12, display: 'grid', gap: 8 }}>
               {etapas.map((e) => (
