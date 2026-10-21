@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import Head from 'next/head';
 import { enriquecerObrasConCircuito, construirIndiceBarrioCircuito, construirIndiceMapkeyNombre } from '../lib/obrasCercanas';
 import { construirPlanificador } from '../lib/planificador';
-import { calcularAgregados, calcularSeguimiento } from '../lib/planificador/agregados';
+import { calcularAgregados } from '../lib/planificador/agregados';
 import { FILTRO_VACIO } from '../lib/planificador/filtros';
 import { cargarFichas, enviarOperacion } from '../lib/planificador/fichasApi';
 import { parsearParte } from '../lib/parteObras';
@@ -182,7 +182,6 @@ export default function Planificador() {
     return construirPlanificador({ ...crudo, obrasEnriquecidas, parte });
   }, [crudo, parte]);
   const agregados = useMemo(() => (filas.length ? calcularAgregados(filas, pautaDerivada) : null), [filas, pautaDerivada]);
-  const seguimiento = useMemo(() => calcularSeguimiento(fichas), [fichas]);
   const hoyTexto = new Date().toLocaleDateString('es-AR');
 
   const Tab = ({ id, children }) => (
@@ -211,7 +210,7 @@ export default function Planificador() {
         {!error && !crudo && <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-secondary)' }}>Cargando datos…</div>}
 
         {crudo && agregados && nav.hoja === 'resumen' && (
-          <HojaResumen filas={filas} pautaDerivada={pautaDerivada} agregados={agregados} seguimiento={seguimiento} persistencia={persistencia}
+          <HojaResumen filas={filas} pautaDerivada={pautaDerivada} agregados={agregados} fichas={fichas} persistencia={persistencia}
             filtros={filtrosResumen} setFiltros={setFiltrosResumen} onIr={irConConjunto} onAbrir={abrirDesdeResumen} hoyTexto={hoyTexto} />
         )}
         {crudo && agregados && nav.hoja === 'circuitos' && (
