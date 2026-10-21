@@ -26,7 +26,9 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const usuario = usuarioDe(req);
   const m = modo();
-  if (!m) return res.status(503).json({ error: 'sin_base', mensaje: 'No hay base de datos configurada (falta PLANIFICADOR_SHEETS_URL / PLANIFICADOR_SHEETS_TOKEN).', usuario });
+  if (!m) return res.status(503).json({ error: 'sin_base', mensaje: 'No hay base de datos configurada (falta PLANIFICADOR_SHEETS_URL / PLANIFICADOR_SHEETS_TOKEN).', usuario,
+    // Diagnóstico sin exponer valores: qué variables ve este deploy y en qué entorno de Vercel corre.
+    diagnostico: { entorno: process.env.VERCEL_ENV || null, tieneUrl: !!process.env.PLANIFICADOR_SHEETS_URL, tieneToken: !!process.env.PLANIFICADOR_SHEETS_TOKEN } });
 
   try {
     if (req.method === 'GET') return res.status(200).json({ modo: m, usuario, fichas: await leerTodas() });
