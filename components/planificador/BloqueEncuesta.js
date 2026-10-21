@@ -78,7 +78,7 @@ export default function BloqueEncuesta({ f }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, overflowX: 'auto', paddingBottom: 8 }}>
+      <div className="plan-encuesta-fila" style={{ display: 'flex', alignItems: 'stretch', gap: 10, overflowX: 'auto', paddingBottom: 8 }}>
         {gob2023 != null && (
           <>
             <Paso color={COLOR_GOB2023} titulo="Gobernación 2023" subtitulo="Resultado electoral (voto)">

@@ -273,7 +273,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
             <div>
               <SubTitulo>Recomendaciones <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>({lista.length}{lista.length === recs.length ? '' : ` de ${recs.length}`}) · se filtran con las barras de estado y de acciones</span></SubTitulo>
               {lista.length === 0 ? <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>No hay recomendaciones{clavesCircuito || tiposSel.length || estadosSel.length ? ' en este filtro' : ''}.</p> : (
-                <div style={{ display: 'grid', gap: 0, maxHeight: 640, overflowY: 'auto', borderTop: '1px solid var(--border)' }}>
+                <div className="plan-lista-scroll" style={{ display: 'grid', gap: 0, maxHeight: 640, overflowY: 'auto', borderTop: '1px solid var(--border)' }}>
                   {lista.map((r) => (
                     <button key={`${r.circuito}|${r.id}`} onClick={() => onAbrir(r.circuito)} title="Abrir la ficha de este circuito"
                       style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', gap: 10, alignItems: 'flex-start', padding: '8px 4px', borderBottom: '1px solid var(--border)', cursor: 'pointer' }}>
@@ -360,7 +360,10 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
           <Boton onClick={() => window.print()} style={{ padding: '5px 12px', fontSize: 12.5 }}>Imprimir / PDF</Boton>
         </div>
       </div>
-      <div className="plan-solo-print" style={{ display: 'none', fontSize: 11, marginBottom: 6 }}>Resumen · generado el {hoyTexto}</div>
+      <div className="plan-solo-print" style={{ display: 'none', marginBottom: 10, paddingBottom: 6, borderBottom: '2px solid #1976D2' }}>
+        <div style={{ fontSize: 17, fontWeight: 700 }}>Planificador territorial · Resumen</div>
+        <div style={{ fontSize: 11, color: '#444' }}>Generado el {hoyTexto} · {filtros.length ? `Filtro: ${etiqueta} (${clavesTodas.length} ${clavesTodas.length === 1 ? 'circuito' : 'circuitos'})` : 'Todos los circuitos'}</div>
+      </div>
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
         <Kpi valor={clavesTodas ? clavesTodas.length : k.total} de={clavesTodas ? k.total : null} label="circuitos" color="#1976D2"

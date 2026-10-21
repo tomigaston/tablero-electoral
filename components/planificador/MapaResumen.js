@@ -113,12 +113,41 @@ export default function MapaResumen({ filas, claves, onAbrir, alto = 'clamp(380p
     };
   }, [geoJsonData, filas, porMapkey]);
 
+  // Mapa para imprimir / exportar a PDF: los mismos circuitos y colores dibujados como SVG (el mapa interactivo de Leaflet
+  // no se reajusta al ancho de la hoja y con él el zoom salía mal). Proyección plana con el coseno de la latitud.
+  const mapaImpresion = useMemo(() => {
+    if (!geoJsonData || !limites) return null;
+    const [[sur, oeste], [norte, este]] = limites;
+    const k = Math.cos((((sur + norte) / 2) * Math.PI) / 180);
+    const X = (lon) => ((lon - oeste) * k).toFixed(5);
+    const Y = (lat) => (norte - lat).toFixed(5);
+    const anillo = (r) => `${r.map((p, i) => `${i ? 'L' : 'M'}${X(p[0])} ${Y(p[1])}`).join('')}Z`;
+    const trazo = (g) => {
+      if (!g) return '';
+      if (g.type === 'Polygon') return g.coordinates.map(anillo).join('');
+      if (g.type === 'MultiPolygon') return g.coordinates.map((p) => p.map(anillo).join('')).join('');
+      return '';
+    };
+    return { ancho: (este - oeste) * k, alto: norte - sur, trazos: geoJsonData.features.map((ft) => ({ ft, d: trazo(ft.geometry) })) };
+  }, [geoJsonData, limites]);
+
   if (error) return <div style={{ height: alto, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B71C1C', border: '1px solid #C62828', borderRadius: 8, padding: 16 }}>No se pudo cargar el mapa: {error}</div>;
   if (!geoJsonData) return <div style={{ height: alto, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)', borderRadius: 8, color: 'var(--text-tertiary)' }}>Cargando mapa…</div>;
 
   return (
     <div>
-      <div style={{ height: alto, borderRadius: 8, overflow: 'hidden' }}>
+      {mapaImpresion && (
+        <div className="plan-solo-print" style={{ display: 'none' }}>
+          <svg viewBox={`0 0 ${mapaImpresion.ancho} ${mapaImpresion.alto}`} width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mapa de circuitos de Córdoba Capital"
+            style={{ display: 'block', maxHeight: '135mm', background: '#EEF2F6', borderRadius: 8 }}>
+            {mapaImpresion.trazos.map(({ ft, d }) => {
+              const st = estiloDe(ft, porMapkey, set);
+              return <path key={ft.properties.circuito} d={d} fill={st.fillColor} fillOpacity={st.fillOpacity} stroke="#FFFFFF" strokeWidth={mapaImpresion.ancho / 1400} strokeLinejoin="round" fillRule="evenodd" />;
+            })}
+          </svg>
+        </div>
+      )}
+      <div className="plan-no-print" style={{ height: alto, borderRadius: 8, overflow: 'hidden' }}>
         <MapContainer center={[-31.42, -64.18]} zoom={11} bounds={limites || undefined} boundsOptions={{ padding: [6, 6] }} zoomSnap={0.25} style={{ height: '100%', width: '100%' }} zoomControl scrollWheelZoom>
           <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <GeoJSON ref={geoRef} data={geoJsonData} style={(feature) => estiloDe(feature, actual.current.porMapkey, actual.current.set)} onEachFeature={onEachFeature} />

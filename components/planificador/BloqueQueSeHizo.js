@@ -52,7 +52,7 @@ function periodoDe(g) {
 
 const Etiqueta = ({ k, v }) => (v == null || v === '' ? null : <span style={{ marginRight: 14, display: 'inline-block' }}><span style={{ color: 'var(--text-tertiary)' }}>{k} </span>{v}</span>);
 const Enlace = ({ href, children }) => (esUrlHttp(href) ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#1565C0' }}>{children}</a> : null);
-const Caja = ({ children }) => <div style={{ marginTop: 10, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-secondary)' }}>{children}</div>;
+const Caja = ({ children }) => <div className="plan-no-print" style={{ marginTop: 10, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-secondary)' }}>{children}</div>;
 
 // Colapsa los eventos consecutivos del mismo tipo: [pauta, pauta, visita] -> [{pauta ×2}, {visita ×1}].
 export function colapsarEventos(eventos) {
@@ -217,12 +217,12 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
   const grupo = abierto != null ? grupos[abierto] : null;
   return (
     <div>
-      <div className="plan-no-print">
+      <div>
       {!grupos.length ? (
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Sin actividad con fecha registrada en este circuito.</p>
       ) : (
         // Línea de tiempo: una columna por grupo, con el mes (o rango de meses) arriba y el tipo de evento debajo.
-        <div style={{ display: 'flex', alignItems: 'flex-start', overflowX: 'auto', paddingBottom: 6 }} role="list" aria-label="Línea de tiempo de lo que se hizo">
+        <div className="plan-linea-tiempo" style={{ display: 'flex', alignItems: 'flex-start', overflowX: 'auto', paddingBottom: 6 }} role="list" aria-label="Línea de tiempo de lo que se hizo">
           {grupos.map((g, i) => {
             const t = COLOR_TIPO_EVENTO[g.tipo];
             const activo = abierto === i;
@@ -252,7 +252,8 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
 
       <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 10, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <span>{totales}</span>
-        <Boton activo={verTotales} onClick={() => setVerTotales(!verTotales)} style={{ padding: '2px 9px', fontSize: 11.5 }}>{f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</Boton>
+        <span className="plan-no-print"><Boton activo={verTotales} onClick={() => setVerTotales(!verTotales)} style={{ padding: '2px 9px', fontSize: 11.5 }}>{f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</Boton></span>
+        <span className="plan-solo-print" style={{ display: 'none' }}>· {f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</span>
       </div>
       {verTotales && <PanelObrasPorEstado items={f.obras} />}
 
@@ -262,7 +263,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
 
       {/* Versión para imprimir / exportar a PDF: la línea de tiempo completa, con los meses y el detalle de cada grupo. */}
       <div className="plan-solo-print" style={{ display: 'none', fontSize: 12.5 }}>
-        <div style={{ marginBottom: 4 }}>{totales} · {f.obras.length} {f.obras.length === 1 ? 'obra total' : 'obras totales'}</div>
+        <div style={{ fontWeight: 700, marginBottom: 2 }}>Detalle de la línea de tiempo</div>
         {!grupos.length && <div>Sin actividad con fecha registrada en este circuito.</div>}
         {grupos.map((g, i) => {
           const per = periodoDe(g);
