@@ -47,7 +47,7 @@ const Dato = ({ titulo, valor, delta, contra, tamano = 32, destacado }) => (
 );
 
 const Paso = ({ color, titulo, subtitulo, children }) => (
-  <div style={{ flex: '0 0 auto', width: 232, boxSizing: 'border-box', borderRadius: 16, border: `1px solid ${color}44`, borderTop: `5px solid ${color}`, background: `${color}0D`, padding: '10px 14px 12px' }}>
+  <div className="plan-paso" style={{ flex: '0 0 auto', width: 232, boxSizing: 'border-box', borderRadius: 16, border: `1px solid ${color}44`, borderTop: `5px solid ${color}`, background: `${color}0D`, padding: '10px 14px 12px' }}>
     <div style={{ fontSize: 14, fontWeight: 700, color }}>{titulo}</div>
     <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{subtitulo}</div>
     {children}

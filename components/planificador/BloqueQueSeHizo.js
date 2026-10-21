@@ -228,7 +228,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
             const activo = abierto === i;
             const per = periodoDe(g);
             return (
-              <div key={i} role="listitem" style={{ flex: '0 0 auto', minWidth: 112, textAlign: 'center', padding: '0 2px' }}>
+              <div key={i} role="listitem" className="plan-col-tiempo" style={{ flex: '0 0 auto', minWidth: 112, textAlign: 'center', padding: '0 2px' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>{per.meses}</div>
                 <div style={{ fontSize: 10.5, color: 'var(--text-tertiary)', whiteSpace: 'nowrap' }}>{per.anios}</div>
                 <div style={{ position: 'relative', height: 16, margin: '4px 0 6px' }} aria-hidden="true">

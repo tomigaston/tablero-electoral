@@ -139,7 +139,7 @@ export default function MapaResumen({ filas, claves, onAbrir, alto = 'clamp(380p
       {mapaImpresion && (
         <div className="plan-solo-print" style={{ display: 'none' }}>
           <svg viewBox={`0 0 ${mapaImpresion.ancho} ${mapaImpresion.alto}`} width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mapa de circuitos de Córdoba Capital"
-            style={{ display: 'block', maxHeight: '135mm', background: '#EEF2F6', borderRadius: 8 }}>
+            style={{ display: 'block', maxHeight: '112mm', background: '#EEF2F6', borderRadius: 10 }}>
             {mapaImpresion.trazos.map(({ ft, d }) => {
               const st = estiloDe(ft, porMapkey, set);
               return <path key={ft.properties.circuito} d={d} fill={st.fillColor} fillOpacity={st.fillOpacity} stroke="#FFFFFF" strokeWidth={mapaImpresion.ancho / 1400} strokeLinejoin="round" fillRule="evenodd" />;

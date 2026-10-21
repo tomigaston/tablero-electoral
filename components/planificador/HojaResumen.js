@@ -18,6 +18,7 @@ import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas } from '../../lib/planific
 import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
 import { Boton, PuntoPrioridad } from './ui';
 import { CabeceraImpresion, PieImpresion } from './Marca';
+import { MARCA, LOGOS } from '../../lib/planificador/marca';
 
 // Leaflet necesita el navegador: mismo criterio que MapaCircuitos en pages/index.js.
 const MapaResumen = dynamic(() => import('./MapaResumen'), {
@@ -179,7 +180,7 @@ function FiltroSubcircuito({ filas, onElegir }) {
       <input list="plan-lista-subcircuitos" value={q} aria-label="Filtrar por subcircuito" placeholder="Filtrar por subcircuito…"
         onChange={(e) => { setQ(e.target.value); elegir(e.target.value, false); }}
         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); elegir(q, true); } }}
-        style={{ width: 230, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 12.5, background: 'var(--bg-primary)', color: 'var(--text-primary)' }} />
+        className="plan-campo" style={{ width: 250, padding: '8px 14px', borderRadius: 12, border: '1px solid var(--border)', fontSize: 12.5, background: '#fff', color: 'var(--text-primary)' }} />
       <datalist id="plan-lista-subcircuitos">{opciones.map((o) => <option key={o.fila.key} value={o.texto} />)}</datalist>
     </div>
   );
@@ -235,7 +236,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Todavía no hay recomendaciones cargadas. Se agregan desde la ficha de cada circuito, en “Decisión y seguimiento”.</p>
       ) : (
         <>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+          <div className="plan-kpis" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
             <Kpi valor={rK.total} label="recomendaciones cargadas" color="#3478B5" />
             {kpiEstado('pendiente', 'Pendiente')}
             {kpiEstado('en_curso', 'En ejecución')}
@@ -354,9 +355,17 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
 
   return (
     <div className="plan-hoja-resumen">
-      <div className="plan-no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Tocá un número, una barra o un color para filtrar todo. <strong>Ctrl + clic</strong> suma más filtros. Tocá un circuito del mapa para abrir su ficha.</span>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="plan-no-print plan-hero" style={{ position: 'relative', overflow: 'hidden', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 16, padding: '18px 24px', borderRadius: 20, border: '1px solid var(--border)', background: `linear-gradient(115deg, ${MARCA.azul}33 0%, #FFFFFF 50%, ${MARCA.dorado}26 100%)`, boxShadow: '0 2px 14px rgba(16,24,40,0.06)' }}>
+        <img src={LOGOS.hacer} alt="" aria-hidden="true" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', height: 96, width: 'auto', opacity: 0.13, pointerEvents: 'none' }} />
+        <div style={{ position: 'relative', flex: '1 1 360px', minWidth: 260 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.15 }}>Resumen · Córdoba Capital</h2>
+          <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', margin: '3px 0 9px' }}>Foto general de los {k.total} circuitos. Tocá un número, una barra o un color para filtrar todo el tablero.</p>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11.5, padding: '3px 11px', borderRadius: 12, background: '#fff', border: '1px solid var(--border)' }}><strong>Ctrl + clic</strong> · suma más filtros</span>
+            <span style={{ fontSize: 11.5, padding: '3px 11px', borderRadius: 12, background: '#fff', border: '1px solid var(--border)' }}><strong>Tocá un circuito</strong> · abre su ficha</span>
+          </div>
+        </div>
+        <div style={{ position: 'relative', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <FiltroSubcircuito filas={filas} onElegir={agregarCircuito} />
           <Boton activo={combinar} onClick={() => setCombinar(!combinar)} titulo="Cada toque suma un filtro en vez de reemplazar (para pantallas táctiles, sin tecla Ctrl)" style={{ padding: '5px 12px', fontSize: 12.5 }}>Combinar filtros</Boton>
           <Boton onClick={() => window.print()} style={{ padding: '5px 12px', fontSize: 12.5 }}>Imprimir / PDF</Boton>
@@ -365,7 +374,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
       <CabeceraImpresion titulo="Planificador territorial · Resumen" subtitulo="Tablero diagnóstico · Córdoba Capital"
         detalle={<><div>Generado el {hoyTexto}</div><div>{filtros.length ? `Filtro: ${etiqueta} (${clavesTodas.length} ${clavesTodas.length === 1 ? 'circuito' : 'circuitos'})` : 'Todos los circuitos'}</div></>} />
 
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+      <div className="plan-kpis" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
         <Kpi valor={clavesTodas ? clavesTodas.length : k.total} de={clavesTodas ? k.total : null} label="circuitos" color="#3478B5"
           extra={`${fmtPctPadron(padronTotal ? (padronFiltrado / padronTotal) * 100 : 0)} del padrón de la ciudad`} proporcion={padronTotal ? (padronFiltrado / padronTotal) * 100 : 0} />
         {KPIS.map((d) => {

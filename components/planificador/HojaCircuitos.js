@@ -4,7 +4,8 @@ import { TIERS } from '../../lib/planificador/config';
 import { aplicarFiltro, FILTRO_VACIO, hayFiltroActivo } from '../../lib/planificador/filtros';
 import { esAccionPendiente } from '../../lib/planificador/agregados';
 import { fmtDeltaPP } from '../../lib/planificador/base';
-import { PuntoPrioridad, Boton } from './ui';
+import { PuntoPrioridad } from './ui';
+import { FRANJA_MARCA } from '../../lib/planificador/marca';
 import FichaCircuito from './FichaCircuito';
 
 const COLOR_TEND = { mejora: '#2E7D32', estable: '#F57F17', empeora: '#BC1734' };
@@ -17,9 +18,13 @@ const IndicadorTendencia = ({ t }) => {
 };
 
 const Select = ({ valor, onChange, opciones, titulo }) => (
-  <select value={valor} onChange={(e) => onChange(e.target.value)} aria-label={titulo} style={{ padding: '6px 6px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 12.5, background: 'var(--bg-primary)', maxWidth: '100%' }}>
-    {opciones.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-  </select>
+  <label style={{ display: 'grid', gap: 3, minWidth: 0 }}>
+    <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: 0.6, textTransform: 'uppercase', color: 'var(--text-tertiary)' }}>{titulo}</span>
+    <select value={valor} onChange={(e) => onChange(e.target.value)} aria-label={titulo} className="plan-campo"
+      style={{ width: '100%', padding: '8px 10px', borderRadius: 12, border: '1px solid transparent', fontSize: 12.5, fontWeight: 600, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer' }}>
+      {opciones.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+    </select>
+  </label>
 );
 
 function FilaLista({ f, activa, ficha, onSelect }) {
@@ -27,7 +32,7 @@ function FilaLista({ f, activa, ficha, onSelect }) {
   const pend = acciones.filter(esAccionPendiente).length;
   return (
     <button onClick={() => onSelect(f.key)} aria-current={activa} className="plan-fila"
-      style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--border)', background: activa ? '#3478B518' : 'transparent', borderLeft: activa ? '3px solid #3478B5' : '3px solid transparent' }}>
+      style={{ all: 'unset', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '11px 14px', cursor: 'pointer', borderBottom: '1px solid var(--border)', background: activa ? '#3478B516' : 'transparent', borderLeft: activa ? '4px solid #BC1734' : '4px solid transparent' }}>
       <PuntoPrioridad nivel={f.prioridad.nivel} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.key} <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>· {f.nombre}</span></div>
@@ -47,24 +52,35 @@ export default function HojaCircuitos({ filas, fichas, filtro, setFiltro, selecc
   return (
     <div className="plan-circuitos" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 380px) 1fr', gap: 14, alignItems: 'start' }}>
       <aside className={`plan-no-print plan-lista ${fila ? 'plan-lista-con-ficha' : ''}`} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden', position: 'sticky', top: 8, boxShadow: '0 2px 14px rgba(16,24,40,0.06)' }}>
-        <div style={{ padding: 10, display: 'grid', gap: 6, borderBottom: '1px solid var(--border)' }}>
-          <input value={filtro.q} onChange={(e) => set('q')(e.target.value)} placeholder="Buscar circuito (ID o nombre)" aria-label="Buscar circuito" style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13 }} />
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ height: 4, background: FRANJA_MARCA }} />
+        <div style={{ padding: '14px 14px 12px', display: 'grid', gap: 10, borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 9 }}>
+              <span aria-hidden="true" style={{ width: 5, height: 18, borderRadius: 3, background: 'linear-gradient(180deg,#6CAEE5,#3478B5)' }} />
+              Circuitos
+            </h2>
+            <span style={{ fontSize: 11.5, fontWeight: 700, padding: '3px 10px', borderRadius: 12, background: '#3478B518', color: '#2A6296' }}>{lista.length} de {filas.length}</span>
+          </div>
+          <div style={{ position: 'relative' }}>
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A94A0" strokeWidth="2.2" strokeLinecap="round" style={{ position: 'absolute', left: 12, top: 11 }}><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+            <input value={filtro.q} onChange={(e) => set('q')(e.target.value)} placeholder="Buscar circuito (ID o nombre)" aria-label="Buscar circuito" className="plan-campo"
+              style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px 9px 36px', borderRadius: 12, border: '1px solid var(--border)', fontSize: 13, background: 'var(--bg-primary)', color: 'var(--text-primary)' }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <Select titulo="Clima" valor={filtro.tier} onChange={set('tier')} opciones={[['todos', 'Clima: todos'], ...Object.entries(TIERS).map(([k, v]) => [k, v.label])]} />
             <Select titulo="Tendencia" valor={filtro.tend} onChange={set('tend')} opciones={[['todas', 'Tendencia: todas'], ['empeora', '↓ empeora'], ['estable', '→ estable'], ['mejora', '↑ mejora'], ['sin_tendencia', '1 ronda'], ['sin_medir', 'sin medir']]} />
             <Select titulo="Acciones" valor={filtro.acciones} onChange={set('acciones')} opciones={[['todas', 'Acciones: todas'], ['pendientes', 'Con pendientes'], ['sin_decision', 'Sin decisión'], ['con_decision', 'Con decisión']]} />
             <Select titulo="Orden" valor={filtro.orden} onChange={set('orden')} opciones={[['prioridad', 'Orden: prioridad'], ['padron', 'Orden: padrón'], ['alfa', 'Orden: alfabético']]} />
           </div>
           {filtro.etiqueta && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '4px 8px', borderRadius: 6, background: '#3478B518', color: '#2A6296' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 10px 7px 12px', borderRadius: 12, background: '#3478B514', color: '#2A6296', border: '1px solid #3478B533' }}>
               <span style={{ flex: 1 }}>Desde el resumen: <strong>{filtro.etiqueta}</strong></span>
-              <button onClick={() => setFiltro({ ...filtro, claves: null, etiqueta: null })} aria-label="Quitar filtro del resumen" style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'inherit' }}>✕</button>
+              <button onClick={() => setFiltro({ ...filtro, claves: null, etiqueta: null })} aria-label="Quitar filtro del resumen" style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'inherit', fontSize: 14 }}>✕</button>
             </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: 'var(--text-secondary)' }}>
-            <span>{lista.length} de {filas.length} circuitos</span>
-            {hayFiltroActivo(filtro) && <Boton onClick={() => setFiltro(FILTRO_VACIO)} style={{ padding: '2px 8px', fontSize: 11.5 }}>Limpiar</Boton>}
-          </div>
+          {hayFiltroActivo(filtro) && (
+            <button onClick={() => setFiltro(FILTRO_VACIO)} style={{ justifySelf: 'start', border: 'none', background: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#BC1734', padding: 0 }}>✕ Limpiar filtros</button>
+          )}
         </div>
         <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 250px)' }}>
           {lista.map((f) => <FilaLista key={f.key} f={f} activa={fila?.key === f.key} ficha={fichas?.[f.key]} onSelect={onSelect} />)}
