@@ -14,7 +14,8 @@ import {
 import {
   listarRecomendaciones, resumenRecomendaciones, pendientesPorHacer, circuitosDe, ESTADOS_REC, COLOR_ESTADO_REC,
 } from '../../lib/planificador/recomendaciones';
-import { ETIQUETA_ESTADO } from '../../lib/planificador/acciones';
+import { ETIQUETA_ESTADO, TIPOS_ACCION } from '../../lib/planificador/acciones';
+import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
 import { Boton, PuntoPrioridad } from './ui';
 
 // Leaflet necesita el navegador: mismo criterio que MapaCircuitos en pages/index.js.
@@ -118,6 +119,42 @@ const KPIS = [
   { origen: 'kpi:pautaSinMed', campo: 'pautaSinMed', label: 'con pauta sin medición posterior', etiqueta: 'Pauta sin medición posterior', color: '#E65100' },
 ];
 
+// Exportar un listado por tipo de tarea (p. ej. todos los circuitos a "Mandar a medir") a PDF o Excel.
+function ExportarListado({ recs }) {
+  const [tipo, setTipo] = useState('medir');
+  const [alcance, setAlcance] = useState('pendientes'); // pendientes (pendientes + en ejecución) | todas
+  const [aviso, setAviso] = useState('');
+  const estados = alcance === 'todas' ? ESTADOS_REC : ['pendiente', 'en_curso'];
+  const estadosTexto = alcance === 'todas' ? 'Todas las recomendaciones' : 'Pendientes y en ejecución';
+  const cuentas = useMemo(() => {
+    const m = {};
+    recs.filter((r) => estados.includes(r.estado)).forEach((r) => { m[r.tipo] = (m[r.tipo] || 0) + 1; });
+    return m;
+  }, [recs, alcance]); // eslint-disable-line react-hooks/exhaustive-deps
+  const total = Object.values(cuentas).reduce((a, n) => a + n, 0);
+  const filas = useMemo(() => filasExportables(recs, { tipo, estados }), [recs, tipo, alcance]); // eslint-disable-line react-hooks/exhaustive-deps
+  const nombre = tipo === 'todos' ? 'Todas las acciones' : TIPOS_ACCION[tipo];
+  const select = { padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 13, background: 'var(--bg-primary)', color: 'var(--text-primary)' };
+  return (
+    <div className="plan-no-print" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', padding: '10px 12px', marginBottom: 14, borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+      <strong style={{ fontSize: 13 }}>Exportar listado</strong>
+      <select value={tipo} onChange={(e) => { setTipo(e.target.value); setAviso(''); }} aria-label="Tipo de acción" style={select}>
+        <option value="todos">Todas las acciones ({total})</option>
+        {Object.entries(TIPOS_ACCION).map(([k, label]) => <option key={k} value={k}>{label} ({cuentas[k] || 0})</option>)}
+      </select>
+      <select value={alcance} onChange={(e) => { setAlcance(e.target.value); setAviso(''); }} aria-label="Estados a incluir" style={select}>
+        <option value="pendientes">Pendientes y en ejecución</option>
+        <option value="todas">Todas (incluye cumplidas)</option>
+      </select>
+      <Boton primario disabled={!filas.length} style={{ padding: '6px 14px', fontSize: 13 }}
+        onClick={() => setAviso(abrirImpresion(`Listado: ${nombre}`, subtituloListado(estadosTexto, filas.length), filas) ? 'En la ventana que se abrió, elegí “Guardar como PDF” como impresora.' : 'El navegador bloqueó la ventana emergente: permitila e intentá de nuevo.')}>Descargar PDF</Boton>
+      <Boton disabled={!filas.length} style={{ padding: '6px 14px', fontSize: 13 }}
+        onClick={() => { descargarCsv(`listado_${nombre.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`, filas); setAviso('Descargado: se abre con Excel.'); }}>Descargar Excel</Boton>
+      <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{filas.length ? `${filas.length} ${filas.length === 1 ? 'fila' : 'filas'}` : 'Sin recomendaciones para ese criterio.'}{aviso ? ` · ${aviso}` : ''}</span>
+    </div>
+  );
+}
+
 const fmtN = (v) => `${v.toFixed(1).replace('.', ',')}%`;
 const cuando = (iso) => { try { return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }); } catch (e) { return ''; } };
 const SubTitulo = ({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 6px' }}>{children}</h3>;
@@ -180,6 +217,8 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
             <Kpi valor={rK.sinRecomendacion} de={nAlcance} label="subcircuitos sin ninguna" color="#78909C" activo={activosDe('seg:sin').length > 0}
               onClick={sinClaves.length ? (e) => filtrar('seg:sin')({ id: 'sin', etiqueta: 'Sin recomendación', claves: sinClaves }, e) : undefined} />
           </div>
+
+          <ExportarListado recs={recs} />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 18, alignItems: 'start' }}>
             <div style={{ display: 'grid', gap: 18 }}>

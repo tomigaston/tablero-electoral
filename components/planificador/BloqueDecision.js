@@ -11,19 +11,18 @@ const cuando = (iso) => { try { return new Date(iso).toLocaleString('es-AR', { d
 
 export default function BloqueDecision({ circuito, ficha, persistencia, onOperacion }) {
   const [otra, setOtra] = useState('');
-  const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState(null);
   const [borrador, setBorrador] = useState(ficha?.notas || '');
   const [estadoNotas, setEstadoNotas] = useState('');
   const timer = useRef(null);
   const pendiente = useRef(null); // { circuito, texto } sin guardar
 
-  const deshabilitado = !persistencia.disponible || enviando;
+  // No se bloquea la pantalla mientras se guarda: la operación se ve al instante y se confirma en segundo plano.
+  const deshabilitado = !persistencia.disponible;
 
-  const ejecutar = async (op, circ = circuito) => {
-    setEnviando(true); setError(null);
-    try { await onOperacion(circ, op); } catch (e) { setError(e.message); }
-    setEnviando(false);
+  const ejecutar = (op, circ = circuito) => {
+    setError(null);
+    onOperacion(circ, op).catch((e) => setError(e.message));
   };
 
   // Notas: al cambiar de circuito se vuelcan las pendientes del anterior y se carga el nuevo texto.
