@@ -268,11 +268,11 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
                   <div style={{ fontSize: 13 }}>Cumplidas en los últimos 7 días: <strong>{rK.cumplidas7}</strong></div>
                   <div style={{ fontSize: 13 }}>Cumplidas en los últimos 30 días: <strong>{rK.cumplidas30}</strong></div>
                 </div>
-                {rK.usuarios.length > 0 && (
+                {rK.usuarios.some((u) => u.cumplio > 0) && (
                   <div>
-                    <SubTitulo>Actividad del equipo</SubTitulo>
-                    {rK.usuarios.slice(0, 6).map((u) => (
-                      <div key={u.usuario} style={{ fontSize: 13 }}><strong>{u.usuario}</strong> · recomendó {u.recomendo} · cumplió {u.cumplio}</div>
+                    <SubTitulo>Cumplidas por</SubTitulo>
+                    {rK.usuarios.filter((u) => u.cumplio > 0).sort((a, b) => b.cumplio - a.cumplio).slice(0, 6).map((u) => (
+                      <div key={u.usuario} style={{ fontSize: 13 }}><strong>{u.usuario}</strong> · {u.cumplio}</div>
                     ))}
                   </div>
                 )}
@@ -290,7 +290,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: 'block', fontSize: 13, fontWeight: 700 }}>{r.fila.key} · {r.fila.nombre}</span>
                         <span style={{ display: 'block', fontSize: 13 }}>{r.texto}</span>
-                        <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendó {r.creada_por} · {cuando(r.creada_en)}</span>
+                        <span style={{ display: 'block', fontSize: 11, color: 'var(--text-tertiary)' }}>Recomendada el {cuando(r.creada_en)}</span>
                         {(r.etapas || []).length > 0 && (() => {
                           const e = ordenarEtapas(r.etapas).pop();
                           return <span style={{ display: 'block', fontSize: 11.5, color: 'var(--text-secondary)' }}>Última etapa ({r.etapas.length}): {fechaDMY(e.fecha)} — {e.texto}</span>;

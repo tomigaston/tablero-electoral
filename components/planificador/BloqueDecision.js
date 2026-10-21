@@ -158,7 +158,7 @@ export default function BloqueDecision({ circuito, ficha, persistencia, onOperac
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13.5, textDecoration: a.estado === 'hecha' ? 'line-through' : 'none', color: a.estado === 'hecha' ? 'var(--text-secondary)' : 'inherit' }}>{a.texto}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
-                  Recomendada por {a.creada_por} · {cuando(a.creada_en)}
+                  Recomendada el {cuando(a.creada_en)}
                   {a.estado === 'en_curso' && ` · En ejecución desde ${cuando(a.estado_en)} (${a.estado_por})`}
                   {a.estado === 'hecha' && ` · Cumplida por ${a.hecha_por || a.estado_por} · ${cuando(a.hecha_en || a.estado_en)}`}
                 </div>
