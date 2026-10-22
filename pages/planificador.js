@@ -64,7 +64,6 @@ html,body{background:#F5F7FA !important}
 
 /* ---- Impresión / PDF: mismo diseño que la pantalla. El Resumen y la ficha salen en hoja A4 vertical. ---- */
 @page{size:A4 portrait;margin:11mm 11mm 13mm}
-@page resumen{size:A4 portrait;margin:11mm 11mm 13mm}
 @media print{
   html,body{background:#fff !important}
   .plan-no-print{display:none !important}
@@ -80,7 +79,7 @@ html,body{background:#F5F7FA !important}
   .plan-lista-scroll{max-height:none !important;overflow:visible !important}
   /* Resumen: hoja vertical (A4). Hoja 1: KPIs + mapa con su leyenda + clima y "a ciegas". Hoja 2: pauta, top 10 y problema #1.
      Hoja 3: seguimiento y, a continuación, la tabla de recomendaciones por subcircuito (sigue en las hojas siguientes). */
-  .plan-hoja-resumen{page:resumen;zoom:1}
+  .plan-hoja-resumen{zoom:1}
   .plan-hoja-resumen .plan-grilla-resumen{display:block !important}
   .plan-hoja-resumen .plan-grilla-resumen .plan-seccion{margin-bottom:0 !important}
   /* Hoja 1 */
