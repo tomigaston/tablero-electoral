@@ -95,8 +95,11 @@ html,body{background:#F5F7FA !important}
   /* Ficha: encuestas y línea de tiempo se comprimen para entrar en una fila. */
   .plan-encuesta-fila{flex-wrap:nowrap !important;gap:6px !important;zoom:.8}
   .plan-paso{flex:1 1 0 !important;width:auto !important;min-width:0 !important;padding:8px 10px 10px !important}
-  .plan-linea-tiempo{zoom:.82;flex-wrap:wrap !important}
-  .plan-col-tiempo{flex:1 1 96px !important;min-width:96px !important}
+  /* Línea de tiempo: columnas de ancho fijo y alineadas a la izquierda (la última fila no se estira, así no parece que pasó mucho tiempo). */
+  .plan-linea-tiempo{zoom:.82;flex-wrap:wrap !important;justify-content:flex-start !important;row-gap:12px}
+  .plan-col-tiempo{flex:0 0 108px !important;width:108px !important;min-width:0 !important}
+  /* Anexo de la ficha: empieza en hoja nueva y puede cortarse entre páginas. */
+  .plan-anexo{break-before:page;page-break-before:always}
 }
 `;
 
@@ -124,7 +127,7 @@ function PanelParte({ texto, setTexto, parte }) {
             style={{ width: '100%', fontFamily: 'monospace', fontSize: 12, padding: 8, borderRadius: 6, border: '1px solid var(--border)' }} />
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4, flexWrap: 'wrap' }}>
             <Boton onClick={() => setTexto('')}>Quitar parte</Boton>
-            <span style={{ color: 'var(--text-secondary)' }}>Con parte cargado, las obras listas de cada circuito se marcan “confirmada por el parte” cuando el parte las trae como finalizadas. Se guarda solo en este navegador.</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Con parte cargado, las obras de cada circuito se marcan “confirmada por el parte” cuando el parte las trae como finalizadas. Se guarda solo en este navegador.</span>
           </div>
         </div>
       )}
