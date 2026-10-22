@@ -10,6 +10,7 @@ import { ChipCategoria, Boton } from './ui';
 import BloqueEncuesta from './BloqueEncuesta';
 import BloqueQueSeHizo, { AnexoLineaTiempo } from './BloqueQueSeHizo';
 import BloqueDecision from './BloqueDecision';
+import BloqueObrasParte from './BloqueObrasParte';
 
 const Seccion = ({ n, titulo, children }) => (
   <section className="plan-seccion" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
@@ -45,7 +46,7 @@ const DatoGrande = ({ etiqueta, valor, gris, destacado }) => (
   </div>
 );
 
-export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hayParte, onVolver }) {
+export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hayParte, parteDia, onVolver }) {
   const hoy = new Date().toLocaleDateString('es-AR');
   // El navegador propone como nombre del PDF el título de la página: se cambia mientras se imprime.
   const imprimir = () => {
@@ -115,11 +116,15 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
         <BloqueQueSeHizo key={f.key} f={f} hayParte={hayParte} />
       </Seccion>
 
-      <Seccion n={4} titulo="Lectura">
+      {parteDia && (
+        <Seccion n={4} titulo="Obras del parte"><BloqueObrasParte f={f} parteDia={parteDia} /></Seccion>
+      )}
+
+      <Seccion n={parteDia ? 5 : 4} titulo="Lectura">
         <div style={{ fontSize: 13.5, lineHeight: 1.55, display: 'grid', gap: 6 }}>{f.lectura.map((p, i) => <p key={i}>{p}</p>)}</div>
       </Seccion>
 
-      <Seccion n={5} titulo="Decisión y seguimiento">
+      <Seccion n={parteDia ? 6 : 5} titulo="Decisión y seguimiento">
         <BloqueDecision circuito={f.key} ficha={ficha} persistencia={persistencia} onOperacion={onOperacion} />
       </Seccion>
       <AnexoLineaTiempo f={f} />

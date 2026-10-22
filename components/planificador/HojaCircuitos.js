@@ -44,7 +44,7 @@ function FilaLista({ f, activa, ficha, onSelect }) {
   );
 }
 
-export default function HojaCircuitos({ filas, fichas, filtro, setFiltro, seleccion, onSelect, persistencia, onOperacion, hayParte }) {
+export default function HojaCircuitos({ filas, fichas, filtro, setFiltro, seleccion, onSelect, persistencia, onOperacion, hayParte, parteDia }) {
   const lista = useMemo(() => aplicarFiltro(filas, filtro, fichas), [filas, filtro, fichas]);
   const fila = filas.find((f) => f.key.toLowerCase() === String(seleccion || '').toLowerCase());
   const set = (campo) => (v) => setFiltro({ ...filtro, [campo]: v });
@@ -90,7 +90,7 @@ export default function HojaCircuitos({ filas, fichas, filtro, setFiltro, selecc
 
       <main className="plan-detalle" style={{ minWidth: 0 }}>
         {fila ? (
-          <FichaCircuito f={fila} ficha={fichas?.[fila.key]} persistencia={persistencia} onOperacion={onOperacion} hayParte={hayParte} onVolver={() => onSelect(null)} />
+          <FichaCircuito f={fila} ficha={fichas?.[fila.key]} persistencia={persistencia} onOperacion={onOperacion} hayParte={hayParte} parteDia={parteDia} onVolver={() => onSelect(null)} />
         ) : (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-secondary)', border: '1px dashed var(--border)', borderRadius: 8, background: 'var(--bg-primary)' }}>
             Elegí un circuito de la lista para ver su ficha.
