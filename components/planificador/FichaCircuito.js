@@ -8,7 +8,7 @@ import { formatPct, num1 } from '../../lib/planificador/base';
 import { formatearFecha } from '../../lib/formatearFecha';
 import { ChipCategoria, Boton } from './ui';
 import BloqueEncuesta from './BloqueEncuesta';
-import BloqueQueSeHizo from './BloqueQueSeHizo';
+import BloqueQueSeHizo, { AnexoLineaTiempo } from './BloqueQueSeHizo';
 import BloqueDecision from './BloqueDecision';
 
 const Seccion = ({ n, titulo, children }) => (
@@ -47,18 +47,26 @@ const DatoGrande = ({ etiqueta, valor, gris, destacado }) => (
 
 export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hayParte, onVolver }) {
   const hoy = new Date().toLocaleDateString('es-AR');
+  // El navegador propone como nombre del PDF el título de la página: se cambia mientras se imprime.
+  const imprimir = () => {
+    const anterior = document.title;
+    const restaurar = () => { document.title = anterior; window.removeEventListener('afterprint', restaurar); };
+    document.title = `Planificador territorial · Tablero electoral ${f.key} ${f.nombre}`;
+    window.addEventListener('afterprint', restaurar);
+    window.print();
+  };
   return (
     <div className="plan-ficha">
       {/* Encabezado de la hoja impresa / exportada a PDF (en pantalla no se ve). */}
-      <CabeceraImpresion titulo={`Ficha del circuito ${f.key} · ${f.nombre}`} subtitulo="Planificador territorial · Córdoba Capital"
-        detalle={<><div>Generada el {hoy}</div><div>{LABEL_PRIORIDAD[f.prioridad.nivel]} · Padrón {f.padron != null ? f.padron.toLocaleString('es-AR') : '—'}</div></>} />
+      <CabeceraImpresion titulo="Ficha de circuito" subtitulo="Planificador territorial · Córdoba Capital" detalle={<div>Generada el {hoy}</div>} />
       <div className="plan-no-print" style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
         {onVolver && <span className="plan-solo-movil"><Boton onClick={onVolver}>← Lista</Boton></span>}
-        <Boton onClick={() => window.print()} titulo="Imprime la ficha en A4; desde el diálogo se puede guardar como PDF">Imprimir / exportar ficha</Boton>
+        <Boton onClick={imprimir} titulo="Imprime la ficha en A4; desde el diálogo se puede guardar como PDF">Imprimir / exportar ficha</Boton>
       </div>
 
       {/* 1. Encabezado + 2. Electoral */}
-      <header className="plan-seccion" style={{ position: 'relative', overflow: 'hidden', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 18, padding: '18px 22px 18px 28px', marginBottom: 12 }}>
+      {/* div y no <header>: el CSS global del sitio oculta todos los <header> al imprimir. */}
+      <div className="plan-seccion" style={{ position: 'relative', overflow: 'hidden', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 18, padding: '18px 22px 18px 28px', marginBottom: 12 }}>
         <span aria-hidden="true" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, background: COLOR_PRIORIDAD[f.prioridad.nivel] || '#9E9E9E' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 280px' }}>
@@ -76,7 +84,7 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
             <DatoGrande etiqueta="META · Gobernador 2023" valor={formatPct(f.shareG23)} destacado />
           </div>
         </div>
-      </header>
+      </div>
 
       <Seccion n={1} titulo="Encuesta"><BloqueEncuesta f={f} /></Seccion>
 
@@ -114,6 +122,7 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
       <Seccion n={5} titulo="Decisión y seguimiento">
         <BloqueDecision circuito={f.key} ficha={ficha} persistencia={persistencia} onOperacion={onOperacion} />
       </Seccion>
+      <AnexoLineaTiempo f={f} />
       <PieImpresion leyenda={`Planificador territorial · Circuito ${f.key} ${f.nombre} · generado el ${hoy}`} />
     </div>
   );

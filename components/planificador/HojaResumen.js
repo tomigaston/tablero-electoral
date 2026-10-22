@@ -118,7 +118,7 @@ const nombreEje = (e) => e.charAt(0) + e.slice(1).toLowerCase();
 // KPIs filtrables (cada uno es su propio "origen": entre KPIs y tarjetas se cruzan).
 const KPIS = [
   { origen: 'kpi:sinMedir', campo: 'sinMedir', label: 'sin medir', etiqueta: 'Sin medir', color: '#808080', extra: (k) => `+ ${k.unaRonda.n} con una sola ronda` },
-  { origen: 'kpi:conObra', campo: 'conObra', label: 'con obra lista', etiqueta: 'Con obra lista para inaugurar', color: '#2E7D32' },
+  { origen: 'kpi:conObra', campo: 'conObra', label: 'con obra', etiqueta: 'Con obra', color: '#2E7D32' },
   { origen: 'kpi:pautaSinMed', campo: 'pautaSinMed', label: 'con pauta sin medición posterior', etiqueta: 'Pauta sin medición posterior', color: '#B07F2A' },
 ];
 

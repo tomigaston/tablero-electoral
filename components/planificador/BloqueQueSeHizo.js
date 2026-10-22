@@ -16,7 +16,7 @@ const ETIQUETA_TIPO = {
   medicion: ['encuesta', 'encuestas'],
   visita: ['visita', 'visitas'],
   pauta: ['pauta', 'pautas'],
-  obra: ['obra lista', 'obras listas'],
+  obra: ['obra', 'obras'],
 };
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -26,26 +26,40 @@ const etiquetaGrupo = (g) => {
   return g.eventos.length === 1 ? uno : `${g.eventos.length} ${varios}`;
 };
 
-// Una línea de texto por evento (para la versión impresa).
-function lineaEvento(e) {
+const URL_RE = /https?:\/\/\S+/g;
+const dominio = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+
+// Un evento del anexo impreso: fecha · título · detalle (gris) · link corto. Los links largos de las notas de prensa se
+// acortan al dominio para que no armen un bloque de texto.
+function detalleEvento(e) {
   const d = e.detalle || {};
-  if (e.tipo === 'pauta') return [formatearFecha(d.inicio), d.titulo_pieza || 'Pieza sin título', [d.campania, d.eje].filter(Boolean).join(' · '), d.plataforma, d.fin ? `hasta ${formatearFecha(d.fin)}` : ''].filter(Boolean).join(' · ');
-  if (e.tipo === 'visita') return [formatearFecha(e.fecha), d.tipo_visita, d.barrio, d.info].filter(Boolean).join(' · ');
+  if (e.tipo === 'pauta') {
+    return { fecha: formatearFecha(d.inicio), titulo: d.titulo_pieza || 'Pieza sin título',
+      extra: [[d.campania, d.eje].filter(Boolean).join(' · '), d.plataforma, d.fin ? `hasta ${formatearFecha(d.fin)}` : ''].filter(Boolean).join(' · ') };
+  }
+  if (e.tipo === 'visita') {
+    const info = String(d.info || '');
+    const url = info.match(URL_RE)?.[0] || (esUrlHttp(d.link) ? d.link : '');
+    return { fecha: formatearFecha(e.fecha), titulo: [d.tipo_visita, d.barrio].filter(Boolean).join(' · ') || 'Visita',
+      extra: info.replace(URL_RE, '').replace(/[\s/·–-]+$/, '').trim(), link: url ? `Nota: ${dominio(url)}` : '' };
+  }
   if (e.tipo === 'medicion') {
     const ap = apruebaDe(d.datos);
-    return [formatearFecha(e.fecha), `Encuesta, ronda ${d.ronda} de ${d.totalRondas}`, d.casos != null ? `${d.casos} casos` : '', ap != null ? `aprobación ${num1(ap)}%` : ''].filter(Boolean).join(' · ');
+    return { fecha: formatearFecha(e.fecha), titulo: `Encuesta · ronda ${d.ronda} de ${d.totalRondas}`,
+      extra: [d.casos != null ? `${d.casos} casos` : '', ap != null ? `aprobación ${num1(ap)}%` : ''].filter(Boolean).join(' · ') };
   }
-  return [formatearFecha(e.fecha), d.nombre_obra || 'Obra', d.tipo_obra, d.barrio, d.estado].filter(Boolean).join(' · ');
+  return { fecha: formatearFecha(e.fecha), titulo: d.nombre_obra || 'Obra', extra: [d.tipo_obra, d.barrio, d.estado].filter(Boolean).join(' · ') };
 }
 
 // Mes (o rango de meses) del grupo, y su año: "febrero – agosto" / "2026". Los eventos vienen ordenados por fecha.
-function periodoDe(g) {
+// Con corto = true los rangos van abreviados ("feb – ago") para que entren en la columna de la línea de tiempo.
+function periodoDe(g, corto = false) {
   const desde = g.eventos[0].fecha;
   const hasta = g.eventos[g.eventos.length - 1].fecha;
-  const mes = (f) => MESES[Number(f.slice(5, 7)) - 1] || '';
+  const mes = (f, abrev) => { const m = MESES[Number(f.slice(5, 7)) - 1] || ''; return abrev ? m.slice(0, 3) : m; };
   const anio = (f) => f.slice(0, 4);
   return {
-    meses: desde.slice(0, 7) === hasta.slice(0, 7) ? mes(desde) : `${mes(desde)} – ${mes(hasta)}`,
+    meses: desde.slice(0, 7) === hasta.slice(0, 7) ? mes(desde) : `${mes(desde, corto)} – ${mes(hasta, corto)}`,
     anios: anio(desde) === anio(hasta) ? anio(desde) : `${anio(desde)} – ${anio(hasta)}`,
   };
 }
@@ -211,7 +225,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
   const totales = [
     `${nPautas} ${nPautas === 1 ? 'pauta' : 'pautas'}`,
     `${nVisitas} ${nVisitas === 1 ? 'visita' : 'visitas'}`,
-    `${nListas} ${nListas === 1 ? 'obra lista' : 'obras listas'}`,
+    `${nListas} ${nListas === 1 ? 'obra' : 'obras'}`,
   ].join(' · ');
 
   const grupo = abierto != null ? grupos[abierto] : null;
@@ -226,7 +240,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
           {grupos.map((g, i) => {
             const t = COLOR_TIPO_EVENTO[g.tipo];
             const activo = abierto === i;
-            const per = periodoDe(g);
+            const per = periodoDe(g, true);
             return (
               <div key={i} role="listitem" className="plan-col-tiempo" style={{ flex: '0 0 auto', minWidth: 112, textAlign: 'center', padding: '0 2px' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>{per.meses}</div>
@@ -258,24 +272,53 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
       {verTotales && <PanelObrasPorEstado items={f.obras} />}
 
       {f.senales.nPautas !== f.piezasPauta.length && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{f.piezasPauta.length - f.senales.nPautas} pieza(s) sin fecha de inicio válida no entran en la secuencia ni en las comparaciones temporales.</div>}
-      {nObrasSinFecha > 0 && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{nObrasSinFecha} obra(s) lista(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
+      {nObrasSinFecha > 0 && <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{nObrasSinFecha} obra(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
       </div>
+    </div>
+  );
+}
 
-      {/* Versión para imprimir / exportar a PDF: la línea de tiempo completa, con los meses y el detalle de cada grupo. */}
-      <div className="plan-solo-print" style={{ display: 'none', fontSize: 12.5 }}>
-        <div style={{ fontWeight: 700, marginBottom: 2 }}>Detalle de la línea de tiempo</div>
-        {!grupos.length && <div>Sin actividad con fecha registrada en este circuito.</div>}
-        {grupos.map((g, i) => {
-          const per = periodoDe(g);
-          return (
-            <div key={i} style={{ marginTop: 6, breakInside: 'avoid' }}>
-              <div style={{ fontWeight: 700 }}>{per.meses} {per.anios} — {etiquetaGrupo(g)}</div>
-              {g.eventos.map((e, j) => <div key={j} style={{ marginLeft: 14 }}>• {lineaEvento(e)}</div>)}
-            </div>
-          );
-        })}
-        {nObrasSinFecha > 0 && <div style={{ marginTop: 6 }}>{nObrasSinFecha} obra(s) lista(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
+// Anexo de la ficha impresa / PDF (al final de todo): el detalle de la línea de tiempo, un bloque por grupo con el mes
+// resaltado a la izquierda y cada evento separado de los otros. En pantalla no se ve (el detalle se abre desde los botones).
+export function AnexoLineaTiempo({ f }) {
+  const grupos = useMemo(() => colapsarEventos(f.eventos), [f.eventos]);
+  const nSinFecha = f.inaugurables.length - f.eventos.filter((e) => e.tipo === 'obra').length;
+  return (
+    <div className="plan-solo-print plan-anexo" style={{ display: 'none' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 700, color: '#5B6772', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 12 }}>
+        <span aria-hidden="true" style={{ width: 5, height: 18, borderRadius: 3, background: 'linear-gradient(180deg,#6CAEE5,#3478B5)' }} />
+        Anexo · Detalle de la línea de tiempo
       </div>
+      {!grupos.length && <div style={{ fontSize: 12.5 }}>Sin actividad con fecha registrada en este circuito.</div>}
+      {grupos.map((g, i) => {
+        const per = periodoDe(g);
+        const t = COLOR_TIPO_EVENTO[g.tipo];
+        return (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '122px minmax(0, 1fr)', gap: 14, marginBottom: 16, breakInside: 'avoid' }}>
+            <div style={{ alignSelf: 'start', padding: '8px 10px', borderRadius: 10, borderLeft: `4px solid ${t.color}`, background: `${t.color}1A` }}>
+              <div style={{ fontSize: 14, fontWeight: 800, lineHeight: 1.2, textTransform: 'capitalize' }}>{per.meses}</div>
+              <div style={{ fontSize: 11, color: '#5B6772' }}>{per.anios}</div>
+              <div style={{ fontSize: 11.5, fontWeight: 700, color: t.color, marginTop: 4 }}>{etiquetaGrupo(g)}</div>
+            </div>
+            <div>
+              {g.eventos.map((e, j) => {
+                const v = detalleEvento(e);
+                return (
+                  <div key={j} style={{ display: 'grid', gridTemplateColumns: '78px minmax(0, 1fr)', gap: 10, padding: '7px 0', borderBottom: j < g.eventos.length - 1 ? '1px solid #E4E8EE' : 'none', breakInside: 'avoid', fontSize: 12 }}>
+                    <div style={{ fontWeight: 700, color: '#5B6772' }}>{v.fecha}</div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#1F2933' }}>{v.titulo}</div>
+                      {v.extra && <div style={{ color: '#5B6772', marginTop: 1 }}>{v.extra}</div>}
+                      {v.link && <div style={{ color: '#2A6296', marginTop: 1 }}>{v.link}</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+      {nSinFecha > 0 && <div style={{ fontSize: 11.5, color: '#8A94A0' }}>{nSinFecha} obra(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
     </div>
   );
 }
