@@ -47,7 +47,13 @@ html,body{background:#F5F7FA !important}
 .plan-raiz .plan-campo:focus{box-shadow:0 0 0 3px #6CAEE555;border-color:#6CAEE5 !important;background:#fff !important}
 .plan-raiz .plan-kpi:hover:not(:disabled){transform:translateY(-2px)}
 .plan-solo-movil{display:none}
+/* Resumen en pantalla: mapa a la izquierda y las cinco tarjetas apiladas a la derecha (las hojas del PDF son display:contents acá). */
+.plan-pag1,.plan-pag2{display:contents}
+.plan-grilla-resumen .plan-mapa-col{grid-column:1;grid-row:1 / span 5}
+.plan-grilla-resumen [data-plan-card]{grid-column:2}
 @media (max-width:900px){
+  .plan-grilla-resumen .plan-mapa-col{grid-column:1;grid-row:auto}
+  .plan-grilla-resumen [data-plan-card]{grid-column:1}
   .plan-circuitos{grid-template-columns:1fr !important}
   .plan-lista{position:static !important}
   .plan-lista-con-ficha{display:none}
@@ -59,6 +65,7 @@ html,body{background:#F5F7FA !important}
 /* ---- Impresión / PDF: mismo diseño que la pantalla. El Resumen sale apaisado (mapa + tarjetas), la ficha vertical. ---- */
 @page{size:A4 portrait;margin:11mm 11mm 13mm}
 @page resumen{size:A4 landscape;margin:10mm 11mm 12mm}
+@page vertical{size:A4 portrait;margin:11mm 11mm 13mm}
 @media print{
   html,body{background:#fff !important}
   .plan-no-print{display:none !important}
@@ -75,22 +82,46 @@ html,body{background:#F5F7FA !important}
   /* Resumen: hoja apaisada y compacta, en tres columnas. El mapa va a la izquierda (ocupa dos filas) y las tarjetas se acomodan
      solas a su lado y debajo, en un orden pensado para que la primera hoja lleve el mapa y los primeros gráficos sin huecos. */
   .plan-hoja-resumen{page:resumen;zoom:.8}
-  .plan-hoja-resumen .plan-grilla-resumen{display:grid !important;grid-template-columns:.95fr 1fr 1fr !important;grid-auto-flow:row dense !important;gap:10px !important;align-items:stretch !important}
-  .plan-hoja-resumen .plan-grilla-resumen > div:last-child{display:contents !important}
-  .plan-hoja-resumen .plan-mapa-col{position:static !important;grid-column:1 !important;grid-row:1 / span 2 !important;order:0 !important}
-  .plan-hoja-resumen .plan-mapa-col .plan-seccion{height:100%;box-sizing:border-box}
+  .plan-hoja-resumen .plan-grilla-resumen{display:block !important}
   .plan-hoja-resumen .plan-grilla-resumen .plan-seccion{margin-bottom:0 !important}
-  .plan-hoja-resumen [data-plan-card="ciegos"]{order:1}
-  .plan-hoja-resumen [data-plan-card="clima"]{order:2}
-  .plan-hoja-resumen [data-plan-card="tema"]{order:3}
-  .plan-hoja-resumen [data-plan-card="problema1"]{order:4}
-  .plan-hoja-resumen [data-plan-card="obras"]{order:5}
-  .plan-hoja-resumen [data-plan-card="top"]{order:6}
+  /* Hoja 1: mapa a la izquierda (ocupa las dos filas) y, a su lado, clima electoral y "a ciegas". */
+  .plan-hoja-resumen .plan-pag1{display:grid !important;grid-template-columns:1.05fr 1fr !important;gap:10px !important;align-items:stretch !important;break-after:page;page-break-after:always}
+  .plan-hoja-resumen .plan-pag1 .plan-mapa-col{position:static !important;grid-column:1 !important;grid-row:1 / span 2 !important}
+  .plan-hoja-resumen .plan-pag1 .plan-mapa-col .plan-seccion{height:100%;box-sizing:border-box}
+  .plan-hoja-resumen .plan-pag1 .plan-mapa-col .plan-seccion > p{display:none}
+  .plan-hoja-resumen .plan-pag1 [data-plan-card]{grid-column:2 !important;grid-row:auto !important}
+  .plan-hoja-resumen [data-plan-card="clima"]{order:1}
+  .plan-hoja-resumen [data-plan-card="ciegos"]{order:2}
+  /* Hoja 2: foco temático de la pauta, top 10 de problemas y problema #1, de a tres. */
+  .plan-hoja-resumen .plan-pag2{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:10px !important;align-items:start !important}
+  .plan-hoja-resumen .plan-pag2 [data-plan-card]{grid-column:auto !important}
+  .plan-hoja-resumen [data-plan-card="tema"]{order:1}
+  .plan-hoja-resumen [data-plan-card="top"]{order:2}
+  .plan-hoja-resumen [data-plan-card="problema1"]{order:3}
+  /* Hoja 3: seguimiento (tarjetas a lo ancho de la hoja y los dos gráficos de barras lado a lado). */
+  .plan-hoja-resumen .plan-pag3{break-before:page;page-break-before:always;margin-top:0 !important}
+  .plan-hoja-resumen .plan-seg-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:14px 36px !important}
+  .plan-hoja-resumen .plan-seg-izq{display:contents !important}
+  /* Hoja 4 (vertical): todas las recomendaciones, agrupadas por subcircuito. */
+  .plan-hoja-resumen .plan-hoja-lista{page:vertical;zoom:1.15}
+  .plan-hoja-resumen .plan-hoja-lista thead{display:table-header-group}
+  /* Letra un poco más grande en las tarjetas del resumen. */
+  .plan-hoja-resumen .plan-seccion > h2{font-size:17px !important}
+  .plan-hoja-resumen .plan-seccion > p{font-size:13px !important}
+  .plan-hoja-resumen .plan-pag1 .plan-seccion button span,.plan-hoja-resumen .plan-pag2 .plan-seccion button span,.plan-hoja-resumen .plan-seg-grid button span{font-size:14px !important}
+  .plan-hoja-resumen .plan-leyenda button{font-size:14.5px !important}
+  .plan-hoja-resumen .plan-pag2 .plan-seccion button[aria-pressed] > span{font-size:14px !important}
+  .plan-kpi-num{font-size:42px !important}
+  .plan-kpi-de{font-size:15px !important}
+  .plan-kpi-label{font-size:16px !important}
+  .plan-kpi-extra{font-size:13.5px !important}
   /* Tarjetas de números: siempre de a cuatro en una fila (nunca una sola estirada abajo). */
   .plan-kpis{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:8px !important;margin-bottom:10px !important}
   .plan-kpis > *{flex:none !important;min-width:0 !important}
-  .plan-kpis-7{grid-template-columns:repeat(7,1fr) !important;gap:6px !important}
-  .plan-kpis-7 .plan-kpi{padding:10px 10px 8px !important}
+  .plan-kpis-7{grid-template-columns:repeat(6,1fr) !important;gap:8px !important}
+  .plan-kpis-7 .plan-kpi{padding:12px 12px 10px !important}
+  .plan-kpis-7 .plan-kpi-num{font-size:36px !important}
+  .plan-kpis-7 .plan-kpi-label{font-size:14.5px !important}
   .plan-raiz .plan-kpi{padding:12px 14px 10px !important;border-radius:14px !important}
   /* Ficha: encuestas y línea de tiempo se comprimen para entrar en una fila. */
   .plan-encuesta-fila{flex-wrap:nowrap !important;gap:6px !important;zoom:.8}
