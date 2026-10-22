@@ -74,11 +74,11 @@ const Kpi = ({ valor, de, label, extra, proporcion, color = COLOR_BARRA, activo,
     style={{ position: 'relative', overflow: 'hidden', flex: '1 1 210px', textAlign: 'left', padding: '18px 20px 14px', borderRadius: 18, border: '1px solid var(--border)', background: activo ? `${color}12` : 'var(--bg-primary)', color: 'var(--text-primary)', cursor: onClick ? 'pointer' : 'default', boxShadow: activo ? `0 0 0 2px ${color}66, 0 6px 20px ${color}22` : '0 2px 14px rgba(16,24,40,0.06)', transition: 'box-shadow .18s, background .18s, transform .18s' }}>
     <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 5, background: color }} />
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-      <span style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.02em' }}>{valor}</span>
-      {de != null && <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>de {de}</span>}
+      <span className="plan-kpi-num" style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.02em' }}>{valor}</span>
+      {de != null && <span className="plan-kpi-de" style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>de {de}</span>}
     </div>
-    <div style={{ fontSize: 13.5, fontWeight: 600, marginTop: 3 }}>{label}</div>
-    {extra && <div style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 2 }}>{extra}</div>}
+    <div className="plan-kpi-label" style={{ fontSize: 13.5, fontWeight: 600, marginTop: 3 }}>{label}</div>
+    {extra && <div className="plan-kpi-extra" style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 2 }}>{extra}</div>}
     {proporcion != null && (
       <div style={{ height: 6, borderRadius: 3, background: 'var(--bg-secondary)', marginTop: 12, overflow: 'hidden' }} aria-hidden="true">
         <div style={{ height: '100%', width: `${Math.max(2, Math.min(100, proporcion))}%`, background: color, borderRadius: 3 }} />
@@ -90,7 +90,7 @@ const Kpi = ({ valor, de, label, extra, proporcion, color = COLOR_BARRA, activo,
 // Leyenda del mapa: cuánta ciudad (circuitos y % del padrón) está en cada color. Cada fila filtra.
 function Leyenda({ items, activos, onClick }) {
   return (
-    <div style={{ marginTop: 10 }}>
+    <div className="plan-leyenda" style={{ marginTop: 10 }}>
       <div style={{ display: 'flex', height: 10, borderRadius: 5, overflow: 'hidden', background: 'var(--bg-secondary)' }} aria-hidden="true">
         {items.map((d) => <div key={d.nivel} style={{ width: `${d.pctPadron}%`, background: COLOR_PRIORIDAD[d.nivel] }} />)}
       </div>
@@ -192,12 +192,15 @@ const SubTitulo =({ children }) => <h3 style={{ fontSize: 13, fontWeight: 700, m
 
 // Seguimiento de recomendaciones del equipo: qué se pidió en las fichas y cuánto se ejecutó. Lee de las mismas fichas
 // (KV). Tocar un número o una barra pinta en el mapa los circuitos con esa recomendación (mismo filtro compartido).
-function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, persistencia, onAbrir }) {
+function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, persistencia, onAbrir, pie }) {
   if (!persistencia.disponible) {
     return (
-      <Tarjeta titulo="Seguimiento de recomendaciones">
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{persistencia.cargando ? 'Cargando…' : `Sin datos de seguimiento: ${persistencia.mensaje || 'base de datos no disponible'}.`}</p>
-      </Tarjeta>
+      <>
+        <Tarjeta titulo="Seguimiento de recomendaciones">
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{persistencia.cargando ? 'Cargando…' : `Sin datos de seguimiento: ${persistencia.mensaje || 'base de datos no disponible'}.`}</p>
+        </Tarjeta>
+        {pie}
+      </>
     );
   }
 
@@ -231,6 +234,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
   );
 
   return (
+    <>
     <Tarjeta titulo="Seguimiento de recomendaciones" subtitulo="Lo que recomendó el equipo en las fichas y cuánto se ejecutó. Tocá un número o una barra para ver esos circuitos en el mapa.">
       {recs.length === 0 ? (
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Todavía no hay recomendaciones cargadas. Se agregan desde la ficha de cada circuito, en “Decisión y seguimiento”.</p>
@@ -248,8 +252,8 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
 
           <ExportarListado recs={recs} />
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 18, alignItems: 'start' }}>
-            <div style={{ display: 'grid', gap: 18 }}>
+          <div className="plan-seg-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 18, alignItems: 'start' }}>
+            <div className="plan-seg-izq" style={{ display: 'grid', gap: 18 }}>
               <div>
                 <SubTitulo>Por estado</SubTitulo>
                 <Barras items={ESTADOS_REC.map((e) => ({ id: e, label: ETIQUETA_ESTADO[e], valor: rEstado.porEstado[e], texto: `${rEstado.porEstado[e]}${rEstado.total ? ` · ${fmtN((rEstado.porEstado[e] / rEstado.total) * 100)}` : ''}`, color: COLOR_ESTADO_REC[e], claves: claveEstado(e), etiqueta: `Recomendación ${ETIQUETA_ESTADO[e]}` }))}
@@ -271,7 +275,7 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
               </div>
             </div>
 
-            <div>
+            <div className="plan-no-print">
               <SubTitulo>Recomendaciones <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>({lista.length}{lista.length === recs.length ? '' : ` de ${recs.length}`}) · se filtran con las barras de estado y de acciones</span></SubTitulo>
               {lista.length === 0 ? <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>No hay recomendaciones{clavesCircuito || tiposSel.length || estadosSel.length ? ' en este filtro' : ''}.</p> : (
                 <div className="plan-lista-scroll" style={{ display: 'grid', gap: 0, maxHeight: 640, overflowY: 'auto', borderTop: '1px solid var(--border)' }}>
@@ -298,6 +302,67 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
         </>
       )}
     </Tarjeta>
+    {lista.length > 0 ? <ListadoImpresion lista={lista} pie={pie} /> : pie}
+    </>
+  );
+}
+
+// Hoja vertical del PDF (solo al imprimir): todas las recomendaciones (las que deja pasar el filtro) agrupadas por
+// subcircuito y ordenadas por número de circuito, así las acciones de un mismo circuito quedan juntas.
+function ListadoImpresion({ lista, pie }) {
+  const grupos = useMemo(() => {
+    const orden = [...lista].sort((a, b) => String(a.circuito).localeCompare(String(b.circuito), 'es', { numeric: true })
+      || String(a.creada_en).localeCompare(String(b.creada_en)));
+    const m = new Map();
+    orden.forEach((r) => { if (!m.has(r.circuito)) m.set(r.circuito, []); m.get(r.circuito).push(r); });
+    return [...m.values()];
+  }, [lista]);
+  const celda = { padding: '7px 8px', verticalAlign: 'top', borderBottom: '1px solid #E4E8EE' };
+  return (
+    <div className="plan-solo-print plan-hoja-lista" style={{ display: 'none' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 16, fontWeight: 800, marginBottom: 2 }}>
+        <span aria-hidden="true" style={{ width: 5, height: 20, borderRadius: 3, background: 'linear-gradient(180deg,#6CAEE5,#3478B5)' }} />
+        Recomendaciones por subcircuito
+      </div>
+      <div style={{ fontSize: 12, color: '#5B6772', margin: '0 0 10px 15px' }}>{lista.length} {lista.length === 1 ? 'recomendación' : 'recomendaciones'} en {grupos.length} {grupos.length === 1 ? 'subcircuito' : 'subcircuitos'} · ordenados por circuito</div>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
+        <thead>
+          <tr style={{ background: '#F2F5F9', textAlign: 'left' }}>
+            <th style={{ padding: '7px 8px', width: '30%' }}>Subcircuito</th>
+            <th style={{ padding: '7px 8px' }}>Acción recomendada</th>
+            <th style={{ padding: '7px 8px', width: 92 }}>Estado</th>
+          </tr>
+        </thead>
+        {grupos.map((g) => (
+          <tbody key={g[0].circuito} style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+            {g.map((r, i) => {
+              const e = (r.etapas || []).length ? ordenarEtapas(r.etapas).pop() : null;
+              return (
+                <tr key={r.id}>
+                  {i === 0 && (
+                    <td rowSpan={g.length} style={{ ...celda, borderRight: '1px solid #E4E8EE' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontWeight: 700 }}>
+                        <PuntoPrioridad nivel={r.fila.prioridad.nivel} tamano={10} />{r.fila.key}
+                      </span>
+                      <div style={{ color: '#5B6772', marginLeft: 17 }}>{r.fila.nombre}</div>
+                    </td>
+                  )}
+                  <td style={celda}>
+                    <div style={{ fontWeight: 600, textDecoration: r.estado === 'hecha' ? 'line-through' : 'none' }}>{textoAccion(r)}</div>
+                    <div style={{ fontSize: 11, color: '#8A94A0' }}>Recomendada el {cuando(r.creada_en)}{r.estado === 'hecha' && r.hecha_en ? ` · Cumplida el ${cuando(r.hecha_en)}` : ''}</div>
+                    {e && <div style={{ fontSize: 11.5, color: '#5B6772' }}>Última etapa ({r.etapas.length}): {fechaDMY(e.fecha)} — {e.texto}</div>}
+                  </td>
+                  <td style={celda}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, padding: '2px 9px', borderRadius: 10, background: `${COLOR_ESTADO_REC[r.estado]}26`, color: COLOR_ESTADO_REC[r.estado], whiteSpace: 'nowrap' }}>{ETIQUETA_ESTADO[r.estado]}</span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        ))}
+      </table>
+      {pie}
+    </div>
   );
 }
 
@@ -402,15 +467,17 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
         </div>
       )}
 
+      {/* En pantalla: mapa a la izquierda y las cinco tarjetas apiladas a la derecha (.plan-pag1 y .plan-pag2 son display:contents).
+          Al imprimir: hoja 1 = mapa + clima + a ciegas; hoja 2 = pauta + top 10 + problema #1. */}
       <div className="plan-grilla-resumen" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(340px, 1fr)', gap: 12, alignItems: 'start' }}>
-        <div className="plan-mapa-col" style={{ position: 'sticky', top: 8 }}>
-          <Tarjeta titulo="Córdoba Capital · situación por circuito" subtitulo={`${k.total} circuitos. Gris: sin medir · rojo: tendencia negativa · amarillo: estable o leve baja (hasta −3 pp) · verde: mejora. Se compara contra la encuesta anterior o, con una sola, contra Gobernación 2023.`}>
-            <MapaResumen filas={filas} claves={clavesTodas} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
-            <Leyenda items={leyenda} activos={activosDe('prioridad')} onClick={(d, e) => filtrar('prioridad')({ id: d.nivel, etiqueta: LABEL_PRIORIDAD[d.nivel], claves: d.claves }, e)} />
-          </Tarjeta>
-        </div>
+        <div className="plan-pag1">
+          <div className="plan-mapa-col" style={{ position: 'sticky', top: 8 }}>
+            <Tarjeta titulo="Córdoba Capital · situación por circuito" subtitulo={`${k.total} circuitos. Gris: sin medir · rojo: tendencia negativa · amarillo: estable o leve baja (hasta −3 pp) · verde: mejora. Se compara contra la encuesta anterior o, con una sola, contra Gobernación 2023.`}>
+              <MapaResumen filas={filas} claves={clavesTodas} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
+              <Leyenda items={leyenda} activos={activosDe('prioridad')} onClick={(d, e) => filtrar('prioridad')({ id: d.nivel, etiqueta: LABEL_PRIORIDAD[d.nivel], claves: d.claves }, e)} />
+            </Tarjeta>
+          </div>
 
-        <div style={{ display: 'grid', gap: 12 }}>
           <Tarjeta titulo="¿Dónde estamos a ciegas?" claveImp="ciegos" filtrada={enFiltro('ciegos')} subtitulo="Circuitos según cantidad de rondas de encuesta">
             <Barras items={aCiegos.ciegos.distribucion.map((d) => ({ id: d.id, label: d.label, valor: d.n, claves: d.claves, etiqueta: d.label, color: d.id === 'sin_medir' ? '#808080' : undefined }))}
               max={aCiegos.kpis.total} activos={activosDe('ciegos')} onClick={filtrar('ciegos')} />
@@ -420,7 +487,9 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
             <Barras items={aClima.tiers.map((t) => ({ id: t.tier, label: TIERS[t.tier].label, valor: t.n, claves: t.claves, color: COLOR_TIER[t.tier], etiqueta: `Clima ${TIERS[t.tier].label}` }))}
               max={aClima.kpis.total} activos={activosDe('clima')} onClick={filtrar('clima')} />
           </Tarjeta>
+        </div>
 
+        <div className="plan-pag2">
           <Tarjeta titulo="Foco temático de la pauta" claveImp="tema" filtrada={enFiltro('tema')} subtitulo={`Pauta por eje temático · ${aTema.tema.totalPiezas.toLocaleString('es-AR')} piezas · ${millones(aTema.tema.totalInversion)} de inversión`}>
             <div className="plan-no-print" style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
               <Boton activo={medida === 'piezas'} onClick={() => setMedida('piezas')} style={{ padding: '3px 10px', fontSize: 12 }}>Piezas</Boton>
@@ -450,11 +519,11 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
         </div>
       </div>
 
-      <div style={{ marginTop: 12 }}>
+      <div className="plan-pag3" style={{ marginTop: 12 }}>
         <SeguimientoRecomendaciones recs={recs} filas={filas} filtros={filtros} filtrar={filtrar} activosDe={activosDe}
-          persistencia={persistencia} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)} />
+          persistencia={persistencia} onAbrir={(key) => onAbrir(key, clavesTodas, etiqueta || null)}
+          pie={<PieImpresion leyenda={`Planificador territorial · Resumen · generado el ${hoyTexto}`} />} />
       </div>
-      <PieImpresion leyenda={`Planificador territorial · Resumen · generado el ${hoyTexto}`} />
     </div>
   );
 }
