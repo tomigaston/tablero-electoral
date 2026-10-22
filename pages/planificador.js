@@ -18,6 +18,7 @@ import HojaCircuitos from '../components/planificador/HojaCircuitos';
 import { Boton } from '../components/planificador/ui';
 import { CabeceraPantalla, PiePantalla } from '../components/planificador/Marca';
 import { MARCA, URL_FUENTE } from '../lib/planificador/marca';
+import { FAVICON_CORDOBA } from '../lib/planificador/favicon';
 
 const ARCHIVOS = {
   datos: 'circuitos_completo.json',
@@ -359,6 +360,7 @@ export default function Planificador() {
       <Head>
         <title>Planificador territorial · Tablero electoral</title>
         <meta name="robots" content="noindex" />
+        <link rel="icon" type="image/svg+xml" href={FAVICON_CORDOBA} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
