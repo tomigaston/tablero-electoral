@@ -11,6 +11,8 @@ import { FILTRO_VACIO } from '../lib/planificador/filtros';
 import { cargarFichas, enviarOperacion } from '../lib/planificador/fichasApi';
 import { aplicarOperacion, nuevoIdAccion } from '../lib/planificador/acciones';
 import { parsearParte } from '../lib/parteObras';
+import { parsearParteDia, armarParteDia } from '../lib/planificador/parteDia';
+import { cargarParte, guardarParte } from '../lib/planificador/parteApi';
 import HojaResumen from '../components/planificador/HojaResumen';
 import HojaCircuitos from '../components/planificador/HojaCircuitos';
 import { Boton } from '../components/planificador/ui';
@@ -153,28 +155,54 @@ function leerHash() {
   return { hoja: 'resumen', seleccion: null };
 }
 
-function PanelParte({ texto, setTexto, parte }) {
+const fechaCorta = (iso) => { const [y, m, d] = String(iso || '').slice(0, 10).split('-'); return d && m && y ? `${d}/${m}/${y}` : ''; };
+
+// Cuadro plegable del parte de obras del día: se pega el mensaje de difusión tal cual, se lee solo y se guarda para todo el equipo.
+// Las obras pasan a las fichas de cada circuito (bloque "Obras del parte").
+function PanelParteDia({ titulo, tipo, guardado, disponible, onGuardar }) {
   const [abierto, setAbierto] = useState(false);
-  const fin = parte?.items?.filter((i) => /^FINALIZ|^TERMINAD/.test(i.estadoNorm)).length ?? 0;
+  const [borrador, setBorrador] = useState(null); // null = sin tocar: se muestra lo guardado
+  const [aviso, setAviso] = useState('');
+  const [guardando, setGuardando] = useState(false);
+  const base = guardado?.texto || '';
+  const texto = borrador ?? base;
+  const lectura = useMemo(() => (texto.trim() ? parsearParteDia(texto, tipo === 'ejecucion' ? 'ejecucion' : 'finalizada') : null), [texto, tipo]);
+  const circuitos = lectura ? new Set(lectura.items.filter((o) => o.circuito).map((o) => o.circuito)).size : 0;
+  const sinCircuito = lectura ? lectura.items.filter((o) => !o.circuito) : [];
+  const hayCambio = borrador != null && borrador !== base;
+  const resumen = lectura
+    ? `cargado${lectura.fecha ? ` del ${fechaCorta(lectura.fecha)}` : ''} · ${lectura.items.length} obras · ${circuitos} circuitos`
+    : 'sin cargar';
+  const guardar = async (nuevo) => {
+    setGuardando(true); setAviso('');
+    try { await onGuardar(tipo, nuevo); setBorrador(null); setAviso(nuevo.trim() ? 'Guardado: ya está en las fichas de cada circuito.' : 'Quitado.'); } catch (e) { setAviso(`No se pudo guardar: ${e.message}`); }
+    setGuardando(false);
+  };
   return (
     <div className="plan-no-print" style={{ marginTop: 10, fontSize: 12.5 }}>
       <button onClick={() => setAbierto(!abierto)} style={{ border: 'none', background: 'none', color: '#2A6296', cursor: 'pointer', padding: 0, fontSize: 12.5 }}>
-        {abierto ? '▾' : '▸'} Parte de Obras del día {parte?.items?.length ? `(cargado: ${parte.meta.fecha || 's/f'} · ${parte.items.length} ítems · ${fin} finalizadas)` : '(no cargado: las obras salen de obras_capital.json)'}
+        {abierto ? '▾' : '▸'} {titulo} ({resumen})
       </button>
       {abierto && (
         <div style={{ marginTop: 6 }}>
-          <textarea value={texto} onChange={(e) => setTexto(e.target.value)} rows={7} placeholder="Pegá acá el texto de la lista de difusión del día…"
-            style={{ width: '100%', fontFamily: 'monospace', fontSize: 12, padding: 8, borderRadius: 6, border: '1px solid var(--border)' }} />
+          {!disponible && <div style={{ marginBottom: 6, color: '#B71C1C' }}>No se puede guardar: la base de datos no está disponible.</div>}
+          <textarea value={texto} onChange={(e) => { setBorrador(e.target.value); setAviso(''); }} rows={8} placeholder={`Pegá acá el mensaje de ${tipo === 'ejecucion' ? 'obras en ejecución' : 'obras finalizadas'} tal cual se difunde…`}
+            style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'monospace', fontSize: 12, padding: 8, borderRadius: 6, border: '1px solid var(--border)' }} />
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4, flexWrap: 'wrap' }}>
-            <Boton onClick={() => setTexto('')}>Quitar parte</Boton>
-            <span style={{ color: 'var(--text-secondary)' }}>Con parte cargado, las obras de cada circuito se marcan “confirmada por el parte” cuando el parte las trae como finalizadas. Se guarda solo en este navegador.</span>
+            <Boton primario disabled={!disponible || !hayCambio || guardando} onClick={() => guardar(texto)}>{guardando ? 'Guardando…' : 'Guardar'}</Boton>
+            <Boton disabled={!disponible || guardando || (!base && borrador == null)} onClick={() => guardar('')}>Quitar</Boton>
+            <span style={{ color: 'var(--text-secondary)' }}>{aviso || (hayCambio ? 'Hay cambios sin guardar.' : 'Se guarda para todo el equipo.')}</span>
           </div>
+          {sinCircuito.length > 0 && (
+            <div style={{ marginTop: 6, color: '#B07F2A' }}>
+              {sinCircuito.length} {sinCircuito.length === 1 ? 'obra no trae' : 'obras no traen'} circuito y no {sinCircuito.length === 1 ? 'entra' : 'entran'} en ninguna ficha: {sinCircuito.map((o) => o.nombre).join(' · ')}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
-
 export default function Planificador() {
   const [crudo, setCrudo] = useState(null);
   const [error, setError] = useState(null);
@@ -182,6 +210,7 @@ export default function Planificador() {
   const [filtro, setFiltro] = useState(FILTRO_VACIO);
   const [filtrosResumen, setFiltrosResumen] = useState([]); // filtros del Resumen: se conservan al ir y volver de Circuitos
   const [textoParte, setTextoParte] = useState('');
+  const [parteGuardada, setParteGuardada] = useState(null); // { ejecucion: { texto, actualizado_en }, finalizadas: { ... } } desde la base
   const [fichas, setFichas] = useState({});
   const [persistencia, setPersistencia] = useState({ disponible: false, cargando: true, mensaje: null, usuario: null });
   const fichasRef = useRef({}); // última versión de las fichas (incluye lo aplicado en pantalla y aún sin confirmar)
@@ -215,6 +244,25 @@ export default function Planificador() {
   useEffect(() => {
     try { if (textoParte) window.localStorage.setItem(LS_PARTE, textoParte); else window.localStorage.removeItem(LS_PARTE); } catch (e) { /* sin storage */ }
   }, [textoParte]);
+
+  // ---- parte de obras del día (los dos mensajes), compartido en la base ----
+  useEffect(() => {
+    let vivo = true;
+    const leer = () => cargarParte().then((r) => { if (vivo) setParteGuardada(r); }).catch(() => {});
+    leer();
+    const t = setInterval(leer, REFRESCO_FICHAS_MS);
+    return () => { vivo = false; clearInterval(t); };
+  }, []);
+  const guardarParteDia = useCallback(async (tipo, texto) => {
+    const r = await guardarParte(tipo, texto);
+    setParteGuardada((p) => ({ ...(p || {}), [tipo]: r[tipo] }));
+  }, []);
+  const parteDia = useMemo(() => {
+    const ej = parteGuardada?.ejecucion?.texto || '';
+    const fin = parteGuardada?.finalizadas?.texto || '';
+    if (!ej.trim() && !fin.trim()) return null;
+    try { return armarParteDia(ej, fin); } catch (e) { return null; }
+  }, [parteGuardada]);
 
   // ---- fichas compartidas (notas, decisiones, seguimiento): base de datos real ----
   const refrescarFichas = useCallback(async () => {
@@ -342,9 +390,10 @@ export default function Planificador() {
         )}
         {crudo && agregados && nav.hoja === 'circuitos' && (
           <HojaCircuitos filas={filas} fichas={fichas} filtro={filtro} setFiltro={setFiltro} seleccion={nav.seleccion} onSelect={seleccionar}
-            persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} />
+            persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} parteDia={parteDia} />
         )}
-        {crudo && <PanelParte texto={textoParte} setTexto={setTextoParte} parte={parte} />}
+        {crudo && <PanelParteDia titulo="Parte de obras · en ejecución" tipo="ejecucion" guardado={parteGuardada?.ejecucion} disponible={persistencia.disponible} onGuardar={guardarParteDia} />}
+        {crudo && <PanelParteDia titulo="Parte de obras · finalizadas" tipo="finalizadas" guardado={parteGuardada?.finalizadas} disponible={persistencia.disponible} onGuardar={guardarParteDia} />}
         <PiePantalla />
       </div>
     </>
