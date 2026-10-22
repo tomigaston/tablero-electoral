@@ -344,8 +344,8 @@ export default function Planificador() {
   const { filas, pautaDerivada } = useMemo(() => {
     if (!crudo) return { filas: [], pautaDerivada: null };
     const obrasEnriquecidas = enriquecerObrasConCircuito(crudo.obrasData, construirIndiceBarrioCircuito(crudo.cruceData), construirIndiceMapkeyNombre(crudo.cruceData));
-    return construirPlanificador({ ...crudo, obrasEnriquecidas, parte });
-  }, [crudo, parte]);
+    return construirPlanificador({ ...crudo, obrasEnriquecidas, parte, parteDia });
+  }, [crudo, parte, parteDia]);
   const agregados = useMemo(() => (filas.length ? calcularAgregados(filas, pautaDerivada) : null), [filas, pautaDerivada]);
   const hoyTexto = new Date().toLocaleDateString('es-AR');
 
