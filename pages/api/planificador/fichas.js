@@ -31,7 +31,12 @@ export default async function handler(req, res) {
     diagnostico: { entorno: process.env.VERCEL_ENV || null, tieneUrl: !!process.env.PLANIFICADOR_SHEETS_URL, tieneToken: !!process.env.PLANIFICADOR_SHEETS_TOKEN } });
 
   try {
-    if (req.method === 'GET') return res.status(200).json({ modo: m, usuario, fichas: await leerTodas() });
+    if (req.method === 'GET') {
+      // Las claves PARTE_* guardan los mensajes del parte de obras (ver parte.js): no son fichas de circuito.
+      const fichas = await leerTodas();
+      Object.keys(fichas).filter((k) => k.startsWith('PARTE_')).forEach((k) => { delete fichas[k]; });
+      return res.status(200).json({ modo: m, usuario, fichas });
+    }
     if (req.method === 'POST') {
       const { circuito, op } = req.body || {};
       if (!CIRCUITO_VALIDO.test(String(circuito || ''))) return res.status(400).json({ error: 'circuito_invalido' });
