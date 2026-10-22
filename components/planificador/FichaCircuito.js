@@ -71,16 +71,16 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
             <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>{DESCRIPCION_CATEGORIA[f.categoria] || ''}</p>
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'stretch' }}>
-            <DatoGrande etiqueta="Padrón (habitantes)" valor={f.padron != null ? f.padron.toLocaleString('es-AR') : '—'} />
+            <DatoGrande etiqueta="Padrón" valor={f.padron != null ? f.padron.toLocaleString('es-AR') : '—'} />
             <DatoGrande etiqueta="Llaryora · Intendente 2019" valor={formatPct(f.shareInt19)} gris />
             <DatoGrande etiqueta="META · Gobernador 2023" valor={formatPct(f.shareG23)} destacado />
           </div>
         </div>
       </header>
 
-      <Seccion n={3} titulo="Encuesta"><BloqueEncuesta f={f} /></Seccion>
+      <Seccion n={1} titulo="Encuesta"><BloqueEncuesta f={f} /></Seccion>
 
-      <Seccion n={4} titulo="Los 3 problemas principales y su cobertura">
+      <Seccion n={2} titulo="Los 3 problemas principales y su cobertura">
         {f.problemas.items.length === 0 ? (
           <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{f.problemas.estado === 'sin_rondas' ? 'Sin encuestas registradas para este circuito.' : 'Sin dato de problemas en las encuestas de este circuito.'}</p>
         ) : (
@@ -103,15 +103,15 @@ export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hay
         )}
       </Seccion>
 
-      <Seccion n={5} titulo="Qué se hizo">
+      <Seccion n={3} titulo="Qué se hizo">
         <BloqueQueSeHizo key={f.key} f={f} hayParte={hayParte} />
       </Seccion>
 
-      <Seccion titulo="Lectura">
+      <Seccion n={4} titulo="Lectura">
         <div style={{ fontSize: 13.5, lineHeight: 1.55, display: 'grid', gap: 6 }}>{f.lectura.map((p, i) => <p key={i}>{p}</p>)}</div>
       </Seccion>
 
-      <Seccion n={7} titulo="Decisión y seguimiento">
+      <Seccion n={5} titulo="Decisión y seguimiento">
         <BloqueDecision circuito={f.key} ficha={ficha} persistencia={persistencia} onOperacion={onOperacion} />
       </Seccion>
       <PieImpresion leyenda={`Planificador territorial · Circuito ${f.key} ${f.nombre} · generado el ${hoy}`} />

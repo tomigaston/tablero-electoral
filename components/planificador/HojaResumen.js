@@ -244,8 +244,6 @@ function SeguimientoRecomendaciones({ recs, filas, filtros, filtrar, activosDe, 
             <Kpi valor={fmtN(rK.pctCumplidas)} label="cumplidas" color={COLOR_ESTADO_REC.hecha} extra={`${rK.porEstado.hecha} de ${rK.total}`} proporcion={rK.pctCumplidas} />
             <Kpi valor={rK.conRecomendacion} de={nAlcance} label="subcircuitos con recomendación" color="#3478B5" activo={activosDe('seg:con').length > 0}
               onClick={conClaves.length ? (e) => filtrar('seg:con')({ id: 'con', etiqueta: 'Con recomendación', claves: conClaves }, e) : undefined} />
-            <Kpi valor={rK.sinRecomendacion} de={nAlcance} label="subcircuitos sin ninguna" color="#78909C" activo={activosDe('seg:sin').length > 0}
-              onClick={sinClaves.length ? (e) => filtrar('seg:sin')({ id: 'sin', etiqueta: 'Sin recomendación', claves: sinClaves }, e) : undefined} />
           </div>
 
           <ExportarListado recs={recs} />
@@ -419,7 +417,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
               max={aCiegos.kpis.total} activos={activosDe('ciegos')} onClick={filtrar('ciegos')} />
           </Tarjeta>
 
-          <Tarjeta titulo="Clima electoral" claveImp="clima" filtrada={enFiltro('clima')} subtitulo="Circuitos por tier de diagnóstico">
+          <Tarjeta titulo="Clima electoral" claveImp="clima" filtrada={enFiltro('clima')} subtitulo="Circuitos por diagnóstico electoral">
             <Barras items={aClima.tiers.map((t) => ({ id: t.tier, label: TIERS[t.tier].label, valor: t.n, claves: t.claves, color: COLOR_TIER[t.tier], etiqueta: `Clima ${TIERS[t.tier].label}` }))}
               max={aClima.kpis.total} activos={activosDe('clima')} onClick={filtrar('clima')} />
           </Tarjeta>
@@ -435,7 +433,7 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
               activos={activosDe('tema')} onClick={filtrar('tema')} />
           </Tarjeta>
 
-          <Tarjeta titulo="Top 10 problemas reportados" claveImp="top" filtrada={enFiltro('problemas')} subtitulo={`En cuántos de los ${conEncuestaProb} circuitos con encuesta figura entre los 3 principales (última encuesta, sin “Otro”). Tocá uno para ver dónde.`}>
+          <Tarjeta titulo="Top 10 problemas reportados" claveImp="top" filtrada={enFiltro('problemas')} subtitulo={`En cuántos de los ${conEncuestaProb} circuitos con encuesta figura entre los 3 principales. Tocá uno para ver dónde.`}>
             <Barras
               items={topProblemas.map((p) => ({ id: p.cat, label: p.cat, valor: p.n, texto: `${p.n} · #1 en ${p.n1}`, claves: p.claves, etiqueta: `Problema reportado: ${p.cat}`, tooltip: `${p.cat}: entre los 3 principales en ${p.n} circuitos (#1 en ${p.n1}) · promedio ${p.promedio.toFixed(1).replace('.', ',')}% de menciones donde aparece` }))}
               max={conEncuestaProb || 1} activos={activosDe('problemas')} onClick={filtrar('problemas')} />
