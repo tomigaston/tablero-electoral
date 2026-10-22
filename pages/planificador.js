@@ -117,6 +117,10 @@ html,body{background:#F5F7FA !important}
   .plan-hoja-resumen .plan-leyenda button{display:grid !important;grid-template-columns:auto 1fr !important;column-gap:9px;align-items:center;font-size:14.5px !important}
   .plan-hoja-resumen .plan-leyenda button > span:nth-child(2){min-width:0 !important}
   .plan-hoja-resumen .plan-leyenda button > span:nth-child(3){grid-column:2}
+  /* Tarjetas de números: contenido alineado arriba (los números a la misma altura) y la barra de proporción siempre abajo. */
+  .plan-raiz .plan-kpi{display:flex !important;flex-direction:column !important;justify-content:flex-start !important}
+  .plan-raiz .plan-kpi > div[aria-hidden]{margin-top:auto !important}
+  .plan-raiz .plan-kpi-extra,.plan-raiz .plan-kpi-label{margin-bottom:6px}
   .plan-kpi-num{font-size:42px !important}
   .plan-kpi-de{font-size:15px !important}
   .plan-kpi-label{font-size:16px !important}
