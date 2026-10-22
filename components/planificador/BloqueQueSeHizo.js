@@ -48,7 +48,11 @@ function detalleEvento(e) {
     return { fecha: formatearFecha(e.fecha), titulo: `Encuesta · ronda ${d.ronda} de ${d.totalRondas}`,
       extra: [d.casos != null ? `${d.casos} casos` : '', ap != null ? `aprobación ${num1(ap)}%` : ''].filter(Boolean).join(' · ') };
   }
-  return { fecha: formatearFecha(e.fecha), titulo: d.nombre_obra || 'Obra', extra: [d.tipo_obra, d.barrio, d.estado].filter(Boolean).join(' · ') };
+  return {
+    fecha: formatearFecha(e.fecha), titulo: d.nombre_obra || 'Obra',
+    extra: [d.tipo_obra, d.cantidad != null ? `${d.cantidad} ${d.cantidad === 1 ? 'rampa' : 'rampas'}` : '', d.barrio, d.estado].filter(Boolean).join(' · '),
+    link: d.origenParte ? 'Fuente: parte de obras' : '',
+  };
 }
 
 // Mes (o rango de meses) del grupo, y su año: "febrero – agosto" / "2026". Los eventos vienen ordenados por fecha.
@@ -141,15 +145,18 @@ function Obra({ o, hayParte }) {
     <div style={{ padding: '6px 0', borderBottom: '1px solid var(--border)', fontSize: 13 }}>
       <div style={{ fontWeight: 600 }}>
         {o.nombre_obra || 'Obra sin nombre'}
+        {o.origenParte && <span title="Este dato sale del parte de obras cargado en el tablero, no de la base de obras" style={{ marginLeft: 8, fontSize: 10.5, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: '#3478B51F', color: '#2A6296' }}>Del parte de obras{o.fechaParte ? ` · ${formatearFecha(o.fechaParte)}` : ''}</span>}
         {o.confirmadaParte && <span title="El parte del día la trae como finalizada" style={{ marginLeft: 8, fontSize: 10.5, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: '#2E7D3222', color: '#2E7D32' }}>✓ Confirmada por el parte{o.soloParte ? ' (solo en el parte)' : ''}</span>}
-        {hayParte && !o.confirmadaParte && <span style={{ marginLeft: 8, fontSize: 10.5, color: 'var(--text-tertiary)' }}>no figura en el parte</span>}
+        {hayParte && !o.confirmadaParte && !o.origenParte && <span style={{ marginLeft: 8, fontSize: 10.5, color: 'var(--text-tertiary)' }}>no figura en el parte</span>}
       </div>
       <div style={{ color: 'var(--text-secondary)', fontSize: 12.5 }}>
         <Etiqueta k="" v={o.tipo_obra} />
+        {o.cantidad != null && <Etiqueta k="" v={`${o.cantidad} ${o.cantidad === 1 ? 'rampa' : 'rampas'}`} />}
         <Etiqueta k="Estado" v={`${o.estado || '—'}${typeof o.porcentaje_avance === 'number' ? ` (${Math.round(Math.min(o.porcentaje_avance, 1) * 100)} %)` : ''}`} />
         <Etiqueta k="Barrio" v={o.barrio} />
         <Etiqueta k="Disponible desde" v={disponible ? formatearFecha(disponible) : null} />
         {esUrlHttp(o.link_memoria_descriptiva) && <Enlace href={o.link_memoria_descriptiva}>Memoria descriptiva</Enlace>}
+        {(o.links || []).filter(esUrlHttp).map((l, i) => <Enlace key={i} href={l}>Ver documento</Enlace>)}
       </div>
     </div>
   );
@@ -216,7 +223,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
 
   // Las obras de la secuencia traen la marca del parte que calculó obrasInaugurablesDeCircuito.
   const marcadas = useMemo(() => new Map(f.inaugurables.map((o) => [claveObra(o), o])), [f.inaugurables]);
-  const nObrasEnSecuencia = f.eventos.filter((e) => e.tipo === 'obra').length;
+  const nObrasEnSecuencia = f.eventos.filter((e) => e.tipo === 'obra' && !e.detalle?.origenParte).length;
   const nObrasSinFecha = f.inaugurables.length - nObrasEnSecuencia;
 
   const nPautas = f.piezasPauta.length;
@@ -282,7 +289,7 @@ export default function BloqueQueSeHizo({ f, hayParte }) {
 // resaltado a la izquierda y cada evento separado de los otros. En pantalla no se ve (el detalle se abre desde los botones).
 export function AnexoLineaTiempo({ f }) {
   const grupos = useMemo(() => colapsarEventos(f.eventos), [f.eventos]);
-  const nSinFecha = f.inaugurables.length - f.eventos.filter((e) => e.tipo === 'obra').length;
+  const nSinFecha = f.inaugurables.length - f.eventos.filter((e) => e.tipo === 'obra' && !e.detalle?.origenParte).length;
   return (
     <div className="plan-solo-print plan-anexo" style={{ display: 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 700, color: '#5B6772', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 12 }}>
