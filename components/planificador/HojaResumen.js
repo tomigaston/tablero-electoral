@@ -345,7 +345,6 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
   const aCiegos = aDe('ciegos');
   const aClima = aDe('clima');
   const aProb = aDe('problema1');
-  const aObras = aDe('obras');
   // Top de problemas: se calcula sobre los circuitos que dejan pasar los filtros de las OTRAS tarjetas.
   const clavesProb = combinarFiltros(filtros, 'problemas');
   const topProblemas = problemasTop(clavesProb ? filas.filter((f) => clavesProb.includes(f.key)) : filas, 10);
@@ -447,12 +446,6 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
             </button>
             <Barras items={aProb.problema1.porTipo.map((p) => ({ id: p.cat, label: p.cat, valor: p.n, claves: p.claves, etiqueta: `Problema #1 sin cobertura: ${p.cat}` }))}
               activos={activosDe('problema1')} onClick={filtrar('problema1')} />
-          </Tarjeta>
-
-          <Tarjeta titulo="Obras listas para inaugurar" claveImp="obras" filtrada={enFiltro('obras')} subtitulo={`${aObras.obras.totalObras} obras en espera, por antigüedad desde que están disponibles`}>
-            <Barras items={aObras.obras.buckets.filter((b) => b.obras > 0).map((b) => ({ id: b.id, label: b.label, valor: b.obras, texto: `${b.obras} · ${b.claves.length} circ.`, claves: b.claves, etiqueta: `Obras listas: ${b.label}`, color: b.id === '180+' || b.id === '91-180' ? '#B07F2A' : undefined, tooltip: `${b.label}: ${b.obras} obras en ${b.claves.length} circuitos` }))}
-              activos={activosDe('obras')} onClick={filtrar('obras')} />
-            <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 8 }}>Se refresca con el parte diario cuando está cargado; sin parte, sale de obras_capital.json.</p>
           </Tarjeta>
         </div>
       </div>
