@@ -294,28 +294,35 @@ export function AnexoLineaTiempo({ f }) {
         const per = periodoDe(g);
         const t = COLOR_TIPO_EVENTO[g.tipo];
         return (
-          <div key={i} style={{ display: 'grid', gridTemplateColumns: '122px minmax(0, 1fr)', gap: 14, marginBottom: 16, breakInside: 'avoid' }}>
-            <div style={{ alignSelf: 'start', padding: '8px 10px', borderRadius: 10, borderLeft: `4px solid ${t.color}`, background: `${t.color}1A` }}>
-              <div style={{ fontSize: 14, fontWeight: 800, lineHeight: 1.2, textTransform: 'capitalize' }}>{per.meses}</div>
-              <div style={{ fontSize: 11, color: '#5B6772' }}>{per.anios}</div>
-              <div style={{ fontSize: 11.5, fontWeight: 700, color: t.color, marginTop: 4 }}>{etiquetaGrupo(g)}</div>
-            </div>
-            <div>
+          // Una tabla por grupo: si el grupo no entra en la hoja se corta donde haga falta y el encabezado (<thead>) con el mes
+          // se repite arriba en cada página; cada evento no se parte.
+          <table key={i} style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16, fontSize: 12 }}>
+            <thead>
+              <tr>
+                <th colSpan={2} style={{ padding: '0 0 6px', textAlign: 'left', fontWeight: 400 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '7px 12px', borderRadius: 10, borderLeft: `4px solid ${t.color}`, background: `${t.color}1A` }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, textTransform: 'capitalize' }}>{per.meses} {per.anios}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: t.color }}>{etiquetaGrupo(g)}</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {g.eventos.map((e, j) => {
                 const v = detalleEvento(e);
                 return (
-                  <div key={j} style={{ display: 'grid', gridTemplateColumns: '78px minmax(0, 1fr)', gap: 10, padding: '7px 0', borderBottom: j < g.eventos.length - 1 ? '1px solid #E4E8EE' : 'none', breakInside: 'avoid', fontSize: 12 }}>
-                    <div style={{ fontWeight: 700, color: '#5B6772' }}>{v.fecha}</div>
-                    <div>
+                  <tr key={j} style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+                    <td style={{ width: 84, padding: '6px 10px 6px 12px', verticalAlign: 'top', fontWeight: 700, color: '#5B6772', whiteSpace: 'nowrap', borderBottom: j < g.eventos.length - 1 ? '1px solid #E4E8EE' : 'none' }}>{v.fecha}</td>
+                    <td style={{ padding: '6px 0', verticalAlign: 'top', borderBottom: j < g.eventos.length - 1 ? '1px solid #E4E8EE' : 'none' }}>
                       <div style={{ fontWeight: 600, color: '#1F2933' }}>{v.titulo}</div>
                       {v.extra && <div style={{ color: '#5B6772', marginTop: 1 }}>{v.extra}</div>}
                       {v.link && <div style={{ color: '#2A6296', marginTop: 1 }}>{v.link}</div>}
-                    </div>
-                  </div>
+                    </td>
+                  </tr>
                 );
               })}
-            </div>
-          </div>
+            </tbody>
+          </table>
         );
       })}
       {nSinFecha > 0 && <div style={{ fontSize: 11.5, color: '#8A94A0' }}>{nSinFecha} obra(s) sin fecha de disponibilidad no entran en la secuencia.</div>}
