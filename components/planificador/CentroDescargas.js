@@ -82,6 +82,7 @@ export const OPCIONES_FICHA = [
 
 // Contenido de las fichas de varios circuitos (las del filtro del Resumen).
 export const OPCIONES_FICHAS_LOTE = [
+  { id: 'listado', etiqueta: 'Listado rápido', descripcion: 'Solo el encabezado de cada circuito en una tabla: circuito, situación, categoría, padrón, Llaryora 2019 y meta Gobernador 2023.' },
   { id: 'resumen', etiqueta: 'Fichas resumen', descripcion: 'Una ficha resumen por circuito, una detrás de otra, en un solo PDF.' },
   { id: 'completa', etiqueta: 'Fichas completas', descripcion: 'Una ficha completa por circuito (con el anexo del detalle de lo que se hizo), en un solo PDF.' },
 ];

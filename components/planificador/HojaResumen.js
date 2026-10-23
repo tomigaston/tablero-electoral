@@ -466,17 +466,17 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
             ))}
           </span>
           <Boton onClick={() => onIr(clavesTodas, etiqueta)} disabled={!clavesTodas.length} style={{ padding: '3px 10px', fontSize: 12 }}>Ver lista</Boton>
-          <Boton onClick={() => setDescargando(true)} disabled={!clavesTodas.length || !onDescargarFichas} titulo="Descarga las fichas individuales de los circuitos del filtro en un solo PDF" style={{ padding: '3px 10px', fontSize: 12 }}>Descargar fichas</Boton>
+          <Boton onClick={() => setDescargando(true)} disabled={!clavesTodas.length || !onDescargarFichas} titulo="Descarga el listado de los circuitos del filtro o sus fichas individuales, en un solo PDF" style={{ padding: '3px 10px', fontSize: 12 }}>Descargar fichas / listado</Boton>
           <Boton primario onClick={() => setFiltros([])} style={{ padding: '3px 10px', fontSize: 12 }}>Limpiar filtro</Boton>
         </div>
       )}
 
       {descargando && clavesTodas && (
-        <CentroDescargas subtitulo="Se exportan las fichas individuales de los circuitos que tenés filtrados."
+        <CentroDescargas subtitulo="Se exporta lo que tenés filtrado: el listado de circuitos o sus fichas individuales."
           alcance={`${clavesTodas.length} ${clavesTodas.length === 1 ? 'circuito' : 'circuitos'} · ${etiqueta}`}
           opciones={OPCIONES_FICHAS_LOTE} valor={modoFichas} onCambiar={setModoFichas}
           aviso={clavesTodas.length > 40 ? 'Son muchas fichas: preparar el PDF puede tardar unos segundos.' : null}
-          onGenerar={() => { setDescargando(false); onDescargarFichas(clavesTodas, modoFichas); }} onCerrar={() => setDescargando(false)} />
+          onGenerar={() => { setDescargando(false); onDescargarFichas(clavesTodas, modoFichas, etiqueta); }} onCerrar={() => setDescargando(false)} />
       )}
 
       {/* En pantalla: mapa a la izquierda y las cinco tarjetas apiladas a la derecha (.plan-pag1 y .plan-pag2 son display:contents).
