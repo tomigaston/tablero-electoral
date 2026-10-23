@@ -292,6 +292,24 @@ def menciona_otro_departamento(aud):
     return False
 
 
+def algun_item_dice_capital(aud):
+    """Algún ítem de la audiencia (separados por coma, '|' o salto de línea) habla de Córdoba Capital, de
+    Capital o de la provincia, sin pedir excluirla y sin nombrar otro departamento ('Córdoba Capital 30 a
+    60 años, Departamento Punilla…' -> True; 'Excluir Departamento Capital' -> False)."""
+    for item in re.split(r"[\r\n]+|,|\|", str(aud or "")):
+        t = normalizar(item)
+        if re.search(r"\b(CAPITAL|PROVINCIA)\b", t) and not re.search(r"EXCLU|EXLCU", t) and not menciona_otro_departamento(item):
+            return True
+    return False
+
+
+def audiencia_nombra_el_circuito(aud, circuito, ref):
+    """'Barrio X' donde X es el nombre del circuito de LOCALIDAD (ej. '010M - AMPLIACION CABILDO' y 'Barrio
+    Ampliación Cabildo…'): la audiencia habla del circuito, no de un barrio."""
+    nombre = ref["circuito_nombre_np"].get(circuito)
+    return bool(nombre) and bool(re.search(r"\bBARRIOS?\s+" + re.escape(nombre) + r"\b", normalizar_sin_puntos(aud)))
+
+
 def _dividir_items(aud):
     partes = re.split(r"[\r\n]+|,|\s+y\s+(?=\d)", str(aud))
     return [p.strip() for p in partes if p and p.strip()]
@@ -398,6 +416,8 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
         if barrios:
             res["entradas"] = [{"destino": "barrio", "circuito": circuito, "barrio": b} for b in barrios]
             res["avisos"] += [aviso_sin_match(x, ref) for x in segmentos_sin_match(aud_sin_loc, ref)]
+        elif audiencia_nombra_el_circuito(aud_sin_loc, circuito, ref):
+            res["entradas"] = entradas_circuito_sin_barrio(circuito, ref)
         elif menciona_barrio(aud_sin_loc):
             res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra un barrio que no se pudo resolver ({aud_sin_loc.strip()})")
             return res
@@ -460,6 +480,8 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
                 res["entradas"] = [{"destino": "barrio", "circuito": None, "barrio": b} for b in barrios]
                 res["avisos"] += [aviso_sin_match(x, ref) for x in segmentos_sin_match(aud, ref)]
                 res["destino"] = "entradas"
+            elif menciona_otro_departamento(aud) and algun_item_dice_capital(aud):
+                res["destino"] = "toda_capital"  # decisión de Tomás del 23/10: un ítem dice Capital
             elif menciona_otro_departamento(aud):
                 res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra otro departamento ({aud})")
             elif menciona_barrio(aud):
