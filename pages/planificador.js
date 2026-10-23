@@ -15,6 +15,7 @@ import { parsearParteDia, armarParteDia } from '../lib/planificador/parteDia';
 import { cargarParte, guardarParte } from '../lib/planificador/parteApi';
 import HojaResumen from '../components/planificador/HojaResumen';
 import HojaCircuitos from '../components/planificador/HojaCircuitos';
+import FichaCircuito from '../components/planificador/FichaCircuito';
 import { Boton } from '../components/planificador/ui';
 import { CabeceraPantalla, PiePantalla } from '../components/planificador/Marca';
 import { MARCA, URL_FUENTE } from '../lib/planificador/marca';
@@ -52,6 +53,7 @@ html,body{background:#F5F7FA !important}
 .plan-solo-movil{display:none}
 /* Resumen en pantalla: mapa a la izquierda y las cinco tarjetas apiladas a la derecha (las hojas del PDF son display:contents acá). */
 .plan-pag1,.plan-pag2{display:contents}
+.plan-lote{display:none}
 .plan-grilla-resumen .plan-mapa-col{grid-column:1;grid-row:1 / span 5}
 .plan-grilla-resumen [data-plan-card]{grid-column:2}
 @media (max-width:900px){
@@ -143,6 +145,12 @@ html,body{background:#F5F7FA !important}
   .plan-col-tiempo{flex:0 0 108px !important;width:108px !important;min-width:0 !important}
   /* Anexo de la ficha: empieza en hoja nueva y puede cortarse entre páginas. */
   .plan-anexo{break-before:page;page-break-before:always}
+  /* Ficha resumen (sin el anexo del detalle) y descarga de varias fichas: una ficha por circuito, cada una en hoja nueva. */
+  .plan-sin-anexo .plan-anexo{display:none !important}
+  .plan-modo-lote .plan-hoja-resumen{display:none !important}
+  .plan-modo-lote .plan-lote{display:block !important}
+  .plan-lote .plan-ficha{break-before:page;page-break-before:always}
+  .plan-lote .plan-ficha:first-child{break-before:auto;page-break-before:auto}
 }
 `;
 
@@ -211,6 +219,7 @@ export default function Planificador() {
   const [filtro, setFiltro] = useState(FILTRO_VACIO);
   const [filtrosResumen, setFiltrosResumen] = useState([]); // filtros del Resumen: se conservan al ir y volver de Circuitos
   const [textoParte, setTextoParte] = useState('');
+  const [lote, setLote] = useState(null); // fichas de varios circuitos para un solo PDF: { claves, modo: 'resumen' | 'completa' }
   const [parteGuardada, setParteGuardada] = useState(null); // { ejecucion: { texto, actualizado_en }, finalizadas: { ... } } desde la base
   const [fichas, setFichas] = useState({});
   const [persistencia, setPersistencia] = useState({ disponible: false, cargando: true, mensaje: null, usuario: null });
@@ -246,6 +255,28 @@ export default function Planificador() {
     try { if (textoParte) window.localStorage.setItem(LS_PARTE, textoParte); else window.localStorage.removeItem(LS_PARTE); } catch (e) { /* sin storage */ }
   }, [textoParte]);
 
+  // ---- Descarga de las fichas de los circuitos filtrados en el Resumen (un PDF con una ficha por circuito) ----
+  // Se dibujan las fichas en un contenedor oculto (.plan-lote), se espera a que se rendericen y se imprime solo ese contenedor.
+  useEffect(() => {
+    if (!lote) return undefined;
+    const raiz = document.querySelector('.plan-raiz');
+    const anterior = document.title;
+    const limpiar = () => {
+      document.title = anterior;
+      raiz?.classList.remove('plan-modo-lote', 'plan-sin-anexo');
+      window.removeEventListener('afterprint', limpiar);
+      setLote(null);
+    };
+    const t = setTimeout(() => {
+      raiz?.classList.add('plan-modo-lote');
+      if (lote.modo === 'resumen') raiz?.classList.add('plan-sin-anexo');
+      document.title = `Planificador territorial · Tablero electoral - ${lote.claves.length} ${lote.claves.length === 1 ? 'ficha' : 'fichas'}${lote.modo === 'resumen' ? ' (resumen)' : ''}`;
+      window.addEventListener('afterprint', limpiar);
+      window.print();
+    }, 400 + lote.claves.length * 20);
+    return () => clearTimeout(t);
+  }, [lote]);
+  const descargarFichas = useCallback((claves, modo) => setLote({ claves, modo }), []);
   // ---- parte de obras del día (los dos mensajes), compartido en la base ----
   useEffect(() => {
     let vivo = true;
@@ -388,13 +419,24 @@ export default function Planificador() {
 
         {crudo && agregados && nav.hoja === 'resumen' && (
           <HojaResumen filas={filas} pautaDerivada={pautaDerivada} agregados={agregados} fichas={fichas} persistencia={persistencia}
-            filtros={filtrosResumen} setFiltros={setFiltrosResumen} onIr={irConConjunto} onAbrir={abrirDesdeResumen} hoyTexto={hoyTexto} />
+            filtros={filtrosResumen} setFiltros={setFiltrosResumen} onIr={irConConjunto} onAbrir={abrirDesdeResumen} onDescargarFichas={descargarFichas} hoyTexto={hoyTexto} />
         )}
         {crudo && agregados && nav.hoja === 'circuitos' && (
           <HojaCircuitos filas={filas} fichas={fichas} filtro={filtro} setFiltro={setFiltro} seleccion={nav.seleccion} onSelect={seleccionar}
             persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} parteDia={parteDia} />
         )}
-        {crudo && <PanelParteDia titulo="Parte de obras · en ejecución" tipo="ejecucion" guardado={parteGuardada?.ejecucion} disponible={persistencia.disponible} onGuardar={guardarParteDia} />}
+        {lote && (
+          <>
+            <div className="plan-no-print" role="status" style={{ position: 'fixed', right: 18, bottom: 18, zIndex: 1000, padding: '12px 18px', borderRadius: 14, background: '#1F2933', color: '#fff', fontSize: 13.5, fontWeight: 600, boxShadow: '0 8px 30px rgba(16,24,40,0.35)' }}>
+              Preparando {lote.claves.length} {lote.claves.length === 1 ? 'ficha' : 'fichas'} para el PDF…
+            </div>
+            <div className="plan-lote">
+              {filas.filter((f) => lote.claves.includes(f.key)).sort((a, b) => a.key.localeCompare(b.key, 'es', { numeric: true })).map((f) => (
+                <FichaCircuito key={f.key} f={f} ficha={fichas[f.key]} persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} />
+              ))}
+            </div>
+          </>
+        )}        {crudo && <PanelParteDia titulo="Parte de obras · en ejecución" tipo="ejecucion" guardado={parteGuardada?.ejecucion} disponible={persistencia.disponible} onGuardar={guardarParteDia} />}
         {crudo && <PanelParteDia titulo="Parte de obras · finalizadas" tipo="finalizadas" guardado={parteGuardada?.finalizadas} disponible={persistencia.disponible} onGuardar={guardarParteDia} />}
         <PiePantalla />
       </div>
