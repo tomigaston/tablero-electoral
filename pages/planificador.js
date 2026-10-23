@@ -16,6 +16,7 @@ import { cargarParte, guardarParte } from '../lib/planificador/parteApi';
 import HojaResumen from '../components/planificador/HojaResumen';
 import HojaCircuitos from '../components/planificador/HojaCircuitos';
 import FichaCircuito from '../components/planificador/FichaCircuito';
+import ListadoCircuitos from '../components/planificador/ListadoCircuitos';
 import { Boton } from '../components/planificador/ui';
 import { CabeceraPantalla, PiePantalla } from '../components/planificador/Marca';
 import { MARCA, URL_FUENTE } from '../lib/planificador/marca';
@@ -219,7 +220,7 @@ export default function Planificador() {
   const [filtro, setFiltro] = useState(FILTRO_VACIO);
   const [filtrosResumen, setFiltrosResumen] = useState([]); // filtros del Resumen: se conservan al ir y volver de Circuitos
   const [textoParte, setTextoParte] = useState('');
-  const [lote, setLote] = useState(null); // fichas de varios circuitos para un solo PDF: { claves, modo: 'resumen' | 'completa' }
+  const [lote, setLote] = useState(null); // fichas de varios circuitos para un solo PDF: { claves, modo: 'listado' | 'resumen' | 'completa', etiqueta }
   const [parteGuardada, setParteGuardada] = useState(null); // { ejecucion: { texto, actualizado_en }, finalizadas: { ... } } desde la base
   const [fichas, setFichas] = useState({});
   const [persistencia, setPersistencia] = useState({ disponible: false, cargando: true, mensaje: null, usuario: null });
@@ -269,14 +270,16 @@ export default function Planificador() {
     };
     const t = setTimeout(() => {
       raiz?.classList.add('plan-modo-lote');
-      if (lote.modo === 'resumen') raiz?.classList.add('plan-sin-anexo');
-      document.title = `Planificador territorial · Tablero electoral - ${lote.claves.length} ${lote.claves.length === 1 ? 'ficha' : 'fichas'}${lote.modo === 'resumen' ? ' (resumen)' : ''}`;
+      if (lote.modo !== 'completa') raiz?.classList.add('plan-sin-anexo');
+      document.title = lote.modo === 'listado'
+        ? `Planificador territorial · Tablero electoral - listado de ${lote.claves.length} ${lote.claves.length === 1 ? 'circuito' : 'circuitos'}`
+        : `Planificador territorial · Tablero electoral - ${lote.claves.length} ${lote.claves.length === 1 ? 'ficha' : 'fichas'}${lote.modo === 'resumen' ? ' (resumen)' : ''}`;
       window.addEventListener('afterprint', limpiar);
       window.print();
     }, 400 + lote.claves.length * 20);
     return () => clearTimeout(t);
   }, [lote]);
-  const descargarFichas = useCallback((claves, modo) => setLote({ claves, modo }), []);
+  const descargarFichas = useCallback((claves, modo, etiqueta) => setLote({ claves, modo, etiqueta }), []);
   // ---- parte de obras del día (los dos mensajes), compartido en la base ----
   useEffect(() => {
     let vivo = true;
@@ -428,12 +431,14 @@ export default function Planificador() {
         {lote && (
           <>
             <div className="plan-no-print" role="status" style={{ position: 'fixed', right: 18, bottom: 18, zIndex: 1000, padding: '12px 18px', borderRadius: 14, background: '#1F2933', color: '#fff', fontSize: 13.5, fontWeight: 600, boxShadow: '0 8px 30px rgba(16,24,40,0.35)' }}>
-              Preparando {lote.claves.length} {lote.claves.length === 1 ? 'ficha' : 'fichas'} para el PDF…
+              Preparando {lote.modo === 'listado' ? 'el listado' : `${lote.claves.length} ${lote.claves.length === 1 ? 'ficha' : 'fichas'}`} para el PDF…
             </div>
             <div className="plan-lote">
-              {filas.filter((f) => lote.claves.includes(f.key)).sort((a, b) => a.key.localeCompare(b.key, 'es', { numeric: true })).map((f) => (
-                <FichaCircuito key={f.key} f={f} ficha={fichas[f.key]} persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} />
-              ))}
+              {lote.modo === 'listado'
+                ? <ListadoCircuitos filas={filas.filter((f) => lote.claves.includes(f.key))} etiqueta={lote.etiqueta} />
+                : filas.filter((f) => lote.claves.includes(f.key)).sort((a, b) => a.key.localeCompare(b.key, 'es', { numeric: true })).map((f) => (
+                  <FichaCircuito key={f.key} f={f} ficha={fichas[f.key]} persistencia={persistencia} onOperacion={operar} hayParte={!!parte?.items?.length} />
+                ))}
             </div>
           </>
         )}        {crudo && <PanelParteDia titulo="Parte de obras · en ejecución" tipo="ejecucion" guardado={parteGuardada?.ejecucion} disponible={persistencia.disponible} onGuardar={guardarParteDia} />}
