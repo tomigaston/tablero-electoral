@@ -48,6 +48,8 @@ for (const fecha of fechas) {
   console.log('Entradas:', entradas.length, '| por estado:', JSON.stringify(por(entradas, (p) => p.estado)));
   console.log('Entradas activas (estado Vigente e INICIO<=hoy<=FIN):', activas.length, '| filas únicas:', new Set(activas.map((p) => p.fila_origen)).size);
   console.log('Activas por bucket:', JSON.stringify(por(activas, (p) => p.destino_tablero)));
+  console.log('toda_capital:', pautas.toda_capital.pautas.length, 'entradas | activas:', pautas.toda_capital.pautas.filter((p) => pautaEstaVigente(p, hoy)).length,
+    '| por estado:', JSON.stringify(por(pautas.toda_capital.pautas, (p) => p.estado)));
   console.log('Nivel 1 (ESTADO activo):', nivel(entradas.filter((p) => p.estado === 'Vigente')));
   console.log('Nivel 2 (activas):', nivel(activas));
   console.log('Nivel 3 (activas dirigidas):', nivel(activas.filter(dirigida)));

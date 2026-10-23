@@ -363,8 +363,10 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
          AUDIENCIA, una entrada por barrio; sin barrios, circuito_sin_barrio.
       3) 'TODAS LAS LOCALIDADES': decide DEPARTAMENTO — Capital -> toda_capital; otro
          departamento u otra provincia -> excluido; 'PROVINCIA DE CÓRDOBA' sin departamento
-         -> decide AUDIENCIA (menciona Córdoba/Capital/Provincia -> toda_capital; nombra
-         otro departamento -> excluido; sin referencia geográfica -> pendiente).
+         -> toda_capital, sea cual sea la AUDIENCIA (vacía, segmento, nota interna), salvo que
+         nombre otro departamento (-> excluido) o, sin mencionar Córdoba/Capital/Provincia,
+         un barrio o un circuito (-> pendiente, como antes). Decisión de Tomás del 23/10, que
+         reemplaza la del 8/10 de dejar pendiente la audiencia vaga.
       4) 'CÓRDOBA CAPITAL, DEPARTAMENTO CAPITAL…': decide AUDIENCIA (lista con números de
          circuito, barrios nombrados, o toda_capital). Si la audiencia nombra otro
          departamento o un barrio que no se pudo resolver -> pendiente (queda afuera).
@@ -412,16 +414,17 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
             else:
                 res.update(destino="excluido", motivo=f"Fuera de Capital: localidad = {TODAS}; departamento = {limpio(depto_raw)}")
             return res
-        # 'PROVINCIA DE CÓRDOBA, ARGENTINA' sin departamento puntual: decide AUDIENCIA
+        # 'PROVINCIA DE CÓRDOBA, ARGENTINA' sin departamento puntual: toda_capital salvo que la
+        # AUDIENCIA nombre otro departamento, o un barrio o circuito sin mencionar Córdoba/Capital.
         n_aud = normalizar(aud)
-        if not n_aud:
-            res.update(destino="pendiente", motivo="PENDIENTE: alcance geográfico ambiguo (sin audiencia)")
-        elif re.search(r"\bDEPARTAMENTO\b", n_aud):
+        if re.search(r"\bDEPARTAMENTO\b", n_aud):
             res.update(destino="excluido", motivo=f"Fuera de Capital: localidad = {TODAS}; audiencia = {aud}")
         elif re.search(r"\b(CORDOBA|CAPITAL|PROVINCIA)\b", n_aud):
             res.update(destino="toda_capital")
+        elif n_aud and (extraer_barrios(aud, ref) or menciona_barrio(aud) or items_con_circuito(aud)):
+            res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra un barrio o un circuito sin decir que es de Capital ({aud})")
         else:
-            res.update(destino="pendiente", motivo=f"PENDIENTE: alcance geográfico ambiguo ({aud})")
+            res.update(destino="toda_capital")
         return res
 
     if loc:
@@ -680,10 +683,9 @@ def motivo_pendiente_claro(motivo):
     """Motivo técnico de una fila pendiente -> texto para quien carga la planilla."""
     m = re.match(r"^PENDIENTE: (.*?)(?: \((.*)\))?$", motivo or "", flags=re.S)
     tipo, texto = (m.group(1), m.group(2)) if m else (motivo, None)
-    if tipo == "alcance geográfico ambiguo":
-        aud = "la AUDIENCIA está vacía" if texto in (None, "sin audiencia") else f"la AUDIENCIA («{texto}») no dice dónde llega"
-        return (f"La localidad dice TODAS LAS LOCALIDADES, el departamento es solo «Provincia de Córdoba» y {aud}. "
-                "Para que entre, indicar en la AUDIENCIA si llega a toda la Capital, a un barrio o a un circuito, o cargar el departamento.")
+    if tipo == "la audiencia nombra un barrio o un circuito sin decir que es de Capital":
+        return (f"La localidad dice TODAS LAS LOCALIDADES y el departamento es solo «Provincia de Córdoba», pero la AUDIENCIA nombra un barrio "
+                f"o un circuito («{texto}»). Si es de Capital, cargar la localidad CÓRDOBA CAPITAL o el código de circuito.")
     if tipo == "la audiencia nombra otro departamento":
         return f"La localidad es Córdoba Capital pero la AUDIENCIA nombra otro departamento («{texto}»). Corregir la localidad o la audiencia."
     if tipo == "la audiencia nombra un barrio que no se pudo resolver":
@@ -856,7 +858,12 @@ def escribir_no_procesadas(path, df_crudo, stats):
                 motivo = (f"Coincide con la fila {otras} en {CLAVE_TEXTO}, y ninguna de las dos tiene métricas cargadas. "
                           f"El tablero muestra solo la fila {otras}.")
             else:
-                motivo = (f"Coincide con la fila {otras} en {CLAVE_TEXTO}, pero las impresiones son distintas ({_fmt_num(imp_p)} contra {_fmt_num(imp_g)}). "
+                mp, mg = d["metricas"][0]
+                if imp_p != imp_g:
+                    distinto = f"las impresiones son distintas ({_fmt_num(imp_p)} contra {_fmt_num(imp_g)})"
+                else:
+                    distinto = f"las métricas son distintas (impresiones {_fmt_num(imp_p)} en las dos; inversión {_fmt_num(mp['inversion'])} contra {_fmt_num(mg['inversion'])})"
+                motivo = (f"Coincide con la fila {otras} en {CLAVE_TEXTO}, pero {distinto}. "
                           f"El tablero conserva la fila {otras} y no suma las métricas. Confirmar si es la misma pieza cargada dos veces o si son piezas "
                           "distintas; si son distintas, diferenciarlas en la planilla (por ejemplo en el título o el link).")
                 if limpio(rp["LINK MATERIAL"]) is None and limpio(rp["TIPO DE MATERIAL"]) is None:

@@ -110,8 +110,11 @@ caso("departamento con 'DE' (DEPARTAMENTO DE COLÓN) -> excluido", geo("DEPARTAM
 caso("otra provincia (sin 'Córdoba') -> excluido", geo("Provincia de Santa Fe", "TODAS LAS LOCALIDADES", None)["destino"] == "excluido")
 caso("'Todas las localidades' en minúscula NO es el valor literal: no cae en toda_capital", geo(CAPITAL, "Todas las localidades", None)["destino"] == "excluido")
 caso("PROVINCIA + audiencia con Córdoba -> toda_capital", geo(PROVINCIA, "TODAS LAS LOCALIDADES", "Provincia de Córdoba de 30 a 60 años. Sin advantage +")["destino"] == "toda_capital")
-caso("PROVINCIA + audiencia vacía -> pendiente", geo(PROVINCIA, "TODAS LAS LOCALIDADES", None)["destino"] == "pendiente")
-caso("PROVINCIA + audiencia sin referencia geográfica -> pendiente", geo(PROVINCIA, "TODAS LAS LOCALIDADES", "Audiencia de alto poder adquisitivo")["destino"] == "pendiente")
+caso("PROVINCIA + audiencia vacía -> toda_capital (decisión 23/10)", geo(PROVINCIA, "TODAS LAS LOCALIDADES", None)["destino"] == "toda_capital")
+for aud in ["Audiencia de alto poder adquisitivo", "ABC1", "Circulo rojo sin distinción. Políticos de primer rango y funcionarios.", "IDN141XXXX/ AEN118XXXX", "Segmentar por intereses"]:
+    caso(f"PROVINCIA + audiencia sin referencia geográfica ({aud[:25]}) -> toda_capital (decisión 23/10)", geo(PROVINCIA, "TODAS LAS LOCALIDADES", aud)["destino"] == "toda_capital")
+caso("PROVINCIA + audiencia que nombra un barrio sin decir Capital -> pendiente (sigue la regla anterior)", geo(PROVINCIA, "TODAS LAS LOCALIDADES", "Barrio Los Naranjos 30 a 65")["destino"] == "pendiente")
+caso("PROVINCIA + audiencia con lista de circuitos sin decir Capital -> pendiente", geo(PROVINCIA, "TODAS LAS LOCALIDADES", "5 G San Vicente, 5 C Empalme")["destino"] == "pendiente")
 caso("PROVINCIA + 'Departamento Punilla' -> excluido", geo(PROVINCIA, "TODAS LAS LOCALIDADES", "Departamento Punilla")["destino"] == "excluido")
 caso("'Toda la provincia excluyendo X' -> toda_capital (decisión 19/10)", geo(PROVINCIA, "TODAS LAS LOCALIDADES", "Toda la provincia excluyendo San Alberto")["destino"] == "toda_capital")
 
@@ -241,7 +244,7 @@ base = {"LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES", "LINK MATERIAL": "ht
 filas = [fila(**base, **{"Impresiones Ejecutada META": 5}), fila(**base, **{"Impresiones Ejecutada META": 5}),  # repetición genuina
          fila(**base, **{"TITULO DE LA PIEZA": "b", "Impresiones Ejecutada META": 5}), fila(**base, **{"TITULO DE LA PIEZA": "b", "Impresiones Ejecutada META": 9}),  # a confirmar
          fila(**{"TITULO DE LA PIEZA": "c", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}), fila(**{"TITULO DE LA PIEZA": "c", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}),  # sin métricas
-         fila(**{"DEPARTAMENTO": PROVINCIA, "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES", "AUDIENCIA  (Barrios o publicos) ": "Audiencia de alto poder adquisitivo"}),  # pendiente
+         fila(**{"LOCALIDAD / SUBCIRCUITO": LOC_CAPITAL, "AUDIENCIA  (Barrios o publicos) ": "Barrio Inventado de 30 a 60 años"}),  # pendiente
          fila(**{"DEPARTAMENTO": "DEPARTAMENTO RIO CUARTO, PROVINCIA DE CÓRDOBA, ARGENTINA", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}),  # fuera
          fila(**{"CAMPAÑA": None, "TITULO DE LA PIEZA": None})]  # vacía
 df_doc = pd.DataFrame(filas, columns=COLUMNAS)
