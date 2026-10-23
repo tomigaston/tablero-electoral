@@ -1,6 +1,6 @@
 // Ficha de un circuito (derecha de la hoja Circuitos). Bloques: encabezado · electoral ·
 // encuesta · 3 problemas + cobertura · qué se hizo · lectura · decisión y seguimiento.
-import React from 'react';
+import React, { useState } from 'react';
 import { DESCRIPCION_CATEGORIA, LABEL_PRIORIDAD, COLOR_PRIORIDAD } from '../../lib/planificador/config';
 import { MARCA } from '../../lib/planificador/marca';
 import { CabeceraImpresion, PieImpresion } from './Marca';
@@ -10,6 +10,8 @@ import { ChipCategoria, Boton } from './ui';
 import BloqueEncuesta from './BloqueEncuesta';
 import BloqueQueSeHizo, { AnexoLineaTiempo } from './BloqueQueSeHizo';
 import BloqueDecision from './BloqueDecision';
+import CentroDescargas, { OPCIONES_FICHA } from './CentroDescargas';
+
 const Seccion = ({ n, titulo, children }) => (
   <section className="plan-seccion" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px', marginBottom: 12 }}>
     <h2 style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{n ? `${n}. ` : ''}{titulo}</h2>
@@ -47,21 +49,31 @@ const DatoGrande = ({ etiqueta, valor, gris, destacado }) => (
 export default function FichaCircuito({ f, ficha, persistencia, onOperacion, hayParte, onVolver }) {
   const hoy = new Date().toLocaleDateString('es-AR');
   // El navegador propone como nombre del PDF el título de la página: se cambia mientras se imprime.
-  const imprimir = () => {
+  // modo 'resumen' oculta el anexo con el detalle de lo que se hizo; 'completa' lo incluye.
+  const [descargando, setDescargando] = useState(false);
+  const [modo, setModo] = useState('resumen');
+  const imprimir = (m) => {
+    const raiz = document.querySelector('.plan-raiz');
     const anterior = document.title;
-    const restaurar = () => { document.title = anterior; window.removeEventListener('afterprint', restaurar); };
-    document.title = `Planificador territorial · Tablero electoral ${f.key} ${f.nombre}`;
+    const restaurar = () => { document.title = anterior; raiz?.classList.remove('plan-sin-anexo'); window.removeEventListener('afterprint', restaurar); };
+    document.title = `Planificador territorial · Tablero electoral ${f.key} ${f.nombre}${m === 'resumen' ? ' (resumen)' : ''}`;
+    if (m === 'resumen') raiz?.classList.add('plan-sin-anexo');
     window.addEventListener('afterprint', restaurar);
     window.print();
   };
+  const generar = () => { setDescargando(false); setTimeout(() => imprimir(modo), 150); };
   return (
     <div className="plan-ficha">
       {/* Encabezado de la hoja impresa / exportada a PDF (en pantalla no se ve). */}
       <CabeceraImpresion titulo="Ficha de circuito" subtitulo="Planificador territorial · Córdoba Capital" detalle={<div>Generada el {hoy}</div>} />
       <div className="plan-no-print" style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
         {onVolver && <span className="plan-solo-movil"><Boton onClick={onVolver}>← Lista</Boton></span>}
-        <Boton onClick={imprimir} titulo="Imprime la ficha en A4; desde el diálogo se puede guardar como PDF">Imprimir / exportar ficha</Boton>
+        <Boton onClick={() => setDescargando(true)} titulo="Elegí si querés la ficha resumen o la completa (con el detalle de lo que se hizo)">Descargar ficha</Boton>
       </div>
+      {descargando && (
+        <CentroDescargas subtitulo="Se exporta la ficha de este circuito." alcance={`Circuito ${f.key} · ${f.nombre}`}
+          opciones={OPCIONES_FICHA} valor={modo} onCambiar={setModo} onGenerar={generar} onCerrar={() => setDescargando(false)} />
+      )}
 
       {/* 1. Encabezado + 2. Electoral */}
       {/* div y no <header>: el CSS global del sitio oculta todos los <header> al imprimir. */}

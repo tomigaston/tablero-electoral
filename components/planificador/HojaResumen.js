@@ -18,6 +18,7 @@ import { ETIQUETA_ESTADO, TIPOS_ACCION, ordenarEtapas, textoAccion } from '../..
 import { filasExportables, descargarCsv, abrirImpresion, subtituloListado } from '../../lib/planificador/exportar';
 import { Boton, PuntoPrioridad } from './ui';
 import { CabeceraImpresion, PieImpresion } from './Marca';
+import CentroDescargas, { OPCIONES_FICHAS_LOTE } from './CentroDescargas';
 import { MARCA, LOGOS } from '../../lib/planificador/marca';
 
 // Leaflet necesita el navegador: mismo criterio que MapaCircuitos en pages/index.js.
@@ -366,9 +367,11 @@ function ListadoImpresion({ lista, pie }) {
   );
 }
 
-export default function HojaResumen({ filas, pautaDerivada, agregados: base, fichas, persistencia, filtros, setFiltros, onIr, onAbrir, hoyTexto }) {
+export default function HojaResumen({ filas, pautaDerivada, agregados: base, fichas, persistencia, filtros, setFiltros, onIr, onAbrir, onDescargarFichas, hoyTexto }) {
   const [medida, setMedida] = useState('piezas'); // piezas | inversion
   const [combinar, setCombinar] = useState(false); // para pantallas táctiles (sin Ctrl)
+  const [descargando, setDescargando] = useState(false); // ventana del Centro de descargas (fichas de los circuitos filtrados)
+  const [modoFichas, setModoFichas] = useState('resumen');
   const k = base.kpis;
   const recs = useMemo(() => listarRecomendaciones(fichas, filas), [fichas, filas]);
 
@@ -463,12 +466,22 @@ export default function HojaResumen({ filas, pautaDerivada, agregados: base, fic
             ))}
           </span>
           <Boton onClick={() => onIr(clavesTodas, etiqueta)} disabled={!clavesTodas.length} style={{ padding: '3px 10px', fontSize: 12 }}>Ver lista</Boton>
+          <Boton onClick={() => setDescargando(true)} disabled={!clavesTodas.length || !onDescargarFichas} titulo="Descarga las fichas individuales de los circuitos del filtro en un solo PDF" style={{ padding: '3px 10px', fontSize: 12 }}>Descargar fichas</Boton>
           <Boton primario onClick={() => setFiltros([])} style={{ padding: '3px 10px', fontSize: 12 }}>Limpiar filtro</Boton>
         </div>
       )}
 
+      {descargando && clavesTodas && (
+        <CentroDescargas subtitulo="Se exportan las fichas individuales de los circuitos que tenés filtrados."
+          alcance={`${clavesTodas.length} ${clavesTodas.length === 1 ? 'circuito' : 'circuitos'} · ${etiqueta}`}
+          opciones={OPCIONES_FICHAS_LOTE} valor={modoFichas} onCambiar={setModoFichas}
+          aviso={clavesTodas.length > 40 ? 'Son muchas fichas: preparar el PDF puede tardar unos segundos.' : null}
+          onGenerar={() => { setDescargando(false); onDescargarFichas(clavesTodas, modoFichas); }} onCerrar={() => setDescargando(false)} />
+      )}
+
       {/* En pantalla: mapa a la izquierda y las cinco tarjetas apiladas a la derecha (.plan-pag1 y .plan-pag2 son display:contents).
           Al imprimir: hoja 1 = mapa + clima + a ciegas; hoja 2 = pauta + top 10 + problema #1. */}
+
       <div className="plan-grilla-resumen" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(340px, 1fr)', gap: 12, alignItems: 'start' }}>
         <div className="plan-pag1">
           <div className="plan-mapa-col" style={{ position: 'sticky', top: 8 }}>
