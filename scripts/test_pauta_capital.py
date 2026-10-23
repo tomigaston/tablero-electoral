@@ -124,9 +124,10 @@ caso("un barrio -> 1 entrada de barrio", barrios_de(r) == ["LOS NARANJOS"], str(
 r = geo(CAPITAL, LOC_CAPITAL, "Alta Córdoba, Cofico, Ayacucho")
 caso("lista de barrios -> una entrada por barrio", barrios_de(r) == ["ALTA CORDOBA", "AYACUCHO", "COFICO"], str(r))
 r = geo(CAPITAL, LOC_CAPITAL, "5 G San Vicente, 5 C Empalme, 12 B Colón, 5 Altamira")
-caso("lista con circuitos (filas 3617-3620): 3 barrios + 1 circuito_sin_barrio",
+caso("lista con circuitos (filas 3617-3620): 3 barrios + la seccional 5 entera (5 y 5A…5I) como circuito_sin_barrio",
      sorted((e["destino"], e["circuito"], e["barrio"]) for e in r["entradas"]) ==
-     [("barrio", "12B", "COLON"), ("barrio", "5C", "EMPALME"), ("barrio", "5G", "SAN VICENTE"), ("circuito_sin_barrio", "5", None)], str(r))
+     [("barrio", "12B", "COLON"), ("barrio", "5C", "EMPALME"), ("barrio", "5G", "SAN VICENTE")] +
+     [("circuito_sin_barrio", c, None) for c in ["5", "5A", "5B", "5C", "5D", "5E", "5F", "5G", "5H", "5I"]], str(r))
 r = geo(CAPITAL, LOC_CAPITAL, "Barrrio Jorge Newbery de 30 a 60 años sin km agregados")
 caso("alias: 'Jorge Newbery' -> PARQUE JORGE NEWBERY", barrios_de(r) == ["PARQUE JORGE NEWBERY"], str(r))
 r = geo(CAPITAL, LOC_CAPITAL, "10 B Ciudedale, 10 H Parque Capital")
@@ -164,20 +165,32 @@ caso("otra localidad -> excluido", geo("DEPARTAMENTO DE COLÓN, PROVINCIA DE CÓ
 caso("regla por fila (decisiones_filas.json): 'Pautar a barrios:' -> excluido", geo(CAPITAL, LOC_CAPITAL, "Pautar a barrios: MONTE CRISTO\nPIQUILLÍN")["destino"] == "excluido")
 
 # --- CASO 8: duplicados -----------------------------------------------------------------------
-print("CASO 8 - duplicados: clave (COD, campaña, título, destino); sin código no se deduplica")
-base = {"COD. CONTENIDO": "A00001", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}
-sal, st, _ = generar(fila(**base, **{"FECHA DE ENVÍO": pd.Timestamp("2026-10-01"), "FIN": pd.Timestamp("2026-10-10")}),
-                     fila(**base, **{"FECHA DE ENVÍO": pd.Timestamp("2026-10-05"), "FIN": pd.Timestamp("2026-10-20")}))
+print("CASO 8 - duplicados: clave (campaña, título, plataforma, destino, INICIO, FIN, link, tipo, audiencia); COD. CONTENIDO no decide")
+base = {"LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES", "LINK MATERIAL": "https://ejemplo/1", "TIPO DE MATERIAL": "REEL", "AUDIENCIA  (Barrios o publicos) ": "Capital 30 a 60"}
+sal, st, _ = generar(fila(**base, **{"FECHA DE ENVÍO": pd.Timestamp("2026-10-01"), "Impresiones Ejecutada META": 10}),
+                     fila(**base, **{"FECHA DE ENVÍO": pd.Timestamp("2026-10-05"), "Impresiones Ejecutada META": 20}))
 p = plano(sal)
-caso("misma clave: 1 colapsada y gana la FECHA DE ENVÍO más reciente", len(p) == 1 and p[0][2]["fin"] == "2026-10-20" and st["entradas_colapsadas_por_dedup"] == 1)
-sal, _, _ = generar(fila(**base, ESTADO="INACTIVO", FIN=pd.Timestamp("2026-10-10")), fila(**base, ESTADO="ACTIVO", FIN=pd.Timestamp("2026-10-20")))
-caso("empate de fecha: gana ESTADO=ACTIVO", plano(sal)[0][2]["estado"] == "Vigente")
-sal, _, _ = generar(fila(**base), fila(**base, **{"TITULO DE LA PIEZA": "Otro título"}))
-caso("mismo código con distinto título: NO se unifican", len(plano(sal)) == 2)
-sal, _, _ = generar(fila(**{"LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}), fila(**{"LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}))
-caso("sin COD. CONTENIDO nunca se deduplica", len(plano(sal)) == 2)
-sal, _, _ = generar(fila(**{"COD. CONTENIDO": 139, "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}), fila(**{"COD. CONTENIDO": "139", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}))
-caso("la comparación de códigos es literal: 139 (número) y '139' (texto) son distintos", len(plano(sal)) == 2)
+caso("misma clave: 1 colapsada, gana la FECHA DE ENVÍO más reciente y las métricas no se suman",
+     len(p) == 1 and p[0][2]["metricas_ejecutadas"]["alcance_o_visualizaciones"] == 20 and st["entradas_colapsadas_por_dedup"] == 1)
+sal, _, _ = generar(fila(**base, ESTADO="INACTIVO"), fila(**base, ESTADO="ACTIVO"))
+caso("empate de fecha: gana ESTADO=ACTIVO", len(plano(sal)) == 1 and plano(sal)[0][2]["estado"] == "Vigente")
+sal, _, _ = generar(fila(**base, **{"Impresiones Ejecutada META": 1}), fila(**base, **{"Impresiones Ejecutada META": 2}))
+caso("empate total: queda la primera de la planilla", plano(sal)[0][2]["fila_origen"] == 2)
+sal, _, _ = generar(fila(**base, **{"COD. CONTENIDO": "A00001"}), fila(**base, **{"COD. CONTENIDO": "A00002"}))
+caso("COD. CONTENIDO distinto no impide unificar (no participa de la clave)", len(plano(sal)) == 1)
+sal, _, _ = generar(fila(**base, **{"COD. CONTENIDO": "A00001"}), fila(**base, **{"COD. CONTENIDO": "A00001", "TITULO DE LA PIEZA": "Otro título"}))
+caso("mismo COD. CONTENIDO con distinto título: NO se unifican", len(plano(sal)) == 2)
+sal, _, _ = generar(fila(**base), fila(**base))
+caso("sin COD. CONTENIDO también se deduplica", len(plano(sal)) == 1)
+sal, _, _ = generar(fila(**base), fila(**base, **{"CAMPAÑA": "  campaña DE prueba ", "TITULO DE LA PIEZA": "Piéza de prueba"}))
+caso("la comparación está normalizada (espacios, mayúsculas, tildes)", len(plano(sal)) == 1)
+for campo, valor in [("PLATAFORMA", "Youtube"), ("FIN", pd.Timestamp("2026-11-30")), ("INICIO ", pd.Timestamp("2026-09-30")), ("LINK MATERIAL", "https://ejemplo/2"),
+                     ("TIPO DE MATERIAL", "CARRUSEL"), ("AUDIENCIA  (Barrios o publicos) ", "Audiencia de alto nivel adquisitivo")]:
+    sal, _, _ = generar(fila(**base), fila(**{**base, campo: valor}))
+    caso(f"distinto {campo.strip()}: NO se unifican", len(plano(sal)) == 2)
+sal, _, _ = generar(fila(**{"LOCALIDAD / SUBCIRCUITO": LOC_CAPITAL, "AUDIENCIA  (Barrios o publicos) ": "Alta Córdoba, Cofico"}),
+                    fila(**{"LOCALIDAD / SUBCIRCUITO": LOC_CAPITAL, "AUDIENCIA  (Barrios o publicos) ": "Alta Córdoba, Cofico"}))
+caso("se compara después de repartir la geografía: 2 filas x 2 barrios = 2 entradas", sorted(k for _, k, _ in plano(sal)) == ["ALTA CORDOBA", "COFICO"])
 
 # --- CASO 9: expansión multi-barrio ---------------------------------------------------------
 print("CASO 9 - una fila con N barrios = N entradas con las métricas completas")
@@ -204,6 +217,52 @@ sal, _, _ = generar(fila(**{"LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES", 
 p = plano(sal)[0][2]
 caso("la entrada trae cod_contenido y fecha_envio (nuevos) y no trae campos internos", p["cod_contenido"] == "A00002" and "fecha_envio" in p and not any(k.startswith("_") for k in p), str(sorted(p)))
 caso("total_pautas consistente en cada bucket", sal["toda_capital"]["total_pautas"] == len(sal["toda_capital"]["pautas"]))
+
+# --- CASO 12: seccional -> una entrada por subcircuito ----------------------------------------
+print("CASO 12 - seccional (código sin letra): circuito_sin_barrio en la seccional y en cada subcircuito")
+r = geo(CAPITAL, "0014 - ARGUELLO, CÓRDOBA CAPITAL, ARGENTINA", None)
+subs14 = ["14"] + [f"14{l}" for l in "ABCDEFGHIJKLMNOPQ"]
+caso("0014 - ARGUELLO -> 14 y 14A…14Q (18 entradas)", [e["circuito"] for e in r["entradas"]] == subs14 and {e["destino"] for e in r["entradas"]} == {"circuito_sin_barrio"}, str(r))
+r = geo(CAPITAL, "005 - ALTAMIRA, CÓRDOBA CAPITAL, ARGENTINA", None)
+caso("005 (seccional numerada 1 a 9) -> 5 y 5A…5I", [e["circuito"] for e in r["entradas"]] == ["5"] + [f"5{l}" for l in "ABCDEFGHI"], str(r))
+for sec in ("1", "2", "3"):
+    r = geo(CAPITAL, f"00{sec} - SECCIONAL, CÓRDOBA CAPITAL, ARGENTINA", None)
+    caso(f"seccional {sec} sin subcircuitos con letra -> queda en sí misma", [e["circuito"] for e in r["entradas"]] == [sec], str(r))
+r = geo(CAPITAL, "014A - ARGUELLO NORTE, CÓRDOBA CAPITAL, ARGENTINA", None)
+caso("código con letra -> solo ese subcircuito", [e["circuito"] for e in r["entradas"]] == ["14A"], str(r))
+sal, _, _ = generar(fila(**{"LOCALIDAD / SUBCIRCUITO": "0014 - ARGUELLO, CÓRDOBA CAPITAL, ARGENTINA", "Inversión ejecutada ": 1000.0}))
+caso("una entrada por subcircuito con las métricas repetidas completas",
+     len(plano(sal)) == 18 and all(x[2]["metricas_ejecutadas"]["inversion"] == 1000.0 for x in plano(sal)) and set(sal["circuitos_sin_barrio"]) == set(subs14))
+
+# --- CASO 13: documento de filas no procesadas ------------------------------------------------------
+print("CASO 13 - documento de filas no procesadas: cuadra con el JSON y falla si no")
+import json as _json, tempfile as _tmp
+base = {"LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES", "LINK MATERIAL": "https://ejemplo/1"}
+filas = [fila(**base, **{"Impresiones Ejecutada META": 5}), fila(**base, **{"Impresiones Ejecutada META": 5}),  # repetición genuina
+         fila(**base, **{"TITULO DE LA PIEZA": "b", "Impresiones Ejecutada META": 5}), fila(**base, **{"TITULO DE LA PIEZA": "b", "Impresiones Ejecutada META": 9}),  # a confirmar
+         fila(**{"TITULO DE LA PIEZA": "c", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}), fila(**{"TITULO DE LA PIEZA": "c", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}),  # sin métricas
+         fila(**{"DEPARTAMENTO": PROVINCIA, "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES", "AUDIENCIA  (Barrios o publicos) ": "Audiencia de alto poder adquisitivo"}),  # pendiente
+         fila(**{"DEPARTAMENTO": "DEPARTAMENTO RIO CUARTO, PROVINCIA DE CÓRDOBA, ARGENTINA", "LOCALIDAD / SUBCIRCUITO": "TODAS LAS LOCALIDADES"}),  # fuera
+         fila(**{"CAMPAÑA": None, "TITULO DE LA PIEZA": None})]  # vacía
+df_doc = pd.DataFrame(filas, columns=COLUMNAS)
+sal, st, _ = g.generar(df_doc, REF)
+with _tmp.TemporaryDirectory() as d:
+    jp, xp = Path(d) / "p.json", Path(d) / "n.xlsx"
+    jp.write_text(_json.dumps(sal, ensure_ascii=False))
+    res = dict(g.escribir_no_procesadas(xp, df_doc, st))
+    g.cuadrar_no_procesadas(xp, list(res.items()), jp, st)
+    caso("resumen: 9 renglones, 1 vacía, 8 reales, 3 entran, 1 fuera, 1 pendiente, 3 duplicadas (1 por bloque)",
+         (res["Renglones de la planilla (sin el encabezado)"], res["Descartadas por vacías (sin CAMPAÑA ni TITULO DE LA PIEZA)"], res["Filas reales"], res["Entran al tablero"],
+          res["Fuera de Capital"], res["Pendientes"], res["Duplicadas (todas sus entradas se unificaron con otra fila)"],
+          res["   Duplicadas: repetición genuina"], res["   Duplicadas: sin métricas"], res["   Duplicadas: a confirmar por el área"]) == (9, 1, 8, 3, 1, 1, 3, 1, 1, 1), str(res))
+    sal["toda_capital"]["pautas"].pop()
+    jp.write_text(_json.dumps(sal, ensure_ascii=False))
+    try:
+        g.cuadrar_no_procesadas(xp, list(res.items()), jp, st)
+        fallo = False
+    except SystemExit:
+        fallo = True
+    caso("si el JSON no coincide con el resumen, falla y no deja el documento", fallo and not xp.exists())
 
 print(f"\n{CASOS - len(FALLOS)}/{CASOS} casos OK")
 if FALLOS:

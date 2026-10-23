@@ -34,7 +34,7 @@ vigentes; 96 contradicen su `estado`; 296 sin fechas.
 - Las 9 piezas multi-barrio (fila_origen repetida: 4–46 barrios) tienen todas `circuito`
   poblado y un único circuito; contenido idéntico entre repeticiones (métricas idénticas →
   no se suman, se toma una).
-- NO existe COD. CONTENIDO ni id de pieza en el JSON.
+- No hay id de pieza en el JSON. `cod_contenido` viaja solo como dato informativo: no se usa para identificar ni deduplicar piezas.
 - **`fila_origen` NO sirve como clave de dedup** (corrección tras verificar en pantalla): solo
   repite en 9 piezas con `circuito` explícito. La mayoría de las piezas multi-barrio llegan con
   una fila distinta POR BARRIO, y además con una fila "gemela" en `circuitos_sin_barrio`

@@ -54,7 +54,7 @@ Lee el resumen y compará con la tabla "Cómo leer el resumen" (más abajo). Si 
 ```bash
 python3 scripts/generar_pauta_capital.py
 ```
-Lee `Contexto/Pauta RRSS_GLOBAL.xlsx` y pisa `public/data/pautas_barrios.json`. Si frena por bajas de código, ver "Frenos".
+Lee `Contexto/Pauta RRSS_GLOBAL.xlsx` y pisa `public/data/pautas_barrios.json` y `public/data/Filas_no_procesadas_pauta_capital.xlsx` (las filas que no entran, con su motivo, para mandarle al área). Imprime el resumen del documento; si no cuadra con el JSON se detiene. Si frena por bajas, ver "Frenos".
 
 ### 5. Control con fechas fijas
 ```bash
@@ -84,11 +84,11 @@ data(pauta): carga semanal con crudo del DD/MM (N filas reales, N entradas)
 Crudo: Contexto/Pauta RRSS_GLOBAL.xlsx, sha256 <hash>
 Entradas: barrios N en N barrios, circuitos_sin_barrio N, toda_capital N
 Estado: Vigente N, Finalizada N, Observada N, S/D N, Programada N
-Bajas de código respecto de la carga anterior: N
+Bajas (campaña + título) respecto de la carga anterior: N
 ```
 
 ```bash
-git add "Contexto/Pauta RRSS_GLOBAL.xlsx" public/data/pautas_barrios.json
+git add "Contexto/Pauta RRSS_GLOBAL.xlsx" public/data/pautas_barrios.json public/data/Filas_no_procesadas_pauta_capital.xlsx
 git commit
 ```
 El hash sale de `shasum -a 256 "Contexto/Pauta RRSS_GLOBAL.xlsx"`.
@@ -107,14 +107,15 @@ Vercel publica solo. Esperar a que figure "Ready" (`vercel ls tablero-electoral`
 | `Entradas por estado` | Cuántas entradas hay en cada estado | `Programada` y estados nuevos pueden aparecer; se muestran tal cual |
 | `AVISO: N ítems de audiencia sin resolver` | Nombres de barrio de las audiencias que no se reconocieron; **quedan afuera**, la fila entra con los demás | Normal. Van a la hoja "Ítems sin resolver" del paso 6 |
 | `Entradas sin INICIO o sin FIN válidos` | Fechas vacías, escritas como texto o como número suelto | Normal si es parecido a la carga anterior; si sube mucho, el crudo cambió |
-| `Códigos dados de baja: N` | Desaparecieron códigos que estaban en el JSON anterior | Ver "Frenos" |
+| `Piezas (campaña + título) dadas de baja: N` | Desaparecieron piezas que estaban en el JSON anterior | Ver "Frenos" |
 | Error `KeyError` con un nombre de columna | Renombraron o borraron una columna del crudo | Parar. El generador lee por nombre exacto (incluidos los espacios finales de `INICIO ` y de `Inversión ejecutada `, y el acento de `UTM´S`) |
 
 ### Números de referencia (carga del 17/10, para comparar)
-Filas del crudo 4.336, reales 4.104; destinos: 609 filas con entradas, 340 toda_capital, 3.065 excluidas, 90 pendientes; 4.942 entradas (barrios 4.083 en 184 barrios, circuitos sin barrio 534, toda_capital 325); estados Finalizada 4.702, Vigente 130, S/D 59, Observada 51; con las fechas 14 y 15/10: 121 piezas únicas activas, 46 circuitos y 11 barrios cubiertos.
+Con las reglas del 23/10 (clave de duplicado sin COD y seccional repartida en sus subcircuitos): filas del crudo 4.336, reales 4.104; entran 928, fuera de Capital 3.065, pendientes 90, duplicadas 21; 7.188 entradas (barrios 4.081 en 184 barrios, circuitos sin barrio 2.771, toda_capital 336); estados Finalizada 6.852, Vigente 187, S/D 85, Observada 64; con las fechas 14 y 15/10: 121 piezas únicas activas (60 + 61), 68 circuitos y 11 barrios cubiertos.
 
 ## Frenos
-- **Bajas de código.** Si un `COD. CONTENIDO` que estaba en el JSON anterior ya no está en el crudo, el generador se detiene **sin escribir** y muestra la lista. Como el crudo es acumulado, una baja no es normal: avisar al área para que explique por qué desaparecieron esas piezas. Si confirman que es correcto (o si las bajas son consecuencia de una regla nueva que vos decidiste), repetir con `python3 scripts/generar_pauta_capital.py --aceptar-bajas` y dejar la lista de códigos en el mensaje del commit.
+- **Bajas.** Si una pieza (CAMPAÑA + TITULO DE LA PIEZA, normalizados) que estaba en el JSON anterior ya no está en el crudo, el generador se detiene **sin escribir** y muestra la lista. Como el crudo es acumulado, una baja no es normal: avisar al área para que explique por qué desaparecieron esas piezas. Si confirman que es correcto (o si las bajas son consecuencia de una regla nueva que vos decidiste), repetir con `python3 scripts/generar_pauta_capital.py --aceptar-bajas` y dejar la lista en el mensaje del commit.
+- **Documento de filas no procesadas que no cuadra.** Si el resumen del documento no coincide con las entradas y filas del JSON, el generador se detiene y no deja el documento: es un error del generador, no del crudo.
 - **Alias que apunta a un barrio inexistente.** El generador se detiene al arrancar: corregir `scripts/config_pauta/alias_barrios.json`.
 
 ## Cómo incorporar lo que confirma el área
@@ -144,5 +145,6 @@ Mientras el área no confirme, el alias o la regla **no se aplica** y el ítem q
 | Lista para el área (se regenera, no se versiona) | `scripts/pendientes_pauta_capital.py` → `Contexto/Pendientes_de_confirmacion.xlsx` |
 | "Activa", estados y cobertura dirigida (pantallas) | `lib/estadoPauta.js` |
 | Salida | `public/data/pautas_barrios.json` |
+| Filas no procesadas para el área (se versiona junto al JSON) | `public/data/Filas_no_procesadas_pauta_capital.xlsx` (lo escribe el generador) |
 | Maestro viejo (solo referencia histórica) | `Contexto/historico/BASE_PAUTA_RRSS_CORDOBA_CAPITAL_2026-10-08.xlsx` |
 | Manual para quienes cargan la planilla | "Manual metodológico — Pauta Digital, Córdoba Capital" |

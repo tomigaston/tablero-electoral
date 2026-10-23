@@ -8,14 +8,17 @@ versionado, reproceso siempre completo desde el crudo, sin maestro intermedio.
 Uso (igual que en el tablero del interior: se pisa el crudo y se corre):
     1) Copiar el crudo nuevo a  Contexto/Pauta RRSS_GLOBAL.xlsx  (pisa el anterior).
     2) python3 scripts/generar_pauta_capital.py
-       Lee Contexto/Pauta RRSS_GLOBAL.xlsx y escribe public/data/pautas_barrios.json.
+       Lee Contexto/Pauta RRSS_GLOBAL.xlsx y escribe public/data/pautas_barrios.json y
+       public/data/Filas_no_procesadas_pauta_capital.xlsx (las filas que no entran, con su
+       motivo, para el área). Si el resumen del documento no cuadra con el JSON, se detiene.
 
 Opciones:
-    --solo-verificar        imprime la verificación sin escribir el JSON
+    --solo-verificar        imprime la verificación sin escribir ningún archivo
     --crudo <ruta>          otro crudo (por defecto Contexto/Pauta RRSS_GLOBAL.xlsx)
     --salida <ruta>         otro destino (por defecto public/data/pautas_barrios.json)
+    --no-procesadas <ruta>  otro destino del documento (por defecto, junto al JSON)
     --previo <ruta>         JSON anterior para el freno de bajas (por defecto, el mismo que se pisa)
-    --aceptar-bajas         continuar aunque desaparezcan códigos (solo con confirmación)
+    --aceptar-bajas         continuar aunque desaparezcan piezas (solo con confirmación)
 
 Reglas (ver docs/pauta-capital-reglas.md cuando exista, y el manual metodológico):
   - Fila real: CAMPAÑA o TITULO DE LA PIEZA no vacíos (igual que el interior).
@@ -24,11 +27,13 @@ Reglas (ver docs/pauta-capital-reglas.md cuando exista, y el manual metodológic
     Nunca se descarta una fila por su estado.
   - Fechas: solo INICIO y FIN; sin respaldo en INICIO/FIN INFORMADO.
   - Geografía: ver clasificar_geografia_capital().
-  - Duplicados: clave (COD. CONTENIDO, campaña, título, destino); gana la FECHA DE
-    ENVÍO más reciente, luego ESTADO=ACTIVO, luego la primera. Sin código nunca
-    se deduplica (igual que el interior).
+  - Duplicados: ver clave_duplicado() (CAMPAÑA, TITULO, PLATAFORMA, destino, INICIO, FIN,
+    LINK MATERIAL, TIPO DE MATERIAL y AUDIENCIA, normalizados); gana la FECHA DE ENVÍO más
+    reciente, luego ESTADO=ACTIVO, luego la primera. COD. CONTENIDO es solo informativo:
+    no decide si una fila es válida ni si es duplicada (solo una agencia lo carga).
   - Una fila que nombra N barrios genera N entradas (una por barrio), con las
-    métricas completas (no se prorratean).
+    métricas completas (no se prorratean). Lo mismo una seccional: una entrada por
+    subcircuito (ver entradas_circuito_sin_barrio()).
 """
 import argparse
 import json
@@ -45,6 +50,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "public" / "data"
 CRUDO_DEFECTO = ROOT / "Contexto" / "Pauta RRSS_GLOBAL.xlsx"
 SALIDA_DEFECTO = DATA / "pautas_barrios.json"
+NO_PROCESADAS = "Filas_no_procesadas_pauta_capital.xlsx"  # se escribe junto al JSON
 CONFIG = Path(__file__).resolve().parent / "config_pauta"
 
 CODIGO_CIRCUITO_RE = re.compile(r"^\d{3,4}[A-Za-z]?\s*-")  # igual que el interior
@@ -177,6 +183,13 @@ def cargar_referencias(data_dir=DATA, config_dir=CONFIG):
     circuito_nombre = {str(c["CircuitoKey"]): normalizar(c["cirn_nom"]) for c in circuitos}
     circuito_nombre_np = {k: normalizar_sin_puntos(v) for k, v in circuito_nombre.items()}
     nombre_a_circuito = {v: k for k, v in circuito_nombre.items()}
+    # Seccional (número sin letra) -> sus subcircuitos con letra: '14' -> ['14A', …, '14Q'].
+    subcircuitos = {}
+    for k in circuito_nombre:
+        m = re.match(r"^(\d+)[A-Z]$", k)
+        if m:
+            subcircuitos.setdefault(m.group(1), []).append(k)
+    subcircuitos = {s: sorted(v) for s, v in subcircuitos.items()}
 
     alias_cfg = json.load(open(config_dir / "alias_barrios.json", encoding="utf8"))
     alias = {normalizar_sin_puntos(k): v for k, v in alias_cfg["alias"].items()}
@@ -192,7 +205,7 @@ def cargar_referencias(data_dir=DATA, config_dir=CONFIG):
     reglas = json.load(open(config_dir / "decisiones_filas.json", encoding="utf8"))["reglas"]
     return {
         "oficiales": oficiales, "por_norm": por_norm, "circuito_nombre": circuito_nombre,
-        "nombre_a_circuito": nombre_a_circuito, "circuito_nombre_np": circuito_nombre_np, "alias": alias, "alias_pendientes": pendientes, "descartar": descartar, "reglas": reglas,
+        "nombre_a_circuito": nombre_a_circuito, "circuito_nombre_np": circuito_nombre_np, "subcircuitos": subcircuitos, "alias": alias, "alias_pendientes": pendientes, "descartar": descartar, "reglas": reglas,
     }
 
 
@@ -304,6 +317,22 @@ def items_con_circuito(aud):
 # Geografía de Capital
 # ---------------------------------------------------------------------------
 
+# Una seccional que llega como tal (código sin letra) también cubre su propio circuito sin
+# letra ('14' ARGUELLO, que es uno de los 119), además de 14A…14Q.
+SECCIONAL_INCLUYE_CIRCUITO_PROPIO = True
+
+
+def entradas_circuito_sin_barrio(circuito, ref):
+    """Circuito con letra -> una entrada. Seccional (sin letra) -> una entrada por cada
+    subcircuito de circuitos_completo.json (y la del propio circuito según
+    SECCIONAL_INCLUYE_CIRCUITO_PROPIO); una seccional sin subcircuitos (1, 2, 3) queda en sí misma."""
+    subs = ref["subcircuitos"].get(circuito, []) if circuito.isdigit() else []
+    if not subs:
+        destinos = [circuito]
+    else:
+        destinos = ([circuito] if SECCIONAL_INCLUYE_CIRCUITO_PROPIO else []) + subs
+    return [{"destino": "circuito_sin_barrio", "circuito": c, "barrio": None} for c in destinos]
+
 def _depto_candidato(depto_raw):
     """'DEPARTAMENTO DE SAN JUSTO, PROVINCIA…' -> 'SAN JUSTO'; sin prefijo DEPARTAMENTO -> None."""
     if depto_raw is None or (isinstance(depto_raw, float) and pd.isna(depto_raw)):
@@ -371,7 +400,7 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
             res.update(destino="pendiente", motivo=f"PENDIENTE: la audiencia nombra un barrio que no se pudo resolver ({aud_sin_loc.strip()})")
             return res
         else:
-            res["entradas"] = [{"destino": "circuito_sin_barrio", "circuito": circuito, "barrio": None}]
+            res["entradas"] = entradas_circuito_sin_barrio(circuito, ref)
         res["destino"] = "entradas"
         return res
 
@@ -406,10 +435,10 @@ def clasificar_geografia_capital(depto_raw, loc_raw, aud_raw, ref):
                         res["avisos"].append(f"circuito '{circuito}' no existe: {nombre}")
                         continue
                     # Ítem SIN letra cuyo nombre es el del propio circuito ('5 Altamira'): apunta al
-                    # circuito entero, no a un barrio -> circuito_sin_barrio. Con letra ('5 G San
-                    # Vicente') el nombre se busca como barrio.
+                    # seccional entera, no a un barrio -> circuito_sin_barrio en cada subcircuito.
+                    # Con letra ('5 G San Vicente') el nombre se busca como barrio.
                     if not tiene_letra and normalizar_sin_puntos(nombre) == ref["circuito_nombre_np"][circuito]:
-                        entradas.append({"destino": "circuito_sin_barrio", "circuito": circuito, "barrio": None})
+                        entradas += entradas_circuito_sin_barrio(circuito, ref)
                         continue
                     barrio = resolver_nombre_barrio(nombre, ref)
                     if barrio == "__DESCARTAR__":
@@ -461,26 +490,37 @@ def _gana_pieza(candidata, actual):
     return False
 
 
+def clave_duplicado(e):
+    """CAMPAÑA + TITULO DE LA PIEZA + PLATAFORMA (cruda) + destino + INICIO + FIN + LINK MATERIAL +
+    TIPO DE MATERIAL + AUDIENCIA, normalizados (espacios, mayúsculas, tildes). COD. CONTENIDO no
+    participa: solo una agencia lo carga."""
+    return (normalizar(e["campania"]), normalizar(e["titulo_pieza"]), normalizar(e["plataforma_origen"]),
+            normalizar(e["_lugar"]), e["inicio"] or "", e["fin"] or "",
+            normalizar(e["material"]["link"]), normalizar(e["material"]["tipo"]), normalizar(e["_audiencia"]))
+
+
 def deduplicar(entradas):
-    """Clave (COD. CONTENIDO, campaña, título, destino). Piezas sin código nunca se descartan.
-    Devuelve (lista, descartadas)."""
-    ganadoras, orden, sin_cod, descartadas = {}, [], [], 0
+    """Unifica las entradas con la misma clave_duplicado(); se conserva una según _gana_pieza().
+    Las métricas nunca se suman. Devuelve (lista, descartadas, unificadas), con
+    unificadas = [(entrada descartada, entrada que quedó)]."""
+    grupos, orden = {}, []
     for e in entradas:
-        cod = e["cod_contenido"]
-        if cod is None:
-            sin_cod.append(e)
-            continue
-        clave = (cod, e["campania"], e["titulo_pieza"], e["_lugar"])
-        if clave not in ganadoras:
-            ganadoras[clave] = e
+        clave = clave_duplicado(e)
+        if clave not in grupos:
+            grupos[clave] = [e]
             orden.append(clave)
-            continue
-        descartadas += 1
-        if _gana_pieza(e, ganadoras[clave]):
-            ganadoras[clave] = e
-    resultado = sin_cod + [ganadoras[c] for c in orden]
+        else:
+            grupos[clave].append(e)
+    resultado, unificadas = [], []
+    for clave in orden:
+        ganadora = grupos[clave][0]
+        for e in grupos[clave][1:]:
+            if _gana_pieza(e, ganadora):
+                ganadora = e
+        resultado.append(ganadora)
+        unificadas += [(e, ganadora) for e in grupos[clave] if e is not ganadora]
     resultado.sort(key=lambda e: e["_orden"])
-    return resultado, descartadas
+    return resultado, len(unificadas), unificadas
 
 
 # ---------------------------------------------------------------------------
@@ -515,11 +555,12 @@ def generar(df_crudo, ref, dedup=True):
     stats["filas_con_cod_contenido"] = int(df["COD. CONTENIDO"].apply(lambda v: limpio(v) is not None).sum())
 
     entradas, orden = [], 0
-    avisos = []
+    avisos, detalle = [], []
     for idx, row in df.iterrows():
         geo = clasificar_geografia_capital(row["DEPARTAMENTO"], row["LOCALIDAD / SUBCIRCUITO"], row["AUDIENCIA  (Barrios o publicos) "], ref)
         fila = int(idx) + 2  # número de fila en la hoja del crudo (encabezado en la fila 1)
         stats["filas_por_destino_" + geo["destino"]] += 1
+        detalle.append({"fila": fila, "destino": geo["destino"], "motivo": geo["motivo"]})
         for aviso in geo["avisos"]:
             avisos.append((fila, aviso))
         if geo["destino"] in ("excluido", "pendiente"):
@@ -572,6 +613,7 @@ def generar(df_crudo, ref, dedup=True):
                 "observaciones": " | ".join(observaciones) if observaciones else None,
                 "barrio": item["barrio"],
                 "_lugar": item["barrio"] or ("circuito:" + str(circuito) if item["destino"] == "circuito_sin_barrio" else "CAPITAL"),
+                "_audiencia": limpio(row["AUDIENCIA  (Barrios o publicos) "]),
                 "_fecha_envio_ts": _a_timestamp(row["FECHA DE ENVÍO"]),
                 "_estado_activo": normalizar(limpio(row["ESTADO"])) == "ACTIVO",
                 "_orden": orden,
@@ -579,8 +621,15 @@ def generar(df_crudo, ref, dedup=True):
             entradas.append(e)
             stats["entradas_antes_de_dedup"] += 1
 
-    entradas, colapsadas = deduplicar(entradas) if dedup else (entradas, 0)
+    entradas, colapsadas, unificadas = deduplicar(entradas) if dedup else (entradas, 0, [])
     stats["entradas_colapsadas_por_dedup"] = colapsadas
+    # Para el documento de filas no procesadas: el destino y motivo de cada fila real, y con
+    # qué fila se unificó cada entrada descartada (con las métricas de las dos).
+    stats["detalle_filas"] = detalle
+    stats["filas_que_entran"] = sorted({e["fila_origen"] for e in entradas})
+    stats["unificadas"] = [(perdida["fila_origen"], perdida["_lugar"], ganadora["fila_origen"]) for perdida, ganadora in unificadas]
+    stats["unificadas_metricas"] = {(perdida["fila_origen"], ganadora["fila_origen"]): (perdida["metricas_ejecutadas"], ganadora["metricas_ejecutadas"])
+                                    for perdida, ganadora in unificadas}
     stats["codigos_unicos_con_cod_contenido"] = int(
         df[df["COD. CONTENIDO"].apply(lambda v: limpio(v) is not None)]["COD. CONTENIDO"].nunique()
     )
@@ -614,14 +663,266 @@ def entradas_de(salida):
         yield "toda_capital", None, p
 
 
+# ---------------------------------------------------------------------------
+# Documento de filas no procesadas (para el área)
+# ---------------------------------------------------------------------------
+
+AUD_COL = "AUDIENCIA  (Barrios o publicos) "
+CLAVE_TEXTO = "campaña, título, plataforma, destino, INICIO, FIN, link, tipo de material y audiencia"
+BLOQUES_DUPLICADAS = [
+    ("Repetición genuina", "Misma pieza cargada dos veces: coincide con otra fila en la clave de duplicado y tiene las mismas métricas."),
+    ("Sin métricas", "Coincide con otra fila en la clave de duplicado y ninguna de las dos tiene métricas cargadas."),
+    ("A confirmar por el área", "Coincide con otra fila en la clave de duplicado pero las métricas son distintas: puede ser la misma pieza cargada dos veces o dos piezas distintas."),
+]
+
+
+def motivo_pendiente_claro(motivo):
+    """Motivo técnico de una fila pendiente -> texto para quien carga la planilla."""
+    m = re.match(r"^PENDIENTE: (.*?)(?: \((.*)\))?$", motivo or "", flags=re.S)
+    tipo, texto = (m.group(1), m.group(2)) if m else (motivo, None)
+    if tipo == "alcance geográfico ambiguo":
+        aud = "la AUDIENCIA está vacía" if texto in (None, "sin audiencia") else f"la AUDIENCIA («{texto}») no dice dónde llega"
+        return (f"La localidad dice TODAS LAS LOCALIDADES, el departamento es solo «Provincia de Córdoba» y {aud}. "
+                "Para que entre, indicar en la AUDIENCIA si llega a toda la Capital, a un barrio o a un circuito, o cargar el departamento.")
+    if tipo == "la audiencia nombra otro departamento":
+        return f"La localidad es Córdoba Capital pero la AUDIENCIA nombra otro departamento («{texto}»). Corregir la localidad o la audiencia."
+    if tipo == "la audiencia nombra un barrio que no se pudo resolver":
+        return (f"La AUDIENCIA nombra un barrio que no figura con su nombre oficial ni tiene un alias confirmado («{texto}»). "
+                "Escribir el barrio con su nombre oficial.")
+    if tipo == "ningún ítem de la audiencia se pudo asignar":
+        return ("La AUDIENCIA es una lista con números de circuito, pero ningún ítem es un barrio reconocido ni el nombre de su circuito. "
+                "Revisar los nombres de la lista.")
+    if tipo == "LOCALIDAD / SUBCIRCUITO vacío":
+        return "LOCALIDAD / SUBCIRCUITO está vacía. Cargar la localidad o el circuito."
+    return motivo
+
+
+def motivo_fuera_de_capital(motivo):
+    """Motivo técnico de una fila excluida -> categoría para el conteo (no se lista fila por fila)."""
+    if motivo.startswith("Fuera de Capital: departamento ="):
+        return "El DEPARTAMENTO no es de Córdoba (otra provincia)"
+    if motivo.startswith(f"Fuera de Capital: localidad = {TODAS}; departamento ="):
+        return "TODAS LAS LOCALIDADES de otro departamento de Córdoba"
+    if motivo.startswith(f"Fuera de Capital: localidad = {TODAS}; audiencia ="):
+        return "TODAS LAS LOCALIDADES de la provincia y la AUDIENCIA nombra otro departamento"
+    if motivo.startswith("Fuera de Capital: localidad ="):
+        return "La localidad es otra (no es Córdoba Capital)"
+    return f"Regla puntual de decisiones_filas.json: {motivo}"
+
+
+def _sin_metricas(m):
+    return all(v is None for v in m.values())
+
+
+def clasificar_duplicadas(stats):
+    """Filas que no entran porque todas sus entradas se unificaron con otra fila -> lista de
+    {fila, conservada (filas), bloque}. El bloque se decide por las métricas de cada pareja."""
+    entran = set(stats["filas_que_entran"])
+    ganadoras = {}
+    for perdida, _, ganadora in stats["unificadas"]:
+        if perdida not in entran:
+            ganadoras.setdefault(perdida, set()).add(ganadora)
+    resultado = []
+    for fila in sorted(ganadoras):
+        pares = [stats["unificadas_metricas"][(fila, g)] for g in sorted(ganadoras[fila])]
+        if all(_sin_metricas(a) and _sin_metricas(b) for a, b in pares):
+            bloque = "Sin métricas"
+        elif all(a == b for a, b in pares):
+            bloque = "Repetición genuina"
+        else:
+            bloque = "A confirmar por el área"
+        resultado.append({"fila": fila, "conservada": sorted(ganadoras[fila]), "bloque": bloque, "metricas": pares})
+    return resultado
+
+
+def _por_que_queda(row_perdida, row_ganadora):
+    ta, tb = _a_timestamp(row_perdida["FECHA DE ENVÍO"]), _a_timestamp(row_ganadora["FECHA DE ENVÍO"])
+    if ta != tb:
+        return "Tiene la FECHA DE ENVÍO más reciente"
+    if (normalizar(limpio(row_perdida["ESTADO"])) == "ACTIVO") != (normalizar(limpio(row_ganadora["ESTADO"])) == "ACTIVO"):
+        return "Tiene ESTADO = ACTIVO"
+    return "Empate en FECHA DE ENVÍO y ESTADO: se conserva la primera de la planilla"
+
+
+def _fmt_num(v):
+    return "s/d" if v is None else f"{float(v):,.0f}".replace(",", ".")
+
+
+def escribir_no_procesadas(path, df_crudo, stats):
+    """Excel para el área: hoja Resumen (cuadre completo), Pendientes y Duplicadas fila por fila,
+    y Fuera de Capital solo como conteo por motivo. Devuelve el resumen [(qué, cantidad)]."""
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+
+    fila_row = lambda f: df_crudo.loc[f - 2]
+    detalle = {d["fila"]: d for d in stats["detalle_filas"]}
+    entran = set(stats["filas_que_entran"])
+    pendientes = [d for d in stats["detalle_filas"] if d["destino"] == "pendiente"]
+    fuera = [d for d in stats["detalle_filas"] if d["destino"] == "excluido"]
+    duplicadas = clasificar_duplicadas(stats)
+    por_bloque = Counter(d["bloque"] for d in duplicadas)
+    entradas_finales = stats["entradas_antes_de_dedup"] - stats["entradas_colapsadas_por_dedup"]
+    fuera_por_motivo = Counter(motivo_fuera_de_capital(d["motivo"]) for d in fuera)
+
+    resumen = [
+        ("Renglones de la planilla (sin el encabezado)", stats["filas_totales"]),
+        ("Descartadas por vacías (sin CAMPAÑA ni TITULO DE LA PIEZA)", stats["filas_descartadas"]),
+        ("Filas reales", stats["filas_reales"]),
+        ("Entran al tablero", len(entran)),
+        ("Fuera de Capital", len(fuera)),
+        ("Pendientes", len(pendientes)),
+        ("Duplicadas (todas sus entradas se unificaron con otra fila)", len(duplicadas)),
+    ] + [(f"   Duplicadas: {b.lower()}", por_bloque.get(b, 0)) for b, _ in BLOQUES_DUPLICADAS] + [
+        ("Entradas generadas antes de unificar duplicados", stats["entradas_antes_de_dedup"]),
+        ("Entradas unificadas por duplicado", stats["entradas_colapsadas_por_dedup"]),
+        ("Entradas del tablero (pautas_barrios.json)", entradas_finales),
+    ]
+    if stats["filas_reales"] != len(entran) + len(fuera) + len(pendientes) + len(duplicadas):
+        raise SystemExit("Filas no procesadas: filas reales != entran + fuera de Capital + pendientes + duplicadas")
+    if stats["filas_totales"] != stats["filas_descartadas"] + stats["filas_reales"]:
+        raise SystemExit("Filas no procesadas: renglones != descartadas por vacías + filas reales")
+    if len(fuera) != sum(fuera_por_motivo.values()):
+        raise SystemExit("Filas no procesadas: el conteo de fuera de Capital por motivo no suma el total")
+
+    wb = Workbook()
+    gris = PatternFill("solid", fgColor="F2F2F2")
+
+    def encabezado(ws, fila=1):
+        for c in ws[fila]:
+            c.font = Font(bold=True)
+            c.fill = gris
+            c.alignment = Alignment(wrap_text=True, vertical="top")
+
+    def anchos(ws, lista):
+        for i, w in enumerate(lista, 1):
+            ws.column_dimensions[get_column_letter(i)].width = w
+
+    rs = wb.active
+    rs.title = "Resumen"
+    rs.append(["Qué se cuenta", "Cantidad"])
+    for k, v in resumen:
+        rs.append([k, v])
+    rs.append([])
+    rs.append(["Cuadre", "Resultado"])
+    encabezado(rs, rs.max_row)
+    rs.append(["Renglones = descartadas por vacías + filas reales", "OK"])
+    rs.append(["Filas reales = entran + fuera de Capital + pendientes + duplicadas", "OK"])
+    rs.append(["Entradas del tablero = generadas − unificadas = entradas de pautas_barrios.json", "OK"])
+    rs.append([])
+    rs.append(["Fuera de Capital por motivo (no es un error: solo se informa la cantidad)", "Filas"])
+    encabezado(rs, rs.max_row)
+    for k, v in fuera_por_motivo.most_common():
+        rs.append([k, v])
+    rs.append([])
+    rs.append(["Carga procesada: hoja GLOBAL_ImportRange de Pauta RRSS_GLOBAL.xlsx. Los números de fila son los de la planilla (encabezado en la fila 1)."])
+    rs.append([f"Clave de duplicado: {CLAVE_TEXTO}, sin distinguir mayúsculas, tildes ni espacios. COD. CONTENIDO no se usa para decidir."])
+    encabezado(rs)
+    anchos(rs, [90, 12])
+
+    cab = ["Fila en la planilla", "CAMPAÑA", "TITULO DE LA PIEZA", "LOCALIDAD / SUBCIRCUITO", "DEPARTAMENTO", "AUDIENCIA", "ESTADO"]
+
+    def datos(f):
+        row = fila_row(f)
+        return [f, limpio(row["CAMPAÑA"]), limpio(row["TITULO DE LA PIEZA"]), limpio(row["LOCALIDAD / SUBCIRCUITO"]),
+                limpio(row["DEPARTAMENTO"]), limpio(row[AUD_COL]), limpio(row["ESTADO"]) or "(vacío)"]
+
+    wp = wb.create_sheet("Pendientes")
+    wp.append(cab + ["Motivo", "Motivo técnico (del generador)", "COD. CONTENIDO (informativo)"])
+    for d in pendientes:
+        wp.append(datos(d["fila"]) + [motivo_pendiente_claro(d["motivo"]), d["motivo"], limpio(fila_row(d["fila"])["COD. CONTENIDO"])])
+    encabezado(wp)
+    wp.freeze_panes = "B2"
+    wp.auto_filter.ref = wp.dimensions
+    anchos(wp, [10, 26, 40, 34, 30, 40, 12, 70, 50, 16])
+
+    wd = wb.create_sheet("Duplicadas")
+    wd.append(cab + ["Bloque", "Se unifica con la fila (queda en el tablero)", "Impresiones / visualizaciones de esta fila",
+                     "Impresiones / visualizaciones de la fila que queda", "Por qué queda la otra fila", "Motivo", "COD. CONTENIDO (informativo)"])
+    encabezado(wd)
+    for bloque, explicacion in BLOQUES_DUPLICADAS:
+        filas_bloque = [d for d in duplicadas if d["bloque"] == bloque]
+        wd.append([f"{bloque} ({len(filas_bloque)} filas): {explicacion}"])
+        wd.cell(wd.max_row, 1).font = Font(bold=True)
+        for d in filas_bloque:
+            g = d["conservada"][0]
+            rp, rg = fila_row(d["fila"]), fila_row(g)
+            imp_p, imp_g = d["metricas"][0][0]["alcance_o_visualizaciones"], d["metricas"][0][1]["alcance_o_visualizaciones"]
+            otras = ", ".join(str(x) for x in d["conservada"])
+            if bloque == "Repetición genuina":
+                motivo = (f"Es la misma pieza que la fila {otras}: coinciden {CLAVE_TEXTO}, y tiene las mismas métricas. "
+                          f"El tablero la muestra una sola vez, con la fila {otras}.")
+            elif bloque == "Sin métricas":
+                motivo = (f"Coincide con la fila {otras} en {CLAVE_TEXTO}, y ninguna de las dos tiene métricas cargadas. "
+                          f"El tablero muestra solo la fila {otras}.")
+            else:
+                motivo = (f"Coincide con la fila {otras} en {CLAVE_TEXTO}, pero las impresiones son distintas ({_fmt_num(imp_p)} contra {_fmt_num(imp_g)}). "
+                          f"El tablero conserva la fila {otras} y no suma las métricas. Confirmar si es la misma pieza cargada dos veces o si son piezas "
+                          "distintas; si son distintas, diferenciarlas en la planilla (por ejemplo en el título o el link).")
+                if limpio(rp["LINK MATERIAL"]) is None and limpio(rp["TIPO DE MATERIAL"]) is None:
+                    motivo += " En las dos filas el LINK MATERIAL y el TIPO DE MATERIAL están vacíos."
+            wd.append(datos(d["fila"]) + [bloque, otras, imp_p, imp_g, _por_que_queda(rp, rg), motivo, limpio(rp["COD. CONTENIDO"])])
+    wd.freeze_panes = "B2"
+    anchos(wd, [10, 26, 40, 34, 30, 40, 12, 22, 14, 16, 16, 34, 80, 16])
+
+    for ws in (wp, wd):
+        for r in ws.iter_rows(min_row=2):
+            for c in r:
+                c.alignment = Alignment(wrap_text=True, vertical="top")
+    for r in wd.iter_rows(min_row=2):
+        for i in (9, 10):
+            r[i].number_format = "#,##0"
+    wb.save(path)
+    return resumen
+
+
+def cuadrar_no_procesadas(path, resumen, json_path, stats):
+    """Relee el documento y el JSON escritos y se detiene si no coinciden."""
+    from openpyxl import load_workbook
+
+    errores = []
+    datos = json.load(open(json_path, encoding="utf8"))
+    entradas = [p for _, _, p in entradas_de(datos)]
+    filas_json = {p["fila_origen"] for p in entradas}
+    wb = load_workbook(path, read_only=True)
+    res = {}
+    for k, v in wb["Resumen"].iter_rows(min_row=2, max_col=2, values_only=True):
+        if k and k not in res:
+            res[k] = v
+    for k, v in resumen:
+        if res.get(k) != v:
+            errores.append(f"Resumen '{k}': en el documento {res.get(k)!r}, calculado {v!r}")
+    esperado = {
+        "Entradas del tablero (pautas_barrios.json)": len(entradas),
+        "Entran al tablero": len(filas_json),
+        "Duplicadas (todas sus entradas se unificaron con otra fila)": stats["filas_reales"] - len(filas_json) - stats["filas_por_destino_excluido"] - stats["filas_por_destino_pendiente"],
+    }
+    for k, v in esperado.items():
+        if res.get(k) != v:
+            errores.append(f"Resumen '{k}' = {res.get(k)!r} pero el JSON da {v!r}")
+
+    def filas_hoja(nombre):
+        return [r[0] for r in wb[nombre].iter_rows(min_row=2, max_col=1, values_only=True) if isinstance(r[0], int)]
+
+    for hoja, clave in (("Pendientes", "Pendientes"), ("Duplicadas", "Duplicadas (todas sus entradas se unificaron con otra fila)")):
+        filas = filas_hoja(hoja)
+        if len(filas) != res.get(clave) or len(set(filas)) != len(filas):
+            errores.append(f"Hoja {hoja}: {len(filas)} filas ({len(set(filas))} distintas), el Resumen dice {res.get(clave)!r}")
+        if set(filas) & filas_json:
+            errores.append(f"Hoja {hoja}: filas que también están en el JSON: {sorted(set(filas) & filas_json)[:10]}")
+    if errores:
+        Path(path).unlink()  # no dejar un documento que dice "OK" sin cuadrar
+        raise SystemExit("El documento de filas no procesadas no cuadra con el JSON (no se dejó el documento):\n  " + "\n  ".join(errores))
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--crudo", default=str(CRUDO_DEFECTO), help="Pauta RRSS_GLOBAL.xlsx (por defecto Contexto/Pauta RRSS_GLOBAL.xlsx)")
     ap.add_argument("--salida", default=str(SALIDA_DEFECTO), help="JSON a escribir (por defecto public/data/pautas_barrios.json)")
-    ap.add_argument("--solo-verificar", action="store_true", help="imprime la verificación y no escribe el JSON")
+    ap.add_argument("--no-procesadas", default=None, help="documento de filas no procesadas (por defecto, junto al JSON)")
+    ap.add_argument("--solo-verificar", action="store_true", help="imprime la verificación y no escribe ningún archivo")
     ap.add_argument("--previo", default=None, help="JSON anterior para el freno de bajas (por defecto, el que se va a pisar)")
     ap.add_argument("--aceptar-bajas", action="store_true",
-                    help="continuar aunque desaparezcan códigos del JSON anterior (solo si el área confirmó las bajas)")
+                    help="continuar aunque desaparezcan piezas del JSON anterior (solo si el área confirmó las bajas)")
     ap.add_argument("--hoy", default=date.today().isoformat())
     args = ap.parse_args(argv)
 
@@ -632,7 +933,7 @@ def main(argv=None):
 
     print("--- Verificación Pauta Capital ---")
     print(f"Filas del crudo: {stats['filas_totales']} | descartadas como basura: {stats['filas_descartadas']} | reales: {stats['filas_reales']}")
-    print(f"Filas con COD. CONTENIDO: {stats['filas_con_cod_contenido']} | códigos únicos: {stats['codigos_unicos_con_cod_contenido']}")
+    print(f"Filas con COD. CONTENIDO (informativo, no decide nada): {stats['filas_con_cod_contenido']} | códigos únicos: {stats['codigos_unicos_con_cod_contenido']}")
     print("Filas por destino:", {k.replace('filas_por_destino_', ''): v for k, v in sorted(stats.items()) if k.startswith('filas_por_destino_')})
     print(f"Entradas antes de dedup: {stats['entradas_antes_de_dedup']} | colapsadas por dedup: {stats['entradas_colapsadas_por_dedup']} | entradas finales: {len(piezas)}")
     print(f"Entradas por bucket: barrios {sum(v['total_pautas'] for v in salida['barrios'].values())} en {len(salida['barrios'])} barrios, "
@@ -650,31 +951,33 @@ def main(argv=None):
     sin_dato = sum(1 for p in piezas if p["inicio"] is None or p["fin"] is None)
     print(f"Entradas sin INICIO o sin FIN válidos: {sin_dato}")
 
-    # Freno de bajas: un COD. CONTENIDO que estaba en el JSON anterior y ya no está
+    # Freno de bajas: una pieza (CAMPAÑA + TITULO DE LA PIEZA, normalizados) que estaba en el JSON
+    # anterior y ya no está. Como el crudo es acumulado, una baja es sospechosa. No usa COD. CONTENIDO.
     previo = Path(args.previo or args.salida)
     if previo.exists():
         anterior = json.load(open(previo, encoding="utf8"))
-        cods_previos = {p.get("cod_contenido") for _, _, p in entradas_de(anterior) if p.get("cod_contenido") is not None}
-        if not cods_previos:
-            print("Freno de bajas: el JSON anterior no trae cod_contenido; se omite en esta corrida.")
-        else:
-            nuevos = {p["cod_contenido"] for p in piezas if p["cod_contenido"] is not None}
-            bajas = sorted(cods_previos - nuevos, key=str)
-            print(f"Códigos dados de baja respecto al JSON anterior: {len(bajas)}")
-            if bajas:
-                print("Detalle:", bajas)
-                if args.aceptar_bajas:
-                    print("--aceptar-bajas: se continúa (las bajas quedan registradas arriba).")
-                else:
-                    raise SystemExit("Aparecieron bajas respecto al JSON anterior. Se detiene la corrida sin escribir: podría ser una pérdida de datos no esperada. Si el área confirmó las bajas, repetir con --aceptar-bajas.")
+        pieza = lambda p: (normalizar(p.get("campania")), normalizar(p.get("titulo_pieza")))
+        bajas = sorted({pieza(p) for _, _, p in entradas_de(anterior)} - {pieza(p) for p in piezas})
+        print(f"Piezas (campaña + título) dadas de baja respecto al JSON anterior: {len(bajas)}")
+        if bajas:
+            print("Detalle:", [" · ".join(b) for b in bajas])
+            if args.aceptar_bajas:
+                print("--aceptar-bajas: se continúa (las bajas quedan registradas arriba).")
+            else:
+                raise SystemExit("Aparecieron bajas respecto al JSON anterior. Se detiene la corrida sin escribir: podría ser una pérdida de datos no esperada. Si el área confirmó las bajas, repetir con --aceptar-bajas.")
 
     if args.solo_verificar:
         print("(--solo-verificar: no se escribió ningún archivo)")
-    else:
-        with open(args.salida, "w", encoding="utf8") as f:
-            f.write(json.dumps(salida, ensure_ascii=False, indent=2))
-        print(f"Escrito: {args.salida}")
-
+        return
+    with open(args.salida, "w", encoding="utf8") as f:
+        f.write(json.dumps(salida, ensure_ascii=False, indent=2))
+    print(f"Escrito: {args.salida}")
+    destino_doc = Path(args.no_procesadas) if args.no_procesadas else Path(args.salida).with_name(NO_PROCESADAS)
+    resumen = escribir_no_procesadas(destino_doc, df, stats)
+    cuadrar_no_procesadas(destino_doc, resumen, Path(args.salida), stats)
+    print(f"Escrito: {destino_doc} (cuadra con el JSON)")
+    for k, v in resumen:
+        print(f"   {k}: {v}")
 
 if __name__ == "__main__":
     main()

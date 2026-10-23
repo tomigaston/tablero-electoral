@@ -36,7 +36,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import generar_pauta_capital as g  # noqa: E402
 
 REGLAS_A_CONFIRMAR = [
-    ("Ítem de lista sin letra y con el nombre del circuito (ej. '5 Altamira')", "Va a circuito sin barrio: apunta al circuito entero. Con letra ('5 G San Vicente') se busca como barrio.", "Geografía → Audiencias con números de circuito"),
     ("Ítem de lista numerado que no es un barrio reconocido ni el nombre del circuito", "Queda afuera; la fila entra con los demás ítems.", "Geografía → Audiencias con números de circuito"),
     ("Audiencia que solo repite el texto de LOCALIDAD (ej. '007B - ALTA CORDOBA, CÓRDOBA CAPITAL, ARGENTINA sin advantage+…')", "El nombre es el del circuito, no un barrio: la fila va a circuito sin barrio.", "Geografía → Barrios en la columna AUDIENCIA"),
     ("'Toda la provincia excluyendo X' con departamento 'Provincia de Córdoba'", "Va a toda la Capital.", "Geografía → Reglas finas"),
