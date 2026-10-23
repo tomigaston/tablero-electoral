@@ -261895,7 +261895,7 @@
     }
   },
   "toda_capital": {
-    "total_pautas": 336,
+    "total_pautas": 407,
     "pautas": [
       {
         "fila_origen": 2,
@@ -263456,6 +263456,82 @@
         "observaciones": null
       },
       {
+        "fila_origen": 963,
+        "cod_contenido": "A05599",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "25 Años de ProCórdoba (Video)",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "AGENCIA PROCÓRDOBA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1mhshinYjFpITKOT_LfrZYmTPh4q8D9nZ?usp=drive_link",
+          "utms": null,
+          "tipo": null,
+          "redes_publicadas": {
+            "ig": "https://www.instagram.com/p/DaWoZUrAqWJ/",
+            "fb": "https://www.facebook.com/reel/2089607202435228/",
+            "yt": null
+          }
+        },
+        "inicio": "2026-07-03",
+        "fin": "2026-07-10",
+        "duracion_dias": 7.0,
+        "fecha_envio": "2026-07-03",
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 102698.0,
+          "frecuencia": 1.72578476843449,
+          "costo_unitario": 457.895382578044,
+          "inversion": 47024.94
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 965,
+        "cod_contenido": "A05602",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Mesa de Narcocriminalidad (Carrusel)",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE JUSTICIA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1EywFD6AtDNYx_fXffcj3neVdeKbBRMZI?usp=drive_link",
+          "utms": null,
+          "tipo": null,
+          "redes_publicadas": {
+            "ig": "https://www.instagram.com/p/DaWakhlgDru/",
+            "fb": "https://www.facebook.com/509396091220866/posts/1466009762226156",
+            "yt": null
+          }
+        },
+        "inicio": "2026-07-03",
+        "fin": "2026-07-10",
+        "duracion_dias": 7.0,
+        "fecha_envio": "2026-07-03",
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 84853.0,
+          "frecuencia": 1.03443945969668,
+          "costo_unitario": 554.370499569844,
+          "inversion": 47040.0
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 966,
         "cod_contenido": "A05603",
         "campania": "COMUNICACIÓN INSTITUCIONAL",
@@ -263487,6 +263563,44 @@
           "frecuencia": 1.06031191354429,
           "costo_unitario": 1325.54165395178,
           "inversion": 108595.0
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 967,
+        "cod_contenido": "A05604",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Educación en las Primeras Infancias: Venir al jardín hace la diferencia (Video)",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1oQ6NPDK68RLt30AKFaQUkNp8O7pviRff?usp=drive_link",
+          "utms": null,
+          "tipo": null,
+          "redes_publicadas": {
+            "ig": "https://www.instagram.com/p/DaWoes7goNC/",
+            "fb": "https://www.facebook.com/reel/1204786792720202/",
+            "yt": null
+          }
+        },
+        "inicio": "2026-07-03",
+        "fin": "2026-07-10",
+        "duracion_dias": 7.0,
+        "fecha_envio": "2026-07-03",
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 297616.0,
+          "frecuencia": 1.84297188008941,
+          "costo_unitario": 961.880476856083,
+          "inversion": 286271.02
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -263677,6 +263791,44 @@
           "frecuencia": 1.78995938175871,
           "costo_unitario": 689.845002955889,
           "inversion": 2340800.0
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 980,
+        "cod_contenido": "A05617",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Obras Julio 2026 (Link)",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Tráfico",
+        "tipo_pauta": "Orgánico",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://www.instagram.com/reel/DaDzClRK1dR/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+          "utms": null,
+          "tipo": null,
+          "redes_publicadas": {
+            "ig": "https://www.instagram.com/p/DaV0f1NgBWh/",
+            "fb": "https://www.facebook.com/301506776559902/posts/1627891011618101/",
+            "yt": null
+          }
+        },
+        "inicio": "2026-07-03",
+        "fin": "2026-07-10",
+        "duracion_dias": 7.0,
+        "fecha_envio": "2026-07-03",
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 3771.0,
+          "frecuencia": 1.35306781485468,
+          "costo_unitario": 5193.78679395385,
+          "inversion": 19585.77
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -265356,6 +265508,44 @@
         "observaciones": null
       },
       {
+        "fila_origen": 1146,
+        "cod_contenido": "A05901",
+        "campania": "STREAMING EVENTOS",
+        "titulo_pieza": "XIX Junta de Gobernadores y traspaso de presidencia Región Centro",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "AGENDA MLL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Tráfico",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1dreF5_565tMdkc5XhH7XKxWJvdPERNUf?usp=drive_link",
+          "utms": null,
+          "tipo": "PLACA FIJA",
+          "redes_publicadas": {
+            "ig": "https://www.instagram.com/p/DbVr0MDg2m5/",
+            "fb": "https://www.facebook.com/509396091220866/posts/1487880556705743",
+            "yt": null
+          }
+        },
+        "inicio": "2026-07-28",
+        "fin": "2026-07-28",
+        "duracion_dias": 0.0,
+        "fecha_envio": "2026-07-27",
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 70135.0,
+          "frecuencia": 2.20550314465408,
+          "costo_unitario": 5261.90119056106,
+          "inversion": 369043.44
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 1149,
         "cod_contenido": "A05904",
         "campania": "HITOS DE GESTIÓN",
@@ -265501,6 +265691,44 @@
           "frecuencia": 2.43768385012296,
           "costo_unitario": 2053.4023076048,
           "inversion": 415200.0
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 1188,
+        "cod_contenido": "A05941",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Inauguración y Ceremonia de traspado de mando de Región Centro",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "AGENDA MLL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1To5HRoODPEqJH1pa98wAboTmInLrLziP",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": "https://www.instagram.com/p/DbePpzQgZlz/",
+            "fb": "https://www.facebook.com/reel/2569973923429378/",
+            "yt": null
+          }
+        },
+        "inicio": "2026-07-31",
+        "fin": "2026-08-10",
+        "duracion_dias": 10.0,
+        "fecha_envio": "2026-07-31",
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 138629.0,
+          "frecuencia": 2.11922341970496,
+          "costo_unitario": 2662.64634383859,
+          "inversion": 369120.0
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -270258,6 +270486,44 @@
         "observaciones": null
       },
       {
+        "fila_origen": 2416,
+        "cod_contenido": "A07199",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "Inauguración 750 metros de Avenida Bodereau",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Orgánico",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://www.facebook.com/reel/1676961417384051",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-09-18",
+        "fin": "2026-10-05",
+        "duracion_dias": 17.0,
+        "fecha_envio": null,
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 13342.0,
+          "frecuencia": 3.89206534422403,
+          "costo_unitario": 2098.49647728976,
+          "inversion": 27998.14
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 2421,
         "cod_contenido": "A07183",
         "campania": "Córdoba Cerca Tuyo",
@@ -270593,6 +270859,44 @@
           "frecuencia": null,
           "costo_unitario": null,
           "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2481,
+        "cod_contenido": "A07280",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "Inauguración Circunvalación Villa Maria Villa Nueva",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1vDLUyNjZc3VpZm4jnCWab2xIQqlp41-f?usp=drive_link",
+          "utms": null,
+          "tipo": null,
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-09-25",
+        "fin": "2026-09-26",
+        "duracion_dias": 1.0,
+        "fecha_envio": null,
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 41731.0,
+          "frecuencia": 1.0941531200839,
+          "costo_unitario": 490.278929333109,
+          "inversion": 20459.83
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -270973,6 +271277,120 @@
           "frecuencia": null,
           "costo_unitario": null,
           "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2546,
+        "cod_contenido": "A07350",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Inicio de Obra del Nuevo Edificio con oficinas y Coworking de la Agencia ProCórdoba",
+        "eje": "OBRAS",
+        "ministerio": "AGENCIA PROCÓRDOBA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1IONIy1LuCRAJdh4dOe82YFy1tNiRajyW?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-02",
+        "fin": "2026-10-05",
+        "duracion_dias": 3.0,
+        "fecha_envio": null,
+        "estado": "Finalizada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 227553.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 1153913.86
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2547,
+        "cod_contenido": "A07351",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "Inauguración Circunvalación Villa María (Primera Parte)",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://www.facebook.com/share/v/1K7bVkEo2n/",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-02",
+        "fin": "2026-10-31",
+        "duracion_dias": 29.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 218074.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 1872277.98
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2550,
+        "cod_contenido": "A07354",
+        "campania": "VIDRIERA PRODUCTIVA",
+        "titulo_pieza": "Expo Bell Ville 2026",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1HEReM0A89zth7CP686ebyz8nn2qG6O0i?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-02",
+        "fin": "2026-10-31",
+        "duracion_dias": 29.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 307772.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 1861879.33
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -271778,6 +272196,82 @@
         "observaciones": null
       },
       {
+        "fila_origen": 2670,
+        "cod_contenido": "A07474",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Córdoba invierte en educación: 70,000 netbooks y 1,200,000 libros",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://www.facebook.com/share/r/14jdpdqcviy/",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-13",
+        "fin": "2026-11-06",
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 127389.0,
+          "frecuencia": 2.56150969194884,
+          "costo_unitario": 2222.67982321864,
+          "inversion": 283144.96
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2671,
+        "cod_contenido": "A07475",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Córdoba invierte en educación: 70,000 netbooks y 1,200,000 libros",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1qKlQ05FTWgRRH8CtG3PWTdpUTTRGBpJ6?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-13",
+        "fin": "2026-11-06",
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 7102.0,
+          "frecuencia": null,
+          "costo_unitario": 0,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 2672,
         "cod_contenido": "A07476",
         "campania": "COMUNICACIÓN INSTITUCIONAL",
@@ -271809,6 +272303,82 @@
           "frecuencia": 2.53741963225357,
           "costo_unitario": 1456.85492949222,
           "inversion": 361074.21
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2673,
+        "cod_contenido": "A07477",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Refuncionalización Unidad de Terapia Intensiva Servicio del Quemado del Hospital Córdoba",
+        "eje": "SALUD",
+        "ministerio": "MINISTERIO DE SALUD",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1d9cGvWD_gYEdhIg4-gWuZRLEVjOJLXKZ?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-07",
+        "fin": "2026-11-06",
+        "duracion_dias": 30.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 64.0,
+          "frecuencia": null,
+          "costo_unitario": 0,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2674,
+        "cod_contenido": "A07478",
+        "campania": "GAS PARA CRECER",
+        "titulo_pieza": "Gas Natural para Crecer",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://www.facebook.com/share/p/19NR7tLvbP/",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-08",
+        "fin": "2026-11-06",
+        "duracion_dias": 29.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 45920.0,
+          "frecuencia": 1.95337757359196,
+          "costo_unitario": 7686.98083623693,
+          "inversion": 352986.16
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -271885,6 +272455,82 @@
           "frecuencia": null,
           "costo_unitario": 0,
           "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2683,
+        "cod_contenido": "A07487",
+        "campania": "CONECTIVIDAD",
+        "titulo_pieza": "Conectividad en Escuelas Rurales",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE ECONOMÍA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1mjLskoQzFNe-XH1E0xbaWTSULFhYVIjY?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-13",
+        "fin": "2026-11-06",
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 97200.0,
+          "frecuencia": 1.78456680191675,
+          "costo_unitario": 1743.4341563786,
+          "inversion": 169461.8
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2684,
+        "cod_contenido": "A07488",
+        "campania": "CONECTIVIDAD",
+        "titulo_pieza": "Conectividad en Escuelas Rurales",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE ECONOMÍA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1mjLskoQzFNe-XH1E0xbaWTSULFhYVIjY?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-13",
+        "fin": "2026-11-06",
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "Vigente",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 35632.0,
+          "frecuencia": 1.53937875318615,
+          "costo_unitario": 4635.00505163897,
+          "inversion": 165154.5
         },
         "circuito": null,
         "circuito_nombre": null,
@@ -272424,6 +273070,196 @@
         "observaciones": null
       },
       {
+        "fila_origen": 2824,
+        "cod_contenido": "A07628",
+        "campania": "EMPLEO +26",
+        "titulo_pieza": "Pieza 5: Ya está en marcha Empleo +26",
+        "eje": "DESARROLLO SOCIAL",
+        "ministerio": "MINISTERIO DE DESARROLLO SOCIAL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1389YSVwAtdhjebW8SSn7UmiYUwE8HoAp?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-13",
+        "fin": "2026-11-06",
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "Observada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 26032.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 173798.13
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2825,
+        "cod_contenido": "A07629",
+        "campania": "EMPLEO +26",
+        "titulo_pieza": "Pieza 5: Ya está en marcha Empleo +26",
+        "eje": "DESARROLLO SOCIAL",
+        "ministerio": "MINISTERIO DE DESARROLLO SOCIAL",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1389YSVwAtdhjebW8SSn7UmiYUwE8HoAp?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": "2026-11-06",
+        "duracion_dias": 46332.0,
+        "fecha_envio": null,
+        "estado": "Observada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 25695.0,
+          "frecuencia": null,
+          "costo_unitario": 0.906323409223584,
+          "inversion": 23287.98
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2826,
+        "cod_contenido": "A07630",
+        "campania": "EMPLEO +26",
+        "titulo_pieza": "Pieza 6: Experiencia Empleo +26 - Inclusión Laboral",
+        "eje": "DESARROLLO SOCIAL",
+        "ministerio": "MINISTERIO DE DESARROLLO SOCIAL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/15TkIQR8uUBuA7pdLDvjAAd27_jZ-xGmv?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-08",
+        "fin": "2026-11-06",
+        "duracion_dias": 29.0,
+        "fecha_envio": null,
+        "estado": "Observada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 258580.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 216276.1
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2827,
+        "cod_contenido": "A07631",
+        "campania": "EMPLEO +26",
+        "titulo_pieza": "Pieza 6: Experiencia Empleo +26 - Inclusión Laboral",
+        "eje": "DESARROLLO SOCIAL",
+        "ministerio": "MINISTERIO DE DESARROLLO SOCIAL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/15TkIQR8uUBuA7pdLDvjAAd27_jZ-xGmv?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-12",
+        "fin": "2026-11-06",
+        "duracion_dias": 25.0,
+        "fecha_envio": null,
+        "estado": "Observada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 3108.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 59770.61
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2829,
+        "cod_contenido": "A07633",
+        "campania": "EMPLEO +26",
+        "titulo_pieza": "Pieza 7: Otras experiencias Empleo +26",
+        "eje": "DESARROLLO SOCIAL",
+        "ministerio": "MINISTERIO DE DESARROLLO SOCIAL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1CHOwy38oMXWDGBOb_COb4O7JzvsJK8fE?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-12",
+        "fin": "2026-11-06",
+        "duracion_dias": 25.0,
+        "fecha_envio": null,
+        "estado": "Observada",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": 280.0,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": 9884.61
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 2833,
         "cod_contenido": "A07637",
         "campania": "CÓRDOBA IMPULSA",
@@ -272766,6 +273602,234 @@
         "observaciones": null
       },
       {
+        "fila_origen": 2973,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Renault - Inauguración nueva Pick Up-COMUNICACIÓN INSTITUCIONAL-PROVINCIA DE CÓRDOBA, ARGENTINA-CARRUSEL-Meta-OCT_26-8",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Renault - Inauguración nueva Pick Up",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1sV9gs7Wu57S8AnkWYT2dCZzvMgqy9mhn?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 7.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2974,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Renault - Inauguración nueva Pick Up-COMUNICACIÓN INSTITUCIONAL-PROVINCIA DE CÓRDOBA, ARGENTINA-CARRUSEL-Meta-OCT_26-9",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Renault - Inauguración nueva Pick Up",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1sV9gs7Wu57S8AnkWYT2dCZzvMgqy9mhn?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 7.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2975,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Premios a la Produccion - Sibilla - 1000 empresarios-COMUNICACIÓN INSTITUCIONAL-PROVINCIA DE CÓRDOBA, ARGENTINA-CARRUSEL-Meta-OCT_26-10",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Premios a la Produccion - Sibilla - 1000 empresarios",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "AGENCIA CÓRDOBA CULTURA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1GAQHMSzWVR7pdTupsGNzuwEaIoSOXk_Y?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 7.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2978,
+        "cod_contenido": "OBRAS QUE TRANSFORMAN-Streaming Nuevo tramo Autopista Ruta Nacional 19-OBRAS-PROVINCIA DE CÓRDOBA, ARGENTINA-PLACA FIJA-Meta-OCT_26-13",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "Streaming Nuevo tramo Autopista Ruta Nacional 19 (Los Chañaritos)",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1bGjRrZqicmQgpRr2Ibw__PIgP3JtsNEV?usp=sharing",
+          "utms": null,
+          "tipo": "PLACA FIJA",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 1.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2985,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Resultados Salud-SALUD-PROVINCIA DE CÓRDOBA, ARGENTINA-CARRUSEL-Meta-OCT_26-20",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Resultados Salud",
+        "eje": "SALUD",
+        "ministerio": "MINISTERIO DE SALUD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1fvYURygafG-Cpwx50TZYeKQmVC8azaAk?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 18.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 2986,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Visita Vicepresidenta Pais Vasco-COMUNICACIÓN INSTITUCIONAL-PROVINCIA DE CÓRDOBA, ARGENTINA-CARRUSEL-Meta-OCT_26-21",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Visita Vicepresidenta Pais Vasco",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "HACER PARA CRECER",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Alcance",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1f8wzIxFi-te5IoMy1pBttA7o2Y8eAZiu?usp=drive_link",
+          "utms": null,
+          "tipo": "CARRUSEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 5.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 3002,
         "cod_contenido": "HACER PARA CRECER-Una búsqueda que puede traer respuestas-DESAROLLO HUMANO-DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-CÓRDOBA CAPITAL, DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-REEL-71",
         "campania": "HACER PARA CRECER",
@@ -272790,6 +273854,538 @@
         "inicio": null,
         "fin": null,
         "duracion_dias": 13.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3105,
+        "cod_contenido": "HACER PARA CRECER-La Región Centro ya tiene su punto de encuentro-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-161",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "La Región Centro ya tiene su punto de encuentro",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1Aaippud5yqDdXNX6jJEKC7M5JXOOP5Vh?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3106,
+        "cod_contenido": "HACER PARA CRECER-Más herramientas para fortalecer la seguridad-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-162",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Más herramientas para fortalecer la seguridad",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1EaUbKTtX2UhSD-Shee4mS5bc3HY66LlV?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3107,
+        "cod_contenido": "HACER PARA CRECER-Donde las grandes ideas se hacen realidad-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-163",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Donde las grandes ideas se hacen realidad",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1cGtuJi7Bk5MdOG-smf_kEjBWeV3Og5VQ?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3108,
+        "cod_contenido": "HACER PARA CRECER-Orgullo cordobés al mundo-CULTURA Y TURISMO-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-164",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Orgullo cordobés al mundo",
+        "eje": "CULTURA Y TURISMO",
+        "ministerio": "AGENCIA CÓRDOBA CULTURA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1hGFXBsJWpemM8cjYw4_0Ss3DG7w0w14R?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3109,
+        "cod_contenido": "HACER PARA CRECER-Impulsando el empleo y la producción local-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-165",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Impulsando el empleo y la producción local",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/13rO8iVEBoHX793EoHWgPBYz0pGZvV1Af?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3110,
+        "cod_contenido": "HACER PARA CRECER-Aprender, hacer, progresar-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-166",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Aprender, hacer, progresar",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/109TMRmKtXCYyF6Q8uTt1IIEnI6sapIP8?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3111,
+        "cod_contenido": "HACER PARA CRECER-Más inversión, más trabajo para Córdoba-OBRAS-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-167",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Más inversión, más trabajo para Córdoba",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/10Zv5Y-CuxN9jq1cb4R_Ezc2Smul6R8_f?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3112,
+        "cod_contenido": "HACER PARA CRECER-La Región Centro ya tiene su punto de encuentro-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-168",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "La Región Centro ya tiene su punto de encuentro",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1Aaippud5yqDdXNX6jJEKC7M5JXOOP5Vh?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-09",
+        "fin": "2026-10-12",
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3113,
+        "cod_contenido": "HACER PARA CRECER-Más herramientas para fortalecer la seguridad-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-169",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Más herramientas para fortalecer la seguridad",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1EaUbKTtX2UhSD-Shee4mS5bc3HY66LlV?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3114,
+        "cod_contenido": "HACER PARA CRECER-Donde las grandes ideas se hacen realidad-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-170",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Donde las grandes ideas se hacen realidad",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1cGtuJi7Bk5MdOG-smf_kEjBWeV3Og5VQ?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-09",
+        "fin": "2026-10-12",
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3115,
+        "cod_contenido": "HACER PARA CRECER-Orgullo cordobés al mundo-CULTURA Y TURISMO-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-171",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Orgullo cordobés al mundo",
+        "eje": "CULTURA Y TURISMO",
+        "ministerio": "AGENCIA CÓRDOBA CULTURA",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1hGFXBsJWpemM8cjYw4_0Ss3DG7w0w14R?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-09",
+        "fin": "2026-10-12",
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3116,
+        "cod_contenido": "HACER PARA CRECER-Impulsando el empleo y la producción local-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-172",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Impulsando el empleo y la producción local",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/13rO8iVEBoHX793EoHWgPBYz0pGZvV1Af?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-09",
+        "fin": "2026-10-12",
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3117,
+        "cod_contenido": "HACER PARA CRECER-Aprender, hacer, progresar-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-173",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Aprender, hacer, progresar",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/109TMRmKtXCYyF6Q8uTt1IIEnI6sapIP8?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-09",
+        "fin": "2026-10-12",
+        "duracion_dias": 6.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3118,
+        "cod_contenido": "HACER PARA CRECER-Más inversión, más trabajo para Córdoba-OBRAS-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-174",
+        "campania": "HACER PARA CRECER",
+        "titulo_pieza": "Más inversión, más trabajo para Córdoba",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE PRODUCCIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/10Zv5Y-CuxN9jq1cb4R_Ezc2Smul6R8_f?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-09",
+        "fin": "2026-10-12",
+        "duracion_dias": 6.0,
         "fecha_envio": null,
         "estado": "S/D",
         "metricas_ejecutadas": {
@@ -273032,6 +274628,196 @@
         "observaciones": null
       },
       {
+        "fila_origen": 3838,
+        "cod_contenido": "OBRAS QUE TRANSFORMAN-LOS GIGANTES-OBRAS-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "LOS GIGANTES",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1quN-dMWgh9dBjZ0qzYwno6hGmRY08Yev?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 31.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3839,
+        "cod_contenido": "OBRAS QUE TRANSFORMAN-LOS GIGANTES-OBRAS-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "LOS GIGANTES",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1quN-dMWgh9dBjZ0qzYwno6hGmRY08Yev?usp=sharing",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 31.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3920,
+        "cod_contenido": "PPP -PPP-DESARROLLO SOCIAL-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL",
+        "campania": "PPP",
+        "titulo_pieza": "PPP",
+        "eje": "DESARROLLO SOCIAL",
+        "ministerio": "MINISTERIO DE DESARROLLO SOCIAL",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1JorkbPq6s1c0cGpjmBGhazGgaGdPhnea?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 31.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3921,
+        "cod_contenido": "CÓRDOBA IMPULSA-Créditos Córdoba Impulsa-PRODUCCIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL",
+        "campania": "CÓRDOBA IMPULSA",
+        "titulo_pieza": "Créditos Córdoba Impulsa",
+        "eje": "PRODUCCIÓN",
+        "ministerio": "MINISTERIO DE ECONOMÍA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1KqByLcJ_vgzeFLZi5nXB9dDJcw5l6ViG?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 31.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3922,
+        "cod_contenido": "PRUEBAS PISA-Presentación Pruebas PISA-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL",
+        "campania": "PRUEBAS PISA",
+        "titulo_pieza": "Presentación Pruebas PISA",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1v47D5Dkbj20opK8b_GNdjJtwoI8nWXSg?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 31.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 3923,
         "cod_contenido": "PPP -PPP-DESARROLLO SOCIAL-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL",
         "campania": "PPP",
@@ -273146,6 +274932,82 @@
         "observaciones": null
       },
       {
+        "fila_origen": 3949,
+        "cod_contenido": "CÓRDOBA HOGAR-Córdoba Hogar 1° entrega septiembre 2026-VINCULACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-Meta-674",
+        "campania": "CÓRDOBA HOGAR",
+        "titulo_pieza": "Córdoba Hogar 1° entrega septiembre 2026",
+        "eje": "VINCULACIÓN",
+        "ministerio": "SECRETARÍA GENERAL DE GOBIERNO",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1S4-WA7UOLNU4Eyrx5QLM8uZ5O_N3YUCs?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3951,
+        "cod_contenido": "CÓRDOBA HOGAR-Córdoba Hogar 1° entrega septiembre 2026-VINCULACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-REEL-Youtube-676",
+        "campania": "CÓRDOBA HOGAR",
+        "titulo_pieza": "Córdoba Hogar 1° entrega septiembre 2026",
+        "eje": "VINCULACIÓN",
+        "ministerio": "SECRETARÍA GENERAL DE GOBIERNO",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Reproducciones de 2 segundos",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1S4-WA7UOLNU4Eyrx5QLM8uZ5O_N3YUCs?usp=drive_link",
+          "utms": null,
+          "tipo": "REEL",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": "2026-10-14",
+        "fin": "2026-11-11",
+        "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 3961,
         "cod_contenido": "GESTIÓN PÚBLICA-Módulos habitacionales que llegan a Vaca Muerta-PRODUCCIÓN-DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-CÓRDOBA CAPITAL, DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-REEL-Meta-686",
         "campania": "GESTIÓN PÚBLICA",
@@ -273208,6 +275070,158 @@
         "inicio": null,
         "fin": null,
         "duracion_dias": 24.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3983,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Asistencia técnica a 105 municipios de COPEC-COMUNICACIÓN INSTITUCIONAL-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Asistencia técnica a 105 municipios de COPEC",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "JEFATURA DE GABINETE",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1u_KdYvv_cKtyGTVmn3FZ9Rry5yL1torg?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3984,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Asistencia técnica a 105 municipios de COPEC-COMUNICACIÓN INSTITUCIONAL-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Asistencia técnica a 105 municipios de COPEC",
+        "eje": "COMUNICACIÓN INSTITUCIONAL",
+        "ministerio": "JEFATURA DE GABINETE",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1u_KdYvv_cKtyGTVmn3FZ9Rry5yL1torg?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3987,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-2do Curso Nacional de Canes Detectores-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "2do Curso Nacional de Canes Detectores",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1nNO7Jo9IIla8xzvF4fFuM2QuH-awXkBt?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3988,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-2do Curso Nacional de Canes Detectores-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "2do Curso Nacional de Canes Detectores",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1nNO7Jo9IIla8xzvF4fFuM2QuH-awXkBt?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
         "fecha_envio": null,
         "estado": "S/D",
         "metricas_ejecutadas": {
@@ -273425,6 +275439,44 @@
         "solicitado_por": "SECRETARÍA",
         "material": {
           "link": "https://drive.google.com/drive/folders/15Sh0mtjJlUmMTGQdM5nDaXZzAod4-o-u?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 3999,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Visita al Hospital de Salud Mental de Oliva-SALUD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Visita al Hospital de Salud Mental de Oliva",
+        "eje": "SALUD",
+        "ministerio": "MINISTERIO DE SALUD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/15fkfFGb2vwQsNliXlOg6Tnl0nSUBFOwi?usp=drive_link",
           "utms": null,
           "tipo": "Reel",
           "redes_publicadas": {
@@ -273982,6 +276034,44 @@
         "observaciones": null
       },
       {
+        "fila_origen": 4040,
+        "cod_contenido": "OBRAS QUE TRANSFORMAN-Parador en San Antonio de Arredondo-OBRAS-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "OBRAS QUE TRANSFORMAN",
+        "titulo_pieza": "Parador en San Antonio de Arredondo",
+        "eje": "OBRAS",
+        "ministerio": "MINISTERIO DE INFRAESTRUCTURA Y SERVICIOS PÚBLICOS",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1AVPkt5Kc7ejg3rVQqGhJTCBlm6rVlUFA?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 4044,
         "cod_contenido": "CALLE A CALLE HACEMOS CIUDAD-Obra en Barrio Mirador-OBRAS-DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-CÓRDOBA CAPITAL, DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-Reel",
         "campania": "CALLE A CALLE HACEMOS CIUDAD",
@@ -273995,6 +276085,82 @@
         "solicitado_por": "SECRETARÍA",
         "material": {
           "link": "https://drive.google.com/drive/folders/1RyxhaWJlL0PYSsKdDhKeW4Ae7wlB_qXE?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4045,
+        "cod_contenido": "CÓRDOBA FRENTE AL NARCOTRÁFICO-La DPA colabora con la lucha contra el narcotráfico-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "CÓRDOBA FRENTE AL NARCOTRÁFICO",
+        "titulo_pieza": "La DPA colabora con la lucha contra el narcotráfico",
+        "eje": "SEGURIDAD",
+        "ministerio": "SECRETARÍA GENERAL DE GOBIERNO",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1TPVOXZTzYgGqjz1zkyGTLcU5ETKibsdL?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4046,
+        "cod_contenido": "CÓRDOBA FRENTE AL NARCOTRÁFICO-La DPA colabora con la lucha contra el narcotráfico-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "CÓRDOBA FRENTE AL NARCOTRÁFICO",
+        "titulo_pieza": "La DPA colabora con la lucha contra el narcotráfico",
+        "eje": "SEGURIDAD",
+        "ministerio": "SECRETARÍA GENERAL DE GOBIERNO",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1TPVOXZTzYgGqjz1zkyGTLcU5ETKibsdL?usp=drive_link",
           "utms": null,
           "tipo": "Reel",
           "redes_publicadas": {
@@ -274149,6 +276315,120 @@
           "link": "https://drive.google.com/drive/folders/12aQPLJZxmuJX_dDBdharcIZNl7cwFj1c?usp=drive_link",
           "utms": null,
           "tipo": "Carrusel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4060,
+        "cod_contenido": "PARQUES INDUSTRIALES-Visita a Expo Parques Industriales (PARQUES INDUSTRIALES)-AMBIENTE-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Carrusel",
+        "campania": "PARQUES INDUSTRIALES",
+        "titulo_pieza": "Visita a Expo Parques Industriales (PARQUES INDUSTRIALES)",
+        "eje": "AMBIENTE",
+        "ministerio": "SECRETARÍA GENERAL DE AMBIENTE Y BIOCIUDADANÍA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1KCc2qWCC8vlGPm3n49KyAA1nfFgzMV-u?usp=drive_link",
+          "utms": null,
+          "tipo": "Carrusel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4062,
+        "cod_contenido": "CULTO-Reunión por Visita al Papa León XIV-VINCULACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "CULTO",
+        "titulo_pieza": "Reunión por Visita al Papa León XIV",
+        "eje": "VINCULACIÓN",
+        "ministerio": "MINISTERIO DE VINCULACIÓN COMUNITARIA",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/14JERs63QL5IviT6s_x_0FKhnBUD2ZlxF?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4063,
+        "cod_contenido": "CULTO-Reunión por Visita al Papa León XIV-VINCULACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "CULTO",
+        "titulo_pieza": "Reunión por Visita al Papa León XIV",
+        "eje": "VINCULACIÓN",
+        "ministerio": "MINISTERIO DE VINCULACIÓN COMUNITARIA",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/14JERs63QL5IviT6s_x_0FKhnBUD2ZlxF?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
           "redes_publicadas": {
             "ig": null,
             "fb": null,
@@ -274590,6 +276870,272 @@
         "observaciones": null
       },
       {
+        "fila_origen": 4077,
+        "cod_contenido": "TECNOPRESENTE-Programa Tecnopresente-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "TECNOPRESENTE",
+        "titulo_pieza": "Programa Tecnopresente",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1ll1tbEnnVZ4Wz1GqwBxdOJgmCT6v10sr?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4078,
+        "cod_contenido": "TECNOPRESENTE-Programa Tecnopresente-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "TECNOPRESENTE",
+        "titulo_pieza": "Programa Tecnopresente",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1ll1tbEnnVZ4Wz1GqwBxdOJgmCT6v10sr?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4079,
+        "cod_contenido": "TECNOPRESENTE-Programa Tecnopresente-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "TECNOPRESENTE",
+        "titulo_pieza": "Programa Tecnopresente",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1ll1tbEnnVZ4Wz1GqwBxdOJgmCT6v10sr?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4080,
+        "cod_contenido": "PROGRAMA transFORMAR@Cba-Prácticas Educativas-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "PROGRAMA transFORMAR@Cba",
+        "titulo_pieza": "Prácticas Educativas",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1PzfegiGfjQRrhVbZxlma-3HLWRlwVP44?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4081,
+        "cod_contenido": "PROGRAMA transFORMAR@Cba-Prácticas Educativas-EDUCACIÓN-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "PROGRAMA transFORMAR@Cba",
+        "titulo_pieza": "Prácticas Educativas",
+        "eje": "EDUCACIÓN",
+        "ministerio": "MINISTERIO DE EDUCACIÓN",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1PzfegiGfjQRrhVbZxlma-3HLWRlwVP44?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4086,
+        "cod_contenido": "COMUNICACIÓN INSTITUCIONAL-Prevención para el Reto Viral-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Carrusel",
+        "campania": "COMUNICACIÓN INSTITUCIONAL",
+        "titulo_pieza": "Prevención para el Reto Viral",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1MZXKUA2vrJWxodYt5L9v4c8sOnl5rw6t?usp=drive_link",
+          "utms": null,
+          "tipo": "Carrusel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4087,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-Córdoba Cibersegura-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Carrusel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "Córdoba Cibersegura",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1g3bbCfSZxXBfPUAPBZa5vWTeWErEJLuD?usp=drive_link",
+          "utms": null,
+          "tipo": "Carrusel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
         "fila_origen": 4088,
         "cod_contenido": "FUERZAS DE SEGURIDAD-Nueva Escuela de Suboficiales-SEGURIDAD-DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-CÓRDOBA CAPITAL, DEPARTAMENTO CAPITAL, PROVINCIA DE CÓRDOBA, ARGENTINA-Carrusel",
         "campania": "FUERZAS DE SEGURIDAD",
@@ -274603,6 +277149,158 @@
         "solicitado_por": "SECRETARÍA",
         "material": {
           "link": "https://drive.google.com/drive/folders/1ePFLKWIizjcW2so4rAjzhX6hTEs3VTNV?usp=drive_link",
+          "utms": null,
+          "tipo": "Carrusel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4089,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-Nueva Escuela de Suboficiales-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "Nueva Escuela de Suboficiales",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1ONnjEp1GbrZSCfY6eMEZiv7efEXSb4xb?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4090,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-Nueva Escuela de Suboficiales-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Reel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "Nueva Escuela de Suboficiales",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "GOOGLE",
+        "plataforma_origen": "Youtube",
+        "objetivo_campana": "Visualizaciones",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1ONnjEp1GbrZSCfY6eMEZiv7efEXSb4xb?usp=drive_link",
+          "utms": null,
+          "tipo": "Reel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4091,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-Opertativo contra delicuentes de vehículos-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Carrusel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "Opertativo contra delicuentes de vehículos",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1QgFFNni1Mb3AcXD82arh9Ri8Rodo_VWj?usp=drive_link",
+          "utms": null,
+          "tipo": "Carrusel",
+          "redes_publicadas": {
+            "ig": null,
+            "fb": null,
+            "yt": null
+          }
+        },
+        "inicio": null,
+        "fin": null,
+        "duracion_dias": 9.0,
+        "fecha_envio": null,
+        "estado": "S/D",
+        "metricas_ejecutadas": {
+          "alcance_o_visualizaciones": null,
+          "frecuencia": null,
+          "costo_unitario": null,
+          "inversion": null
+        },
+        "circuito": null,
+        "circuito_nombre": null,
+        "destino_tablero": "toda_capital",
+        "observaciones": null
+      },
+      {
+        "fila_origen": 4092,
+        "cod_contenido": "FUERZAS DE SEGURIDAD-Consejo de Seguridad del Interior-SEGURIDAD-PROVINCIA DE CÓRDOBA, ARGENTINA-TODAS LAS LOCALIDADES-Carrusel",
+        "campania": "FUERZAS DE SEGURIDAD",
+        "titulo_pieza": "Consejo de Seguridad del Interior",
+        "eje": "SEGURIDAD",
+        "ministerio": "MINISTERIO DE SEGURIDAD",
+        "plataforma": "META",
+        "plataforma_origen": "Meta",
+        "objetivo_campana": "Frecuencia",
+        "tipo_pauta": "Dark Post",
+        "solicitado_por": "SECRETARÍA",
+        "material": {
+          "link": "https://drive.google.com/drive/folders/1Tx95RDZG0MiVQF0CZbTi3DFj4Z87wBjt?usp=drive_link",
           "utms": null,
           "tipo": "Carrusel",
           "redes_publicadas": {
